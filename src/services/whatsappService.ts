@@ -84,8 +84,9 @@ export class WhatsAppService {
       const data = await response.json();
       
       console.log("[WhatsApp Service] Structured Log:\n" + JSON.stringify({
-        template: payload.template?.name || "N/A",
-        phone: cleanMobile,
+        templateName: payload.template?.name || "N/A",
+        languageCode: payload.template?.language?.code || "N/A",
+        phoneNumber: cleanMobile,
         payload: payload,
         metaResponse: data,
         success: response.ok,
@@ -119,12 +120,21 @@ export class WhatsAppService {
     parameters: string[],
     messageType: string
   ): Promise<boolean> {
+    const templateLanguageMap: Record<string, string> = {
+      "registration_success": "en_US",
+      "payment_success": "en",
+      "forgot_id_recovery": "en",
+      "result_available": "en",
+    };
+
+    const languageCode = templateLanguageMap[templateName] || "en_US";
+
     const payload = {
       type: "template",
       template: {
         name: templateName,
         language: {
-          code: "en_US"
+          code: languageCode
         },
         components: [
           {
