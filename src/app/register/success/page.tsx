@@ -103,7 +103,7 @@ export default function SuccessPage() {
 
   const handleCopyLink = () => {
     if (!regDetails) return;
-    const refLink = `https://cnts.in/register?ref=${regDetails.registrationId}`;
+    const refLink = `https://thecouragelibrary.com/register?ref=${regDetails.registrationId}`;
     navigator.clipboard.writeText(refLink).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -382,7 +382,7 @@ export default function SuccessPage() {
               {/* Clipboard copy box */}
               <div className="flex flex-col sm:flex-row items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-1.5 w-full max-w-md mx-auto md:mx-0">
                 <div className="text-[10px] sm:text-xs font-mono px-2 py-1 text-indigo-300 truncate w-full text-center sm:text-left min-w-0 flex-1">
-                  https://cnts.in/register?ref={regDetails.registrationId}
+                  https://thecouragelibrary.com/register?ref={regDetails.registrationId}
                 </div>
                 <button
                   type="button"
