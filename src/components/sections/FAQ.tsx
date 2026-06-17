@@ -105,12 +105,7 @@ export default function FAQ() {
             Still have questions?{" "}
             <a href="mailto:support@thecouragelibrary.com" className="text-blue-700 font-semibold hover:underline">
               support@thecouragelibrary.com
-            </a>{" "}
-            ·{" "}
-            <a href="tel:+911800000000" className="text-blue-700 font-semibold hover:underline">
-              1800-XXX-XXXX
-            </a>{" "}
-            (Toll Free)
+            </a>
           </p>
         </div>
       </div>

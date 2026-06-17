@@ -504,13 +504,6 @@ Remarks: ${formData.message || "None provided"}
               <Mail size={16} className="text-blue-500" />
               <span>Email: <strong>partners@thecouragelibrary.com</strong></span>
             </a>
-            <a
-              href="tel:+911800000000"
-              className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl py-4 px-6 hover:shadow-sm transition-all w-full md:w-auto"
-            >
-              <Phone size={16} className="text-emerald-500" />
-              <span>Toll-Free: <strong>1800-XXX-XXXX</strong></span>
-            </a>
           </div>
         </div>
       </section>

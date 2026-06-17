@@ -200,22 +200,6 @@ export default function ContactPage() {
                   </div>
                 </a>
 
-                {/* WhatsApp Support */}
-                <a 
-                  href="https://wa.me/911800000000?text=Hello%20CNTS%20Support,%20I%20have%20an%20inquiry..."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start gap-3 p-3 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
-                >
-                  <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-600 shrink-0">
-                    <MessageSquare size={16} />
-                  </div>
-                  <div>
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">WhatsApp Hotline</span>
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-emerald-700 transition-colors">Chat Support</span>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Instantly message our advisors</p>
-                  </div>
-                </a>
               </div>
             </div>
 

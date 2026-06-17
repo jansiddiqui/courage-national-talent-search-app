@@ -2,7 +2,7 @@
 export class EmailService {
   private apiKey = process.env.BREVO_API_KEY || "";
   private senderName = "CNTS Support";
-  private senderEmail = "support@thecouragelibrary.com";
+  private senderEmail = "noreply@thecouragelibrary.com";
 
   public isSandbox(): boolean {
     return !this.apiKey;

@@ -354,17 +354,10 @@ export default function FAQPage() {
               <div className="flex flex-wrap gap-3 justify-center">
                 <a
                   href="mailto:support@thecouragelibrary.com"
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all"
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-800 border border-blue-800 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-800/10"
                 >
-                  <Mail size={12} className="text-blue-600" />
+                  <Mail size={12} />
                   support@thecouragelibrary.com
-                </a>
-                <a
-                  href="tel:+911800000000"
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-800 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-800/10"
-                >
-                  <Phone size={12} />
-                  1800-XXX-XXXX (Toll Free)
                 </a>
               </div>
             </div>

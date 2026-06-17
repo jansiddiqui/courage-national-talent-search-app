@@ -54,7 +54,7 @@ export default function DataDeletionPage() {
             
             <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-6">
               <ol className="list-decimal pl-4 space-y-4 text-slate-700 font-medium">
-                <li>Send an email to <strong>couragecnts@gmail.com</strong></li>
+                <li>Send an email to <strong>support@thecouragelibrary.com</strong></li>
                 <li>
                   Use the subject line: <br/>
                   <span className="inline-block mt-1 bg-white border border-slate-200 px-3 py-1.5 rounded text-slate-900 font-bold shadow-sm">"Data Deletion Request"</span>
@@ -169,7 +169,7 @@ export default function DataDeletionPage() {
                 <div className="font-semibold text-slate-900 text-base">Courage National Talent Search (CNTS)</div>
                 <div className="text-slate-500 flex items-center gap-2">
                   <Mail size={16} className="text-slate-400" />
-                  couragecnts@gmail.com
+                  support@thecouragelibrary.com
                 </div>
               </div>
               <a

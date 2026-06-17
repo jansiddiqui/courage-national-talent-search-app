@@ -130,7 +130,7 @@ export default function PrivacyPolicyPage() {
                 Have questions about our data safety or children protection guidelines?
               </p>
               <a
-                href="mailto:privacy@thecouragelibrary.com"
+                href="mailto:support@thecouragelibrary.com"
                 className="inline-flex items-center gap-2 text-xs bg-white text-slate-950 font-semibold py-2 px-3 rounded-lg hover:bg-blue-50 transition-colors w-full justify-center shadow-sm"
               >
                 <Mail size={13} /> Contact Privacy Desk
@@ -312,13 +312,13 @@ export default function PrivacyPolicyPage() {
                 <div className="space-y-2 text-xs">
                   <div className="font-semibold text-slate-900 text-sm">Courage Education Private Limited</div>
                   <div className="text-slate-500">Registered Office: Kanpur, Uttar Pradesh, India</div>
-                  <div className="text-slate-500">Contact Desk: privacy@thecouragelibrary.com</div>
+                  <div className="text-slate-500">Contact Desk: support@thecouragelibrary.com</div>
                 </div>
                 <a
-                  href="mailto:privacy@thecouragelibrary.com"
+                  href="mailto:support@thecouragelibrary.com"
                   className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-sm shrink-0 text-xs"
                 >
-                  <Mail size={15} /> Email: privacy@thecouragelibrary.com
+                  <Mail size={15} /> Email: support@thecouragelibrary.com
                 </a>
               </div>
             </section>
