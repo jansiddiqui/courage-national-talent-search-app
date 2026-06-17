@@ -443,165 +443,214 @@ export async function GET(
       flex-direction: column;
     }
 
-    @media print {
-      body {
-        background: white;
-        padding: 0;
+      /* Responsive alignments */
+      @media (max-width: 640px) {
+        body {
+          padding: 15px 10px;
+        }
+        .no-print-container {
+          flex-direction: column;
+          gap: 15px;
+          text-align: center;
+          padding: 15px;
+        }
+        .receipt-card {
+          padding: 20px;
+          border-radius: 12px;
+        }
+        .header-grid {
+          grid-template-cols: 1fr;
+          gap: 20px;
+          text-align: center;
+        }
+        .logo-container {
+          justify-content: center;
+        }
+        .receipt-meta {
+          text-align: center;
+        }
+        .info-grid {
+          grid-template-cols: 1fr;
+          gap: 25px;
+        }
+        .transaction-table th, .transaction-table td {
+          padding: 12px 8px;
+          font-size: 11px;
+        }
+        .total-section {
+          align-items: stretch;
+        }
+        .total-row {
+          width: 100%;
+        }
+        .status-stamp {
+          left: 50%;
+          transform: translateX(-50%) rotate(-10deg);
+          bottom: 150px;
+        }
       }
-      .no-print-container {
-        display: none;
+
+      @media print {
+        body {
+          background: white;
+          padding: 0;
+        }
+        .no-print-container {
+          display: none;
+        }
+        .receipt-card {
+          border: none;
+          box-shadow: none;
+          padding: 0;
+        }
       }
-      .receipt-card {
-        border: none;
-        box-shadow: none;
-        padding: 0;
-      }
-    }
-  </style>
-</head>
-<body>
+    </style>
+  </head>
+  <body>
 
-  <div class="no-print-container">
-    <div>
-      <span style="font-size: 12px; color: var(--text);">Transaction receipt generated.</span>
-    </div>
-    <div style="display: flex; gap: 10px;">
-      <button onclick="window.history.back()" class="btn btn-outline">Go Back</button>
-      <button onclick="window.print()" class="btn btn-primary">Print Receipt</button>
-    </div>
-  </div>
-
-  <div class="receipt-card">
-    <div class="status-stamp">PAID</div>
-
-    <div class="header-grid">
-      <div class="logo-container">
-        <div class="logo-icon">C</div>
-        <div class="logo-text">
-          <h1>COURAGE</h1>
-          <p>National Talent Search</p>
-        </div>
+    <div class="no-print-container">
+      <div>
+        <span style="font-size: 12px; color: var(--text);">Transaction receipt generated.</span>
       </div>
-      <div class="receipt-meta">
-        <h2>RECEIPT / INVOICE</h2>
-        <p style="color: #64748b; font-family: monospace;">Receipt No: RC-26-${candidate.registration_id.split("-").pop()}</p>
-        <p style="color: #94a3b8; font-size: 10px; margin-top: 3px;">Date: ${formattedDate}</p>
+      <div style="display: flex; gap: 10px; justify-content: center;">
+        <button onclick="window.history.back()" class="btn btn-outline">Go Back</button>
+        <button onclick="window.print()" class="btn btn-primary">Print Receipt</button>
       </div>
     </div>
 
-    <div class="info-grid">
-      <div class="info-section">
-        <h3>Paid By</h3>
-        <div class="info-details">
-          <strong>${candidate.parent_name}</strong><br>
-          Email: ${candidate.parent_email || "N/A"}<br>
-          WhatsApp: +91 ${candidate.whatsapp_number}<br>
-          State: ${candidate.state}
-        </div>
-      </div>
-      <div class="info-section">
-        <h3>Candidate Identity Card</h3>
-        <div class="id-card-container">
-          <div class="id-card-watermark">Founding Edition 2026</div>
-          <div class="id-card-header">
-            <div style="display: flex; align-items: center; gap: 6px;">
-              <div style="width: 20px; height: 20px; background: #2563eb; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 850; font-size: 10px; color: white;">C</div>
-              <div>
-                <span style="font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 800; color: white; display: block; line-height: 1;">CNTS</span>
-                <span style="font-size: 6px; color: #60a5fa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; line-height: 1; margin-top: 1px;">Founding Edition 2026</span>
-              </div>
-            </div>
-            <span style="font-family: 'Outfit', sans-serif; font-size: 7px; font-weight: 700; color: #93c5fd; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(37, 99, 235, 0.3); padding: 1px 6px; border-radius: 99px; text-transform: uppercase;">Identity Pass</span>
+    <div class="receipt-card">
+      <div class="status-stamp">PAID</div>
+
+      <div class="header-grid">
+        <div class="logo-container">
+          <img src="/images/logo.png" alt="Logo" style="width: 40px; height: 40px; object-fit: contain; background: white; padding: 2px; border-radius: 8px;">
+          <div class="logo-text">
+            <h1>COURAGE</h1>
+            <p>National Talent Search</p>
           </div>
-          
-          <div class="id-card-body">
-            <div class="id-card-photo">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                <circle cx="12" cy="7" r="4"></circle>
-              </svg>
-              <span style="margin-top: 2px; font-size: 4px;">Affix Photo</span>
+        </div>
+        <div class="receipt-meta">
+          <h2>RECEIPT / INVOICE</h2>
+          <p style="color: #64748b; font-family: monospace;">Receipt No: RC-26-${candidate.registration_id.split("-").pop()}</p>
+          <p style="color: #94a3b8; font-size: 10px; margin-top: 3px;">Date: ${formattedDate}</p>
+        </div>
+      </div>
+
+      <div class="info-grid">
+        <div class="info-section">
+          <h3>Paid By</h3>
+          <div class="info-details">
+            <strong>${candidate.parent_name}</strong><br>
+            Email: ${candidate.parent_email || "N/A"}<br>
+            WhatsApp: +91 ${candidate.whatsapp_number}<br>
+            State: ${candidate.state}
+          </div>
+        </div>
+        <div class="info-section">
+          <h3>Candidate Identity Card</h3>
+          <div class="id-card-container">
+            <div class="id-card-watermark">Founding Edition 2026</div>
+            <div class="id-card-header">
+              <div style="display: flex; align-items: center; gap: 6px;">
+                <div style="width: 24px; height: 24px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; padding: 2px;">
+                  <img src="/images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div>
+                  <span style="font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 800; color: white; display: block; line-height: 1;">CNTS</span>
+                  <span style="font-size: 7px; color: #60a5fa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; line-height: 1; margin-top: 2px;">Founding Edition 2026</span>
+                </div>
+              </div>
+              <span style="font-family: 'Outfit', sans-serif; font-size: 7px; font-weight: 700; color: #93c5fd; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(37, 99, 235, 0.3); padding: 2px 6px; border-radius: 99px; text-transform: uppercase; white-space: nowrap;">Identity Pass</span>
             </div>
             
-            <div class="id-card-info">
-              <div class="id-card-field" style="grid-column: span 2;">
-                <span class="id-card-label">Candidate Name</span>
-                <span class="id-card-value" style="font-size: 10px; font-weight: 700;">${candidate.student_name}</span>
+            <div class="id-card-body">
+              <div class="id-card-photo">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+                <span style="margin-top: 4px; font-size: 5px; font-weight: 700;">Affix Photo</span>
               </div>
-              <div class="id-card-field">
-                <span class="id-card-label">Class</span>
-                <span class="id-card-value">Class ${candidate.student_class}</span>
-              </div>
-              <div class="id-card-field">
-                <span class="id-card-label">State</span>
-                <span class="id-card-value">${candidate.state}</span>
-              </div>
-              <div class="id-card-field">
-                <span class="id-card-label">Candidate ID</span>
-                <span class="id-card-value id-card-value-highlight" style="font-size: 9px;">${candidate.registration_id}</span>
-              </div>
-              <div class="id-card-field">
-                <span class="id-card-label">Status</span>
-                <span class="id-card-value" style="color: #34d399; font-weight: 700;">Enrolled / Active</span>
+              
+              <div class="id-card-info">
+                <div class="id-card-field" style="grid-column: span 2;">
+                  <span class="id-card-label">Candidate Name</span>
+                  <span class="id-card-value" style="font-size: 12px; font-weight: 700;">${candidate.student_name}</span>
+                </div>
+                <div class="id-card-field">
+                  <span class="id-card-label">Class</span>
+                  <span class="id-card-value">Class ${candidate.student_class}</span>
+                </div>
+                <div class="id-card-field">
+                  <span class="id-card-label">State</span>
+                  <span class="id-card-value">${candidate.state}</span>
+                </div>
+                <div class="id-card-field">
+                  <span class="id-card-label">Candidate ID</span>
+                  <span class="id-card-value id-card-value-highlight" style="font-size: 10px;">${candidate.registration_id}</span>
+                </div>
+                <div class="id-card-field">
+                  <span class="id-card-label">Status</span>
+                  <span class="id-card-value" style="color: #34d399; font-weight: 700;">Enrolled / Active</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div class="id-card-footer">
-            <div class="id-card-footer-item">
-              <span class="id-card-label" style="font-size: 5px;">Exam Date</span>
-              <span class="id-card-value" style="font-size: 9px; font-weight: 700;">19 July 2026</span>
-            </div>
-            <div class="id-card-footer-item">
-              <span class="id-card-label" style="font-size: 5px;">Slot Venue</span>
-              <span class="id-card-value" style="font-size: 9px; font-weight: 700;">Online / Portal</span>
+            <div class="id-card-footer">
+              <div class="id-card-footer-item">
+                <span class="id-card-label" style="font-size: 6px;">Exam Date</span>
+                <span class="id-card-value" style="font-size: 10px; font-weight: 700;">19 July 2026</span>
+              </div>
+              <div class="id-card-footer-item">
+                <span class="id-card-label" style="font-size: 6px;">Slot Venue</span>
+                <span class="id-card-value" style="font-size: 10px; font-weight: 700;">Online / Portal</span>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <table class="transaction-table">
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th style="width: 20%; text-align: center;">Qty</th>
-          <th class="amount-header" style="width: 25%;">Unit Price</th>
-          <th class="amount-header" style="width: 25%;">Total</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>
-            <strong>CNTS 2026 Registration Fee (Founding Edition)</strong><br>
-            <span style="font-size: 11px; color: #94a3b8;">Includes practice paper mock sets, online diagnostic exam seat, and student talent profile report.</span>
-          </td>
-          <td style="text-align: center;">1</td>
-          <td class="amount">₹99.00</td>
-          <td class="amount">₹99.00</td>
-        </tr>
-      </tbody>
-    </table>
+      <table class="transaction-table">
+        <thead>
+          <tr>
+            <th>Description</th>
+            <th style="width: 15%; text-align: center;">Qty</th>
+            <th class="amount-header" style="width: 20%;">Unit Price</th>
+            <th class="amount-header" style="width: 20%;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              <strong>CNTS 2026 Registration Fee (Founding Edition)</strong><br>
+              <span style="font-size: 11px; color: #94a3b8; display: inline-block; margin-top: 4px;">Includes practice paper mock sets, online diagnostic exam seat, and student talent profile report.</span>
+            </td>
+            <td style="text-align: center;">1</td>
+            <td class="amount">₹99.00</td>
+            <td class="amount">₹99.00</td>
+          </tr>
+        </tbody>
+      </table>
 
-    <div class="total-section">
-      <div class="total-row">
-        <span>Subtotal</span>
-        <span style="font-weight: 500;">₹99.00</span>
+      <div class="total-section">
+        <div class="total-row">
+          <span>Subtotal</span>
+          <span style="font-weight: 500;">₹99.00</span>
+        </div>
+        <div class="total-row">
+          <span>Taxes & Service Fees</span>
+          <span style="font-weight: 500;">₹0.00</span>
+        </div>
+        <div class="total-row grand">
+          <span>Grand Total Paid</span>
+          <span>₹99.00</span>
+        </div>
       </div>
-      <div class="total-row">
-        <span>Taxes & Service Fees</span>
-        <span style="font-weight: 500;">₹0.00</span>
-      </div>
-      <div class="total-row grand">
-        <span>Grand Total Paid</span>
-        <span>₹99.00</span>
-      </div>
-    </div>
 
-    <div class="footer">
-      <p>This is a system-generated electronic receipt powered by Razorpay billing integration.</p>
-      <p style="margin-top: 5px;">Courage Education Private Limited • support@cnts.org.in</p>
-    </div>
+      <div class="footer">
+        <p>This is a system-generated electronic receipt powered by Razorpay billing integration.</p>
+        <p style="margin-top: 5px;">Courage Education Private Limited • support@thecouragelibrary.com</p>
+      </div>
   </div>
 
 </body>

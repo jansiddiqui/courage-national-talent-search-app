@@ -263,13 +263,21 @@ export default function SuccessPage() {
             {/* Header */}
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-display font-bold text-lg shadow-inner">C</div>
-                <div>
+                <div className="relative w-10 h-10 bg-white rounded-xl p-1 shrink-0 flex items-center justify-center">
+                  <Image
+                    src="/images/logo.png"
+                    alt="CNTS Logo"
+                    width={32}
+                    height={32}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="min-w-0">
                   <h4 className="font-display font-extrabold text-sm text-white tracking-tight leading-none mb-1">CNTS</h4>
-                  <span className="text-[8px] text-blue-400 font-black tracking-wider uppercase">Founding Edition 2026</span>
+                  <span className="text-[8px] text-blue-400 font-black tracking-wider uppercase whitespace-nowrap block truncate">Founding Edition 2026</span>
                 </div>
               </div>
-              <span className="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm">
+              <span className="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm whitespace-nowrap shrink-0 ml-2">
                 Identity Card
               </span>
             </div>
@@ -329,13 +337,15 @@ export default function SuccessPage() {
 
             {/* Print Trigger Button */}
             <div className="pt-2">
-              <button
-                onClick={() => window.print()}
-                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 border-none transition-all cursor-pointer"
+              <a
+                href={`/api/admit-card/${regDetails.registrationId}`}
+                target="_blank"
+                rel="noreferrer"
+                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 border-none transition-all cursor-pointer no-underline"
               >
                 <Download size={16} />
                 Download Candidate Pass
-              </button>
+              </a>
             </div>
           </div>
         </div>
