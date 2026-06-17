@@ -42,7 +42,7 @@ export async function GET(
       const { data: reg, error } = await (supabaseAdmin as any)
         .from("registrations")
         .select("*")
-        .eq("registration_id", normalizedId)
+        .or(`registration_id.eq.${normalizedId},cnts_id.eq.${normalizedId}`)
         .maybeSingle();
 
       if (error) {

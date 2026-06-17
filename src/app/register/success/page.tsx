@@ -291,28 +291,29 @@ export default function SuccessPage() {
                 <div className="grid grid-cols-2 gap-2">
                   <div>
                     <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Class</span>
-                    <strong className="text-white text-xs font-semibold">Class {regDetails.studentClass}</strong>
-                  </div>
-                  <div>
-                    <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">State</span>
-                    <strong className="text-white text-xs font-semibold">{regDetails.state}</strong>
-                  </div>
+                  <strong className="text-white text-xs font-semibold truncate block">{regDetails.studentName}</strong>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Candidate ID</span>
-                    <strong className="text-amber-400 font-mono text-xs font-bold uppercase tracking-wider block truncate">{regDetails.registrationId}</strong>
+              </div>
+              
+              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex gap-3 items-center">
+                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                  <Trophy size={14} className="text-white/60" />
+                </div>
+                <div className="grid grid-cols-2 gap-2 flex-1 min-w-0">
+                  <div className="min-w-0">
+                    <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block truncate">Candidate ID</span>
+                    <strong className="text-amber-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider block truncate">{regDetails.registrationId}</strong>
                   </div>
-                  <div>
-                    <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Enrollment Status</span>
-                    <strong className="text-white text-[10px] font-semibold block">Enrolled / Active</strong>
+                  <div className="min-w-0">
+                    <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block truncate">Enrollment Status</span>
+                    <strong className="text-white text-[10px] sm:text-xs font-semibold block truncate">Enrolled / Active</strong>
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Exam Date & Venue Footer */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-3 grid grid-cols-2 gap-2 text-center">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-3 grid grid-cols-2 gap-2 text-center mb-4">
               <div>
                 <span className="text-[6px] text-white/40 uppercase font-bold tracking-widest block">Exam Date</span>
                 <strong className="text-white text-[10px] font-bold">19 July 2026</strong>
@@ -322,12 +323,12 @@ export default function SuccessPage() {
                 <strong className="text-white text-[10px] font-bold">Online / Portal</strong>
               </div>
             </div>
-
+            
             {/* Print Trigger Button */}
-            <div className="flex gap-2 pt-2 no-print">
+            <div className="flex gap-2">
               <button
                 onClick={() => window.print()}
-                className="w-full py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-md shadow-blue-900/20 active:scale-[0.98] transition-all cursor-pointer border-none"
+                className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-md border-none transition-all cursor-pointer"
               >
                 <Download size={12} />
                 Print Candidate Pass
@@ -336,71 +337,8 @@ export default function SuccessPage() {
           </div>
         </div>
 
-        {/* Student Details Summary */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-blue-900/5 border border-slate-100 p-6 md:p-8 space-y-6">
-          <h3 className="font-display font-bold text-lg text-slate-850 flex items-center gap-2">
-            <Trophy size={18} className="text-blue-800" />
-            Registered Profile
-          </h3>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 text-sm pb-2 border-b border-slate-100">
-            {/* Student Name */}
-            <div className="space-y-1">
-              <span className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <User size={12} /> Student Name
-              </span>
-              <p className="font-semibold text-slate-800">{regDetails.studentName}</p>
-            </div>
-
-            {/* Class & Category */}
-            <div className="space-y-1">
-              <span className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <BookOpen size={12} /> Class & Category
-              </span>
-              <p className="font-semibold text-slate-800">
-                Class {regDetails.studentClass} · <span className="text-blue-800 text-xs font-bold">{isJunior ? "Sub-Junior" : "Junior"}</span>
-              </p>
-            </div>
-
-            {/* Language */}
-            <div className="space-y-1">
-              <span className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <Languages size={12} /> Medium of Exam
-              </span>
-              <p className="font-semibold text-slate-800">{regDetails.language}</p>
-            </div>
-
-            {/* Location */}
-            <div className="space-y-1">
-              <span className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <MapPin size={12} /> Location
-              </span>
-              <p className="font-semibold text-slate-800">
-                {regDetails.district}, {regDetails.state}
-              </p>
-            </div>
-
-            {/* School */}
-            <div className="space-y-1 sm:col-span-2">
-              <span className="text-xs text-slate-400 font-medium uppercase tracking-wider flex items-center gap-1">
-                <School size={12} /> School Name
-              </span>
-              <p className="font-semibold text-slate-800">{regDetails.schoolName}</p>
-            </div>
-          </div>
-
-          <div className="pt-2">
-            <div className="p-3 bg-emerald-50/50 border border-emerald-100/50 rounded-2xl flex items-center gap-2">
-              <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0"></div>
-              <span className="text-xs text-emerald-950 font-semibold">
-                {examCategory} syllabus and mock tests will apply to this candidate.
-              </span>
-            </div>
-          </div>
-        </div>
-
         {/* Viral Referral Loop Card */}
-        <div className="bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-950 text-white rounded-3xl p-6 md:p-8 shadow-xl shadow-blue-955/20 border border-indigo-950 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-950 text-white rounded-3xl p-6 md:p-8 shadow-xl shadow-blue-955/20 border border-indigo-950 relative overflow-hidden w-full">
           <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
           
           <div className="relative flex flex-col md:flex-row items-center gap-6">
@@ -408,7 +346,7 @@ export default function SuccessPage() {
               <Star size={28} className="text-white fill-white" />
             </div>
             
-            <div className="flex-1 space-y-3 text-center md:text-left">
+            <div className="flex-1 space-y-3 text-center md:text-left min-w-0">
               <div className="inline-flex items-center gap-1 bg-amber-500/10 border border-amber-500/30 px-2.5 py-0.5 rounded-full">
                 <Sparkles size={11} className="text-amber-400" />
                 <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
@@ -423,14 +361,14 @@ export default function SuccessPage() {
               </p>
 
               {/* Clipboard copy box */}
-              <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-1.5 max-w-md mx-auto md:mx-0">
-                <div className="text-xs font-mono px-2 text-indigo-300 truncate select-all flex-1 text-left">
+              <div className="flex flex-col sm:flex-row items-center gap-2 bg-white/5 border border-white/10 rounded-xl p-1.5 w-full max-w-md mx-auto md:mx-0">
+                <div className="text-[10px] sm:text-xs font-mono px-2 py-1 text-indigo-300 truncate w-full text-center sm:text-left min-w-0 flex-1">
                   https://cnts.in/register?ref={regDetails.registrationId}
                 </div>
                 <button
                   type="button"
                   onClick={handleCopyLink}
-                  className={`px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+                  className={`w-full sm:w-auto shrink-0 px-3 py-2 rounded-lg text-xs font-bold transition-all duration-200 flex items-center justify-center gap-1.5 cursor-pointer ${
                     copied 
                       ? "bg-emerald-650 text-white" 
                       : "bg-white text-slate-900 hover:bg-slate-100"

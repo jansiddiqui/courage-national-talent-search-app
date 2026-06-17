@@ -522,75 +522,78 @@ export default function AdminOverviewPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFF]">
       
-      {/* Top Banner Navigation */}
-      <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-md border-b border-slate-100 py-4 px-6 md:px-12 flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="relative w-8 h-8">
-            <Image
-              src="/images/logo.png"
-              alt="CNTS Logo"
-              fill
-              className="object-contain"
-              priority
-            />
+      {/* Sticky Header & Navigation Group */}
+      <div className="sticky top-0 z-40">
+        {/* Top Banner Navigation */}
+        <header className="bg-white/90 backdrop-blur-md border-b border-slate-100 py-4 px-4 md:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
+          <div className="flex items-center gap-3">
+            <div className="relative w-8 h-8 shrink-0">
+              <Image
+                src="/images/logo.png"
+                alt="CNTS Logo"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <div>
+              <h1 className="font-display font-bold text-base text-slate-800 flex items-center gap-2">
+                CNTS Admin Center
+              </h1>
+              <p className="text-[10px] text-slate-500 font-medium tracking-wide uppercase">
+                Talent Discovery Auditing
+              </p>
+            </div>
           </div>
-          <div>
-            <h1 className="font-display font-bold text-base text-slate-800 flex items-center gap-2">
-              CNTS Admin Center
-            </h1>
-            <p className="text-[10px] text-slate-500 font-medium tracking-wide uppercase">
-              Talent Discovery Auditing
-            </p>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <button
+              onClick={() => loadData(true)}
+              disabled={refreshing}
+              className={`flex-1 md:flex-none p-2.5 text-slate-500 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all border border-slate-200/50 flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer ${
+                refreshing ? "opacity-60 cursor-not-allowed" : ""
+              }`}
+            >
+              <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+              Sync
+            </button>
+            <button
+              onClick={() => router.push("/admin/registrations")}
+              className="flex-1 md:flex-none px-4 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 hover:shadow-blue-700/20 flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <FileText size={13} />
+              Registrations Table
+            </button>
           </div>
-        </div>
+        </header>
 
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => loadData(true)}
-            disabled={refreshing}
-            className={`p-2.5 text-slate-500 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all border border-slate-200/50 flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer ${
-              refreshing ? "opacity-60 cursor-not-allowed" : ""
-            }`}
-          >
-            <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-            Sync
-          </button>
-          <button
-            onClick={() => router.push("/admin/registrations")}
-            className="px-4 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 hover:shadow-blue-700/20 flex items-center gap-1.5 cursor-pointer"
-          >
-            <FileText size={13} />
-            Registrations Table
-          </button>
-        </div>
-      </header>
-
-      {/* Tab Navigation */}
-      <div className="bg-white border-b border-slate-100 px-6 md:px-12 sticky top-[69px] z-30 shadow-sm">
-        <div className="max-w-7xl mx-auto flex gap-6">
-          {[
-            { id: "overview", label: "Overview & Analytics", icon: Trophy },
-            { id: "settings", label: "Global Settings", icon: Settings },
-            { id: "whatsapp", label: "WhatsApp Control Center", icon: MessageSquare },
-            { id: "coupons", label: "Promo & Coupon Manager", icon: Award }
-          ].map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as any)}
-                className={`py-4 px-2 font-display text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer ${
-                  isActive
-                    ? "border-blue-800 text-blue-800"
-                    : "border-transparent text-slate-500 hover:text-slate-700"
-                }`}
-              >
-                <Icon size={16} />
-                {tab.label}
-              </button>
-            );
-          })}
+        {/* Tab Navigation */}
+        <div className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-12 shadow-sm overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+          <div className="max-w-7xl mx-auto flex gap-6 w-max">
+            {[
+              { id: "overview", label: "Overview & Analytics", icon: Trophy },
+              { id: "settings", label: "Global Settings", icon: Settings },
+              { id: "whatsapp", label: "WhatsApp Control Center", icon: MessageSquare },
+              { id: "coupons", label: "Promo & Coupon Manager", icon: Award }
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id as any)}
+                  className={`py-4 px-2 font-display text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
+                    isActive
+                      ? "border-blue-800 text-blue-800"
+                      : "border-transparent text-slate-500 hover:text-slate-700"
+                  }`}
+                >
+                  <Icon size={16} />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
