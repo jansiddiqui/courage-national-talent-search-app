@@ -259,79 +259,82 @@ export default function SuccessPage() {
             Founding Edition 2026
           </div>
 
-          <div className="relative space-y-6">
+          <div className="relative space-y-5">
             {/* Header */}
             <div className="flex justify-between items-center border-b border-white/10 pb-4">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-display font-bold text-sm">C</div>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-display font-bold text-lg shadow-inner">C</div>
                 <div>
-                  <h4 className="font-display font-extrabold text-xs text-white tracking-tight leading-none">CNTS</h4>
-                  <span className="text-[7px] text-blue-400 font-black tracking-wider uppercase">Founding Edition 2026</span>
+                  <h4 className="font-display font-extrabold text-sm text-white tracking-tight leading-none mb-1">CNTS</h4>
+                  <span className="text-[8px] text-blue-400 font-black tracking-wider uppercase">Founding Edition 2026</span>
                 </div>
               </div>
-              <span className="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[8px] font-black uppercase tracking-wider">
+              <span className="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm">
                 Identity Card
               </span>
             </div>
 
-            {/* Body Info Grid */}
-            <div className="grid grid-cols-3 gap-4 items-center">
+            {/* Body Info */}
+            <div className="flex gap-5">
               {/* Photo Area */}
-              <div className="col-span-1 border border-white/10 rounded-xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-2 relative">
-                <User size={24} className="text-white/20" />
-                <span className="text-[6px] text-white/30 uppercase font-bold tracking-wider mt-2">Affix Photo</span>
+              <div className="w-24 sm:w-28 shrink-0 border border-white/10 rounded-2xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-2 relative overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                <User size={28} className="text-white/20 mb-2 relative z-10" />
+                <span className="text-[7px] text-white/40 uppercase font-bold tracking-widest relative z-10">Affix Photo</span>
               </div>
 
               {/* Candidate Info Details */}
-              <div className="col-span-2 space-y-3 pl-2">
+              <div className="flex-1 space-y-4 py-1 min-w-0">
                 <div>
-                  <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Candidate Name</span>
-                  <strong className="text-white text-xs md:text-sm font-semibold truncate block">{regDetails.studentName}</strong>
+                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Candidate Name</span>
+                  <strong className="text-white text-sm sm:text-base font-semibold block truncate" title={regDetails.studentName}>{regDetails.studentName}</strong>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Class</span>
-                  <strong className="text-white text-xs font-semibold truncate block">{regDetails.studentName}</strong>
+                <div>
+                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Class</span>
+                  <strong className="text-white text-sm sm:text-base font-semibold block truncate" title={regDetails.studentClass}>{regDetails.studentClass}</strong>
                 </div>
-              </div>
-              
-              <div className="bg-white/5 border border-white/10 rounded-xl p-3 flex gap-3 items-center">
-                <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
-                  <Trophy size={14} className="text-white/60" />
-                </div>
-                <div className="grid grid-cols-2 gap-2 flex-1 min-w-0">
-                  <div className="min-w-0">
-                    <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block truncate">Candidate ID</span>
-                    <strong className="text-amber-400 font-mono text-[10px] sm:text-xs font-bold uppercase tracking-wider block truncate">{regDetails.registrationId}</strong>
-                  </div>
-                  <div className="min-w-0">
-                    <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block truncate">Enrollment Status</span>
-                    <strong className="text-white text-[10px] sm:text-xs font-semibold block truncate">Enrolled / Active</strong>
-                  </div>
+                <div>
+                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Candidate ID</span>
+                  <strong className="text-amber-400 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider block truncate">{regDetails.registrationId}</strong>
                 </div>
               </div>
             </div>
 
-            {/* Exam Date & Venue Footer */}
-            <div className="bg-white/5 border border-white/10 rounded-xl p-3 grid grid-cols-2 gap-2 text-center mb-4">
-              <div>
-                <span className="text-[6px] text-white/40 uppercase font-bold tracking-widest block">Exam Date</span>
-                <strong className="text-white text-[10px] font-bold">19 July 2026</strong>
+            {/* Status & Footer Section */}
+            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+              <div className="flex items-center gap-3 w-full sm:w-auto min-w-0">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
+                  <CheckCircle2 size={18} className="text-emerald-400" />
+                </div>
+                <div className="min-w-0">
+                  <span className="text-[8px] text-emerald-400/80 uppercase font-black tracking-widest block mb-1">Status</span>
+                  <strong className="text-emerald-400 text-xs sm:text-sm font-bold block truncate">Enrolled & Active</strong>
+                </div>
               </div>
-              <div>
-                <span className="text-[6px] text-white/40 uppercase font-bold tracking-widest block">Slot Venue</span>
-                <strong className="text-white text-[10px] font-bold">Online / Portal</strong>
+
+              <div className="w-full sm:w-px sm:h-10 bg-white/10 hidden sm:block"></div>
+              <div className="w-full h-px bg-white/10 sm:hidden"></div>
+
+              <div className="flex gap-6 w-full sm:w-auto justify-between sm:justify-start">
+                <div>
+                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Exam Date</span>
+                  <strong className="text-white text-xs sm:text-sm font-bold block">19 July 2026</strong>
+                </div>
+                <div>
+                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Venue</span>
+                  <strong className="text-white text-xs sm:text-sm font-bold block">Online Portal</strong>
+                </div>
               </div>
             </div>
-            
+
             {/* Print Trigger Button */}
-            <div className="flex gap-2">
+            <div className="pt-2">
               <button
                 onClick={() => window.print()}
-                className="w-full py-2.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 shadow-md border-none transition-all cursor-pointer"
+                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 border-none transition-all cursor-pointer"
               >
-                <Download size={12} />
-                Print Candidate Pass
+                <Download size={16} />
+                Download Candidate Pass
               </button>
             </div>
           </div>
@@ -383,26 +386,26 @@ export default function SuccessPage() {
         </div>
 
         {/* Next Steps Timeline */}
-        <div className="bg-white rounded-3xl shadow-xl shadow-blue-900/5 border border-slate-100 p-6 md:p-8 space-y-6">
-          <h3 className="font-display font-bold text-lg text-slate-800">
+        <div className="bg-white rounded-3xl shadow-xl shadow-blue-900/5 border border-slate-100 p-6 md:p-8 space-y-8 relative z-10">
+          <h3 className="font-display font-bold text-xl text-slate-900">
             Next Steps in Your Journey
           </h3>
 
-          <div className="space-y-6">
+          <div className="relative space-y-8 before:absolute before:inset-0 before:ml-4 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-blue-100 before:via-blue-100 before:to-transparent">
             {[
               {
                 step: 1,
                 title: "Download Sample Question Paper",
                 desc: "Immediately practice with mock questions configured for Class " + regDetails.studentClass + ".",
                 badge: "Immediate Action",
-                badgeColor: "bg-blue-50 text-blue-800 border-blue-100",
+                badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
                 action: (
                   <a
                     href={samplePaperPath}
                     download={`CNTS_Class${regDetails.studentClass}_Sample_Paper.pdf`}
-                    className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-blue-800 text-white text-xs font-bold rounded-lg hover:bg-blue-700 shadow-md shadow-blue-800/15 transition-all cursor-pointer"
+                    className="inline-flex items-center gap-2 mt-3 px-5 py-2.5 bg-blue-700 text-white text-sm font-bold rounded-xl hover:bg-blue-600 shadow-lg shadow-blue-700/20 transition-all cursor-pointer"
                   >
-                    <Download size={12} />
+                    <Download size={14} />
                     Download Class {regDetails.studentClass} Paper
                   </a>
                 )
@@ -412,13 +415,13 @@ export default function SuccessPage() {
                 title: "Join Official WhatsApp Updates Channel",
                 desc: "Follow the official parent broadcast community to secure real-time announcements.",
                 badge: "Action Required",
-                badgeColor: "bg-emerald-50 text-emerald-800 border-emerald-100",
+                badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200",
                 action: (
                   <Link
                     href="/updates"
-                    className="inline-flex items-center gap-2 mt-2 px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg hover:bg-emerald-500 shadow-md shadow-emerald-600/15 transition-all"
+                    className="inline-flex items-center gap-2 mt-3 px-5 py-2.5 bg-emerald-600 text-white text-sm font-bold rounded-xl hover:bg-emerald-500 shadow-lg shadow-emerald-600/20 transition-all"
                   >
-                    <MessageSquare size={12} />
+                    <MessageSquare size={14} />
                     Join Broadcast Group
                   </Link>
                 )
@@ -428,35 +431,35 @@ export default function SuccessPage() {
                 title: "Diagnostic Portal Login Credentials",
                 desc: "Parent and child diagnostic test portal logins will be generated. We will notify you via SMS & WhatsApp.",
                 badge: "Release Date: 10 July",
-                badgeColor: "bg-slate-50 text-slate-600 border-slate-200"
+                badgeColor: "bg-amber-50 text-amber-700 border-amber-200"
               },
               {
                 step: 4,
                 title: "Final CNTS Talent Discovery Exam",
                 desc: "Log in to the diagnostic portal to complete the talent search test.",
                 badge: "Exam Date: 19 July",
-                badgeColor: "bg-blue-50 text-blue-800 border-blue-100"
+                badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200"
               }
-            ].map((item) => (
-              <div key={item.step} className="flex gap-4 items-start">
-                {/* Step Circle */}
-                <div className="w-6 h-6 rounded-full bg-blue-50 border border-blue-100 text-blue-850 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                  {item.step}
+            ].map((item, index, array) => (
+              <div key={item.step} className="relative flex items-start justify-between md:justify-normal md:odd:flex-row-reverse group is-active">
+                {/* Icon */}
+                <div className="flex items-center justify-center w-8 h-8 rounded-full border-4 border-white bg-blue-100 text-blue-700 shadow shrink-0 md:order-1 md:group-odd:-translate-x-1/2 md:group-even:translate-x-1/2 z-10">
+                  <span className="text-xs font-bold">{item.step}</span>
                 </div>
                 {/* Content */}
-                <div className="space-y-1">
-                  <div className="flex flex-wrap items-center gap-2">
-                    <h4 className="text-sm font-semibold text-slate-800 leading-tight">
-                      {item.title}
-                    </h4>
-                    <span className={`px-2 py-0.5 text-[9px] font-bold tracking-wide rounded-md border ${item.badgeColor}`}>
+                <div className="w-[calc(100%-3rem)] md:w-[calc(50%-2rem)] p-4 rounded-2xl border border-slate-100 bg-white shadow-sm transition-all hover:shadow-md hover:border-blue-100">
+                  <div className="flex flex-wrap items-center gap-2 mb-2">
+                    <span className={`px-2.5 py-1 text-[10px] font-bold tracking-wide rounded-lg border ${item.badgeColor}`}>
                       {item.badge}
                     </span>
                   </div>
-                  <p className="text-slate-500 text-xs leading-normal">
+                  <h4 className="text-base font-bold text-slate-900 mb-1">
+                    {item.title}
+                  </h4>
+                  <p className="text-slate-500 text-sm leading-relaxed">
                     {item.desc}
                   </p>
-                  {item.action && <div className="pt-1">{item.action}</div>}
+                  {item.action && <div className="pt-2">{item.action}</div>}
                 </div>
               </div>
             ))}
@@ -490,7 +493,6 @@ export default function SuccessPage() {
           </a>
         </div>
 
-      </div>
       </div>
     </main>
   );
