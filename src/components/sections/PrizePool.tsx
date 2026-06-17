@@ -64,14 +64,14 @@ export default function PrizePool() {
             return (
               <div
                 key={p.rank}
-                className={`relative flex flex-col items-center text-center group ${
-                  isCenter ? "md:-mb-0 order-first md:order-none" : ""
+                className={`relative flex flex-col items-center text-center group w-full ${
+                  isCenter ? "max-w-[280px] sm:max-w-none sm:w-auto order-first md:order-none" : "max-w-[260px] sm:max-w-none sm:w-auto"
                 }`}
               >
                 <div
-                  className={`${
-                    isCenter ? "w-60 p-8" : "w-52 p-7"
-                  } rounded-xl bg-gradient-to-br ${p.gradient} text-white relative overflow-hidden shadow-2xl ${p.glow} shadow-lg group-hover:-translate-y-1 transition-transform duration-300`}
+                  className={`w-full ${
+                    isCenter ? "sm:w-60 p-8" : "sm:w-52 p-7"
+                  } rounded-t-2xl sm:rounded-xl bg-gradient-to-br ${p.gradient} text-white relative overflow-hidden shadow-2xl ${p.glow} shadow-lg group-hover:-translate-y-1 transition-transform duration-300`}
                 >
                   {/* Background shimmer */}
                   <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none rounded-xl" />

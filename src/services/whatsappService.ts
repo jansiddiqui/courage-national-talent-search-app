@@ -65,7 +65,7 @@ export class WhatsAppService {
 
     try {
       const response = await fetch(
-        `https://graph.facebook.com/v23.0/${this.phoneId}/messages`,
+        `https://graph.facebook.com/v20.0/${this.phoneId}/messages`,
         {
           method: "POST",
           headers: {

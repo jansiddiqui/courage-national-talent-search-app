@@ -23,6 +23,7 @@ const footerLinks = {
     { label: "Results Portal", href: "/results" },
     { label: "Certificate Verification", href: "/verify" },
     { label: "For Schools", href: "/for-schools" },
+    { label: "FAQs & Support", href: "/faq" },
     { label: "Contact Us", href: "/contact" },
   ],
   Legal: [
