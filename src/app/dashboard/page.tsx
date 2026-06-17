@@ -461,7 +461,7 @@ export default function DashboardPage() {
                       <div className="grid grid-cols-3 gap-4 items-center">
                         {/* Photo Area */}
                         <div className={`col-span-1 border border-white/10 rounded-xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-0 relative overflow-hidden group-hover:border-white/20 transition-colors`}>
-                          <img src={`/api/photo/${c.registration_id || c.cnts_id || c.id}`} alt="Candidate Photo" className="w-full h-full object-cover rounded-xl z-10 relative" onError={(e) => {
+                          <img src={`/api/photo/${c.registration_id || c.id}`} alt="Candidate Photo" className="w-full h-full object-cover rounded-xl z-10 relative" onError={(e) => {
                             e.currentTarget.style.display = 'none';
                             e.currentTarget.nextElementSibling?.classList.remove('hidden');
                           }} />
