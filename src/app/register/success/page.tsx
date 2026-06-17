@@ -491,6 +491,7 @@ export default function SuccessPage() {
         </div>
 
       </div>
+      </div>
     </main>
   );
 }
