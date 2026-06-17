@@ -460,7 +460,8 @@ function RegisterForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          couponCode: isCouponApplied ? couponCode.trim().toUpperCase() : ""
+          couponCode: isCouponApplied ? couponCode.trim().toUpperCase() : "",
+          email: formData.parentEmail
         })
       });
 

@@ -3,14 +3,32 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { couponCode } = await request.json();
+    const { couponCode, email } = await request.json();
     let finalAmount = 99; // Default price: ₹99
+
+    const { supabaseAdmin, hasSupabaseAdminConfig } = await import("@/lib/supabaseAdmin");
+
+    // Prevent Admin/SuperAdmin from registering
+    if (hasSupabaseAdminConfig && email) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: adminCheck } = await (supabaseAdmin as any)
+        .from("admin_users")
+        .select("email")
+        .eq("email", email)
+        .maybeSingle();
+      
+      if (adminCheck) {
+        return NextResponse.json(
+          { success: false, error: "Administrators cannot register as candidates." },
+          { status: 403 }
+        );
+      }
+    }
 
     if (couponCode) {
       const cleanCode = couponCode.trim().toUpperCase();
       let discountPercent = 0;
 
-      const { supabaseAdmin, hasSupabaseAdminConfig } = await import("@/lib/supabaseAdmin");
       if (!hasSupabaseAdminConfig) {
         // Sandbox fallback for local developer testing
         if (cleanCode === "FOUNDER50") {
