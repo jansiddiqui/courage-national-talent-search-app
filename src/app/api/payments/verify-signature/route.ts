@@ -148,7 +148,8 @@ export async function POST(request: Request) {
       registration_status: "REGISTERED",
       mobile_verified: true,
       cnts_id: cntsId,
-      coupon_code: couponCode || null
+      coupon_code: couponCode || null,
+      photo_url: formData.photo_url || null
     };
 
     // 3. Database Write (Updates draft if available, otherwise inserts new)

@@ -91,6 +91,7 @@ export async function saveRegistration(
     mobile_verified: data.mobile_verified || false,
     admin_notes: data.admin_notes || null,
     user_id: data.user_id || null,
+    photo_url: data.photo_url || null,
     created_at: timestamp,
   };
 
@@ -201,6 +202,7 @@ export async function updateRegistrationData(
     if (data.mobile_verified !== undefined) recordToUpdate.mobile_verified = data.mobile_verified;
     if (data.admin_notes !== undefined) recordToUpdate.admin_notes = data.admin_notes;
     if (data.user_id !== undefined) recordToUpdate.user_id = data.user_id;
+    if (data.photo_url !== undefined) recordToUpdate.photo_url = data.photo_url;
 
     const res = await fetch("/api/registrations", {
       method: "PUT",
