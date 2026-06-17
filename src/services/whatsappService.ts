@@ -82,6 +82,16 @@ export class WhatsAppService {
       );
 
       const data = await response.json();
+      
+      console.log("[WhatsApp Service] Structured Log:\n" + JSON.stringify({
+        template: payload.template?.name || "N/A",
+        phone: cleanMobile,
+        payload: payload,
+        metaResponse: data,
+        success: response.ok,
+        error: response.ok ? null : (data.error?.message || data.error)
+      }, null, 2));
+
       if (response.ok) {
         return {
           success: true,
@@ -89,13 +99,13 @@ export class WhatsAppService {
         };
       }
 
-      console.error("[WhatsApp Service] Meta API error:", data);
+      console.error("[WhatsApp Service] Exact Meta Error:", data.error || data.message || data);
       return {
         success: false,
         error: data.error?.message || "Meta API rejection"
       };
     } catch (err: any) {
-      console.error("[WhatsApp Service] Fetch error:", err);
+      console.error(err.response?.data || err.message || err);
       return { success: false, error: err.message || "Network error" };
     }
   }
