@@ -1,5 +1,5 @@
 import crypto from "crypto";
-const { authenticator } = require("otplib");
+import { authenticator } from "otplib";
 
 const ENCRYPTION_KEY = process.env.ADMIN_TOTP_ENCRYPTION_KEY;
 const ALGORITHM = "aes-256-gcm";

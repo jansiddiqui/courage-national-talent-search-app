@@ -3,7 +3,7 @@ import { verifySession, signSession } from "@/lib/sessionHelper";
 import { generateTotpSecret, generateRecoveryCodes } from "@/lib/totpHelper";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import QRCode from "qrcode";
-const { authenticator } = require("otplib");
+import { authenticator } from "otplib";
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
