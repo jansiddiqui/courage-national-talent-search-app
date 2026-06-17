@@ -466,7 +466,16 @@ function RegisterForm() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to initialize transaction order.");
+        let errorMessage = "Failed to initialize transaction order.";
+        try {
+          const errorData = await res.json();
+          if (errorData.error) {
+            errorMessage = errorData.error;
+          }
+        } catch (e) {
+          // Fallback to generic message if not JSON
+        }
+        throw new Error(errorMessage);
       }
 
       const orderData = await res.json();
