@@ -332,13 +332,14 @@ export async function GET(
     /* Identity Card style */
     .id-card-container {
       margin-bottom: 30px;
-      padding: 20px;
-      border-radius: 16px;
-      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+      padding: 24px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
       color: white;
       border: 1px solid rgba(255, 255, 255, 0.1);
       position: relative;
       overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
     
     .id-card-watermark {
@@ -346,56 +347,64 @@ export async function GET(
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%) rotate(-20deg);
-      font-size: 24px;
+      font-size: 28px;
       font-weight: 850;
-      color: rgba(255, 255, 255, 0.02);
+      color: rgba(255, 255, 255, 0.03);
       white-space: nowrap;
       pointer-events: none;
       z-index: 1;
       text-transform: uppercase;
-      letter-spacing: 2px;
+      letter-spacing: 4px;
+      font-family: 'Outfit', sans-serif;
     }
 
     .id-card-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
-      padding-bottom: 10px;
-      margin-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 16px;
+      margin-bottom: 20px;
       position: relative;
       z-index: 2;
     }
 
     .id-card-body {
-      display: grid;
-      grid-template-cols: 80px 1fr;
-      gap: 20px;
-      align-items: center;
+      display: flex;
+      gap: 24px;
+      align-items: flex-start;
       position: relative;
       z-index: 2;
     }
 
     .id-card-photo {
-      width: 75px;
-      height: 100px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      width: 90px;
+      height: 120px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
       background: rgba(255, 255, 255, 0.05);
-      border-radius: 8px;
+      border-radius: 12px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      font-size: 7px;
       color: rgba(255, 255, 255, 0.3);
-      text-transform: uppercase;
-      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .id-card-photo::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.2), transparent);
     }
 
     .id-card-info {
+      flex: 1;
       display: grid;
       grid-template-cols: 1fr 1fr;
-      gap: 10px;
+      gap: 16px;
+      row-gap: 20px;
     }
 
     .id-card-field {
@@ -404,36 +413,37 @@ export async function GET(
     }
 
     .id-card-label {
-      font-size: 7px;
-      color: rgba(255, 255, 255, 0.45);
+      font-size: 8px;
+      color: rgba(255, 255, 255, 0.4);
       text-transform: uppercase;
-      font-weight: 800;
-      letter-spacing: 0.5px;
+      font-weight: 900;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
     }
 
     .id-card-value {
-      font-size: 11px;
+      font-size: 13px;
       font-weight: 600;
       color: white;
-      margin-top: 1px;
     }
 
     .id-card-value-highlight {
       color: #fbbf24;
       font-family: monospace;
       font-weight: 700;
+      font-size: 12px;
+      letter-spacing: 0.5px;
     }
 
     .id-card-footer {
-      display: grid;
-      grid-template-cols: 1fr 1fr;
-      gap: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 6px 12px;
-      border-radius: 8px;
-      margin-top: 14px;
-      text-align: center;
+      padding: 12px 20px;
+      border-radius: 12px;
+      margin-top: 20px;
       position: relative;
       z-index: 2;
     }
@@ -441,6 +451,11 @@ export async function GET(
     .id-card-footer-item {
       display: flex;
       flex-direction: column;
+      text-align: left;
+    }
+
+    .id-card-footer-item:last-child {
+      text-align: right;
     }
 
       /* Responsive alignments */
@@ -551,60 +566,59 @@ export async function GET(
           <div class="id-card-container">
             <div class="id-card-watermark">Founding Edition 2026</div>
             <div class="id-card-header">
-              <div style="display: flex; align-items: center; gap: 6px;">
-                <div style="width: 24px; height: 24px; background: white; border-radius: 6px; display: flex; align-items: center; justify-content: center; padding: 2px;">
-                  <img src="/images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
-                </div>
-                <div>
-                  <span style="font-family: 'Outfit', sans-serif; font-size: 10px; font-weight: 800; color: white; display: block; line-height: 1;">CNTS</span>
-                  <span style="font-size: 7px; color: #60a5fa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; line-height: 1; margin-top: 2px;">Founding Edition 2026</span>
-                </div>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 36px; height: 36px; background: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; padding: 4px; flex-shrink: 0;">
+                <img src="/images/logo.png" alt="Logo" style="width: 100%; height: 100%; object-fit: contain;">
               </div>
-              <span style="font-family: 'Outfit', sans-serif; font-size: 7px; font-weight: 700; color: #93c5fd; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(37, 99, 235, 0.3); padding: 2px 6px; border-radius: 99px; text-transform: uppercase; white-space: nowrap;">Identity Pass</span>
+              <div>
+                <span style="font-family: 'Outfit', sans-serif; font-size: 14px; font-weight: 800; color: white; display: block; line-height: 1.1; margin-bottom: 2px;">CNTS</span>
+                <span style="font-size: 8px; color: #60a5fa; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; display: block; line-height: 1; white-space: nowrap;">Founding Edition 2026</span>
+              </div>
+            </div>
+            <span style="font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 800; color: #93c5fd; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(37, 99, 235, 0.3); padding: 4px 10px; border-radius: 99px; text-transform: uppercase; white-space: nowrap;">Identity Pass</span>
+          </div>
+          
+          <div class="id-card-body">
+            <div class="id-card-photo">
+              <svg style="position: relative; z-index: 10; margin-bottom: 8px;" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+              </svg>
+              <span style="font-size: 7px; font-weight: 800; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 1px; position: relative; z-index: 10;">Affix Photo</span>
             </div>
             
-            <div class="id-card-body">
-              <div class="id-card-photo">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-                  <circle cx="12" cy="7" r="4"></circle>
-                </svg>
-                <span style="margin-top: 4px; font-size: 5px; font-weight: 700;">Affix Photo</span>
+            <div class="id-card-info">
+              <div class="id-card-field" style="grid-column: span 2;">
+                <span class="id-card-label">Candidate Name</span>
+                <span class="id-card-value" style="font-size: 15px; font-weight: 700;">${candidate.student_name}</span>
               </div>
-              
-              <div class="id-card-info">
-                <div class="id-card-field" style="grid-column: span 2;">
-                  <span class="id-card-label">Candidate Name</span>
-                  <span class="id-card-value" style="font-size: 12px; font-weight: 700;">${candidate.student_name}</span>
-                </div>
-                <div class="id-card-field">
-                  <span class="id-card-label">Class</span>
-                  <span class="id-card-value">Class ${candidate.student_class}</span>
-                </div>
-                <div class="id-card-field">
-                  <span class="id-card-label">State</span>
-                  <span class="id-card-value">${candidate.state}</span>
-                </div>
-                <div class="id-card-field">
-                  <span class="id-card-label">Candidate ID</span>
-                  <span class="id-card-value id-card-value-highlight" style="font-size: 10px;">${candidate.registration_id}</span>
-                </div>
-                <div class="id-card-field">
-                  <span class="id-card-label">Status</span>
-                  <span class="id-card-value" style="color: #34d399; font-weight: 700;">Enrolled / Active</span>
-                </div>
+              <div class="id-card-field">
+                <span class="id-card-label">Class</span>
+                <span class="id-card-value">Class ${candidate.student_class}</span>
+              </div>
+              <div class="id-card-field">
+                <span class="id-card-label">State</span>
+                <span class="id-card-value">${candidate.state}</span>
+              </div>
+              <div class="id-card-field">
+                <span class="id-card-label">Candidate ID</span>
+                <span class="id-card-value id-card-value-highlight">${candidate.registration_id}</span>
+              </div>
+              <div class="id-card-field">
+                <span class="id-card-label">Status</span>
+                <span class="id-card-value" style="color: #34d399; font-weight: 700;">Enrolled / Active</span>
               </div>
             </div>
+          </div>
 
-            <div class="id-card-footer">
-              <div class="id-card-footer-item">
-                <span class="id-card-label" style="font-size: 6px;">Exam Date</span>
-                <span class="id-card-value" style="font-size: 10px; font-weight: 700;">19 July 2026</span>
-              </div>
-              <div class="id-card-footer-item">
-                <span class="id-card-label" style="font-size: 6px;">Slot Venue</span>
-                <span class="id-card-value" style="font-size: 10px; font-weight: 700;">Online / Portal</span>
-              </div>
+          <div class="id-card-footer">
+            <div class="id-card-footer-item">
+              <span class="id-card-label">Exam Date</span>
+              <span class="id-card-value">19 July 2026</span>
+            </div>
+            <div class="id-card-footer-item">
+              <span class="id-card-label">Slot Venue</span>
+              <span class="id-card-value">Online / Portal</span>
             </div>
           </div>
         </div>
