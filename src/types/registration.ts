@@ -14,6 +14,7 @@ export interface RegistrationData {
   parentEmail: string;
 
   // Step 3: Preferences & Demographics
+  country: string;
   state: string;
   district: string;
   language: "English" | "Hindi" | "";

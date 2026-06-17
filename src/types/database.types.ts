@@ -16,6 +16,7 @@ export interface Database {
           mobile_number: string | null;
           whatsapp_number: string;
           parent_email: string;
+          country: string;
           state: string;
           district: string;
           language: string;
@@ -46,6 +47,7 @@ export interface Database {
           mobile_number?: string | null;
           whatsapp_number: string;
           parent_email: string;
+          country: string;
           state: string;
           district: string;
           language: string;
@@ -76,6 +78,7 @@ export interface Database {
           mobile_number?: string | null;
           whatsapp_number?: string;
           parent_email?: string;
+          country?: string;
           state?: string;
           district?: string;
           language?: string;

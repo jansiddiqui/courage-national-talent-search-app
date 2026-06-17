@@ -29,7 +29,8 @@ import {
 import Link from "next/link";
 import Image from "next/image";
 import { RegistrationData, RegistrationStep } from "@/types/registration";
-import { INDIAN_STATES, STATE_DISTRICTS } from "@/constants/indianStates";
+import { Country, State, City } from "country-state-city";
+import SearchableSelect from "@/components/registration/SearchableSelect";
 import { saveRegistration, updateRegistrationStatus, updateRegistrationData, uploadCandidatePhoto } from "@/services/supabaseService";
 import PhotoUploader from "@/components/registration/PhotoUploader";
 
@@ -73,6 +74,7 @@ function RegisterForm() {
     mobile_number: "",
     whatsapp_number: "",
     parentEmail: "",
+    country: "IN", // Default to India
     state: "",
     district: "",
     language: "",
@@ -1306,81 +1308,76 @@ function RegisterForm() {
                 </div>
 
                 <div className="space-y-4 pt-2">
+                  {/* Country selection */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="country" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                      <MapPin size={13} className="text-slate-400" />
+                      Country <span className="text-red-500">*</span>
+                    </label>
+                    <SearchableSelect
+                      id="country"
+                      options={Country.getAllCountries().map(c => ({ label: c.name, value: c.isoCode }))}
+                      value={formData.country}
+                      onChange={(val) => {
+                        handleInputChange("country", val);
+                        handleInputChange("state", "");
+                        handleInputChange("district", "");
+                      }}
+                      onBlur={() => handleBlur("country")}
+                      placeholder="Select Country..."
+                      error={!!(touched.country && errors.country)}
+                    />
+                  </div>
+
                   {/* State selection */}
                   <div className="space-y-1.5">
                     <label htmlFor="state" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
                       <MapPin size={13} className="text-slate-400" />
-                      State / UT <span className="text-red-500">*</span>
+                      State / Province <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <select
-                        id="state"
-                        value={formData.state}
-                        onChange={(e) => handleInputChange("state", e.target.value)}
-                        onBlur={() => handleBlur("state")}
-                        className={`w-full px-4 py-3 pr-10 rounded-xl border bg-slate-50/50 text-sm outline-none appearance-none transition-all duration-200 ${
-                          touched.state && errors.state
-                            ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
-                            : "border-slate-200 focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10"
-                        }`}
-                        aria-invalid={touched.state && !!errors.state}
-                      >
-                        <option value="">Select State</option>
-                        {INDIAN_STATES.map((st) => (
-                          <option key={st} value={st}>
-                            {st}
-                          </option>
-                        ))}
-                      </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-550">
-                        ▼
-                      </div>
-                    </div>
+                    <SearchableSelect
+                      id="state"
+                      options={formData.country ? State.getStatesOfCountry(formData.country).map(st => ({ label: st.name, value: st.isoCode })) : []}
+                      value={formData.state}
+                      onChange={(val) => {
+                        handleInputChange("state", val);
+                        handleInputChange("district", "");
+                      }}
+                      onBlur={() => handleBlur("state")}
+                      disabled={!formData.country}
+                      placeholder={!formData.country ? "Select Country First" : "Select State / Province..."}
+                      error={!!(touched.state && errors.state)}
+                    />
                     {touched.state && errors.state && (
                       <p className="text-xs text-red-500 font-medium">{errors.state}</p>
                     )}
                   </div>
 
-                  {/* District selection */}
+                  {/* District/City selection */}
                   <div className="space-y-1.5">
                     <label htmlFor="district" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
                       <MapPin size={13} className="text-slate-400" />
-                      District <span className="text-red-500">*</span>
+                      City <span className="text-red-500">*</span>
                     </label>
-                    <div className="relative">
-                      <select
-                        id="district"
-                        value={formData.district}
-                        onChange={(e) => handleInputChange("district", e.target.value)}
-                        onBlur={() => handleBlur("district")}
-                        disabled={!formData.state}
-                        className={`w-full px-4 py-3 pr-10 rounded-xl border bg-slate-50/50 text-sm outline-none appearance-none transition-all duration-200 ${
-                          !formData.state ? "opacity-60 cursor-not-allowed" : ""
-                        } ${
-                          touched.district && errors.district
-                            ? "border-red-300 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
-                            : "border-slate-200 focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10"
-                        }`}
-                        aria-invalid={touched.district && !!errors.district}
-                      >
-                        <option value="">
-                          {!formData.state ? "Select State First" : "Select District"}
-                        </option>
-                        {formData.state &&
-                          STATE_DISTRICTS[formData.state]?.map((dst) => (
-                            <option key={dst} value={dst}>
-                              {dst}
-                            </option>
-                          ))}
-                      </select>
-                      <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-slate-550">
-                        ▼
-                      </div>
-                    </div>
+                    <SearchableSelect
+                      id="district"
+                      options={formData.country && formData.state ? City.getCitiesOfState(formData.country, formData.state).map(cty => ({ label: cty.name, value: cty.name })) : []}
+                      value={formData.district}
+                      onChange={(val) => handleInputChange("district", val)}
+                      onBlur={() => handleBlur("district")}
+                      disabled={!formData.state}
+                      placeholder={!formData.state ? "Select State First" : "Search City..."}
+                      allowManualEntry={true}
+                      error={!!(touched.district && errors.district)}
+                    />
                     {touched.district && errors.district && (
                       <p className="text-xs text-red-500 font-medium">{errors.district}</p>
                     )}
                   </div>
+
+                  <p className="text-xs text-slate-500 italic mt-1 pl-1">
+                    Open to eligible students in India and abroad.
+                  </p>
 
                   {/* Preferred Language */}
                   <div className="space-y-1.5">

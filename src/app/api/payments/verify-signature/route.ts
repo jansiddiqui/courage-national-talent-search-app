@@ -138,6 +138,7 @@ export async function POST(request: Request) {
       mobile_number: formattedMobile,
       whatsapp_number: formattedWhatsapp,
       parent_email: formData.parentEmail || null,
+      country: formData.country,
       state: formData.state,
       district: formData.district,
       language: formData.language,

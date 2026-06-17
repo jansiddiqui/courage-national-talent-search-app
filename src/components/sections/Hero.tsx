@@ -13,10 +13,10 @@ const talentBadges = [
 ];
 
 const stats = [
+  { value: "Classes 5–8", label: "Eligibility" },
+  { value: "Online Assessment", label: "Format" },
+  { value: "India & International", label: "Reach" },
   { value: "Founding Edition", label: "2026 Cohort" },
-  { value: "Eligibility", label: "Classes 5–8" },
-  { value: "Assessment Format", label: "Online" },
-  { value: "Outcome", label: "Talent Profile Report" },
 ];
 
 const recentRegistrations = [
