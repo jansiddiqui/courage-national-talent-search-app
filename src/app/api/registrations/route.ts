@@ -52,6 +52,14 @@ export async function GET() {
     }
 
     const isAdmin = session.role === "ADMIN" || session.role === "SUPER_ADMIN" || session.role === "VOLUNTEER";
+    
+    if (isAdmin) {
+      const { is2FaFresh } = await import("@/lib/sessionHelper");
+      if (!is2FaFresh(session)) {
+        return NextResponse.json({ success: false, message: "Require Re-Auth" }, { status: 403 });
+      }
+    }
+
     let query = (supabaseAdmin as any).from("registrations").select("*");
 
     if (!isAdmin) {

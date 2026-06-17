@@ -34,6 +34,37 @@ export async function middleware(request: NextRequest) {
     if (role !== "ADMIN" && role !== "SUPER_ADMIN" && role !== "VOLUNTEER") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
+
+    // Fingerprint Validation
+    const ip = request.headers.get("x-forwarded-for") || "unknown";
+    const userAgent = request.headers.get("user-agent") || "unknown";
+    const { generateFingerprint } = await import("./lib/sessionHelper");
+    const currentFingerprint = await generateFingerprint(ip, userAgent);
+
+    if (session.ipHash && session.userAgentHash) {
+      if (session.ipHash !== currentFingerprint.ipHash || session.userAgentHash !== currentFingerprint.userAgentHash) {
+        // Fingerprint mismatch - force re-auth
+        const response = NextResponse.redirect(new URL("/login?error=Session invalidated due to network change. Please login again.", request.url));
+        response.cookies.delete("cnts_session");
+        return response;
+      }
+    }
+
+    // 2FA Gating
+    const isSetupRoute = pathname === "/admin/setup-2fa";
+    const isVerifyRoute = pathname === "/admin/verify-2fa";
+
+    if (session.setup_required && !isSetupRoute) {
+      return NextResponse.redirect(new URL("/admin/setup-2fa", request.url));
+    }
+
+    if (!session.is_2fa_verified && !isSetupRoute && !isVerifyRoute) {
+      return NextResponse.redirect(new URL("/admin/verify-2fa", request.url));
+    }
+
+    if (session.is_2fa_verified && (isSetupRoute || isVerifyRoute)) {
+      return NextResponse.redirect(new URL("/admin", request.url));
+    }
   }
 
   return NextResponse.next();
