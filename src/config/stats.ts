@@ -1,0 +1,2 @@
+export const BASELINE_REGISTRATIONS = 1247;
+export const BASELINE_STATES = 17;

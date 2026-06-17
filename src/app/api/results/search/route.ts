@@ -1,0 +1,150 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextResponse } from "next/server";
+import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
+
+export async function GET(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const regId = searchParams.get("regId");
+    const dob = searchParams.get("dob");
+
+    if (!regId || !dob) {
+      return NextResponse.json(
+        { success: false, message: "Missing required query parameters: regId and dob" },
+        { status: 400 }
+      );
+    }
+
+    const cleanRegId = regId.trim().toUpperCase();
+    const cleanDob = dob.trim();
+
+    // 1. Sandbox check
+    if (!hasSupabaseAdminConfig) {
+      if (cleanRegId === "CNTS26-8XK4P" && cleanDob === "2013-05-14") {
+        return NextResponse.json({
+          success: true,
+          candidate: {
+            registration_id: "CNTS26-8XK4P",
+            cnts_id: "CNTS260001",
+            student_name: "Aditya Verma",
+            student_class: "7",
+            school_name: "Delhi Public School",
+            school_city: "Kanpur",
+            state: "Uttar Pradesh",
+            district: "Kanpur Nagar",
+            language: "English",
+            dob: "2013-05-14",
+            payment_status: "PAID"
+          },
+          result: {
+            overall_score: 85.75,
+            percentile: 95.8,
+            national_rank: 425,
+            state_rank: 32,
+            logical_reasoning_score: 92,
+            mathematics_score: 85,
+            language_score: 78,
+            general_awareness_score: 88
+          }
+        });
+      } else {
+        return NextResponse.json(
+          { success: false, message: "No candidate found matching this ID and DOB in sandbox mode." },
+          { status: 404 }
+        );
+      }
+    }
+
+    // 2. Query Database: Join registrations & results tables
+    const { data: registration, error } = await (supabaseAdmin as any)
+      .from("registrations")
+      .select(`
+        registration_id,
+        cnts_id,
+        student_name,
+        student_class,
+        school_name,
+        school_city,
+        state,
+        district,
+        language,
+        dob,
+        payment_status,
+        results:results (
+          overall_score,
+          percentile,
+          national_rank,
+          state_rank,
+          logical_reasoning_score,
+          mathematics_score,
+          language_score,
+          general_awareness_score
+        )
+      `)
+      .or(`registration_id.eq.${cleanRegId},cnts_id.eq.${cleanRegId}`)
+      .eq("dob", cleanDob)
+      .eq("payment_status", "PAID")
+      .maybeSingle();
+
+    if (error) {
+      console.error("[Results Search API] Database query error:", error);
+      return NextResponse.json(
+        { success: false, message: "Database query error while retrieving results" },
+        { status: 500 }
+      );
+    }
+
+    if (!registration) {
+      return NextResponse.json(
+        { success: false, message: "No paid candidate registration found matching this ID and Date of Birth." },
+        { status: 404 }
+      );
+    }
+
+    const result = registration.results;
+    if (!result) {
+      return NextResponse.json(
+        { 
+          success: false, 
+          message: "Candidate found, but cognitive evaluation report is not published yet or scoring is pending." 
+        },
+        { status: 404 }
+      );
+    }
+
+    // Format output
+    return NextResponse.json({
+      success: true,
+      candidate: {
+        registration_id: registration.registration_id,
+        cnts_id: registration.cnts_id,
+        student_name: registration.student_name,
+        student_class: registration.student_class,
+        school_name: registration.school_name,
+        school_city: registration.school_city,
+        state: registration.state,
+        district: registration.district,
+        language: registration.language,
+        dob: registration.dob,
+        payment_status: registration.payment_status
+      },
+      result: {
+        overall_score: result.overall_score,
+        percentile: result.percentile,
+        national_rank: result.national_rank,
+        state_rank: result.state_rank,
+        logical_reasoning_score: result.logical_reasoning_score,
+        mathematics_score: result.mathematics_score,
+        language_score: result.language_score,
+        general_awareness_score: result.general_awareness_score
+      }
+    });
+
+  } catch (error: any) {
+    console.error("Results search endpoint error:", error);
+    return NextResponse.json(
+      { success: false, message: error.message || "Internal Server Error" },
+      { status: 500 }
+    );
+  }
+}

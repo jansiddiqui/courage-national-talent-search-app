@@ -1,0 +1,108 @@
+import { UserPlus, BookOpen, ClipboardList, BarChart2, Award, ArrowRight } from "lucide-react";
+import Link from "next/link";
+
+const steps = [
+  {
+    icon: UserPlus,
+    step: "Register",
+    title: "Sign up in 3 minutes",
+    desc: "Parents register their child with basic details. Choose class level, preferred language, and exam mode (online or OMR).",
+    color: "text-blue-700 bg-blue-50",
+    connector: "bg-blue-200",
+  },
+  {
+    icon: BookOpen,
+    step: "Prepare",
+    title: "Free prep resources",
+    desc: "Access CNTS practice sets, sample papers, and video walkthroughs — all free. Understand the exam pattern deeply.",
+    color: "text-amber-700 bg-amber-50",
+    connector: "bg-amber-200",
+  },
+  {
+    icon: ClipboardList,
+    step: "Appear",
+    title: "Take the exam",
+    desc: "Sit for the 2.5-hour assessment from home or at your nearest CNTS exam center. No stress, fair evaluation.",
+    color: "text-emerald-700 bg-emerald-50",
+    connector: "bg-emerald-200",
+  },
+  {
+    icon: BarChart2,
+    step: "Discover",
+    title: "Receive your Talent Profile",
+    desc: "Within 21 days, receive a full diagnostic report with national rank, percentile, subject scores, and strength mapping.",
+    color: "text-purple-700 bg-purple-50",
+    connector: "bg-purple-200",
+  },
+  {
+    icon: Award,
+    step: "Shine",
+    title: "Awards & recognition",
+    desc: "Top rankers receive scholarships, medals, and national recognition. Every participant gets a verifiable certificate.",
+    color: "text-rose-700 bg-rose-50",
+    connector: null,
+  },
+];
+
+export default function HowItWorks() {
+  return (
+    <section id="how-it-works" className="py-24 lg:py-32 mesh-bg">
+      <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <div className="text-center max-w-xl mx-auto mb-16">
+          <span className="inline-block text-xs font-bold text-blue-700 uppercase tracking-widest mb-4 bg-blue-50 px-3 py-1 rounded-full">
+            How It Works
+          </span>
+          <h2 className="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight mb-4">
+            Simple steps.
+            <br />
+            <span className="gradient-text">Lasting impact.</span>
+          </h2>
+          <p className="text-lg text-slate-500">
+            From registration to results — the CNTS journey is straightforward, supportive, and transformative.
+          </p>
+        </div>
+
+        {/* Steps */}
+        <div className="relative">
+          {/* Connecting line (desktop) */}
+          <div className="hidden lg:block absolute top-[72px] left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-amber-200 via-emerald-200 to-rose-200 mx-[calc(10%)] pointer-events-none" />
+
+          <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
+            {steps.map((s, i) => (
+              <div key={s.step} className="relative flex flex-col items-center text-center group">
+                {/* Step number */}
+                <div className="relative mb-6">
+                  <div className={`w-16 h-16 rounded-2xl ${s.color} flex items-center justify-center shadow-sm border border-white group-hover:scale-110 transition-transform duration-300 relative z-10`}>
+                    <s.icon size={22} />
+                  </div>
+                  <div className="absolute -top-2 -right-2 w-6 h-6 bg-white rounded-full flex items-center justify-center border border-slate-200 text-xs font-bold text-slate-500 shadow-sm">
+                    {i + 1}
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="bg-white rounded-2xl border border-slate-100 p-5 hover:border-blue-100 hover:shadow-md transition-all w-full card-glow">
+                  <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">{s.step}</div>
+                  <h3 className="font-display font-bold text-slate-900 text-base mb-2 leading-tight">{s.title}</h3>
+                  <p className="text-xs text-slate-500 leading-relaxed">{s.desc}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Bottom CTA */}
+        <div className="mt-12 text-center">
+          <Link
+            href="/register"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-800/25 hover:-translate-y-0.5 group"
+          >
+            Start Your Child&apos;s Journey
+            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
