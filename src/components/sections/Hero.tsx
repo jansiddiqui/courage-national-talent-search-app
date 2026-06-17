@@ -512,14 +512,18 @@ export default function Hero() {
         </div>
 
         {/* Stats bar */}
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
           {dynamicStats.map((s) => (
             <div
               key={s.label}
-              className="text-center p-6 bg-white/70 backdrop-blur-sm rounded-2xl border border-white shadow-sm"
+              className="text-center p-4 sm:p-6 bg-white/70 backdrop-blur-sm rounded-xl border border-white shadow-sm flex flex-col justify-center min-h-[110px] sm:min-h-0"
             >
-              <div className="font-display text-3xl font-bold text-blue-800 mb-1">{s.value}</div>
-              <div className="text-sm text-slate-500 font-medium">{s.label}</div>
+              <div className="font-display text-base sm:text-xl md:text-3xl font-bold tracking-tight text-blue-800 mb-1 break-words leading-tight">
+                {s.value}
+              </div>
+              <div className="text-xs sm:text-sm text-slate-500 font-medium leading-snug">
+                {s.label}
+              </div>
             </div>
           ))}
         </div>
