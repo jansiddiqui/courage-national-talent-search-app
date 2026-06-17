@@ -35,10 +35,10 @@ export default function NeedHelp() {
             <div className="pt-2 border-t border-slate-50 flex justify-between items-center">
               <span className="text-[10px] font-bold text-slate-400">SLA: 24-48 Hours</span>
               <a
-                href="mailto:support@cnts.org.in"
-                className="text-xs font-bold text-blue-700 hover:text-blue-800"
+                href="mailto:support@thecouragelibrary.com"
+                className="text-xs font-bold text-blue-700 hover:text-blue-800 truncate pl-2"
               >
-                support@cnts.org.in
+                support@thecouragelibrary.com
               </a>
             </div>
           </div>

@@ -31,7 +31,6 @@ import Image from "next/image";
 import { RegistrationData, RegistrationStep } from "@/types/registration";
 import { INDIAN_STATES, STATE_DISTRICTS } from "@/constants/indianStates";
 import { saveRegistration, updateRegistrationStatus, updateRegistrationData, uploadCandidatePhoto } from "@/services/supabaseService";
-import NeedHelp from "@/components/layout/NeedHelp";
 import PhotoUploader from "@/components/registration/PhotoUploader";
 
 function RegisterForm() {
@@ -857,8 +856,8 @@ function RegisterForm() {
       </section>
 
       {/* Right panel: The Form (3 Steps) */}
-      <section className="flex-1 px-6 py-12 md:p-12 lg:p-16 flex flex-col justify-center max-w-2xl">
-        <div className="w-full">
+      <section className="flex-1 px-6 py-12 md:p-12 lg:p-16 flex flex-col justify-center max-w-4xl mx-auto w-full">
+        <div className="w-full max-w-2xl mx-auto">
           
           {/* Form Steps Tracker Banner */}
           <div className="mb-8 p-4 bg-white border border-slate-150 rounded-2xl shadow-sm flex flex-col gap-3">
@@ -1590,7 +1589,7 @@ function RegisterForm() {
                   disabled={!parentConsent}
                   className={`inline-flex items-center gap-2 px-8 py-3.5 text-white rounded-xl text-sm font-bold shadow-lg transition-all duration-200 ${
                     parentConsent 
-                      ? "bg-emerald-650 hover:bg-emerald-600 hover:shadow-emerald-555/20 cursor-pointer" 
+                      ? "bg-emerald-600 hover:bg-emerald-500 hover:shadow-emerald-500/20 cursor-pointer" 
                       : "bg-slate-300 shadow-none cursor-not-allowed opacity-60"
                   }`}
                 >
@@ -1604,7 +1603,6 @@ function RegisterForm() {
         </div>
       </section>
       </div>
-      <NeedHelp />
     </div>
   );
 }

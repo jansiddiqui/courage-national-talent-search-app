@@ -425,26 +425,24 @@ export async function uploadCandidatePhoto(registrationId: string, base64Data: s
   if (!hasSupabaseConfig) return `candidate_photos/${registrationId}/photo.jpg`;
 
   try {
-    // Convert base64 to Blob
-    const response = await fetch(base64Data);
-    const blob = await response.blob();
-    
-    const filePath = `candidate_photos/${registrationId}/photo.jpg`;
-    
-    // Upload to private bucket
-    const { error } = await db.storage
-      .from('candidate_photos')
-      .upload(filePath, blob, {
-        contentType: 'image/jpeg',
-        upsert: true
-      });
-      
-    if (error) {
-      console.error("Supabase photo upload error:", error);
+    const res = await fetch(`/api/photo/${registrationId}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ base64Data })
+    });
+
+    if (!res.ok) {
+      console.error("API photo upload error:", res.statusText);
       return null;
     }
-    
-    return filePath;
+
+    const data = await res.json();
+    if (!data.success) {
+      console.error("API photo upload failed:", data.error);
+      return null;
+    }
+
+    return data.filePath;
   } catch (err) {
     console.error("Failed to upload photo:", err);
     return null;
