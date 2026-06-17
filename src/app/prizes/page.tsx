@@ -76,7 +76,7 @@ export default function PrizesPage() {
       <section className="py-16 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8">
         
         {/* Junior Category card */}
-        <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm space-y-4 relative overflow-hidden group hover:border-blue-200 transition-all duration-300">
+        <div className="bg-white rounded-xl border border-slate-100 p-8 shadow-sm space-y-4 relative overflow-hidden group hover:border-blue-200 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform" />
           <div className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
             Classes 5 & 6
@@ -98,7 +98,7 @@ export default function PrizesPage() {
         </div>
 
         {/* Senior Category card */}
-        <div className="bg-white rounded-3xl border border-slate-100 p-8 shadow-sm space-y-4 relative overflow-hidden group hover:border-purple-200 transition-all duration-300">
+        <div className="bg-white rounded-xl border border-slate-100 p-8 shadow-sm space-y-4 relative overflow-hidden group hover:border-purple-200 transition-all duration-300">
           <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform" />
           <div className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
             Classes 7 & 8
@@ -138,7 +138,7 @@ export default function PrizesPage() {
             {[podiumAwards[1], podiumAwards[0], podiumAwards[2]].map((p) => (
               <div 
                 key={p.rank} 
-                className={`relative w-64 p-6 rounded-3xl bg-gradient-to-br ${
+                className={`relative w-64 p-6 rounded-xl bg-gradient-to-br ${
                   p.gradient
                 } text-white shadow-xl ${
                   p.glow
@@ -146,7 +146,7 @@ export default function PrizesPage() {
                   p.isCenter ? "md:py-10 md:w-72 relative z-10 order-first md:order-none" : ""
                 }`}
               >
-                <div className="absolute inset-0 bg-white/10 opacity-30 pointer-events-none rounded-3xl" />
+                <div className="absolute inset-0 bg-white/10 opacity-30 pointer-events-none rounded-xl" />
                 <span className="text-4xl mb-2 block">{p.badge}</span>
                 <h3 className="font-display font-bold text-3xl mb-1 select-all">{p.prize}</h3>
                 <span className="text-xs font-semibold text-white/80 block uppercase tracking-wider">{p.rank}</span>
@@ -171,7 +171,7 @@ export default function PrizesPage() {
           Additional Rankings & Rewards
         </h3>
         
-        <div className="bg-white border border-slate-100 rounded-3xl shadow-sm overflow-hidden divide-y divide-slate-100">
+        <div className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden divide-y divide-slate-100">
           {segmentPrizes.map((p) => (
             <div key={p.rank} className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 hover:bg-slate-50/50 transition-colors">
               <div className="space-y-0.5">
@@ -207,7 +207,7 @@ export default function PrizesPage() {
           <div className="grid md:grid-cols-3 gap-8">
             
             {/* Verified Certificates */}
-            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 space-y-4">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 md:p-8 space-y-4">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-blue-400">
                 <ShieldCheck size={20} />
               </div>
@@ -218,7 +218,7 @@ export default function PrizesPage() {
             </div>
 
             {/* Talent Profile Report */}
-            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 space-y-4">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 md:p-8 space-y-4">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-emerald-400">
                 <FileText size={20} />
               </div>
@@ -229,7 +229,7 @@ export default function PrizesPage() {
             </div>
 
             {/* National Ranking */}
-            <div className="bg-white/5 border border-white/10 rounded-3xl p-6 md:p-8 space-y-4">
+            <div className="bg-white/5 border border-white/10 rounded-xl p-6 md:p-8 space-y-4">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center text-purple-400">
                 <Globe size={20} />
               </div>
@@ -255,7 +255,7 @@ export default function PrizesPage() {
           </p>
           <a
             href="/register"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-800/15 transition-all hover:-translate-y-0.5 cursor-pointer"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-800/15 transition-all hover:-translate-y-0.5 cursor-pointer"
           >
             Start Your Child&apos;s Journey
             <ArrowRight size={16} />

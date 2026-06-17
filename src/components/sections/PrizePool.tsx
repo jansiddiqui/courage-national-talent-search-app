@@ -58,7 +58,7 @@ export default function PrizePool() {
         </div>
 
         {/* Podium */}
-        <div className="flex flex-col md:flex-row items-end justify-center gap-4 mb-12">
+        <div className="flex flex-col md:flex-row items-center md:items-end justify-center gap-4 mb-12">
           {[prizes[1], prizes[0], prizes[2]].map((p, displayIdx) => {
             const isCenter = displayIdx === 1;
             return (
@@ -71,10 +71,10 @@ export default function PrizePool() {
                 <div
                   className={`${
                     isCenter ? "w-60 p-8" : "w-52 p-7"
-                  } rounded-3xl bg-gradient-to-br ${p.gradient} text-white relative overflow-hidden shadow-2xl ${p.glow} shadow-lg group-hover:-translate-y-1 transition-transform duration-300`}
+                  } rounded-xl bg-gradient-to-br ${p.gradient} text-white relative overflow-hidden shadow-2xl ${p.glow} shadow-lg group-hover:-translate-y-1 transition-transform duration-300`}
                 >
                   {/* Background shimmer */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none rounded-3xl" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent pointer-events-none rounded-xl" />
                   <div className={`relative mb-3 font-display font-extrabold ${isCenter ? "text-4xl" : "text-3xl"} bg-white/10 w-12 h-12 rounded-full flex items-center justify-center mx-auto border border-white/20`}>{p.badge}</div>
                   <div className={`font-display font-bold relative ${isCenter ? "text-4xl" : "text-3xl"} mb-1`}>
                     {p.prize}
@@ -91,7 +91,7 @@ export default function PrizePool() {
                 </div>
                 {/* Podium base */}
                 <div
-                  className={`w-full rounded-b-2xl ${
+                  className={`w-full rounded-b-xl ${
                     isCenter ? "h-8 bg-gradient-to-b from-amber-100 to-amber-50" : "h-5 bg-gradient-to-b from-slate-100 to-slate-50"
                   } mt-0`}
                 />
@@ -101,7 +101,7 @@ export default function PrizePool() {
         </div>
 
         {/* More awards table */}
-        <div className="max-w-3xl mx-auto bg-slate-50 rounded-3xl border border-slate-100 overflow-hidden">
+        <div className="max-w-3xl mx-auto bg-slate-50 rounded-xl border border-slate-100 overflow-hidden">
           <div className="px-7 py-4 border-b border-slate-100 bg-white">
             <h3 className="font-display font-bold text-slate-800 text-lg">More Awards & Recognition</h3>
           </div>
