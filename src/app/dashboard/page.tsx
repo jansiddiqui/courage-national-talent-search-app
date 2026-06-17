@@ -460,9 +460,15 @@ export default function DashboardPage() {
                       {/* Body Info Grid */}
                       <div className="grid grid-cols-3 gap-4 items-center">
                         {/* Photo Area */}
-                        <div className="col-span-1 border border-white/10 rounded-xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-2 relative">
-                          <User size={24} className="text-white/20" />
-                          <span className="text-[6px] text-white/30 uppercase font-bold tracking-wider mt-2">Affix Photo</span>
+                        <div className={`col-span-1 border border-white/10 rounded-xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-0 relative overflow-hidden group-hover:border-white/20 transition-colors`}>
+                          <img src={`/api/photo/${c.registration_id || c.cnts_id || c.id}`} alt="Candidate Photo" className="w-full h-full object-cover rounded-xl z-10 relative" onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                          }} />
+                          <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/5">
+                            <User size={24} className="text-white/20" />
+                            <span className="text-[6px] text-white/30 uppercase font-bold tracking-wider mt-2">Affix Photo</span>
+                          </div>
                         </div>
 
                         {/* Candidate Info Details */}

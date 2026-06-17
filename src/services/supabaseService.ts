@@ -417,3 +417,36 @@ export async function saveRegistrationNote(registrationId: string, notes: string
   }
   return true;
 }
+
+/**
+ * Uploads a base64 candidate photo to Supabase storage
+ */
+export async function uploadCandidatePhoto(registrationId: string, base64Data: string): Promise<string | null> {
+  if (!hasSupabaseConfig) return `candidate_photos/${registrationId}/photo.jpg`;
+
+  try {
+    // Convert base64 to Blob
+    const response = await fetch(base64Data);
+    const blob = await response.blob();
+    
+    const filePath = `candidate_photos/${registrationId}/photo.jpg`;
+    
+    // Upload to private bucket
+    const { error } = await db.storage
+      .from('candidate_photos')
+      .upload(filePath, blob, {
+        contentType: 'image/jpeg',
+        upsert: true
+      });
+      
+    if (error) {
+      console.error("Supabase photo upload error:", error);
+      return null;
+    }
+    
+    return filePath;
+  } catch (err) {
+    console.error("Failed to upload photo:", err);
+    return null;
+  }
+}

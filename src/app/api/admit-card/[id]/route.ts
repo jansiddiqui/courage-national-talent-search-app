@@ -77,6 +77,20 @@ export async function GET(
       return new NextResponse("Candidate registration not found.", { status: 404 });
     }
 
+    let photoSignedUrl = null;
+    if (candidate.photo_url) {
+      if (hasSupabaseAdminConfig) {
+        const { data } = await (supabaseAdmin as any).storage
+          .from('candidate_photos')
+          .createSignedUrl(candidate.photo_url.replace('candidate_photos/', ''), 60 * 60); // 1 hour
+        if (data?.signedUrl) {
+          photoSignedUrl = data.signedUrl;
+        }
+      } else {
+        photoSignedUrl = candidate.photo_url; // Mock bypass
+      }
+    }
+
     // Render professional premium admit card HTML
     const html = `<!DOCTYPE html>
 <html lang="en">
@@ -606,12 +620,15 @@ export async function GET(
       </div>
       
       <div class="id-card-body">
-        <div class="id-card-photo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-            <circle cx="12" cy="7" r="4"></circle>
-          </svg>
-          <span style="margin-top: 4px; font-size: 6px;">Affix Photo</span>
+        <div class="id-card-photo" style="${photoSignedUrl ? 'padding: 0; border: none; background: transparent;' : ''}">
+          ${photoSignedUrl 
+            ? `<img src="${photoSignedUrl}" alt="Candidate Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`
+            : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                <circle cx="12" cy="7" r="4"></circle>
+               </svg>
+               <span style="margin-top: 4px; font-size: 6px;">Affix Photo</span>`
+          }
         </div>
         
         <div class="id-card-info">

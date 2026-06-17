@@ -285,10 +285,16 @@ export default function SuccessPage() {
             {/* Body Info */}
             <div className="flex gap-5">
               {/* Photo Area */}
-              <div className="w-24 sm:w-28 shrink-0 border border-white/10 rounded-2xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-2 relative overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                <User size={28} className="text-white/20 mb-2 relative z-10" />
-                <span className="text-[7px] text-white/40 uppercase font-bold tracking-widest relative z-10">Affix Photo</span>
+              <div className="w-24 sm:w-28 shrink-0 border border-white/10 rounded-2xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-0 relative overflow-hidden group-hover:border-white/20 transition-colors">
+                <img src={`/api/photo/${regDetails.registrationId}`} alt="Candidate Photo" className="w-full h-full object-cover rounded-2xl z-10 relative" onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
+                }} />
+                <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/5">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                  <User size={28} className="text-white/20 mb-2 relative z-10" />
+                  <span className="text-[7px] text-white/40 uppercase font-bold tracking-widest relative z-10">Affix Photo</span>
+                </div>
               </div>
 
               {/* Candidate Info Details */}

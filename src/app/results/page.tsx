@@ -722,13 +722,24 @@ export default function ResultsPage() {
               <div className="absolute inset-4 border-[6px] border-double border-slate-800 rounded-xl flex flex-col justify-between p-4" style={{ transform: "translateZ(30px)" }}>
                 
                 {/* Certificate header */}
-                <div className="text-center space-y-1">
-                  <span className="text-[7px] md:text-[9px] font-bold text-amber-700 tracking-widest block uppercase font-mono">
-                    Founding Edition Participant Certificate
-                  </span>
-                  <h3 className="font-display font-black text-slate-900 text-sm md:text-base leading-none tracking-tight">
-                    COURAGE NATIONAL TALENT SEARCH
-                  </h3>
+                <div className="text-center flex items-start justify-between">
+                  <div className="w-8 h-10 invisible" /> {/* Spacer */}
+                  <div className="space-y-1 text-center flex-1">
+                    <span className="text-[7px] md:text-[9px] font-bold text-amber-700 tracking-widest block uppercase font-mono">
+                      Founding Edition Participant Certificate
+                    </span>
+                    <h3 className="font-display font-black text-slate-900 text-sm md:text-base leading-none tracking-tight">
+                      COURAGE NATIONAL TALENT SEARCH
+                    </h3>
+                  </div>
+                  {/* Photo Profile */}
+                  <div className="w-8 h-10 border border-slate-200 rounded shrink-0 overflow-hidden bg-slate-100 flex items-center justify-center">
+                    {candidateResult?.candidate?.registration_id ? (
+                      <img src={`/api/photo/${candidateResult.candidate.registration_id}`} alt="Photo" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
+                    ) : (
+                      <User size={12} className="text-slate-300" />
+                    )}
+                  </div>
                 </div>
                 {/* Body */}
                 <div className="text-center space-y-1.5">

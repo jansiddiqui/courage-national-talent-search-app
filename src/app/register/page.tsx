@@ -30,8 +30,9 @@ import Link from "next/link";
 import Image from "next/image";
 import { RegistrationData, RegistrationStep } from "@/types/registration";
 import { INDIAN_STATES, STATE_DISTRICTS } from "@/constants/indianStates";
-import { saveRegistration, updateRegistrationStatus, updateRegistrationData } from "@/services/supabaseService";
+import { saveRegistration, updateRegistrationStatus, updateRegistrationData, uploadCandidatePhoto } from "@/services/supabaseService";
 import NeedHelp from "@/components/layout/NeedHelp";
+import PhotoUploader from "@/components/registration/PhotoUploader";
 
 function RegisterForm() {
   const router = useRouter();
@@ -166,6 +167,10 @@ function RegisterForm() {
   // Validation functions
   const validateField = (name: keyof RegistrationData, value: string): string => {
     switch (name) {
+      case "photo_base64":
+        if (!value) return "Candidate passport photo is required";
+        return "";
+
       case "studentName":
         if (!value.trim()) return "Student name is required";
         if (value.trim().length < 3) return "Name must be at least 3 characters";
@@ -283,7 +288,7 @@ function RegisterForm() {
 
   const validateStep = (step: RegistrationStep): boolean => {
     const stepFields: Record<RegistrationStep, (keyof RegistrationData)[]> = {
-      1: ["studentName", "dob", "studentClass", "schoolName", "schoolCity"],
+      1: ["photo_base64", "studentName", "dob", "studentClass", "schoolName", "schoolCity"],
       2: ["parentName", "mobile_number", "whatsapp_number", "parentEmail"],
       3: ["state", "district", "language", "whyParticipating", "howHeard"],
     };
@@ -339,15 +344,26 @@ function RegisterForm() {
             payment_status: "PENDING"
           };
           
-          if (draftRegId) {
-            await updateRegistrationData(draftRegId, draftData);
+          let currentDraftId = draftRegId;
+          if (currentDraftId) {
+            await updateRegistrationData(currentDraftId, draftData);
           } else {
             const savedDraft = await saveRegistration(draftData);
             if (savedDraft && savedDraft.registrationId) {
-              setDraftRegId(savedDraft.registrationId);
-              sessionStorage.setItem("cnts_draft_registration_id", savedDraft.registrationId);
+              currentDraftId = savedDraft.registrationId;
+              setDraftRegId(currentDraftId);
+              sessionStorage.setItem("cnts_draft_registration_id", currentDraftId);
             }
           }
+
+          if (currentDraftId && formData.photo_base64 && !formData.photo_url) {
+            const uploadedUrl = await uploadCandidatePhoto(currentDraftId, formData.photo_base64);
+            if (uploadedUrl) {
+              await updateRegistrationData(currentDraftId, { photo_url: uploadedUrl });
+              setFormData(prev => ({ ...prev, photo_url: uploadedUrl }));
+            }
+          }
+
           setShowDraftSaved(true);
           setTimeout(() => setShowDraftSaved(false), 3000);
         } catch (err) {
@@ -928,6 +944,18 @@ function RegisterForm() {
                 </div>
 
                 <div className="space-y-4 pt-2">
+                  {/* Candidate Passport Photo */}
+                  <PhotoUploader
+                    photoBase64={formData.photo_base64}
+                    onPhotoSelected={(base64) => {
+                      handleInputChange("photo_base64", base64);
+                      if (errors.photo_base64) {
+                        setErrors(prev => ({ ...prev, photo_base64: "" }));
+                      }
+                    }}
+                    error={touched.photo_base64 ? errors.photo_base64 : undefined}
+                  />
+
                   {/* Student Name */}
                   <div className="space-y-1.5">
                     <label htmlFor="studentName" className="text-xs font-semibold text-slate-700 flex items-center gap-1">

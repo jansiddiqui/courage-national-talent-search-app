@@ -25,6 +25,8 @@ export interface RegistrationData {
   utm_medium?: string;
   utm_campaign?: string;
   referral_code?: string;
+  photo_url?: string;
+  photo_base64?: string;
   payment_id?: string;
   payment_status?: string;
   registration_status?: string;
