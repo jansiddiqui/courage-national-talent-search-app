@@ -539,21 +539,27 @@ export async function GET(
         border-radius: 16px;
       }
       .id-card-body {
-        flex-direction: column;
+        flex-direction: row;
         align-items: center;
-        text-align: center;
-        gap: 16px;
+        text-align: left;
+        gap: 12px;
+      }
+      .id-card-photo {
+        width: 60px;
+        height: 80px;
+        flex-shrink: 0;
       }
       .id-card-info {
-        grid-template-cols: 1fr;
+        grid-template-cols: 1fr 1fr;
         width: 100%;
+        gap: 8px;
         row-gap: 12px;
       }
       .id-card-field {
-        align-items: center;
+        align-items: flex-start;
       }
       .id-card-field[style*="grid-column: span 2"] {
-        grid-column: span 1 !important;
+        grid-column: span 2 !important;
       }
       .id-card-footer-item {
         padding: 6px;
