@@ -488,53 +488,77 @@ export async function GET(
       font-size: 11px;
     }
 
-    .transaction-table {
-      /* Responsive alignments */
-      @media (max-width: 640px) {
-        body {
-          padding: 15px 10px;
-        }
-        .no-print-container {
-          flex-direction: column;
-          gap: 15px;
-          text-align: center;
-          padding: 15px;
-        }
-        .receipt-card {
-          padding: 20px;
-          border-radius: 12px;
-        }
-        .header-grid {
-          grid-template-cols: 1fr;
-          gap: 20px;
-          text-align: center;
-        }
-        .logo-container {
-          justify-content: center;
-        }
-        .receipt-meta {
-          text-align: center;
-        }
-        .info-grid {
-          grid-template-cols: 1fr;
-          gap: 25px;
-        }
-        .transaction-table th, .transaction-table td {
-          padding: 12px 8px;
-          font-size: 11px;
-        }
-        .total-section {
-          align-items: stretch;
-        }
-        .total-row {
-          width: 100%;
-        }
-        .status-stamp {
-          left: 50%;
-          transform: translateX(-50%) rotate(-10deg);
-          bottom: 150px;
-        }
+    /* Responsive alignments */
+    @media (max-width: 640px) {
+      body {
+        padding: 15px 10px;
       }
+      .no-print-container {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+        padding: 15px;
+      }
+      .receipt-card {
+        padding: 20px;
+        border-radius: 12px;
+      }
+      .header-grid {
+        grid-template-cols: 1fr;
+        gap: 20px;
+        text-align: center;
+      }
+      .logo-container {
+        justify-content: center;
+      }
+      .receipt-meta {
+        text-align: center;
+      }
+      .info-grid {
+        grid-template-cols: 1fr;
+        gap: 25px;
+      }
+      .transaction-table th, .transaction-table td {
+        padding: 12px 8px;
+        font-size: 11px;
+      }
+      .total-section {
+        align-items: stretch;
+      }
+      .total-row {
+        width: 100%;
+      }
+      .status-stamp {
+        left: 50%;
+        transform: translateX(-50%) rotate(-10deg);
+        bottom: 150px;
+      }
+      /* Identity Card Mobile Adjustments */
+      .id-card-container {
+        padding: 16px;
+        border-radius: 16px;
+      }
+      .id-card-body {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+      }
+      .id-card-info {
+        grid-template-cols: 1fr;
+        width: 100%;
+        row-gap: 12px;
+      }
+      .id-card-field {
+        align-items: center;
+      }
+      .id-card-field[style*="grid-column: span 2"] {
+        grid-column: span 1 !important;
+      }
+      .id-card-footer-item {
+        padding: 6px;
+      }
+    }
 
       @media print {
         body {
