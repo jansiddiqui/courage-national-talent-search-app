@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { CandidateIdentityCard } from "@/components/shared/CandidateIdentityCard";
+import { DashboardMissionCarousel } from "@/components/shared/DashboardMissionCarousel";
 import Image from "next/image";
 import { 
   Trophy, 
@@ -311,6 +312,14 @@ export default function DashboardPage() {
                 payment_status: c.payment_status,
                 photo_url: `/api/photo/${c.registration_id || c.id}`
               }} />
+
+              {/* Section 1.5: Share & Invite (Organic Referral) */}
+              <DashboardMissionCarousel 
+                registration_id={c.registration_id}
+                referralsCount={referralsCount}
+                handleCopyCode={handleCopyCode}
+                codeCopied={codeCopied}
+              />
 
               {/* Section 2: Important Dates Card */}
               <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
