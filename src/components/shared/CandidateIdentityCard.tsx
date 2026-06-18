@@ -72,16 +72,30 @@ export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps)
                 <strong className="text-white text-sm sm:text-base font-semibold truncate block">{candidate.state}</strong>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Candidate ID</span>
-                <strong className="text-amber-400 font-mono text-sm sm:text-base font-bold uppercase tracking-wider block truncate">{candidate.registration_id}</strong>
-              </div>
-              <div>
-                <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Enrollment Status</span>
-                <strong className="text-emerald-400 text-xs sm:text-sm font-semibold block uppercase tracking-wide">{candidate.payment_status === "PAID" ? "Enrolled / Active" : "Pending"}</strong>
-              </div>
-            </div>
+          </div>
+        </div>
+
+        {/* Full Width Info: ID and Status */}
+        <div className="grid grid-cols-2 gap-4 px-1">
+          <div>
+            <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Candidate ID</span>
+            <strong className="text-amber-400 font-mono text-sm sm:text-base font-bold uppercase tracking-wider block truncate">{candidate.registration_id}</strong>
+          </div>
+          <div className="text-right sm:text-left">
+            <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Enrollment Status</span>
+            <strong className="text-emerald-400 text-xs sm:text-sm font-semibold block uppercase tracking-wide">{candidate.payment_status === "PAID" ? "Enrolled / Active" : "Pending"}</strong>
+          </div>
+        </div>
+
+        {/* Exam Date & Venue Footer */}
+        <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5 grid grid-cols-2 gap-4 text-center">
+          <div>
+            <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Exam Date</span>
+            <strong className="text-white text-sm font-bold">19 July 2026</strong>
+          </div>
+          <div>
+            <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Slot Venue</span>
+            <strong className="text-white text-sm font-bold">Online / Portal</strong>
           </div>
         </div>
       </div>
