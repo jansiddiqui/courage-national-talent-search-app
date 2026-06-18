@@ -81,24 +81,8 @@ export default function Footer() {
               </div>
               <div className="flex items-start gap-2.5 text-slate-500">
                 <MapPin size={13} className="text-slate-600 mt-0.5 shrink-0" />
-                <span className="text-[11px] leading-tight">Courage Education Pvt. Ltd. · Kanpur, UP</span>
+                <span className="text-[11px] leading-tight">Courage National Talent Search · Kanpur, UP</span>
               </div>
-            </div>
-
-            {/* WhatsApp updates connection button */}
-            <div className="pt-2">
-              <a
-                href="https://whatsapp.com/channel/0029Vb8NYaiEquiRSLwDD338"
-                target="_blank"
-                rel="noreferrer"
-                className="group relative inline-flex items-center gap-2.5 px-5 py-2.5 overflow-hidden rounded-xl bg-slate-900 border border-emerald-500/30 hover:border-emerald-500/60 transition-all active:scale-[0.98] shadow-lg hover:shadow-emerald-500/10"
-              >
-                <div className="absolute inset-0 bg-emerald-500/10 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300" />
-                <svg className="w-4 h-4 fill-emerald-500 relative z-10 drop-shadow-[0_0_8px_rgba(16,185,129,0.5)]" viewBox="0 0 24 24">
-                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.73-1.45L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.413 9.863-9.847.001-2.63-1.019-5.101-2.871-6.958C16.612 1.943 14.137 1.94 12.01 1.94c-5.44 0-9.866 4.414-9.869 9.848-.002 1.71.453 3.382 1.32 4.874L2.44 21.908l5.207-1.366z"/>
-                </svg>
-                <span className="text-[13px] font-bold text-emerald-400 group-hover:text-emerald-300 transition-colors relative z-10">Subscribe to WhatsApp Channel</span>
-              </a>
             </div>
           </div>
 
@@ -126,7 +110,7 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
-          <p>© 2026 Courage Education Pvt. Ltd. All rights reserved.</p>
+          <p>© 2026 Courage National Talent Search. All rights reserved.</p>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             <span>Platform operational · Founding Edition 2026</span>
