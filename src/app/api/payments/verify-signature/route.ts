@@ -210,6 +210,8 @@ export async function POST(request: Request) {
       await NotificationService.sendPaymentSuccess(
         formattedWhatsapp,
         formData.parentEmail || null,
+        formData.studentName,
+        cntsId,
         isFree ? "Free Registration" : razorpayPaymentId
       );
     } catch (notifyError) {

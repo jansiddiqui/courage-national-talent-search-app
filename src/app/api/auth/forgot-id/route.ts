@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { whatsappService } from "@/services/whatsappService";
+import { emailService } from "@/services/emailService";
 
 export async function POST(request: Request) {
   try {
@@ -25,9 +26,10 @@ export async function POST(request: Request) {
         const cntsId = last10 === "8707884735" ? "CNTS260000" : "CNTS260001";
         
         await whatsappService.sendForgotCNTSID(phoneNumber, studentName, cntsId);
+        await emailService.sendRecoveryEmail("test@example.com", cntsId);
         return NextResponse.json({ 
           success: true, 
-          message: `CNTS ID sent via WhatsApp to ${phoneNumber} (Sandbox mode: check console logs)` 
+          message: `CNTS ID sent via WhatsApp and Email to ${phoneNumber} (Sandbox mode: check console logs)` 
         });
       }
       return NextResponse.json({ 
@@ -43,7 +45,7 @@ export async function POST(request: Request) {
     // We construct the query
     const { data: registrations, error: queryError } = await (supabaseAdmin as any)
       .from("registrations")
-      .select("cnts_id, registration_id, student_name, mobile_number, whatsapp_number")
+      .select("cnts_id, registration_id, student_name, mobile_number, whatsapp_number, parent_email")
       .or(`mobile_number.in.(${formats.map(f => `"${f}"`).join(",")}),whatsapp_number.in.(${formats.map(f => `"${f}"`).join(",")})`)
       .order("created_at", { ascending: false });
 
@@ -66,16 +68,21 @@ export async function POST(request: Request) {
 
     const success = await whatsappService.sendForgotCNTSID(recipient, match.student_name, cntsId);
 
-    if (!success) {
+    // Also send email if available
+    if (match.parent_email) {
+      await emailService.sendRecoveryEmail(match.parent_email, cntsId);
+    }
+
+    if (!success && !match.parent_email) {
       return NextResponse.json({ 
         success: false, 
-        message: "Failed to dispatch recovery message over WhatsApp. Please try again." 
+        message: "Failed to dispatch recovery message. Please try again." 
       }, { status: 500 });
     }
 
     return NextResponse.json({ 
       success: true, 
-      message: `Your CNTS ID has been successfully dispatched to WhatsApp number ${recipient}.` 
+      message: `Your CNTS ID has been successfully dispatched.` 
     });
   } catch (e: any) {
     console.error("Forgot-id recovery route error:", e);
