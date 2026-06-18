@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { CandidateIdentityCard } from "@/components/shared/CandidateIdentityCard";
 import { 
   Award, 
   Search, 
@@ -363,80 +364,14 @@ export default function CertificateVerifyPage() {
               {verifiedCertificate && (
                 <div className="space-y-6">
                   {/* Standardized Candidate Identity Card */}
-                  <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-3xl border border-indigo-900/40 p-6 shadow-xl relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-blue-800/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-                    <div className="absolute -left-6 -bottom-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
-                    
-                    {/* Watermark text */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-20deg] font-display font-extrabold text-2xl tracking-widest text-white/5 uppercase select-none pointer-events-none whitespace-nowrap">
-                      Founding Edition 2026
-                    </div>
-
-                    <div className="relative space-y-6">
-                      {/* Header */}
-                      <div className="flex justify-between items-center border-b border-white/10 pb-4">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white font-display font-bold text-sm">C</div>
-                          <div>
-                            <h4 className="font-display font-extrabold text-xs text-white tracking-tight leading-none">CNTS</h4>
-                            <span className="text-[7px] text-blue-400 font-black tracking-wider uppercase">Founding Edition 2026</span>
-                          </div>
-                        </div>
-                        <span className="px-2.5 py-0.5 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[8px] font-black uppercase tracking-wider font-sans">
-                          Identity Card
-                        </span>
-                      </div>
-
-                      {/* Body Info Grid */}
-                      <div className="grid grid-cols-3 gap-4 items-center">
-                        {/* Photo Area */}
-                        <div className="col-span-1 border border-white/10 rounded-xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-2 relative">
-                          <User size={24} className="text-white/20" />
-                          <span className="text-[6px] text-white/30 uppercase font-bold tracking-wider mt-2">Affix Photo</span>
-                        </div>
-
-                        {/* Candidate Info Details */}
-                        <div className="col-span-2 space-y-3 pl-2">
-                          <div>
-                            <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Candidate Name</span>
-                            <strong className="text-white text-xs md:text-sm font-semibold truncate block">{verifiedCertificate.student_name}</strong>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Class</span>
-                              <strong className="text-white text-xs font-semibold">Class {verifiedCertificate.student_class}</strong>
-                            </div>
-                            <div>
-                              <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">State</span>
-                              <strong className="text-white text-xs font-semibold">{verifiedCertificate.state}</strong>
-                            </div>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2">
-                            <div>
-                              <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Candidate ID</span>
-                              <strong className="text-amber-400 font-mono text-xs font-bold uppercase tracking-wider block truncate">{verifiedCertificate.registration_id}</strong>
-                            </div>
-                            <div>
-                              <span className="text-[7px] text-white/40 uppercase font-black tracking-wider block">Enrollment Status</span>
-                              <strong className="text-white text-[10px] font-semibold block">{verifiedCertificate.payment_status === "PAID" ? "Enrolled / Active" : "Pending Payment"}</strong>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Exam Date & Venue Footer */}
-                      <div className="bg-white/5 border border-white/10 rounded-xl p-3 grid grid-cols-2 gap-2 text-center text-xs">
-                        <div>
-                          <span className="text-[6px] text-white/40 uppercase font-bold tracking-widest block">Exam Date</span>
-                          <strong className="text-white text-[10px] font-bold">19 July 2026</strong>
-                        </div>
-                        <div>
-                          <span className="text-[6px] text-white/40 uppercase font-bold tracking-widest block">Slot Venue</span>
-                          <strong className="text-white text-[10px] font-bold">Online / Portal</strong>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  <CandidateIdentityCard candidate={{
+                    student_name: verifiedCertificate.student_name,
+                    student_class: verifiedCertificate.student_class,
+                    state: verifiedCertificate.state,
+                    registration_id: verifiedCertificate.registration_id,
+                    payment_status: verifiedCertificate.payment_status,
+                    photo_url: `/api/photo/${verifiedCertificate.registration_id}`
+                  }} />
 
                   {/* Verification Status Details */}
                   <div className="bg-gradient-to-br from-white to-slate-50/55 border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm relative overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-300">

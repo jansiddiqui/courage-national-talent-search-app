@@ -590,7 +590,7 @@ export async function GET(
 
     <div class="header">
       <div class="logo-container">
-        <div class="logo-icon">C</div>
+        <img src="/images/logo.png" alt="CNTS Logo" style="width: 48px; height: 48px; object-fit: contain; background: white; border-radius: 12px; padding: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" />
         <div class="logo-text">
           <h1>COURAGE</h1>
           <p>National Talent Search</p>
@@ -610,7 +610,7 @@ export async function GET(
       <div class="id-card-watermark">Founding Edition 2026</div>
       <div class="id-card-header">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <div style="width: 24px; height: 24px; background: #2563eb; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-weight: 850; font-size: 12px; color: white;">C</div>
+          <img src="/images/logo.png" alt="CNTS Logo" style="width: 28px; height: 28px; object-fit: contain; background: white; border-radius: 6px; padding: 2px;" />
           <div>
             <span style="font-family: 'Outfit', sans-serif; font-size: 11px; font-weight: 800; color: white; display: block; line-height: 1;">CNTS</span>
             <span style="font-size: 7px; color: #60a5fa; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; display: block; line-height: 1; margin-top: 1px;">Founding Edition 2026</span>

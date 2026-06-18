@@ -4,6 +4,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { CandidateIdentityCard } from "@/components/shared/CandidateIdentityCard";
 import Image from "next/image";
 import { 
   Trophy, 
@@ -293,71 +294,14 @@ export default function DashboardPage() {
             <div key={c.id} className="space-y-8">
               
               {/* Section 1: Candidate Identity Card */}
-              <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-3xl border border-indigo-900/40 p-6 sm:p-8 shadow-xl relative overflow-hidden group">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-blue-800/20 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-                <div className="absolute -left-6 -bottom-6 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-                
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-15deg] font-display font-extrabold text-4xl sm:text-5xl tracking-widest text-white/5 uppercase select-none pointer-events-none whitespace-nowrap">
-                  Founding Edition 2026
-                </div>
-
-                <div className="relative space-y-6 sm:space-y-8">
-                  {/* Header */}
-                  <div className="flex justify-between items-center border-b border-white/10 pb-4 sm:pb-6">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-display font-bold text-lg">C</div>
-                      <div>
-                        <h4 className="font-display font-extrabold text-sm sm:text-base text-white tracking-tight leading-none">CNTS</h4>
-                        <span className="text-[9px] sm:text-[10px] text-blue-400 font-black tracking-wider uppercase">Founding Edition 2026</span>
-                      </div>
-                    </div>
-                    <span className="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
-                      Identity Card
-                    </span>
-                  </div>
-
-                  {/* Body Info */}
-                  <div className="grid grid-cols-4 sm:grid-cols-5 gap-4 sm:gap-6 items-center">
-                    <div className="col-span-1 border border-white/10 rounded-xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:border-white/20 transition-colors">
-                      <img src={`/api/photo/${c.registration_id || c.id}`} alt="Candidate Photo" className="w-full h-full object-cover rounded-xl z-10 relative" onError={(e) => {
-                        e.currentTarget.style.display = 'none';
-                        e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                      }} />
-                      <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/5">
-                        <User size={24} className="text-white/20" />
-                        <span className="text-[6px] sm:text-[8px] text-white/30 uppercase font-bold tracking-wider mt-2">Affix Photo</span>
-                      </div>
-                    </div>
-
-                    <div className="col-span-3 sm:col-span-4 space-y-4 sm:space-y-5 pl-2">
-                      <div>
-                        <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Candidate Name</span>
-                        <strong className="text-white text-base sm:text-lg font-semibold truncate block tracking-wide">{c.student_name}</strong>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Class</span>
-                          <strong className="text-white text-sm sm:text-base font-semibold">Class {c.student_class}</strong>
-                        </div>
-                        <div>
-                          <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">State</span>
-                          <strong className="text-white text-sm sm:text-base font-semibold truncate block">{c.state}</strong>
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div>
-                          <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Candidate ID</span>
-                          <strong className="text-amber-400 font-mono text-sm sm:text-base font-bold uppercase tracking-wider block truncate">{c.registration_id}</strong>
-                        </div>
-                        <div>
-                          <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Enrollment Status</span>
-                          <strong className="text-emerald-400 text-xs sm:text-sm font-semibold block uppercase tracking-wide">{c.payment_status === "PAID" ? "Enrolled / Active" : "Pending"}</strong>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              <CandidateIdentityCard candidate={{
+                student_name: c.student_name,
+                student_class: c.student_class,
+                state: c.state,
+                registration_id: c.registration_id,
+                payment_status: c.payment_status,
+                photo_url: `/api/photo/${c.registration_id || c.id}`
+              }} />
 
               {/* Section 2: Important Dates Card */}
               <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
