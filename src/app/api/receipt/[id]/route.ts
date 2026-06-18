@@ -650,7 +650,7 @@ export async function GET(
           <div class="info-details">
             <strong>${candidate.parent_name}</strong><br>
             Email: ${candidate.parent_email || "N/A"}<br>
-            WhatsApp: +91 ${candidate.whatsapp_number}<br>
+            WhatsApp: ${candidate.whatsapp_number.startsWith('+') ? '' : '+91 '}${candidate.whatsapp_number}<br>
             State: ${candidate.state}
           </div>
         </div>
@@ -766,7 +766,7 @@ export async function GET(
 
       <div class="footer">
         <p>This is a system-generated electronic receipt powered by Razorpay billing integration.</p>
-        <p style="margin-top: 5px;">Courage Education Private Limited • support@thecouragelibrary.com</p>
+        <p style="margin-top: 5px;">Courage National Talent Search • support@thecouragelibrary.com</p>
       </div>
   </div>
 
