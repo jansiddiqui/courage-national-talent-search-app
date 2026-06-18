@@ -326,13 +326,12 @@ export async function GET(
       padding: 4px 12px;
       border-radius: 8px;
       display: inline-block;
-      position: absolute;
-      top: 120px;
-      right: 60px;
-      left: auto;
-      transform: rotate(10deg);
+      transform: rotate(-5deg);
       opacity: 0.85;
       letter-spacing: 1px;
+      align-self: center;
+      margin-right: auto;
+      margin-left: 20px;
     }
 
     .footer {
@@ -526,14 +525,12 @@ export async function GET(
       .total-section {
         align-items: stretch;
       }
+      .status-stamp {
+        transform: rotate(-5deg);
+        margin-left: 0;
+      }
       .total-row {
         width: 100%;
-      }
-      .status-stamp {
-        top: 150px;
-        right: 40px;
-        left: auto;
-        transform: rotate(10deg);
       }
       /* Identity Card Mobile Adjustments */
       .id-card-container {
@@ -628,8 +625,6 @@ export async function GET(
     </div>
 
     <div class="receipt-card">
-      <div class="status-stamp">PAID</div>
-
       <div class="header-grid">
         <div class="logo-container">
           <img src="/images/logo.png" alt="Logo" style="width: 40px; height: 40px; object-fit: contain; background: white; padding: 2px; border-radius: 8px;">
@@ -747,7 +742,9 @@ export async function GET(
         </tbody>
       </table>
 
-      <div class="total-section">
+      <div style="display: flex; justify-content: flex-end;">
+        <div class="status-stamp">PAID</div>
+        <div class="total-section">
         <div class="total-row">
           <span>Subtotal</span>
           <span style="font-weight: 500;">₹99.00</span>
@@ -760,6 +757,7 @@ export async function GET(
           <span>Grand Total Paid</span>
           <span>₹99.00</span>
         </div>
+      </div>
       </div>
 
       <div class="footer">
