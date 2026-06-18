@@ -24,17 +24,17 @@ export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps)
 
       <div className="relative space-y-6 sm:space-y-8">
         {/* Header */}
-        <div className="flex justify-between items-center border-b border-white/10 pb-4 sm:pb-6">
+        <div className="flex justify-between items-center border-b border-white/10 pb-4 sm:pb-6 gap-2">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center p-1.5 overflow-hidden shrink-0 shadow-sm">
               <img src="/images/logo.png" alt="CNTS Logo" className="w-full h-full object-contain" />
             </div>
             <div>
               <h4 className="font-display font-extrabold text-sm sm:text-base text-white tracking-tight leading-none">CNTS</h4>
-              <span className="text-[9px] sm:text-[10px] text-blue-400 font-black tracking-wider uppercase">Founding Edition 2026</span>
+              <span className="text-[9px] sm:text-[10px] text-blue-400 font-black tracking-wider uppercase whitespace-nowrap block mt-1">Founding Edition 2026</span>
             </div>
           </div>
-          <span className="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[9px] sm:text-[10px] font-black uppercase tracking-widest shrink-0">
+          <span className="px-2 py-1 sm:px-3 sm:py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[8px] sm:text-[10px] font-black uppercase tracking-widest shrink-0 text-center whitespace-nowrap">
             Identity Card
           </span>
         </div>
@@ -57,10 +57,10 @@ export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps)
             </div>
           </div>
 
-          <div className="col-span-3 sm:col-span-4 space-y-4 sm:space-y-5 pl-2">
+          <div className="col-span-3 sm:col-span-4 space-y-4 sm:space-y-5 pl-2 sm:pl-4">
             <div>
               <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Candidate Name</span>
-              <strong className="text-white text-base sm:text-lg font-semibold truncate block tracking-wide">{candidate.student_name}</strong>
+              <strong className="text-white text-base sm:text-xl font-semibold truncate block tracking-wide">{candidate.student_name}</strong>
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
@@ -75,27 +75,27 @@ export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps)
           </div>
         </div>
 
-        {/* Full Width Info: ID and Status */}
-        <div className="grid grid-cols-2 gap-4 px-1">
-          <div>
-            <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Candidate ID</span>
-            <strong className="text-amber-400 font-mono text-sm sm:text-base font-bold uppercase tracking-wider block truncate">{candidate.registration_id}</strong>
+        {/* Unified Premium Footer Data Table */}
+        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden divide-y divide-white/10">
+          <div className="grid grid-cols-2 divide-x divide-white/10">
+            <div className="p-3 sm:p-4 text-center bg-white/[0.02]">
+              <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Candidate ID</span>
+              <strong className="text-amber-400 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider block truncate">{candidate.registration_id}</strong>
+            </div>
+            <div className="p-3 sm:p-4 text-center bg-white/[0.02]">
+              <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Enrollment Status</span>
+              <strong className="text-emerald-400 text-[10px] sm:text-xs font-semibold block uppercase tracking-wider mt-0.5">{candidate.payment_status === "PAID" ? "Enrolled / Active" : "Pending"}</strong>
+            </div>
           </div>
-          <div className="text-right sm:text-left">
-            <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-0.5">Enrollment Status</span>
-            <strong className="text-emerald-400 text-xs sm:text-sm font-semibold block uppercase tracking-wide">{candidate.payment_status === "PAID" ? "Enrolled / Active" : "Pending"}</strong>
-          </div>
-        </div>
-
-        {/* Exam Date & Venue Footer */}
-        <div className="bg-white/5 border border-white/10 rounded-xl p-4 sm:p-5 grid grid-cols-2 gap-4 text-center">
-          <div>
-            <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Exam Date</span>
-            <strong className="text-white text-sm font-bold">19 July 2026</strong>
-          </div>
-          <div>
-            <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Slot Venue</span>
-            <strong className="text-white text-sm font-bold">Online / Portal</strong>
+          <div className="grid grid-cols-2 divide-x divide-white/10">
+            <div className="p-3 sm:p-4 text-center">
+              <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Exam Date</span>
+              <strong className="text-white text-xs sm:text-sm font-bold">19 July 2026</strong>
+            </div>
+            <div className="p-3 sm:p-4 text-center">
+              <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Slot Venue</span>
+              <strong className="text-white text-xs sm:text-sm font-bold">Online / Portal</strong>
+            </div>
           </div>
         </div>
       </div>
