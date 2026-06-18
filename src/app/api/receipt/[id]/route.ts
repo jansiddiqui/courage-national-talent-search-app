@@ -328,7 +328,7 @@ export async function GET(
       transform: rotate(-10deg);
       display: inline-block;
       position: absolute;
-      bottom: 100px;
+      top: 180px;
       left: 60px;
       opacity: 0.85;
       letter-spacing: 1px;
@@ -531,7 +531,8 @@ export async function GET(
       .status-stamp {
         left: 50%;
         transform: translateX(-50%) rotate(-10deg);
-        bottom: 150px;
+        top: 250px;
+        bottom: auto;
       }
       /* Identity Card Mobile Adjustments */
       .id-card-container {
@@ -567,17 +568,33 @@ export async function GET(
     }
 
       @media print {
+        @page {
+          size: A4;
+          margin: 15mm;
+        }
         body {
           background: white;
           padding: 0;
+          -webkit-print-color-adjust: exact !important;
+          print-color-adjust: exact !important;
         }
         .no-print-container {
-          display: none;
+          display: none !important;
         }
         .receipt-card {
           border: none;
           box-shadow: none;
           padding: 0;
+          margin: 0;
+          max-width: 100%;
+        }
+        .info-section, .transaction-table, .id-card-container {
+          page-break-inside: avoid;
+          break-inside: avoid;
+        }
+        .footer {
+          page-break-inside: avoid;
+          break-inside: avoid;
         }
       }
     </style>

@@ -571,17 +571,29 @@ export async function GET(
     }
 
     @media print {
+      @page {
+        size: A4;
+        margin: 15mm;
+      }
       body {
         background: white;
         padding: 0;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
       }
       .no-print-container {
-        display: none;
+        display: none !important;
       }
       .admit-card {
         border: none;
         box-shadow: none;
         padding: 0;
+        margin: 0;
+        max-width: 100%;
+      }
+      .id-card-container, .exam-schedule-card, .instructions-card {
+        page-break-inside: avoid;
+        break-inside: avoid;
       }
     }
   </style>
