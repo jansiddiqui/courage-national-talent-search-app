@@ -451,27 +451,44 @@ export async function GET(
 
     .id-card-footer {
       display: flex;
-      justify-content: space-between;
-      align-items: center;
+      flex-direction: column;
       background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 255, 255, 0.05);
-      padding: 12px 20px;
-      border-radius: 12px;
-      margin-top: 20px;
+      border-radius: 8px;
+      margin-top: 16px;
       position: relative;
       z-index: 2;
+      overflow: hidden;
+    }
+
+    .id-card-footer-row {
+      display: grid;
+      grid-template-cols: 1fr 1fr;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .id-card-footer-row:last-child {
+      border-bottom: none;
     }
 
     .id-card-footer-item {
       display: flex;
       flex-direction: column;
-      text-align: left;
+      padding: 8px 12px;
+      text-align: center;
+      border-right: 1px solid rgba(255, 255, 255, 0.05);
     }
-
     .id-card-footer-item:last-child {
-      text-align: right;
+      border-right: none;
     }
 
+    .id-card-footer-item .id-card-label {
+      font-size: 7px;
+    }
+    .id-card-footer-item .id-card-value {
+      font-size: 11px;
+    }
+
+    .transaction-table {
       /* Responsive alignments */
       @media (max-width: 640px) {
         body {
@@ -617,25 +634,29 @@ export async function GET(
                 <span class="id-card-label">State</span>
                 <span class="id-card-value">${candidate.state}</span>
               </div>
-              <div class="id-card-field">
-                <span class="id-card-label">Candidate ID</span>
-                <span class="id-card-value id-card-value-highlight">${candidate.registration_id}</span>
-              </div>
-              <div class="id-card-field">
-                <span class="id-card-label">Status</span>
-                <span class="id-card-value" style="color: #34d399; font-weight: 700;">Enrolled / Active</span>
-              </div>
             </div>
           </div>
 
           <div class="id-card-footer">
-            <div class="id-card-footer-item">
-              <span class="id-card-label">Exam Date</span>
-              <span class="id-card-value">19 July 2026</span>
+            <div class="id-card-footer-row">
+              <div class="id-card-footer-item" style="background: rgba(255, 255, 255, 0.01);">
+                <span class="id-card-label" style="font-size: 6px;">Candidate ID</span>
+                <span class="id-card-value id-card-value-highlight" style="font-size: 10px;">${candidate.registration_id}</span>
+              </div>
+              <div class="id-card-footer-item" style="background: rgba(255, 255, 255, 0.01);">
+                <span class="id-card-label" style="font-size: 6px;">Enrollment Status</span>
+                <span class="id-card-value" style="font-size: 9px; color: #34d399; font-weight: 700; text-transform: uppercase;">Enrolled / Active</span>
+              </div>
             </div>
-            <div class="id-card-footer-item">
-              <span class="id-card-label">Slot Venue</span>
-              <span class="id-card-value">Online / Portal</span>
+            <div class="id-card-footer-row">
+              <div class="id-card-footer-item">
+                <span class="id-card-label">Exam Date</span>
+                <span class="id-card-value">19 July 2026</span>
+              </div>
+              <div class="id-card-footer-item">
+                <span class="id-card-label">Slot Venue</span>
+                <span class="id-card-value">Online / Portal</span>
+              </div>
             </div>
           </div>
         </div>

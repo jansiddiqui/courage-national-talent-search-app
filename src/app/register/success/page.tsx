@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { CandidateIdentityCard } from "@/components/shared/CandidateIdentityCard";
 import { 
   CheckCircle2, 
   Download, 
@@ -245,114 +246,28 @@ export default function SuccessPage() {
           }
         `}} />
 
-        {/* Candidate Identity Card */}
-        <div id="printable-card-area" className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-3xl border border-indigo-900/40 p-6 shadow-xl relative overflow-hidden group">
-          {/* Confetti watermark */}
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-800/10 rounded-full blur-2xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute -left-6 -bottom-6 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
-          <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{
-            backgroundImage: "radial-gradient(ellipse at center, #2563eb 0%, transparent 70%)"
+        {/* Candidate Identity Card Container */}
+        <div id="printable-card-area" className="relative group">
+          <CandidateIdentityCard candidate={{
+            student_name: regDetails.studentName,
+            student_class: regDetails.studentClass,
+            state: regDetails.state,
+            registration_id: regDetails.registrationId,
+            payment_status: "PAID",
+            photo_url: `/api/photo/${regDetails.registrationId}`
           }} />
 
-          {/* Watermark text */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 rotate-[-20deg] font-display font-extrabold text-2xl tracking-widest text-white/5 uppercase select-none pointer-events-none whitespace-nowrap">
-            Founding Edition 2026
-          </div>
-
-          <div className="relative space-y-5">
-            {/* Header */}
-            <div className="flex justify-between items-center border-b border-white/10 pb-4">
-              <div className="flex items-center gap-3">
-                <div className="relative w-10 h-10 bg-white rounded-xl p-1 shrink-0 flex items-center justify-center">
-                  <Image
-                    src="/images/logo.png"
-                    alt="CNTS Logo"
-                    width={32}
-                    height={32}
-                    className="object-contain"
-                  />
-                </div>
-                <div className="min-w-0">
-                  <h4 className="font-display font-extrabold text-sm text-white tracking-tight leading-none mb-1">CNTS</h4>
-                  <span className="text-[8px] text-blue-400 font-black tracking-wider uppercase whitespace-nowrap block truncate">Founding Edition 2026</span>
-                </div>
-              </div>
-              <span className="px-3 py-1 bg-blue-500/20 text-blue-300 border border-blue-500/30 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm whitespace-nowrap shrink-0 ml-2">
-                Identity Card
-              </span>
-            </div>
-
-            {/* Body Info */}
-            <div className="flex gap-5">
-              {/* Photo Area */}
-              <div className="w-24 sm:w-28 shrink-0 border border-white/10 rounded-2xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center p-0 relative overflow-hidden group-hover:border-white/20 transition-colors">
-                <img src={`/api/photo/${regDetails.registrationId}`} alt="Candidate Photo" className="w-full h-full object-cover rounded-2xl z-10 relative" onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                  e.currentTarget.nextElementSibling?.classList.remove('hidden');
-                }} />
-                <div className="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/5">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                  <User size={28} className="text-white/20 mb-2 relative z-10" />
-                  <span className="text-[7px] text-white/40 uppercase font-bold tracking-widest relative z-10">Affix Photo</span>
-                </div>
-              </div>
-
-              {/* Candidate Info Details */}
-              <div className="flex-1 space-y-4 py-1 min-w-0">
-                <div>
-                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Candidate Name</span>
-                  <strong className="text-white text-sm sm:text-base font-semibold block truncate" title={regDetails.studentName}>{regDetails.studentName}</strong>
-                </div>
-                <div>
-                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Class</span>
-                  <strong className="text-white text-sm sm:text-base font-semibold block truncate" title={regDetails.studentClass}>{regDetails.studentClass}</strong>
-                </div>
-                <div>
-                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Candidate ID</span>
-                  <strong className="text-amber-400 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider block truncate">{regDetails.registrationId}</strong>
-                </div>
-              </div>
-            </div>
-
-            {/* Status & Footer Section */}
-            <div className="bg-white/5 border border-white/10 rounded-2xl p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
-              <div className="flex items-center gap-3 w-full sm:w-auto min-w-0">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center shrink-0">
-                  <CheckCircle2 size={18} className="text-emerald-400" />
-                </div>
-                <div className="min-w-0">
-                  <span className="text-[8px] text-emerald-400/80 uppercase font-black tracking-widest block mb-1">Status</span>
-                  <strong className="text-emerald-400 text-xs sm:text-sm font-bold block truncate">Enrolled & Active</strong>
-                </div>
-              </div>
-
-              <div className="w-full sm:w-px sm:h-10 bg-white/10 hidden sm:block"></div>
-              <div className="w-full h-px bg-white/10 sm:hidden"></div>
-
-              <div className="flex gap-6 w-full sm:w-auto justify-between sm:justify-start">
-                <div>
-                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Exam Date</span>
-                  <strong className="text-white text-xs sm:text-sm font-bold block">19 July 2026</strong>
-                </div>
-                <div>
-                  <span className="text-[8px] text-white/40 uppercase font-black tracking-widest block mb-1">Venue</span>
-                  <strong className="text-white text-xs sm:text-sm font-bold block">Online Portal</strong>
-                </div>
-              </div>
-            </div>
-
-            {/* Print Trigger Button */}
-            <div className="pt-2">
-              <a
-                href={`/api/admit-card/${regDetails.registrationId}`}
-                target="_blank"
-                rel="noreferrer"
-                className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 border-none transition-all cursor-pointer no-underline"
-              >
-                <Download size={16} />
-                Download Candidate Pass
-              </a>
-            </div>
+          {/* Print Trigger Button */}
+          <div className="pt-4 no-print">
+            <a
+              href={`/api/admit-card/${regDetails.registrationId}`}
+              target="_blank"
+              rel="noreferrer"
+              className="w-full py-3.5 bg-blue-600 hover:bg-blue-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-blue-600/20 border-none transition-all cursor-pointer no-underline"
+            >
+              <Download size={16} />
+              Download Candidate Pass
+            </a>
           </div>
         </div>
 
