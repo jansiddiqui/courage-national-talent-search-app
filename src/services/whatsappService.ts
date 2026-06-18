@@ -172,7 +172,7 @@ export class WhatsAppService {
     return this.sendTemplateMessage(
       phoneNumber,
       "registration_success",
-      [studentName, studentClass, registrationId],
+      [studentName, registrationId, studentClass],
       "REGISTRATION_CONFIRMATION"
     );
   }
@@ -182,12 +182,12 @@ export class WhatsAppService {
    */
   public async sendPaymentConfirmation(
     phoneNumber: string,
-    registrationId: string
+    paymentId: string
   ): Promise<boolean> {
     return this.sendTemplateMessage(
       phoneNumber,
       "payment_success",
-      [registrationId],
+      [paymentId],
       "PAYMENT_CONFIRMATION"
     );
   }

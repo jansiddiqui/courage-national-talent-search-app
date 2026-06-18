@@ -43,14 +43,14 @@ export class NotificationService {
   public static async sendPaymentSuccess(
     phoneNumber: string,
     email: string | null,
-    registrationId: string
+    paymentId: string
   ): Promise<{ whatsapp: boolean; email: boolean }> {
     console.log(`[NotificationService] Dispatching payment success alerts for ${phoneNumber}`);
     
     // 1. WhatsApp Template Dispatch
     const waPromise = whatsappService.sendPaymentConfirmation(
       phoneNumber,
-      registrationId
+      paymentId
     );
 
     // 2. Email Receipt Dispatch (if email is provided)
@@ -58,7 +58,7 @@ export class NotificationService {
     if (email) {
       emailPromise = emailService.sendPaymentEmail(
         email,
-        registrationId
+        paymentId
       );
     }
 
