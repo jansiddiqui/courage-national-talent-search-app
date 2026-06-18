@@ -586,9 +586,13 @@ export async function GET(
           margin: 0;
           max-width: 100%;
         }
+        .header-grid {
+          padding-bottom: 15px;
+          margin-bottom: 15px;
+        }
         .info-grid {
           gap: 15px;
-          margin-bottom: 20px;
+          margin-bottom: 15px;
         }
         .id-card-container {
           margin-bottom: 15px;
@@ -598,8 +602,8 @@ export async function GET(
           margin-top: 15px;
         }
         .footer {
-          margin-top: 30px;
-          padding-top: 15px;
+          margin-top: 15px;
+          padding-top: 10px;
         }
         .info-section, .transaction-table, .id-card-container {
           page-break-inside: avoid;
