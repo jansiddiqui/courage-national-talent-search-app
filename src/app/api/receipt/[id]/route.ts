@@ -325,11 +325,12 @@ export async function GET(
       text-transform: uppercase;
       padding: 4px 12px;
       border-radius: 8px;
-      transform: rotate(-10deg);
       display: inline-block;
       position: absolute;
-      top: 180px;
-      left: 60px;
+      top: 120px;
+      right: 60px;
+      left: auto;
+      transform: rotate(10deg);
       opacity: 0.85;
       letter-spacing: 1px;
     }
@@ -529,10 +530,10 @@ export async function GET(
         width: 100%;
       }
       .status-stamp {
-        left: 50%;
-        transform: translateX(-50%) rotate(-10deg);
-        top: 250px;
-        bottom: auto;
+        top: 150px;
+        right: 40px;
+        left: auto;
+        transform: rotate(10deg);
       }
       /* Identity Card Mobile Adjustments */
       .id-card-container {
@@ -570,7 +571,7 @@ export async function GET(
       @media print {
         @page {
           size: A4;
-          margin: 15mm;
+          margin: 10mm;
         }
         body {
           background: white;
@@ -587,6 +588,21 @@ export async function GET(
           padding: 0;
           margin: 0;
           max-width: 100%;
+        }
+        .info-grid {
+          gap: 15px;
+          margin-bottom: 20px;
+        }
+        .id-card-container {
+          margin-bottom: 15px;
+          padding: 16px;
+        }
+        .transaction-table {
+          margin-top: 15px;
+        }
+        .footer {
+          margin-top: 30px;
+          padding-top: 15px;
         }
         .info-section, .transaction-table, .id-card-container {
           page-break-inside: avoid;
