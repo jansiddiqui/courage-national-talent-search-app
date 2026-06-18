@@ -463,7 +463,7 @@ export async function GET(
 
     .id-card-footer-row {
       display: grid;
-      grid-template-cols: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
       border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     }
     .id-card-footer-row:last-child {
@@ -550,7 +550,7 @@ export async function GET(
         flex-shrink: 0;
       }
       .id-card-info {
-        grid-template-cols: 1fr 1fr;
+        grid-template-columns: 1fr 1fr;
         width: 100%;
         gap: 8px;
         row-gap: 12px;
