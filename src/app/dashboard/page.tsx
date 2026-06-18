@@ -254,13 +254,22 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer"
-        >
-          <LogOut size={13} />
-          Logout
-        </button>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/register"
+            className="flex items-center gap-1.5 px-4 py-2 bg-blue-800 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-sm"
+          >
+            <span className="hidden sm:inline">Register Another Child</span>
+            <span className="sm:hidden">Register</span>
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer"
+          >
+            <LogOut size={13} />
+            <span className="hidden sm:inline">Logout</span>
+          </button>
+        </div>
       </header>
 
       {/* Main Container */}

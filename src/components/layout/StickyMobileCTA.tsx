@@ -6,6 +6,20 @@ import { ArrowRight } from "lucide-react";
 
 export default function StickyMobileCTA() {
   const [isVisible, setIsVisible] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { authService } = await import("@/services/authService");
+        const session = await authService.checkSession();
+        setIsAuthenticated(session.isAuthenticated);
+      } catch (e) {
+        // ignore
+      }
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,13 +48,23 @@ export default function StickyMobileCTA() {
           <span className="text-[10px] font-medium text-slate-400 line-through">₹499</span>
         </span>
       </div>
-      <Link
-        href="/register"
-        className="bg-blue-800 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-blue-800/10 active:scale-[0.98] transition-all"
-      >
-        Register Now
-        <ArrowRight size={12} />
-      </Link>
+      {isAuthenticated ? (
+        <Link
+          href="/dashboard"
+          className="bg-blue-800 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-blue-800/10 active:scale-[0.98] transition-all"
+        >
+          Dashboard
+          <ArrowRight size={12} />
+        </Link>
+      ) : (
+        <Link
+          href="/register"
+          className="bg-blue-800 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-blue-800/10 active:scale-[0.98] transition-all"
+        >
+          Register Now
+          <ArrowRight size={12} />
+        </Link>
+      )}
     </div>
   );
 }

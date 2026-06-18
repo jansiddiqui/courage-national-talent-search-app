@@ -11,6 +11,20 @@ interface NavbarProps {
 export default function Navbar({ theme = "light" }: NavbarProps) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const { authService } = await import("@/services/authService");
+        const session = await authService.checkSession();
+        setIsAuthenticated(session.isAuthenticated);
+      } catch (e) {
+        // ignore
+      }
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -121,22 +135,33 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
 
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/login"
-            className={`text-sm font-medium transition-colors ${
-              isDarkNavbar
-                ? "text-slate-300 hover:text-white"
-                : "text-slate-600 hover:text-slate-900"
-            }`}
-          >
-            Login
-          </Link>
-          <Link
-            href="/register"
-            className="px-5 py-2.5 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-800/25 hover:shadow-blue-700/30 hover:-translate-y-0.5"
-          >
-            Register Now
-          </Link>
+          {isAuthenticated ? (
+            <Link
+              href="/dashboard"
+              className="px-5 py-2.5 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-800/25 hover:shadow-blue-700/30 hover:-translate-y-0.5"
+            >
+              Dashboard
+            </Link>
+          ) : (
+            <>
+              <Link
+                href="/login"
+                className={`text-sm font-medium transition-colors ${
+                  isDarkNavbar
+                    ? "text-slate-300 hover:text-white"
+                    : "text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                Login
+              </Link>
+              <Link
+                href="/register"
+                className="px-5 py-2.5 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-800/25 hover:shadow-blue-700/30 hover:-translate-y-0.5"
+              >
+                Register Now
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu button */}
@@ -166,20 +191,32 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
             </Link>
           ))}
           <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
-            <Link
-              href="/login"
-              onClick={() => setMenuOpen(false)}
-              className="block w-full text-center px-5 py-3 border border-slate-250/60 text-slate-700 hover:bg-slate-50 text-sm font-semibold rounded-xl"
-            >
-              Login
-            </Link>
-            <Link
-              href="/register"
-              onClick={() => setMenuOpen(false)}
-              className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl"
-            >
-              Register Now
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                href="/dashboard"
+                onClick={() => setMenuOpen(false)}
+                className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl"
+              >
+                Dashboard
+              </Link>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  onClick={() => setMenuOpen(false)}
+                  className="block w-full text-center px-5 py-3 border border-slate-250/60 text-slate-700 hover:bg-slate-50 text-sm font-semibold rounded-xl"
+                >
+                  Login
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl"
+                >
+                  Register Now
+                </Link>
+              </>
+            )}
           </div>
         </div>
       )}
