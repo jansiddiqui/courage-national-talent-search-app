@@ -255,11 +255,10 @@ export default function PrizesPage() {
             Give your child the opportunity to showcase their reasoning strengths at a national level and earn prestigious scholarships.
           </p>
           <RegisterCTA
+            unauthenticatedText="Start Your Child's Journey"
+            rightIcon={<ArrowRight size={16} />}
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-800/15 transition-all hover:-translate-y-0.5 cursor-pointer"
-          >
-            Start Your Child&apos;s Journey
-            <ArrowRight size={16} />
-          </RegisterCTA>
+          />
         </div>
       </section>
 

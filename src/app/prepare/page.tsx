@@ -591,11 +591,10 @@ export default function PreparePage() {
                   Retake Quiz
                 </button>
                 <RegisterCTA
+                  unauthenticatedText="Register for CNTS 2026"
+                  rightIcon={<ArrowRight size={13} />}
                   className="flex-grow h-11 bg-blue-800 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow-md transition-all flex items-center justify-center gap-1 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
-                >
-                  Register for CNTS 2026
-                  <ArrowRight size={13} />
-                </RegisterCTA>
+                />
               </div>
             </div>
           )}
@@ -615,10 +614,9 @@ export default function PreparePage() {
               Parent Login
             </Link>
             <RegisterCTA
+              unauthenticatedText="Register Candidate"
               className="px-6 py-3 bg-blue-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-blue-850/15 hover:bg-blue-700 cursor-pointer"
-            >
-              Register Candidate
-            </RegisterCTA>
+            />
           </div>
         </div>
 

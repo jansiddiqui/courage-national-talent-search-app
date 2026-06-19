@@ -36,12 +36,10 @@ export default function CTA() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <RegisterCTA
-                className="group inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-800 font-bold rounded-2xl hover:bg-blue-50 transition-all duration-200 shadow-xl shadow-black/20 hover:-translate-y-0.5 text-base"
-              >
-                <Sparkles size={16} className="text-amber-500" />
-                Get Your Child&apos;s Talent Profile – ₹99
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </RegisterCTA>
+                unauthenticatedText="Start Your Child's Registration"
+                rightIcon={<ArrowRight size={16} />}
+                className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-900 hover:bg-blue-50 text-sm font-bold rounded-2xl shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5 cursor-pointer"
+              />
               <Link
                 href="/about"
                 className="inline-flex items-center gap-2 px-8 py-4 border border-white/30 text-white font-semibold rounded-2xl hover:bg-white/10 transition-all duration-200 text-base"

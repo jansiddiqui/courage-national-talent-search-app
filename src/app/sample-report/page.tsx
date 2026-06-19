@@ -392,11 +392,10 @@ export default function SampleReportPage() {
             CNTS helps you understand how your child is wired, how they learn best, and what careers fit their natural aptitudes.
           </p>
           <RegisterCTA
+            unauthenticatedText="Register Now – ₹99"
+            rightIcon={<ArrowRight size={16} />}
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-800/15 transition-all hover:-translate-y-0.5 cursor-pointer"
-          >
-            Register Now – ₹99
-            <ArrowRight size={16} />
-          </RegisterCTA>
+          />
         </div>
       </section>
 

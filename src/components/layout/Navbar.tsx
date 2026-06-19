@@ -143,12 +143,6 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
               >
                 Dashboard
               </Link>
-              <Link
-                href="/register"
-                className="px-5 py-2.5 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-800/25 hover:shadow-blue-700/30 hover:-translate-y-0.5"
-              >
-                Register Another Child
-              </Link>
             </>
           ) : (
             <>
@@ -207,13 +201,6 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                   className="block w-full text-center px-5 py-3 bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl"
                 >
                   Dashboard
-                </Link>
-                <Link
-                  href="/register"
-                  onClick={() => setMenuOpen(false)}
-                  className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl"
-                >
-                  Register Another Child
                 </Link>
               </>
             ) : (

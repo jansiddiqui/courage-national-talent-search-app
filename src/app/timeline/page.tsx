@@ -206,11 +206,10 @@ export default function TimelinePage() {
             Secure your child&apos;s spot in the Founding Edition for ₹99. Complete the assessment in July, get verified credentials before August.
           </p>
           <RegisterCTA
+            unauthenticatedText="Register Now – ₹99"
+            rightIcon={<ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-850/20 transition-all hover:-translate-y-0.5 cursor-pointer group"
-          >
-            Register Now – ₹99
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </RegisterCTA>
+          />
         </div>
       </section>
 

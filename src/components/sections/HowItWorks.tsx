@@ -96,11 +96,10 @@ export default function HowItWorks() {
         {/* Bottom CTA */}
         <div className="mt-12 text-center">
           <RegisterCTA
-            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all shadow-xl shadow-blue-800/25 hover:-translate-y-0.5 group"
-          >
-            Start Your Child&apos;s Journey
-            <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </RegisterCTA>
+            unauthenticatedText="Start Registration Now"
+            rightIcon={<ArrowRight size={16} />}
+            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-800/15 transition-all hover:-translate-y-0.5 cursor-pointer"
+          />
         </div>
       </div>
     </section>

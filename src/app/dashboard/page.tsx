@@ -31,7 +31,8 @@ import {
   FileText,
   Share2,
   Bell,
-  Play
+  Play,
+  ArrowRight
 } from "lucide-react";
 import { fetchRegistrations, fetchSystemSettings } from "@/services/supabaseService";
 import { hasSupabaseConfig } from "@/lib/supabaseClient";

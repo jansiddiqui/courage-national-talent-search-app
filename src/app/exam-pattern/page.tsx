@@ -65,10 +65,10 @@ export default function ExamPatternPage() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <RegisterCTA
+              unauthenticatedText="Register Candidate"
+              rightIcon={<ArrowRight size={16} />}
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-8 rounded-xl transition-all shadow-lg text-sm flex items-center gap-2"
-            >
-              Register Candidate <ArrowRight size={16} />
-            </RegisterCTA>
+            />
             <Link
               href="/parent-guide"
               className="bg-white/5 hover:bg-white/10 text-white border border-white/10 font-semibold py-3.5 px-8 rounded-xl transition-all text-sm"
