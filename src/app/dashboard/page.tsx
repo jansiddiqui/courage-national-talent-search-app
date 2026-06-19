@@ -345,12 +345,23 @@ export default function DashboardPage() {
               </div>
 
               {/* Section 1.5: Share & Invite (Organic Referral) */}
-              <DashboardMissionCarousel 
-                registration_id={c.registration_id}
-                referralsCount={referralsCount}
-                handleCopyCode={handleCopyCode}
-                codeCopied={codeCopied}
-              />
+              <div className="mt-12 space-y-4">
+                <div className="flex items-center gap-3 px-2">
+                  <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center shrink-0">
+                    <Sparkles className="text-amber-600" size={20} />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-xl text-slate-800 leading-tight">Your Role as a Founding Parent</h3>
+                    <p className="text-sm text-slate-500 font-medium mt-0.5">Help us discover and empower more bright minds across India.</p>
+                  </div>
+                </div>
+                <DashboardMissionCarousel 
+                  registration_id={c.registration_id}
+                  referralsCount={referralsCount}
+                  handleCopyCode={handleCopyCode}
+                  codeCopied={codeCopied}
+                />
+              </div>
 
               {/* Section 2: Important Dates Card */}
               <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm">
