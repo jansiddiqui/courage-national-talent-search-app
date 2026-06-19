@@ -66,6 +66,14 @@ export function DashboardMissionCarousel({
       </div>
       
       <div className="flex-1 relative z-10 w-full flex flex-col justify-between">
+        {/* Inner Header */}
+        <div className="mb-6 flex items-center gap-2">
+          <div className="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center">
+            <Sparkles size={12} className="text-blue-600" />
+          </div>
+          <h2 className="text-xs sm:text-sm font-bold uppercase tracking-widest text-blue-600">Your Mission</h2>
+        </div>
+
         <div className="relative min-h-[160px] sm:min-h-[120px] md:min-h-[140px] mb-4">
           {cards.map((card, idx) => (
             <div 
