@@ -202,6 +202,38 @@ export default function Hero() {
               A National Assessment for Classes 5–8. Designed to identify reasoning ability, mathematical thinking, language skills, and learning potential.
             </p>
 
+            {/* Quick Facts Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/75 backdrop-blur-sm border border-slate-200/80 p-5 rounded-3xl max-w-xl shadow-sm">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-700 shrink-0 mt-0.5 text-xs">🎓</div>
+                <div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Eligible Grades</span>
+                  <span className="text-xs font-bold text-slate-850">Classes 5, 6, 7 & 8</span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 shrink-0 mt-0.5 text-xs">💰</div>
+                <div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Registration Fee</span>
+                  <span className="text-xs font-bold text-blue-800">₹99 <span className="text-[9px] text-slate-500 font-semibold">(Subsidized)</span></span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 mt-0.5 text-xs">📅</div>
+                <div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Assessment Date</span>
+                  <span className="text-xs font-bold text-slate-850">19 July 2026 <span className="text-[9px] text-slate-500 font-semibold">(Online)</span></span>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 shrink-0 mt-0.5 text-xs">📜</div>
+                <div>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">What You Get</span>
+                  <span className="text-xs font-bold text-slate-850">Cognitive Profile & Certificate</span>
+                </div>
+              </div>
+            </div>
+
             {/* Live Registration Activity Ticker */}
             <div className="h-9 bg-blue-50/50 border border-blue-100/50 px-4 py-1.5 rounded-2xl flex items-center gap-2 max-w-sm">
               <span className="flex h-2 w-2 relative">

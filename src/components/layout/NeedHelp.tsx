@@ -43,27 +43,25 @@ export default function NeedHelp() {
             </div>
           </div>
 
-          {/* WhatsApp Support Card */}
+          {/* Submit Inquiry Card */}
           <div className="bg-white p-5 rounded-2xl border border-slate-100 flex flex-col justify-between space-y-4">
             <div className="space-y-2">
               <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-700">
                 <MessageSquare size={16} />
               </div>
-              <h4 className="font-bold text-slate-800 text-sm">WhatsApp Updates</h4>
+              <h4 className="font-bold text-slate-800 text-sm">Submit Inquiry</h4>
               <p className="text-[11px] text-slate-500 leading-relaxed">
-                Receive instant notifications about exam schedules, slot details, and status updates.
+                Have a registration question, billing issue, or school inquiry? Send a request directly to our team.
               </p>
             </div>
             <div className="pt-2 border-t border-slate-50 flex justify-between items-center">
-              <span className="text-[10px] font-bold text-slate-400">SLA: Instant Alerts</span>
-              <a
-                href="https://wa.me/91XXXXXXXXXX"
-                target="_blank"
-                rel="noreferrer"
+              <span className="text-[10px] font-bold text-slate-400">SLA: 2-4 Hours</span>
+              <Link
+                href="/contact"
                 className="text-xs font-bold text-emerald-700 hover:text-emerald-800"
               >
-                Opt-in Updates
-              </a>
+                Contact Support
+              </Link>
             </div>
           </div>
 

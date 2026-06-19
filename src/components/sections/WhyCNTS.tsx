@@ -63,6 +63,20 @@ export default function WhyCNTS() {
             Traditional exams measure memory. CNTS measures meaning — who your child is,
             what they&apos;re wired for, and where they can genuinely excel.
           </p>
+
+          <div className="mt-8 p-5 rounded-3xl bg-blue-50/50 border border-blue-100 flex items-start gap-4 shadow-sm max-w-xl">
+            <div className="w-10 h-10 rounded-2xl bg-blue-100/60 flex items-center justify-center shrink-0 text-blue-850">
+              <Brain size={18} />
+            </div>
+            <div>
+              <p className="text-sm font-bold text-blue-900 leading-tight">
+                CNTS is not a rote-learning examination.
+              </p>
+              <p className="text-xs text-slate-550 leading-relaxed mt-1">
+                It is designed to help parents understand <strong>how their child thinks and learns</strong>, not merely what they have memorized.
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Cards grid */}

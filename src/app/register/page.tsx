@@ -1557,6 +1557,33 @@ function RegisterForm() {
                       <span className="text-xl font-bold text-amber-400">₹{finalPrice}</span>
                     </div>
                   </div>
+
+                  {/* Trust Signals and Privacy Reassurance */}
+                  <div className="mt-6 p-4 rounded-2xl bg-slate-50 border border-slate-200/60 space-y-3 shadow-inner">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                        <span className="text-emerald-600 font-bold shrink-0">✓</span>
+                        <span>Secure Payments by Razorpay</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                        <span className="text-emerald-600 font-bold shrink-0">✓</span>
+                        <span>WhatsApp & Email Confirmation</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                        <span className="text-emerald-600 font-bold shrink-0">✓</span>
+                        <span>Admit Card & Result Access Included</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                        <span className="text-emerald-600 font-bold shrink-0">✓</span>
+                        <span>Trusted by Students Across India</span>
+                      </div>
+                    </div>
+                    <div className="h-px bg-slate-200" />
+                    <p className="text-[11px] text-slate-500 leading-normal text-center">
+                      Your information is used only for CNTS participation.<br />
+                      We <span className="font-bold text-slate-750">never</span> share student data with third parties.
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
