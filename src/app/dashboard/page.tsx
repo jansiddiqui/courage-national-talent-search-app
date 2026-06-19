@@ -7,6 +7,7 @@ import Link from "next/link";
 import { CandidateIdentityCard } from "@/components/shared/CandidateIdentityCard";
 import { DashboardMissionCarousel } from "@/components/shared/DashboardMissionCarousel";
 import Image from "next/image";
+import html2canvas from "html2canvas";
 import { 
   Trophy, 
   Download, 
@@ -184,10 +185,29 @@ export default function DashboardPage() {
   };
 
   const handleCopyCode = (code: string) => {
-    navigator.clipboard.writeText(code).then(() => {
-      setCodeCopied(true);
-      setTimeout(() => setCodeCopied(false), 2500);
-    });
+    navigator.clipboard.writeText(code);
+    setCodeCopied(true);
+    setTimeout(() => setCodeCopied(false), 2000);
+  };
+
+  const handleDownloadCard = async (candidateId: string, candidateName: string) => {
+    const element = document.getElementById(`id-card-${candidateId}`);
+    if (!element) return;
+    
+    try {
+      const canvas = await html2canvas(element, { 
+        scale: 2, 
+        useCORS: true, 
+        backgroundColor: null 
+      });
+      const dataUrl = canvas.toDataURL("image/png");
+      const link = document.createElement("a");
+      link.download = `CNTS_Founding_Badge_${candidateName.replace(/\s+/g, '_')}.png`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error("Failed to generate image", error);
+    }
   };
 
   if (!isHydrated || loading) {
@@ -304,14 +324,27 @@ export default function DashboardPage() {
             <div key={c.id} className="space-y-8">
               
               {/* Section 1: Candidate Identity Card */}
-              <CandidateIdentityCard candidate={{
-                student_name: c.student_name,
-                student_class: c.student_class,
-                state: c.state,
-                registration_id: c.registration_id,
-                payment_status: c.payment_status,
-                photo_url: `/api/photo/${c.registration_id || c.id}`
-              }} />
+              <div>
+                <div id={`id-card-${c.id}`} className="relative rounded-3xl overflow-hidden">
+                  <CandidateIdentityCard candidate={{
+                    student_name: c.student_name,
+                    student_class: c.student_class,
+                    state: c.state,
+                    registration_id: c.registration_id,
+                    payment_status: c.payment_status,
+                    photo_url: `/api/photo/${c.registration_id || c.id}`
+                  }} />
+                </div>
+                <div className="flex justify-end mt-4">
+                  <button 
+                    onClick={() => handleDownloadCard(c.id, c.student_name)} 
+                    className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-xl text-sm font-bold transition-colors border border-slate-200 shadow-sm"
+                  >
+                    <Download size={16} /> 
+                    Download Image for Status
+                  </button>
+                </div>
+              </div>
 
               {/* Section 1.5: Share & Invite (Organic Referral) */}
               <DashboardMissionCarousel 

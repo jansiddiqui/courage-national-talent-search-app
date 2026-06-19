@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import { Sparkles, Users, Trophy, Check, Copy } from "lucide-react";
+import { Sparkles, Users, Trophy, Check, Copy, Award, BookOpen } from "lucide-react";
 
 export function DashboardMissionCarousel({
   registration_id,
@@ -17,19 +17,19 @@ export function DashboardMissionCarousel({
 
   const cards = [
     {
-      title: "Post to WhatsApp Status",
-      icon: <Sparkles size={20} className="text-amber-500" />,
-      text: "Take a screenshot of your child's Founding Identity Card above and post it to your WhatsApp Status to inspire your circle.",
+      title: "1 Referral: Founding Referrer",
+      icon: <Award size={24} className="text-amber-500" />,
+      text: "Invite just 1 student to unlock the exclusive Founding Referrer Badge on your child's academic profile.",
     },
     {
-      title: "Help Us Spread the Mission",
-      icon: <Users size={20} className="text-blue-500" />,
-      text: "As a Founding Parent, your support is vital. By sharing your status, you help us reach and empower more bright minds across India.",
+      title: "3 Referrals: Advanced Papers",
+      icon: <BookOpen size={24} className="text-blue-500" />,
+      text: "Help 3 students register to instantly unlock the Advanced Practice Paper Pack, giving your child a powerful competitive edge.",
     },
     {
-      title: "Proud Founding Participant",
-      icon: <Trophy size={20} className="text-emerald-500" />,
-      text: "A single recommendation from you can change another student's academic trajectory. Invite them to join the CNTS movement.",
+      title: "10 Referrals: Ambassador Status",
+      icon: <Trophy size={24} className="text-emerald-500" />,
+      text: "Achieve ultimate prestige. Refer 10 students to earn the highly coveted CNTS Founding Ambassador Certificate.",
     }
   ];
 
@@ -44,8 +44,8 @@ export function DashboardMissionCarousel({
     <div className="bg-white rounded-3xl border border-amber-200 p-6 md:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
       <div className="absolute top-0 right-0 w-48 h-48 bg-amber-100 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
       
-      <div className="flex-1 relative z-10 w-full min-h-[150px] flex flex-col justify-between">
-        <div className="relative h-24">
+      <div className="flex-1 relative z-10 w-full min-h-[160px] flex flex-col justify-between">
+        <div className="relative h-28">
           {cards.map((card, idx) => (
             <div 
               key={idx}
@@ -55,11 +55,11 @@ export function DashboardMissionCarousel({
                   : "opacity-0 translate-y-4 pointer-events-none"
               }`}
             >
-              <h3 className="font-display font-bold text-slate-800 text-xl flex items-center gap-2 mb-2">
+              <h3 className="font-display font-bold text-slate-800 text-2xl flex items-center gap-2 mb-3">
                 {card.icon}
                 {card.title}
               </h3>
-              <p className="text-sm text-slate-600 leading-relaxed max-w-lg">
+              <p className="text-base text-slate-600 leading-relaxed max-w-lg font-medium">
                 {card.text}
               </p>
             </div>
