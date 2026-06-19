@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import { Sparkles, Brain, Trophy, Star, Shield, ArrowRight } from "lucide-react";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import FounderLetter from "@/components/sections/FounderLetter";
 import NeedHelp from "@/components/layout/NeedHelp";
 
@@ -206,13 +207,12 @@ export default function AboutPage() {
           <p className="text-slate-500 text-xs max-w-md mx-auto">
             Registration takes less than 3 minutes. Secure your child&apos;s national rank and receive their customized Talent Profile.
           </p>
-          <Link
-            href="/register"
+          <RegisterCTA
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-850/20 transition-all hover:-translate-y-0.5 cursor-pointer"
           >
             Register Now
             <ArrowRight size={16} />
-          </Link>
+          </RegisterCTA>
         </div>
       </section>
 

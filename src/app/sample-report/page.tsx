@@ -7,6 +7,7 @@ import {
   Star, ShieldCheck, ArrowRight, Brain, 
   FileDown, Compass, GraduationCap
 } from "lucide-react";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 interface DomainScore {
   name: string;
@@ -390,13 +391,12 @@ export default function SampleReportPage() {
           <p className="text-slate-500 text-xs md:text-sm max-w-md mx-auto">
             CNTS helps you understand how your child is wired, how they learn best, and what careers fit their natural aptitudes.
           </p>
-          <a
-            href="/register"
+          <RegisterCTA
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-800/15 transition-all hover:-translate-y-0.5 cursor-pointer"
           >
             Register Now – ₹99
             <ArrowRight size={16} />
-          </a>
+          </RegisterCTA>
         </div>
       </section>
 

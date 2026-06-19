@@ -136,12 +136,20 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
         {/* CTA */}
         <div className="hidden md:flex items-center gap-3">
           {isAuthenticated ? (
-            <Link
-              href="/dashboard"
-              className="px-5 py-2.5 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-800/25 hover:shadow-blue-700/30 hover:-translate-y-0.5"
-            >
-              Dashboard
-            </Link>
+            <>
+              <Link
+                href="/dashboard"
+                className="px-5 py-2.5 bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl hover:bg-slate-200 transition-all duration-200"
+              >
+                Dashboard
+              </Link>
+              <Link
+                href="/register"
+                className="px-5 py-2.5 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-800/25 hover:shadow-blue-700/30 hover:-translate-y-0.5"
+              >
+                Register Another Child
+              </Link>
+            </>
           ) : (
             <>
               <Link
@@ -192,19 +200,28 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
           ))}
           <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
             {isAuthenticated ? (
-              <Link
-                href="/dashboard"
-                onClick={() => setMenuOpen(false)}
-                className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl"
-              >
-                Dashboard
-              </Link>
+              <>
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMenuOpen(false)}
+                  className="block w-full text-center px-5 py-3 bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl"
+                >
+                  Dashboard
+                </Link>
+                <Link
+                  href="/register"
+                  onClick={() => setMenuOpen(false)}
+                  className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl"
+                >
+                  Register Another Child
+                </Link>
+              </>
             ) : (
               <>
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="block w-full text-center px-5 py-3 border border-slate-250/60 text-slate-700 hover:bg-slate-50 text-sm font-semibold rounded-xl"
+                  className="block w-full text-center px-5 py-3 bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl"
                 >
                   Login
                 </Link>

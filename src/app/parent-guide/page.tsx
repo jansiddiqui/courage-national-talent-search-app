@@ -9,6 +9,7 @@ import {
   ArrowRight,
   HeartHandshake
 } from "lucide-react";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 export default function ParentGuidePage() {
   const journeySteps = [
@@ -38,12 +39,11 @@ export default function ParentGuidePage() {
             Complete transparency regarding India's premier cognitive diagnostics talent search. Learn about our academic framework, details, timelines, and support commitments.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/register"
+            <RegisterCTA
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-8 rounded-xl transition-all shadow-lg text-sm flex items-center gap-2"
             >
               Register Candidate <ArrowRight size={16} />
-            </Link>
+            </RegisterCTA>
             <Link
               href="/exam-pattern"
               className="bg-white/5 hover:bg-white/10 text-white border border-white/10 font-semibold py-3.5 px-8 rounded-xl transition-all text-sm"

@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 export default function WhyCNTSPage() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -169,12 +170,10 @@ export default function WhyCNTSPage() {
             <p className="text-xs text-slate-400">Registration for the Founding Edition 2026 is currently open for Classes 5–8. Slot allocation is limited.</p>
           </div>
           <div className="flex gap-4 justify-center flex-wrap">
-            <Link
-              href="/register"
+            <RegisterCTA
+              unauthenticatedText="Start Candidate Registration (₹99)"
               className="px-8 py-3.5 bg-blue-800 hover:bg-blue-700 text-white text-xs font-bold rounded-2xl shadow-md transition-all cursor-pointer"
-            >
-              Start Candidate Registration (₹99)
-            </Link>
+            />
             <Link
               href="/about"
               className="px-8 py-3.5 border border-slate-700 text-slate-300 hover:text-white rounded-2xl text-xs font-bold transition-all cursor-pointer"

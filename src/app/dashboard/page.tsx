@@ -274,13 +274,7 @@ export default function DashboardPage() {
         </div>
 
         <div className="flex items-center gap-3">
-          <Link
-            href="/register"
-            className="flex items-center gap-1.5 px-4 py-2 bg-blue-800 text-white rounded-xl text-xs font-bold hover:bg-blue-700 transition-all shadow-sm"
-          >
-            <span className="hidden sm:inline">Register Another Child</span>
-            <span className="sm:hidden">Register</span>
-          </Link>
+
           <button
             onClick={handleLogout}
             className="flex items-center gap-1.5 px-3 py-2 border border-slate-200 text-slate-600 rounded-xl text-xs font-semibold hover:bg-slate-50 hover:text-slate-800 transition-all cursor-pointer"
@@ -577,6 +571,26 @@ export default function DashboardPage() {
             </div>
           );
         })}
+
+        {/* Register Another Child Card */}
+        <div className="mt-8 bg-gradient-to-br from-blue-900 to-indigo-950 text-white rounded-3xl p-8 md:p-10 shadow-xl border border-blue-800 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="absolute top-0 right-0 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+          <div className="relative space-y-2 text-center md:text-left flex-1">
+            <h3 className="font-display font-bold text-2xl text-white">Register Another Child</h3>
+            <p className="text-blue-200 text-sm max-w-lg leading-relaxed">
+              Have another bright mind in the family? You can manage multiple candidates from this same dashboard. Click below to add another child to the Courage National Talent Search.
+            </p>
+          </div>
+          <div className="relative shrink-0">
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-900 hover:bg-blue-50 text-sm font-bold rounded-2xl shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5"
+            >
+              Register Another Child
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </div>
 
       </main>
       <NeedHelp />

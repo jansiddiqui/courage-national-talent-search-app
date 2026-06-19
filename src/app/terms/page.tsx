@@ -187,7 +187,7 @@ export default function TermsOfUsePage() {
                 <span className="text-blue-600">3.</span> Exam Schedule Adjustments
               </h2>
               <p>
-                While the official calendar is set (e.g., Exam Date scheduled for <strong>July 19, 2026</strong>), Courage Education Private Limited reserves the absolute right to reschedule, postpone, or adjust the assessment timeline due to:
+                While the official calendar is set (e.g., Exam Date scheduled for <strong>July 19, 2026</strong>), Courage National Talent Search reserves the absolute right to reschedule, postpone, or adjust the assessment timeline due to:
               </p>
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid gap-3 my-2 text-xs">
                 <p><strong>Operational Reasons:</strong> Logistical modifications in physical OMR center distribution, school calendar conflicts, or state mandates.</p>
@@ -285,7 +285,7 @@ export default function TermsOfUsePage() {
               </p>
               <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-6 md:items-center justify-between mt-4">
                 <div className="space-y-2 text-xs">
-                  <div className="font-semibold text-slate-900 text-sm">Courage Education Private Limited</div>
+                  <div className="font-semibold text-slate-900 text-sm">Courage National Talent Search</div>
                   <div className="text-slate-500">Registered Office: Kanpur, Uttar Pradesh, India</div>
                   <div className="text-slate-500">Compliance Desk: support@thecouragelibrary.com</div>
                 </div>

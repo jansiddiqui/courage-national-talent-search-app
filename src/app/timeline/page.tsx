@@ -2,6 +2,7 @@
 
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import { Calendar, Sparkles, Clock, Play, BookOpen, AlertCircle, ShieldAlert, BadgeCheck, FileBarChart, Trophy, ArrowRight } from "lucide-react";
 
 interface TimelineEvent {
@@ -204,13 +205,12 @@ export default function TimelinePage() {
           <p className="text-slate-500 text-xs md:text-sm max-w-md mx-auto">
             Secure your child&apos;s spot in the Founding Edition for ₹99. Complete the assessment in July, get verified credentials before August.
           </p>
-          <a
-            href="/register"
+          <RegisterCTA
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-850/20 transition-all hover:-translate-y-0.5 cursor-pointer group"
           >
             Register Now – ₹99
             <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-          </a>
+          </RegisterCTA>
         </div>
       </section>
 

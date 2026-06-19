@@ -2,6 +2,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import NeedHelp from "@/components/layout/NeedHelp";
 import Link from "next/link";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import { 
   BookOpen, 
   HelpCircle, 
@@ -63,12 +64,11 @@ export default function ExamPatternPage() {
             Complete details on subjects, question weights, test slots, and marking criteria for Classes 5–8.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
-            <Link
-              href="/register"
+            <RegisterCTA
               className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-8 rounded-xl transition-all shadow-lg text-sm flex items-center gap-2"
             >
               Register Candidate <ArrowRight size={16} />
-            </Link>
+            </RegisterCTA>
             <Link
               href="/parent-guide"
               className="bg-white/5 hover:bg-white/10 text-white border border-white/10 font-semibold py-3.5 px-8 rounded-xl transition-all text-sm"

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import { Trophy, Star, ShieldCheck, FileText, Globe, ArrowRight, Check } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -253,13 +254,12 @@ export default function PrizesPage() {
           <p className="text-slate-500 text-xs max-w-sm mx-auto">
             Give your child the opportunity to showcase their reasoning strengths at a national level and earn prestigious scholarships.
           </p>
-          <a
-            href="/register"
+          <RegisterCTA
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-lg text-sm font-bold shadow-lg shadow-blue-800/15 transition-all hover:-translate-y-0.5 cursor-pointer"
           >
             Start Your Child&apos;s Journey
             <ArrowRight size={16} />
-          </a>
+          </RegisterCTA>
         </div>
       </section>
 

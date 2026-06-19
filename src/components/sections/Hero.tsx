@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Sparkles, Star, Trophy, Brain, Zap, CheckCircle2, AlertCircle } from "lucide-react";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import { fetchTotalRegistrationCount, fetchRegistrations } from "@/services/supabaseService";
 import { BASELINE_REGISTRATIONS, BASELINE_STATES } from "@/config/stats";
 
@@ -222,13 +223,10 @@ export default function Hero() {
 
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                href="/register"
+              <RegisterCTA
+                unauthenticatedText="Register Candidate – Subsidized Founding Edition (₹99)"
                 className="group inline-flex items-center justify-center gap-2 px-7 py-4 bg-blue-800 text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all duration-200 shadow-xl shadow-blue-800/25 hover:shadow-blue-700/35 hover:-translate-y-0.5 w-full sm:w-auto text-center"
-              >
-                Register Candidate – Subsidized Founding Edition (₹99)
-                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+              />
               <Link
                 href="/sample-report"
                 className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-slate-700 font-semibold rounded-2xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 shadow-sm w-full sm:w-auto"

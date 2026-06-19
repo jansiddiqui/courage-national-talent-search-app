@@ -19,6 +19,7 @@ import {
 import { fetchSystemSettings } from "@/services/supabaseService";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 import { Search } from "lucide-react";
 
@@ -243,13 +244,22 @@ export default function AnnouncementsPage() {
                       <p className="text-slate-600 text-sm leading-relaxed">{ann.content}</p>
                       {ann.actionLabel && ann.actionHref && (
                         <div className="pt-2">
-                          <Link
-                            href={ann.actionHref}
-                            className="inline-flex items-center gap-1.5 text-sm font-bold text-red-700 hover:text-red-600 group"
-                          >
-                            {ann.actionLabel}
-                            <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
-                          </Link>
+                          {ann.actionHref === "/register" ? (
+                            <RegisterCTA
+                              className="inline-flex items-center gap-1.5 text-sm font-bold text-red-700 hover:text-red-600 group"
+                            >
+                              {ann.actionLabel}
+                              <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                            </RegisterCTA>
+                          ) : (
+                            <Link
+                              href={ann.actionHref}
+                              className="inline-flex items-center gap-1.5 text-sm font-bold text-red-700 hover:text-red-600 group"
+                            >
+                              {ann.actionLabel}
+                              <ChevronRight size={14} className="group-hover:translate-x-0.5 transition-transform" />
+                            </Link>
+                          )}
                         </div>
                       )}
                     </div>
@@ -307,13 +317,22 @@ export default function AnnouncementsPage() {
                       <p className="text-slate-500 text-sm leading-relaxed">{ann.content}</p>
                       {ann.actionLabel && ann.actionHref && (
                         <div className="pt-1">
-                          <Link
-                            href={ann.actionHref}
-                            className="inline-flex items-center gap-1 text-[12px] font-bold text-blue-800 hover:text-blue-700 group/link"
-                          >
-                            {ann.actionLabel}
-                            <ChevronRight size={13} className="group-hover/link:translate-x-0.5 transition-transform" />
-                          </Link>
+                          {ann.actionHref === "/register" ? (
+                            <RegisterCTA
+                              className="inline-flex items-center gap-1 text-[12px] font-bold text-blue-800 hover:text-blue-700 group/link"
+                            >
+                              {ann.actionLabel}
+                              <ChevronRight size={13} className="group-hover/link:translate-x-0.5 transition-transform" />
+                            </RegisterCTA>
+                          ) : (
+                            <Link
+                              href={ann.actionHref}
+                              className="inline-flex items-center gap-1 text-[12px] font-bold text-blue-800 hover:text-blue-700 group/link"
+                            >
+                              {ann.actionLabel}
+                              <ChevronRight size={13} className="group-hover/link:translate-x-0.5 transition-transform" />
+                            </Link>
+                          )}
                         </div>
                       )}
                     </div>

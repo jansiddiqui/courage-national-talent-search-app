@@ -147,7 +147,7 @@ export default function PrivacyPolicyPage() {
                 <span className="text-blue-600">1.</span> Introduction
               </h2>
               <p>
-                Welcome to the <strong>Courage National Talent Search (CNTS)</strong>, organized by Courage Education Private Limited (&quot;we&quot;, &quot;us&quot;, or &quot;our&quot;). We are committed to safeguarding the privacy and security of our users, particularly because our talent discovery assessment serves minor school students in <strong>Classes 5, 6, 7, and 8</strong>.
+                Welcome to the <strong>Courage National Talent Search (CNTS)</strong> ("we", "us", or "our"). We are committed to safeguarding the privacy and security of our users, particularly because our talent discovery assessment serves minor school students in <strong>Classes 5, 6, 7, and 8</strong>.
               </p>
               <p>
                 This Privacy Policy outlines how we collect, store, verify, and secure the personal information provided to us by parents or legal guardians during the registration process for the CNTS 2026 Founding Edition. By accessing the platform, submitting a registration, or verifying results, you explicitly consent to the practices described in this document.
@@ -310,7 +310,7 @@ export default function PrivacyPolicyPage() {
               </p>
               <div className="bg-slate-50 border border-slate-200 rounded-2xl p-6 flex flex-col md:flex-row gap-6 md:items-center justify-between mt-4">
                 <div className="space-y-2 text-xs">
-                  <div className="font-semibold text-slate-900 text-sm">Courage Education Private Limited</div>
+                  <div className="font-semibold text-slate-900 text-sm">Courage National Talent Search</div>
                   <div className="text-slate-500">Registered Office: Kanpur, Uttar Pradesh, India</div>
                   <div className="text-slate-500">Contact Desk: support@thecouragelibrary.com</div>
                 </div>
