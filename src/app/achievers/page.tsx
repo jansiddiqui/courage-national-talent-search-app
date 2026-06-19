@@ -270,11 +270,10 @@ export default function AchieversPage() {
           </div>
           <div className="flex flex-col sm:flex-row gap-4 justify-center relative">
             <RegisterCTA
+              unauthenticatedText="Register Now (₹99)"
+              leftIcon={<Sparkles size={15} />}
               className="px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white text-sm font-bold rounded-2xl shadow-lg shadow-blue-800/30 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
-            >
-              <Sparkles size={15} />
-              Register Now (₹99)
-            </RegisterCTA>
+            />
             <Link
               href="/prepare"
               className="px-8 py-4 bg-white/10 hover:bg-white/20 text-white text-sm font-bold rounded-2xl border border-white/20 transition-all flex items-center justify-center gap-2"

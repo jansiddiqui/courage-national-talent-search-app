@@ -208,11 +208,10 @@ export default function AboutPage() {
             Registration takes less than 3 minutes. Secure your child&apos;s national rank and receive their customized Talent Profile.
           </p>
           <RegisterCTA
-            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-850/20 transition-all hover:-translate-y-0.5 cursor-pointer"
-          >
-            Register Now
-            <ArrowRight size={16} />
-          </RegisterCTA>
+            unauthenticatedText="Register Candidate"
+            rightIcon={<ArrowRight size={16} />}
+            className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-800/15 transition-all hover:-translate-y-0.5 cursor-pointer"
+          />
         </div>
       </section>
 
