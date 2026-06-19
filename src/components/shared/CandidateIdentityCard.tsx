@@ -76,31 +76,31 @@ export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps)
         </div>
 
         {/* Unified Premium Footer Data Table */}
-        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden flex flex-col sm:flex-row">
+        <div className="bg-white/5 border border-white/10 rounded-xl overflow-hidden flex flex-row items-stretch">
           <div className="flex-1 divide-y divide-white/10">
             <div className="grid grid-cols-2 divide-x divide-white/10">
-              <div className="p-3 sm:p-4 text-center bg-white/[0.02]">
-                <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Candidate ID</span>
-                <strong className="text-amber-400 font-mono text-xs sm:text-sm font-bold uppercase tracking-wider block truncate">{candidate.registration_id}</strong>
+              <div className="p-2 sm:p-4 text-center bg-white/[0.02]">
+                <span className="text-[7px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Candidate ID</span>
+                <strong className="text-amber-400 font-mono text-[10px] sm:text-sm font-bold uppercase tracking-wider block truncate">{candidate.registration_id}</strong>
               </div>
-              <div className="p-3 sm:p-4 text-center bg-white/[0.02]">
-                <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Enrollment Status</span>
-                <strong className="text-emerald-400 text-[10px] sm:text-xs font-semibold block uppercase tracking-wider mt-0.5">{candidate.payment_status === "PAID" ? "Enrolled / Active" : "Pending"}</strong>
+              <div className="p-2 sm:p-4 text-center bg-white/[0.02]">
+                <span className="text-[7px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Enrollment Status</span>
+                <strong className="text-emerald-400 text-[9px] sm:text-xs font-semibold block uppercase tracking-wider mt-0.5">{candidate.payment_status === "PAID" ? "Enrolled / Active" : "Pending"}</strong>
               </div>
             </div>
             <div className="grid grid-cols-2 divide-x divide-white/10">
-              <div className="p-3 sm:p-4 text-center">
-                <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Exam Date</span>
-                <strong className="text-white text-xs sm:text-sm font-bold">19 July 2026</strong>
+              <div className="p-2 sm:p-4 text-center">
+                <span className="text-[7px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Exam Date</span>
+                <strong className="text-white text-[10px] sm:text-sm font-bold">19 July 2026</strong>
               </div>
-              <div className="p-3 sm:p-4 text-center">
-                <span className="text-[8px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Slot Venue</span>
-                <strong className="text-white text-xs sm:text-sm font-bold">Online / Portal</strong>
+              <div className="p-2 sm:p-4 text-center">
+                <span className="text-[7px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Slot Venue</span>
+                <strong className="text-white text-[10px] sm:text-sm font-bold">Online / Portal</strong>
               </div>
             </div>
           </div>
           {/* Smart QR Referral Code */}
-          <div className="w-full sm:w-32 bg-white flex flex-col items-center justify-center p-3 shrink-0">
+          <div className="w-24 sm:w-32 bg-white flex flex-col items-center justify-center p-2 sm:p-3 shrink-0">
             <img 
               src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.thecouragelibrary.com/register?ref=${candidate.registration_id}&color=1e3a8a`}
               alt="Scan to Register"

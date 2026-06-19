@@ -41,25 +41,27 @@ export function DashboardMissionCarousel({
   }, [cards.length]);
 
   return (
-    <div className="bg-white rounded-3xl border border-amber-200 p-6 md:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
-      <div className="absolute top-0 right-0 w-48 h-48 bg-amber-100 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
+    <div className="bg-white rounded-3xl border border-blue-200 p-6 md:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10 relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100/50 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
       
-      <div className="flex-1 relative z-10 w-full min-h-[160px] flex flex-col justify-between">
-        <div className="relative h-28">
+      <div className="flex-1 relative z-10 w-full flex flex-col justify-between">
+        <div className="relative min-h-[160px] sm:min-h-[120px] md:min-h-[140px] mb-4">
           {cards.map((card, idx) => (
             <div 
               key={idx}
-              className={`absolute inset-0 transition-all duration-700 ease-in-out ${
+              className={`absolute inset-0 transition-all duration-700 ease-in-out flex flex-col justify-center ${
                 idx === activeIndex 
                   ? "opacity-100 translate-y-0 pointer-events-auto" 
                   : "opacity-0 translate-y-4 pointer-events-none"
               }`}
             >
-              <h3 className="font-display font-bold text-slate-800 text-2xl flex items-center gap-2 mb-3">
-                {card.icon}
+              <h3 className="font-display font-bold text-slate-800 text-xl sm:text-2xl flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3">
+                <div className="p-2 bg-slate-50 rounded-lg border border-slate-100 shadow-sm shrink-0">
+                  {card.icon}
+                </div>
                 {card.title}
               </h3>
-              <p className="text-base text-slate-600 leading-relaxed max-w-lg font-medium">
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-lg font-medium pr-4">
                 {card.text}
               </p>
             </div>
