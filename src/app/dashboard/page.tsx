@@ -63,7 +63,7 @@ export default function DashboardPage() {
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [systemSettings, setSystemSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
-  const [referralsCount, setReferralsCount] = useState(0);
+
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [codeCopied, setCodeCopied] = useState(false);
   const [checklistState, setChecklistState] = useState<Record<string, boolean>>({});
@@ -343,7 +343,7 @@ export default function DashboardPage() {
               <div className="mt-12">
                 <DashboardMissionCarousel 
                   registration_id={c.registration_id}
-                  referralsCount={referralsCount}
+                  referralsCount={c.total_referrals || 0}
                   handleCopyCode={handleCopyCode}
                   codeCopied={codeCopied}
                 />
