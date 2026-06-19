@@ -677,13 +677,18 @@ export default function ResultsPage() {
                   </div>
                 </div>
                 {/* Body */}
-                <div className="text-center space-y-1.5">
+                <div className="text-center space-y-1.5 relative">
+                  {/* Sample Watermark */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 transform -rotate-12">
+                    <span className="text-4xl font-black text-red-500 uppercase tracking-widest border-4 border-red-500 px-4 py-1 rounded">SAMPLE</span>
+                  </div>
+
                   <p className="text-[8px] md:text-[10px] italic text-slate-505 font-medium">This is to certify that</p>
                   <h4 className="font-display font-bold text-base md:text-lg text-slate-800 leading-none">
-                    {candidateResult ? candidateResult.candidate.student_name : "Priya Sharma"}
+                    [Your Child&apos;s Name]
                   </h4>
                   <p className="text-[8px] md:text-[10px] text-slate-600 max-w-[280px] mx-auto leading-relaxed">
-                    of Class {candidateResult ? candidateResult.candidate.student_class : "7"} has successfully qualified as a Founding Cohort Member in the Founding Edition of CNTS 2026.
+                    of Class [Class] has successfully qualified as a Founding Cohort Member in the Founding Edition of CNTS 2026.
                   </p>
                 </div>
 
@@ -695,12 +700,12 @@ export default function ResultsPage() {
                 {/* Footer details */}
                 <div className="flex justify-between items-end text-[7px] md:text-[9px] font-semibold text-slate-505 pt-2 border-t border-slate-100">
                   <div className="space-y-0.5 text-left">
-                    <p>AIR: <strong className="text-slate-800 font-bold">#{candidateResult ? candidateResult.result.national_rank : "47"}</strong></p>
-                    <p>State Rank: <strong className="text-slate-800 font-bold">#{candidateResult ? candidateResult.result.state_rank : "8"}</strong></p>
+                    <p>AIR: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
+                    <p>State Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
                   </div>
                   
                   {/* Stylized QR Code for verification */}
-                  <div className="flex items-center gap-1 border border-slate-200 p-1 rounded bg-white shadow-sm">
+                  <div className="flex items-center gap-1 border border-slate-200 p-1 rounded bg-white shadow-sm opacity-50">
                     <div className="w-6 h-6 bg-slate-900 flex flex-wrap p-0.5 gap-0.5 rounded shrink-0">
                       <div className="w-2.5 h-2.5 bg-white border border-slate-900 rounded-sm" />
                       <div className="w-2.5 h-2.5 bg-slate-900" />
@@ -709,12 +714,12 @@ export default function ResultsPage() {
                     </div>
                     <div className="text-[5px] text-slate-400 font-mono leading-none text-left">
                       VERIFIED<br/>
-                      No: CERT-26-{(candidateResult ? (candidateResult.candidate.cnts_id || candidateResult.candidate.registration_id) : "CNTS26-7P9R2").split("-").pop()}
+                      No: [SAMPLE-CERT-ID]
                     </div>
                   </div>
                   
                   <div className="space-y-0.5 text-right font-mono">
-                    <p className="text-[5px] md:text-[7px] text-slate-400">ID: {candidateResult ? (candidateResult.candidate.cnts_id || candidateResult.candidate.registration_id) : "CNTS26-7P9R2"}</p>
+                    <p className="text-[5px] md:text-[7px] text-slate-400">ID: [SAMPLE-ID]</p>
                     <p className="font-bold text-slate-800 font-sans">Registrar of Evaluation</p>
                   </div>
                 </div>
@@ -737,10 +742,15 @@ export default function ResultsPage() {
               className="bg-white rounded-3xl shadow-xl border border-slate-200 p-5 aspect-[1.414/1] relative overflow-hidden cursor-pointer select-none group flex flex-col justify-between"
             >
               {/* Header */}
-              <div className="flex justify-between items-start" style={{ transform: "translateZ(20px)" }}>
+              <div className="flex justify-between items-start relative" style={{ transform: "translateZ(20px)" }}>
+                {/* Sample Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 transform -rotate-12 top-20">
+                  <span className="text-4xl font-black text-red-500 uppercase tracking-widest border-4 border-red-500 px-4 py-1 rounded">SAMPLE</span>
+                </div>
+                
                 <div>
                   <h4 className="font-display font-bold text-xs md:text-sm text-slate-800">Cognitive Profile Report</h4>
-                  <p className="text-[7px] md:text-[9px] text-slate-400 font-mono">Candidate ID: CNTS26-7P9R2</p>
+                  <p className="text-[7px] md:text-[9px] text-slate-400 font-mono">Candidate ID: [Candidate ID]</p>
                 </div>
                 <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded text-[7px] md:text-[9px] font-bold uppercase tracking-wider">
                   Top 3% Cohort
@@ -798,9 +808,14 @@ export default function ResultsPage() {
 
             {/* High fidelity full-size mockup */}
             <div className="border-8 border-double border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 bg-[#FCFBF8] text-center my-4 relative overflow-hidden">
+              {/* Sample Watermark */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 transform -rotate-12 z-0">
+                <span className="text-6xl md:text-8xl font-black text-red-500 uppercase tracking-widest border-8 border-red-500 px-6 py-2 rounded-xl">SAMPLE</span>
+              </div>
+
               <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
               
-              <div className="space-y-2">
+              <div className="space-y-2 relative z-10">
                 <span className="text-[9px] md:text-[11px] font-bold text-amber-700 tracking-widest block uppercase font-mono">
                   Founding Edition Participant Certificate
                 </span>
@@ -811,13 +826,13 @@ export default function ResultsPage() {
                 <div className="w-24 h-[1px] bg-slate-300 mx-auto" />
               </div>
 
-              <div className="space-y-3">
+              <div className="space-y-3 relative z-10">
                 <p className="text-xs md:text-sm italic text-slate-505 font-medium">This is to certify that</p>
                 <h4 className="font-display font-bold text-lg md:text-2xl text-slate-800 leading-none">
-                  {candidateResult ? candidateResult.candidate.student_name : "Priya Sharma"}
+                  [Your Child&apos;s Name]
                 </h4>
                 <p className="text-xs text-slate-650 max-w-md mx-auto leading-relaxed">
-                  of Class {candidateResult ? candidateResult.candidate.student_class : "7"} has successfully qualified as a Founding Cohort Member in the Founding Edition of CNTS 2026.
+                  of Class [Class] has successfully qualified as a Founding Cohort Member in the Founding Edition of CNTS 2026.
                 </p>
               </div>
 
@@ -826,15 +841,15 @@ export default function ResultsPage() {
                 Verified Credential | Digitally Signed | Publicly Verifiable
               </div>
 
-              <div className="flex justify-between items-end text-xs font-semibold text-slate-505 pt-6 border-t border-slate-100">
+              <div className="flex justify-between items-end text-xs font-semibold text-slate-505 pt-6 border-t border-slate-100 relative z-10">
                 <div className="space-y-1 text-left font-sans">
-                  <p>All India Rank: <strong className="text-slate-800 font-bold">#{candidateResult ? candidateResult.result.national_rank : "47"}</strong></p>
-                  <p>State Rank: <strong className="text-slate-800 font-bold">#{candidateResult ? candidateResult.result.state_rank : "8"}</strong></p>
-                  <p>National Percentile: <strong className="text-emerald-700 font-bold">{Number(candidateResult ? candidateResult.result.percentile : "99.12").toFixed(2)}%</strong></p>
+                  <p>All India Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
+                  <p>State Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
+                  <p>National Percentile: <strong className="text-emerald-700 font-bold">[Percentile]%</strong></p>
                 </div>
                 
                 {/* Stylized QR Code for verification */}
-                <div className="flex items-center gap-2 border border-slate-200 p-1.5 rounded-lg bg-white shadow-sm">
+                <div className="flex items-center gap-2 border border-slate-200 p-1.5 rounded-lg bg-white shadow-sm opacity-50">
                   <div className="w-8 h-8 bg-slate-900 flex flex-wrap p-0.5 gap-0.5 rounded shrink-0">
                     <div className="w-3.5 h-3.5 bg-white border border-slate-900 rounded-sm" />
                     <div className="w-3.5 h-3.5 bg-slate-900" />
@@ -843,12 +858,12 @@ export default function ResultsPage() {
                   </div>
                   <div className="text-[7px] text-slate-400 font-mono leading-none text-left">
                     VERIFIED CERTIFICATE<br/>
-                    No: CERT-26-{(candidateResult ? (candidateResult.candidate.cnts_id || candidateResult.candidate.registration_id) : "CNTS26-7P9R2").split("-").pop()}
+                    No: [SAMPLE-CERT-ID]
                   </div>
                 </div>
                 
                 <div className="space-y-1 text-right font-mono">
-                  <p className="text-[8px] md:text-[10px] text-slate-400">ID: {candidateResult ? (candidateResult.candidate.cnts_id || candidateResult.candidate.registration_id) : "CNTS26-7P9R2"}</p>
+                  <p className="text-[8px] md:text-[10px] text-slate-400">ID: [SAMPLE-ID]</p>
                   <p className="font-bold text-slate-800 font-sans">Registrar of Evaluation</p>
                   <p className="text-[8px] text-slate-400 font-mono">Date: 28 July 2026</p>
                 </div>
@@ -885,11 +900,16 @@ export default function ResultsPage() {
             </button>
 
             {/* High fidelity full-size mockup */}
-            <div className="border border-slate-200 rounded-2xl p-6 space-y-6 bg-white my-4">
-              <div className="flex justify-between items-start border-b border-slate-100 pb-4">
+            <div className="border border-slate-200 rounded-2xl p-6 space-y-6 bg-white my-4 relative overflow-hidden">
+              {/* Sample Watermark */}
+              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 transform -rotate-12 z-0">
+                <span className="text-6xl md:text-8xl font-black text-red-500 uppercase tracking-widest border-8 border-red-500 px-6 py-2 rounded-xl">SAMPLE</span>
+              </div>
+
+              <div className="flex justify-between items-start border-b border-slate-100 pb-4 relative z-10">
                 <div>
                   <h4 className="font-display font-bold text-sm md:text-base text-slate-800">Cognitive Profile Report</h4>
-                  <p className="text-xs text-slate-400 font-mono">Candidate ID: CNTS26-7P9R2</p>
+                  <p className="text-xs text-slate-400 font-mono">Candidate ID: [Candidate ID]</p>
                 </div>
                 <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-full text-xs font-bold uppercase tracking-wider">
                   Top 3% Cohort
@@ -897,11 +917,11 @@ export default function ResultsPage() {
               </div>
 
               {/* Grid profile detail */}
-              <div className="grid grid-cols-2 gap-4 text-xs">
-                <div>Candidate: <strong className="text-slate-800 font-bold">Priya Sharma</strong></div>
-                <div>Class: <strong className="text-slate-800 font-bold">Grade 7</strong></div>
-                <div>National Percentile: <strong className="text-slate-800 font-bold">99.12%</strong></div>
-                <div>All India Rank: <strong className="text-slate-800 font-bold">#47</strong></div>
+              <div className="grid grid-cols-2 gap-4 text-xs relative z-10">
+                <div>Candidate: <strong className="text-slate-800 font-bold">[Your Child&apos;s Name]</strong></div>
+                <div>Class: <strong className="text-slate-800 font-bold">[Class]</strong></div>
+                <div>National Percentile: <strong className="text-slate-800 font-bold">[Percentile]%</strong></div>
+                <div>All India Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></div>
               </div>
 
               <div className="space-y-3 py-2">
