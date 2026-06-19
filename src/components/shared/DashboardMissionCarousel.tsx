@@ -31,32 +31,39 @@ export function DashboardMissionCarousel({
 
   const cards = [
     {
-      title: "Earn Courage Points",
-      icon: <Sparkles size={24} className="text-amber-500" />,
-      text: "For every student you empower, earn Courage Points. Your 1st referral gives you 500 points, and the rewards keep multiplying!",
+      title: "Your Impact Matters",
+      icon: <Users size={24} className="text-amber-500" />,
+      text: "We rely on parents like you to reach bright minds. Every recommendation you make is measured in Courage Points, starting with 500 points for your first contribution.",
     },
     {
-      title: "Unlock the Courage Kit",
+      title: "A Token of Gratitude",
       icon: <Award size={24} className="text-blue-500" />,
-      text: "Accumulate points to unlock the exclusive Courage Kit—filled with premium goodies, academic resources, and official CNTS merchandise.",
+      text: "As a gesture of our deep appreciation, parents with high impact scores will receive the Courage Kit—a premium collection of academic resources and merchandise.",
     },
     {
-      title: "National Recognition",
+      title: "National Felicitation",
       icon: <Trophy size={24} className="text-purple-500" />,
-      text: "Top point earners across India will be formally felicitated with a prestigious Recognition Certificate and celebrated as National Ambassadors.",
+      text: "We want to honor those who stand by us. The Top 10 contributing parents across India will be formally felicitated as National Ambassadors of our mission.",
     }
   ];
 
   useEffect(() => {
     const timer = setInterval(() => {
       setActiveIndex((current) => (current + 1) % cards.length);
-    }, 4500);
+    }, 5000);
     return () => clearInterval(timer);
   }, [cards.length]);
 
   return (
     <div className="bg-white rounded-3xl border border-blue-200 p-6 md:p-8 shadow-sm flex flex-col md:flex-row items-center justify-between gap-6 md:gap-10 relative overflow-hidden">
+      {/* Background Mission Graphics */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-blue-100/50 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
+      <div className="absolute -bottom-10 -left-10 text-blue-50/50 pointer-events-none transform -rotate-12">
+        <BookOpen size={180} />
+      </div>
+      <div className="absolute top-10 right-1/4 text-amber-50/50 pointer-events-none">
+        <Sparkles size={120} />
+      </div>
       
       <div className="flex-1 relative z-10 w-full flex flex-col justify-between">
         <div className="relative min-h-[160px] sm:min-h-[120px] md:min-h-[140px] mb-4">
@@ -75,7 +82,7 @@ export function DashboardMissionCarousel({
                 </div>
                 {card.title}
               </h3>
-              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-lg font-medium pr-4">
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-lg font-medium pr-4 relative z-10">
                 {card.text}
               </p>
             </div>
@@ -83,7 +90,7 @@ export function DashboardMissionCarousel({
         </div>
         
         {/* Navigation Dots */}
-        <div className="flex items-center gap-1.5 mt-2 mb-4">
+        <div className="flex items-center gap-1.5 mt-2 mb-4 relative z-10">
           {cards.map((_, idx) => (
             <button
               key={idx}
@@ -95,7 +102,7 @@ export function DashboardMissionCarousel({
           ))}
         </div>
         
-        <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-auto">
+        <div className="bg-white/80 backdrop-blur-sm border border-slate-200 p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mt-auto relative z-10 shadow-sm">
           <div>
             <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1">Your Referral Code</span>
             <strong className="text-lg font-mono text-slate-800 tracking-wider flex items-center gap-2">
@@ -112,7 +119,7 @@ export function DashboardMissionCarousel({
             </div>
             <div className="w-px h-8 bg-slate-200 hidden sm:block"></div>
             <div className="text-right flex-1 sm:flex-none">
-              <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500 block mb-1">Courage Points</span>
+              <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500 block mb-1">Impact Score</span>
               <strong className="text-2xl font-bold text-amber-600 flex items-center justify-end gap-1">
                 <Sparkles size={16} />
                 {couragePoints}
@@ -129,15 +136,15 @@ export function DashboardMissionCarousel({
           )}`}
           target="_blank"
           rel="noreferrer"
-          className="w-full md:w-auto px-5 py-3.5 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-[14px] flex flex-col items-center justify-center gap-0.5 transition-all shadow-md hover:shadow-lg shadow-[#25D366]/20 active:scale-95 border border-[#1fa64f]"
+          className="w-full md:w-auto px-5 py-3 bg-[#25D366] hover:bg-[#20bd5a] text-white rounded-xl flex flex-col items-center justify-center gap-1 transition-all shadow-md hover:shadow-lg shadow-[#25D366]/20 active:scale-95 border border-[#1fa64f]"
         >
-          <div className="flex items-center gap-2.5">
-            <svg className="w-6 h-6 fill-current drop-shadow-sm" viewBox="0 0 24 24">
+          <div className="flex items-center justify-center gap-2 w-full">
+            <svg className="w-5 h-5 shrink-0 fill-current drop-shadow-sm" viewBox="0 0 24 24">
               <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.888-.788-1.489-1.761-1.663-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51a12.8 12.8 0 0 0-.57-.01c-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/>
             </svg>
-            <span className="text-base font-bold tracking-wide">Send WhatsApp Message</span>
+            <span className="text-[15px] sm:text-base font-bold tracking-wide whitespace-nowrap">Share on WhatsApp</span>
           </div>
-          <span className="text-[10px] font-semibold text-white/80">FORWARD LINK TO FRIENDS</span>
+          <span className="text-[9px] sm:text-[10px] font-semibold text-white/80 uppercase">Forward to Friends</span>
         </a>
       </div>
     </div>
