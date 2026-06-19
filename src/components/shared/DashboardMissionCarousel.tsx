@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Sparkles, Users, Trophy, Check, Copy, Award, BookOpen } from "lucide-react";
 
 export function DashboardMissionCarousel({
@@ -15,26 +15,35 @@ export function DashboardMissionCarousel({
 }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
+  // Calculate escalating Courage Points
+  const couragePoints = useMemo(() => {
+    let points = 0;
+    for (let i = 1; i <= referralsCount; i++) {
+      if (i === 1) points += 500;
+      else if (i === 2) points += 700;
+      else if (i === 3) points += 1000;
+      else if (i === 4) points += 1500;
+      else if (i === 5) points += 2000;
+      else points += 2500;
+    }
+    return points;
+  }, [referralsCount]);
+
   const cards = [
     {
-      title: "Help Us Reach Every Student",
-      icon: <Users size={24} className="text-blue-500" />,
-      text: "As a Founding Parent, you are a vital pillar of the Courage Library. Help us extend this opportunity to more bright minds across India.",
-    },
-    {
-      title: "Spread the Mission",
+      title: "Earn Courage Points",
       icon: <Sparkles size={24} className="text-amber-500" />,
-      text: "We are on a mission to discover and nurture true talent. Your recommendation helps us find students who need this platform the most.",
+      text: "For every student you empower, earn Courage Points. Your 1st referral gives you 500 points, and the rewards keep multiplying!",
     },
     {
-      title: "Be Our Ambassador",
-      icon: <Award size={24} className="text-emerald-500" />,
-      text: "When you share your child's Identity Card, you actively contribute to our vision of accessible, high-quality assessments for all.",
+      title: "Unlock the Courage Kit",
+      icon: <Award size={24} className="text-blue-500" />,
+      text: "Accumulate points to unlock the exclusive Courage Kit—filled with premium goodies, academic resources, and official CNTS merchandise.",
     },
     {
       title: "National Recognition",
       icon: <Trophy size={24} className="text-purple-500" />,
-      text: "We will formally felicitate the Top 10 parents across India who make the greatest contribution to expanding the Courage Library mission.",
+      text: "Top point earners across India will be formally felicitated with a prestigious Recognition Certificate and celebrated as National Ambassadors.",
     }
   ];
 
@@ -96,9 +105,19 @@ export function DashboardMissionCarousel({
               </button>
             </strong>
           </div>
-          <div className="text-left sm:text-right border-t sm:border-t-0 sm:border-l border-slate-200 pt-3 sm:pt-0 sm:pl-6 w-full sm:w-auto">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1">Students Referred</span>
-            <strong className="text-2xl font-bold text-blue-700">{referralsCount}</strong>
+          <div className="flex items-center gap-4 border-t sm:border-t-0 sm:border-l border-slate-200 pt-3 sm:pt-0 sm:pl-6 w-full sm:w-auto">
+            <div className="text-left">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400 block mb-1">Referrals</span>
+              <strong className="text-2xl font-bold text-slate-800">{referralsCount}</strong>
+            </div>
+            <div className="w-px h-8 bg-slate-200 hidden sm:block"></div>
+            <div className="text-right flex-1 sm:flex-none">
+              <span className="text-[10px] uppercase font-bold tracking-wider text-amber-500 block mb-1">Courage Points</span>
+              <strong className="text-2xl font-bold text-amber-600 flex items-center justify-end gap-1">
+                <Sparkles size={16} />
+                {couragePoints}
+              </strong>
+            </div>
           </div>
         </div>
       </div>
