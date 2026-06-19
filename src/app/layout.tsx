@@ -3,7 +3,7 @@ import Script from "next/script";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cnts.in"),
+  metadataBase: new URL("https://thecouragelibrary.com"),
   title: "CNTS 2026 Founding Edition – Courage National Talent Search",
   description: "India&apos;s premier talent discovery platform for students in Classes 5–8. Uncover your child&apos;s unique strengths and unlock a future-ready profile.",
   icons: {
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CNTS 2026 Founding Edition – Courage National Talent Search",
     description: "India&apos;s premier talent discovery platform for students in Classes 5–8. Uncover your child&apos;s unique strengths and unlock a future-ready profile.",
-    url: "https://cnts.in",
+    url: "https://thecouragelibrary.com",
     siteName: "CNTS",
     images: [
       {

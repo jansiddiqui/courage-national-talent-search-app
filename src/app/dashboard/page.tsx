@@ -53,6 +53,7 @@ interface Candidate {
   payment_id: string | null;
   created_at: string;
   parent_name?: string;
+  total_referrals?: number;
 }
 
 export default function DashboardPage() {
@@ -150,19 +151,10 @@ export default function DashboardPage() {
             }
           ];
           setCandidates(mockCandidates);
-
-          // Calculate mock referrals (e.g. 3 referrals for demo display)
-          setReferralsCount(3);
         } else {
           setIsDemoMode(false);
           setCandidates(filteredCandidates);
 
-          // Calculate actual referrals based on the candidate's registration code
-          const regIds = filteredCandidates.map((c: any) => c.registration_id);
-          const totalReferrals = dbData.filter((reg: any) => 
-            regIds.includes(reg.referral_code)
-          ).length;
-          setReferralsCount(totalReferrals);
         }
       } catch (err) {
         console.error("Dashboard data load error:", err);
