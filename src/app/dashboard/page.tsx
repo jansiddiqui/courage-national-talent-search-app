@@ -7,7 +7,6 @@ import Link from "next/link";
 import { CandidateIdentityCard } from "@/components/shared/CandidateIdentityCard";
 import { DashboardMissionCarousel } from "@/components/shared/DashboardMissionCarousel";
 import Image from "next/image";
-import html2canvas from "html2canvas";
 import { 
   Trophy, 
   Download, 
@@ -195,12 +194,11 @@ export default function DashboardPage() {
     if (!element) return;
     
     try {
-      const canvas = await html2canvas(element, { 
-        scale: 2, 
-        useCORS: true, 
-        backgroundColor: null 
+      const { toPng } = await import('html-to-image');
+      const dataUrl = await toPng(element, { 
+        pixelRatio: 2,
+        backgroundColor: '#ffffff'
       });
-      const dataUrl = canvas.toDataURL("image/png");
       const link = document.createElement("a");
       link.download = `CNTS_Founding_Badge_${candidateName.replace(/\s+/g, '_')}.png`;
       link.href = dataUrl;

@@ -17,19 +17,19 @@ export function DashboardMissionCarousel({
 
   const cards = [
     {
-      title: "1 Referral: Founding Referrer",
-      icon: <Award size={24} className="text-amber-500" />,
-      text: "Invite just 1 student to unlock the exclusive Founding Referrer Badge on your child's academic profile.",
+      title: "Help Us Reach Every Student",
+      icon: <Users size={24} className="text-blue-500" />,
+      text: "As a Founding Parent, you are a vital pillar of the Courage Library. Help us extend this opportunity to more bright minds across India.",
     },
     {
-      title: "3 Referrals: Advanced Papers",
-      icon: <BookOpen size={24} className="text-blue-500" />,
-      text: "Help 3 students register to instantly unlock the Advanced Practice Paper Pack, giving your child a powerful competitive edge.",
+      title: "Spread the Mission",
+      icon: <Sparkles size={24} className="text-amber-500" />,
+      text: "We are on a mission to discover and nurture true talent. Your recommendation helps us find students who need this platform the most.",
     },
     {
-      title: "10 Referrals: Ambassador Status",
-      icon: <Trophy size={24} className="text-emerald-500" />,
-      text: "Achieve ultimate prestige. Refer 10 students to earn the highly coveted CNTS Founding Ambassador Certificate.",
+      title: "Be Our Ambassador",
+      icon: <Award size={24} className="text-emerald-500" />,
+      text: "When you share your child's Identity Card, you actively contribute to our vision of accessible, high-quality assessments for all.",
     }
   ];
 
