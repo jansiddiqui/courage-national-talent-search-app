@@ -261,7 +261,7 @@ export default function PrivacyPolicyPage() {
                 <span className="text-blue-600">6.</span> WhatsApp and Email Communications
               </h2>
               <p>
-                By providing a primary contact number and email address, parents authorize CNTS and Courage Education Pvt. Ltd. to send transaction notifications and academic alerts:
+                By providing a primary contact number and email address, parents authorize CNTS and Courage National Talent Search to send transaction notifications and academic alerts:
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>

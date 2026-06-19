@@ -862,7 +862,7 @@ function RegisterForm() {
 
         {/* Footer info */}
         <div className="relative pt-8 md:pt-0 text-[10px] text-slate-500 space-y-1">
-          <p>© 2026 Courage Education Pvt. Ltd.</p>
+          <p>© 2026 Courage National Talent Search</p>
           <p>Secure 256-bit encrypted SSL checkout.</p>
         </div>
       </section>

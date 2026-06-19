@@ -266,7 +266,7 @@ export default function TermsOfUsePage() {
                 <span className="text-blue-600">7.</span> Liability Limitations
               </h2>
               <p>
-                Under no circumstances shall Courage Education Pvt. Ltd., its directors, employees, or school partners be liable for any indirect, consequential, or incidental damages resulting from:
+                Under no circumstances shall Courage National Talent Search, its directors, employees, or school partners be liable for any indirect, consequential, or incidental damages resulting from:
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>The student's performance or scores in the talent assessment.</li>
