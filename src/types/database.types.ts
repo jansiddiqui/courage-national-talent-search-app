@@ -129,6 +129,10 @@ export interface Database {
           subject: string | null;
           message: string;
           created_at: string;
+          status: 'pending' | 'in_progress' | 'resolved' | 'spam';
+          admin_notes: string | null;
+          priority: 'low' | 'normal' | 'high' | 'urgent';
+          source: string;
         };
         Insert: {
           id?: string;
@@ -138,6 +142,10 @@ export interface Database {
           subject?: string | null;
           message: string;
           created_at?: string;
+          status?: 'pending' | 'in_progress' | 'resolved' | 'spam';
+          admin_notes?: string | null;
+          priority?: 'low' | 'normal' | 'high' | 'urgent';
+          source?: string;
         };
         Update: {
           id?: string;
@@ -147,6 +155,10 @@ export interface Database {
           subject?: string | null;
           message?: string;
           created_at?: string;
+          status?: 'pending' | 'in_progress' | 'resolved' | 'spam';
+          admin_notes?: string | null;
+          priority?: 'low' | 'normal' | 'high' | 'urgent';
+          source?: string;
         };
       };
       system_settings: {

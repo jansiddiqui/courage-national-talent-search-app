@@ -32,7 +32,7 @@ import {
   XCircle,
   AlertCircle
 } from "lucide-react";
-import { fetchRegistrations, fetchSystemSettings, updateSystemSetting } from "@/services/supabaseService";
+import { fetchRegistrations, fetchSystemSettings, updateSystemSetting, fetchContactMessages, updateContactMessage } from "@/services/supabaseService";
 import { hasSupabaseConfig } from "@/lib/supabaseClient";
 
 interface MetricCardProps {
@@ -97,7 +97,15 @@ export default function AdminOverviewPage() {
   const [testResult, setTestResult] = useState<any>(null);
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support">("overview");
+
+  // Support Inbox states
+  const [contactMessages, setContactMessages] = useState<any[]>([]);
+  const [loadingMessages, setLoadingMessages] = useState(false);
+  const [supportFilter, setSupportFilter] = useState<"pending" | "in_progress" | "resolved" | "spam">("pending");
+  const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
+  const [adminNotesInput, setAdminNotesInput] = useState("");
+  const [updatingSupport, setUpdatingSupport] = useState(false);
 
   // Coupon Manager states
   const [coupons, setCoupons] = useState<any[]>([]);
@@ -140,9 +148,7 @@ export default function AdminOverviewPage() {
       const res = await fetch("/api/coupons");
       if (res.ok) {
         const data = await res.json();
-        if (data.success) {
-          setCoupons(data.coupons || []);
-        }
+        setCoupons(data.coupons || []);
       }
     } catch (err) {
       console.error("Failed to fetch coupons:", err);
@@ -150,6 +156,39 @@ export default function AdminOverviewPage() {
       setLoadingCoupons(false);
     }
   };
+
+  const fetchSupportMessages = async () => {
+    setLoadingMessages(true);
+    try {
+      const msgs = await fetchContactMessages();
+      setContactMessages(msgs || []);
+    } catch (err) {
+      console.error("Failed to fetch support messages:", err);
+    } finally {
+      setLoadingMessages(false);
+    }
+  };
+
+  const handleUpdateSupportMessage = async (id: string, updates: any) => {
+    setUpdatingSupport(true);
+    try {
+      const success = await updateContactMessage(id, updates);
+      if (success) {
+        // Optimistically update local state
+        setContactMessages(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
+        if (selectedMessage && selectedMessage.id === id) {
+          setSelectedMessage({ ...selectedMessage, ...updates });
+        }
+      } else {
+        alert("Failed to update message. Please check database connection.");
+      }
+    } catch (err) {
+      console.error("Failed to update message:", err);
+    } finally {
+      setUpdatingSupport(false);
+    }
+  };
+
 
   const handleCreateCoupon = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -364,7 +403,7 @@ export default function AdminOverviewPage() {
       }
 
       if (showPulse) {
-        await Promise.all([fetchWaLogs(), fetchCoupons()]);
+        await Promise.all([fetchWaLogs(), fetchCoupons(), fetchSupportMessages()]);
       }
     } catch (e) {
       console.error("Failed to load registrations in dashboard", e);
@@ -381,6 +420,7 @@ export default function AdminOverviewPage() {
       loadData();
       fetchWaLogs();
       fetchCoupons();
+      fetchSupportMessages();
     }, 0);
     return () => clearTimeout(timer);
   }, []);
@@ -574,7 +614,8 @@ export default function AdminOverviewPage() {
               { id: "overview", label: "Overview & Analytics", icon: Trophy },
               { id: "settings", label: "Global Settings", icon: Settings },
               { id: "whatsapp", label: "WhatsApp Control Center", icon: MessageSquare },
-              { id: "coupons", label: "Promo & Coupon Manager", icon: Award }
+              { id: "coupons", label: "Promo & Coupon Manager", icon: Award },
+              { id: "support", label: "Support Inbox", icon: MessageSquare }
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -1327,6 +1368,223 @@ export default function AdminOverviewPage() {
                   </tbody>
                 </table>
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* SUPPORT INBOX TAB */}
+        {activeTab === "support" && (
+          <div className="space-y-8 animate-slide-up">
+            <div className="flex flex-col md:flex-row gap-6">
+              
+              {/* LEFT: INBOX FILTERS & LIST */}
+              <div className="w-full md:w-1/3 flex flex-col gap-4">
+                <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                  <h2 className="font-display font-bold text-xl text-slate-800 mb-6">Inbox Folders</h2>
+                  <div className="space-y-2">
+                    {[
+                      { id: "pending", label: "🔴 Pending", count: contactMessages.filter(m => m.status === 'pending' || !m.status).length },
+                      { id: "in_progress", label: "🟡 In Progress", count: contactMessages.filter(m => m.status === 'in_progress').length },
+                      { id: "resolved", label: "🟢 Resolved", count: contactMessages.filter(m => m.status === 'resolved').length },
+                      { id: "spam", label: "⚫ Spam", count: contactMessages.filter(m => m.status === 'spam').length }
+                    ].map(folder => (
+                      <button
+                        key={folder.id}
+                        onClick={() => setSupportFilter(folder.id as any)}
+                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                          supportFilter === folder.id 
+                            ? "bg-blue-50 text-blue-800 border border-blue-100" 
+                            : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-transparent"
+                        }`}
+                      >
+                        <span>{folder.label}</span>
+                        <span className="bg-white px-2 py-0.5 rounded-lg text-xs border border-slate-200">
+                          {folder.count}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* MESSAGE LIST */}
+                <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm flex-1 flex flex-col h-[500px]">
+                  <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+                    <span className="font-bold text-slate-700 text-sm">Messages</span>
+                    <button
+                      onClick={fetchSupportMessages}
+                      disabled={loadingMessages}
+                      className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
+                    >
+                      <RefreshCw size={14} className={loadingMessages ? "animate-spin" : ""} />
+                    </button>
+                  </div>
+                  <div className="overflow-y-auto flex-1">
+                    {loadingMessages ? (
+                      <div className="p-6 text-center text-slate-400 text-sm animate-pulse">Loading messages...</div>
+                    ) : contactMessages.filter(m => (m.status || 'pending') === supportFilter).length === 0 ? (
+                      <div className="p-8 text-center text-slate-400 text-sm">No messages in this folder.</div>
+                    ) : (
+                      contactMessages
+                        .filter(m => (m.status || 'pending') === supportFilter)
+                        .map(msg => (
+                          <div 
+                            key={msg.id}
+                            onClick={() => {
+                              setSelectedMessage(msg);
+                              setAdminNotesInput(msg.admin_notes || "");
+                            }}
+                            className={`p-4 border-b border-slate-50 cursor-pointer transition-colors ${
+                              selectedMessage?.id === msg.id ? "bg-blue-50 border-l-4 border-l-blue-600" : "hover:bg-slate-50 border-l-4 border-l-transparent"
+                            }`}
+                          >
+                            <div className="flex justify-between items-start mb-1">
+                              <span className="font-bold text-slate-800 text-sm truncate">{msg.name}</span>
+                              <span className="text-[10px] text-slate-400 shrink-0">
+                                {new Date(msg.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="text-xs font-semibold text-slate-600 truncate mb-1">
+                              {msg.subject || "No Subject"}
+                            </div>
+                            <p className="text-xs text-slate-500 line-clamp-2">
+                              {msg.message}
+                            </p>
+                          </div>
+                        ))
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              {/* RIGHT: SELECTED MESSAGE DETAILS */}
+              <div className="w-full md:w-2/3">
+                {selectedMessage ? (
+                  <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col h-full space-y-6">
+                    
+                    {/* Header */}
+                    <div className="flex items-start justify-between border-b border-slate-100 pb-6">
+                      <div>
+                        <h2 className="font-display font-bold text-2xl text-slate-800 mb-2">
+                          {selectedMessage.subject || "No Subject"}
+                        </h2>
+                        <div className="flex flex-wrap gap-4 text-sm">
+                          <div className="flex items-center gap-1.5 text-slate-600">
+                            <span className="font-semibold text-slate-800">{selectedMessage.name}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5 text-slate-500">
+                            <a href={`mailto:${selectedMessage.email}`} className="hover:text-blue-600 hover:underline">
+                              {selectedMessage.email}
+                            </a>
+                          </div>
+                          {selectedMessage.phone && (
+                            <div className="flex items-center gap-1.5 text-slate-500">
+                              {selectedMessage.phone}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span className="text-xs text-slate-400 font-medium">
+                          {new Date(selectedMessage.created_at).toLocaleString()}
+                        </span>
+                        <div className="flex gap-2">
+                          <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase">
+                            {selectedMessage.source || 'Website'}
+                          </span>
+                          <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
+                            selectedMessage.priority === 'urgent' ? 'bg-red-100 text-red-700' :
+                            selectedMessage.priority === 'high' ? 'bg-orange-100 text-orange-700' :
+                            'bg-slate-100 text-slate-600'
+                          }`}>
+                            {selectedMessage.priority || 'Normal'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Message Body */}
+                    <div className="flex-1 min-h-[150px]">
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Message</h3>
+                      <div className="p-4 bg-slate-50 rounded-2xl text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
+                        {selectedMessage.message}
+                      </div>
+                    </div>
+
+                    {/* Admin Notes */}
+                    <div>
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Internal Notes</h3>
+                      <textarea
+                        value={adminNotesInput}
+                        onChange={(e) => setAdminNotesInput(e.target.value)}
+                        placeholder="Add internal notes about handling this inquiry..."
+                        className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all min-h-[100px]"
+                      />
+                      <div className="mt-2 flex justify-end">
+                        <button
+                          onClick={() => handleUpdateSupportMessage(selectedMessage.id, { admin_notes: adminNotesInput })}
+                          disabled={updatingSupport}
+                          className="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700 cursor-pointer"
+                        >
+                          Save Notes
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Actions Panel */}
+                    <div className="border-t border-slate-100 pt-6">
+                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Actions & Reply</h3>
+                      <div className="flex flex-wrap gap-3">
+                        
+                        <a 
+                          href={`mailto:${selectedMessage.email}?subject=Re: ${encodeURIComponent(selectedMessage.subject || 'Your Inquiry to CNTS')}`}
+                          className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-xl text-sm font-semibold transition-all"
+                        >
+                          <Send size={16} />
+                          Reply via Email
+                        </a>
+
+                        {selectedMessage.phone && (
+                          <a 
+                            href={`https://wa.me/${selectedMessage.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${selectedMessage.name},\n\nThank you for contacting CNTS.\n\nRegarding your query:\n\n[Type your response here]\n\nRegards,\nCNTS Support Team\n`)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-semibold transition-all"
+                          >
+                            <MessageSquare size={16} />
+                            Reply via WhatsApp
+                          </a>
+                        )}
+
+                        <div className="flex-1"></div>
+
+                        <select
+                          value={selectedMessage.status || 'pending'}
+                          onChange={(e) => handleUpdateSupportMessage(selectedMessage.id, { status: e.target.value })}
+                          className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none cursor-pointer hover:bg-slate-50"
+                          disabled={updatingSupport}
+                        >
+                          <option value="pending">Mark as Pending</option>
+                          <option value="in_progress">Mark as In Progress</option>
+                          <option value="resolved">Mark as Resolved</option>
+                          <option value="spam">Mark as Spam</option>
+                        </select>
+                      </div>
+                    </div>
+
+                  </div>
+                ) : (
+                  <div className="bg-white border border-slate-100 rounded-3xl p-12 shadow-sm flex flex-col items-center justify-center text-center h-full min-h-[500px]">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
+                      <MessageSquare size={32} />
+                    </div>
+                    <h3 className="text-lg font-bold text-slate-700 mb-2">No Message Selected</h3>
+                    <p className="text-sm text-slate-500 max-w-sm">
+                      Select a message from the inbox on the left to view details, add internal notes, and reply to the parent.
+                    </p>
+                  </div>
+                )}
+              </div>
+
             </div>
           </div>
         )}

@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { 
   Star, ShieldCheck, ArrowRight, Brain, 
-  FileDown, Compass, GraduationCap
+  Compass, GraduationCap
 } from "lucide-react";
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
@@ -83,30 +83,7 @@ const domainScores: DomainScore[] = [
   },
 ];
 
-export default function SampleReportPage() {
-  const [downloading, setDownloading] = useState(false);
-  const [downloadSuccess, setDownloadSuccess] = useState(false);
-
-  const handleDownload = () => {
-    setDownloading(true);
-    setDownloadSuccess(false);
-    
-    // Simulate generation & download of a sample PDF file
-    setTimeout(() => {
-      setDownloading(false);
-      setDownloadSuccess(true);
-      
-      // Trigger native download helper using window
-      const link = document.createElement("a");
-      link.href = "/sample-papers/class7.pdf"; // Reuses a class7 PDF placeholder as mock report
-      link.download = "CNTS_Sample_Talent_Profile_Priya_Sharma.pdf";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-
-      setTimeout(() => setDownloadSuccess(false), 3000);
-    }, 1500);
-  };
+export default function SampleReport() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
@@ -131,23 +108,6 @@ export default function SampleReportPage() {
           <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
             This is a mock presentation of the multi-dimensional report parents receive. No single test mark can show your child&apos;s genius—we map it in detail.
           </p>
-
-          <div className="pt-2">
-            <button
-              onClick={handleDownload}
-              disabled={downloading}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-blue-900 font-bold rounded-2xl hover:bg-blue-50 transition-all shadow-xl cursor-pointer disabled:opacity-50"
-            >
-              <FileDown size={16} />
-              {downloading ? "Generating PDF..." : "Download Sample PDF Report"}
-            </button>
-            
-            {downloadSuccess && (
-              <p className="text-emerald-400 text-xs mt-2 animate-pulse">
-                ✓ Report downloaded successfully!
-              </p>
-            )}
-          </div>
         </div>
       </section>
 

@@ -33,17 +33,17 @@ export function DashboardMissionCarousel({
     {
       title: "Help Us Reach More Bright Minds",
       icon: <HeartHandshake size={24} className="text-rose-500" />,
-      text: "We are on a mission to discover talent all over India. We need your voluntary support to spread the word. This is not an earning task, but a collaborative effort to help students.",
+      text: "We are on a mission to discover talent all over India. We need your voluntary support to spread the word. Share your code with other parents.",
     },
     {
-      title: "Rewarding Your Support",
+      title: "Exclusive Milestone Rewards",
       icon: <Award size={24} className="text-blue-500" />,
-      text: "For your valuable help, you get Courage Points: 500 pts for the 1st student, 700 pts for the 2nd, and so on. High scorers will receive our exclusive Courage Kit and a Recognition Certificate.",
+      text: "Unlock specific rewards: 3 Referrals = Premium Mock Test Pack. 5 Referrals = Advanced Cognitive Assessment Report. 10 Referrals = Full ₹99 Refund. 20 Referrals = Founding Ambassador Certificate.",
     },
     {
-      title: "Top 10 National Felicitation",
+      title: "Track Your Courage Points",
       icon: <Trophy size={24} className="text-amber-500" />,
-      text: "To honor our strongest supporters, the Top 10 parents with the best scores will be formally felicitated on a national level as key ambassadors of our educational mission.",
+      text: "You earn escalating Courage Points for every successful referral. The higher your points, the faster you unlock your premium milestones and National Felicitation.",
     }
   ];
 

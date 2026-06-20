@@ -1,101 +1,105 @@
-import { Brain, BarChart3, FileText, Globe2, Layers, Lightbulb } from "lucide-react";
-
-const reasons = [
-  {
-    icon: Brain,
-    title: "Beyond Marks — True Talent Discovery",
-    desc: "CNTS identifies cognitive strengths, learning styles, and intellectual aptitudes that a school report card never shows. We see the full child.",
-    accent: "bg-blue-50 text-blue-700",
-    border: "hover:border-blue-200",
-  },
-  {
-    icon: BarChart3,
-    title: "Benchmarked Nationally",
-    desc: "Your child is compared against a national cohort — giving a clear, honest national percentile and subject-level diagnostic breakdown.",
-    accent: "bg-amber-50 text-amber-700",
-    border: "hover:border-amber-200",
-  },
-  {
-    icon: FileText,
-    title: "A Lifelong Talent Portfolio",
-    desc: "Every CNTS result builds a permanent, shareable academic profile useful for scholarships, school admissions, and career counseling.",
-    accent: "bg-emerald-50 text-emerald-700",
-    border: "hover:border-emerald-200",
-  },
-  {
-    icon: Globe2,
-    title: "Available in Hindi & English",
-    desc: "Designed for India's diversity — full bilingual support so language is never a barrier to a child's potential.",
-    accent: "bg-purple-50 text-purple-700",
-    border: "hover:border-purple-200",
-  },
-  {
-    icon: Layers,
-    title: "Classes 5 to 8, One Platform",
-    desc: "A cohesive, age-appropriate assessment journey that grows with your child year over year.",
-    accent: "bg-rose-50 text-rose-700",
-    border: "hover:border-rose-200",
-  },
-  {
-    icon: Lightbulb,
-    title: "Actionable Guidance, Not Just Scores",
-    desc: "Post-result counseling reports give parents specific next steps — study strategies, enrichment programs, and strength areas to nurture.",
-    accent: "bg-cyan-50 text-cyan-700",
-    border: "hover:border-cyan-200",
-  },
-];
+import { CheckCircle2, XCircle } from "lucide-react";
 
 export default function WhyCNTS() {
   return (
     <section id="why-cnts" className="py-24 lg:py-32 mesh-bg">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-6xl mx-auto px-6">
+        
         {/* Section header */}
-        <div className="max-w-2xl mb-16">
+        <div className="max-w-3xl mx-auto text-center mb-16">
           <span className="inline-block text-xs font-bold text-blue-700 uppercase tracking-widest mb-4 bg-blue-50 px-3 py-1 rounded-full">
             Why CNTS
           </span>
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight mb-5">
-            Not a test.
+            Parents don&apos;t buy features.
             <br />
-            <span className="gradient-text">A revelation.</span>
+            <span className="gradient-text">They buy outcomes.</span>
           </h2>
-          <p className="text-lg text-slate-500 leading-relaxed">
-            Traditional exams measure memory. CNTS measures meaning — who your child is,
-            what they&apos;re wired for, and where they can genuinely excel.
-          </p>
-
-          <div className="mt-8 p-5 rounded-3xl bg-blue-50/50 border border-blue-100 flex items-start gap-4 shadow-sm max-w-xl">
-            <div className="w-10 h-10 rounded-2xl bg-blue-100/60 flex items-center justify-center shrink-0 text-blue-850">
-              <Brain size={18} />
-            </div>
-            <div>
-              <p className="text-sm font-bold text-blue-900 leading-tight">
-                CNTS is not a rote-learning examination.
-              </p>
-              <p className="text-xs text-slate-550 leading-relaxed mt-1">
-                It is designed to help parents understand <strong>how their child thinks and learns</strong>, not merely what they have memorized.
-              </p>
-            </div>
+          
+          <div className="mt-8 p-6 md:p-8 rounded-3xl bg-blue-800 text-white shadow-xl shadow-blue-900/20 text-left md:text-center relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-emerald-400 to-amber-400"></div>
+            <p className="text-xl md:text-2xl font-medium leading-relaxed">
+              "A child can score 95% in school and still struggle with reasoning, decision making, creativity, or problem solving. CNTS helps uncover those hidden strengths."
+            </p>
           </div>
         </div>
 
-        {/* Cards grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {reasons.map((r) => (
-            <div
-              key={r.title}
-              className={`group p-7 bg-white rounded-3xl border border-slate-100 ${r.border} card-glow transition-all duration-300`}
-            >
-              <div className={`w-12 h-12 rounded-2xl ${r.accent} flex items-center justify-center mb-5`}>
-                <r.icon size={20} />
-              </div>
-              <h3 className="font-display font-bold text-slate-900 text-lg mb-3 leading-snug">
-                {r.title}
-              </h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{r.desc}</p>
+        {/* Comparison Table */}
+        <div className="max-w-4xl mx-auto bg-white rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-200 overflow-hidden">
+          
+          <div className="grid grid-cols-2 bg-slate-50 border-b border-slate-200">
+            <div className="p-6 md:p-8 text-center border-r border-slate-200">
+              <h3 className="font-display font-bold text-slate-500 text-lg md:text-xl uppercase tracking-wider">Most School Exams</h3>
             </div>
-          ))}
+            <div className="p-6 md:p-8 text-center bg-blue-50/50">
+              <h3 className="font-display font-black text-blue-800 text-lg md:text-xl uppercase tracking-wider">CNTS</h3>
+            </div>
+          </div>
+
+          <div className="divide-y divide-slate-100">
+            {/* Row 1 */}
+            <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
+              <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
+                <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
+                <span className="text-slate-600 font-medium text-sm md:text-base">Measures what a child remembers</span>
+              </div>
+              <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
+                <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
+                <span className="text-blue-900 font-bold text-sm md:text-base">Measures how a child thinks</span>
+              </div>
+            </div>
+
+            {/* Row 2 */}
+            <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
+              <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
+                <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
+                <span className="text-slate-600 font-medium text-sm md:text-base">Focus on marks</span>
+              </div>
+              <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
+                <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
+                <span className="text-blue-900 font-bold text-sm md:text-base">Focus on potential</span>
+              </div>
+            </div>
+
+            {/* Row 3 */}
+            <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
+              <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
+                <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
+                <span className="text-slate-600 font-medium text-sm md:text-base">One final score</span>
+              </div>
+              <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
+                <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
+                <span className="text-blue-900 font-bold text-sm md:text-base">Multi-dimensional talent profile</span>
+              </div>
+            </div>
+
+            {/* Row 4 */}
+            <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
+              <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
+                <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
+                <span className="text-slate-600 font-medium text-sm md:text-base">Limited feedback</span>
+              </div>
+              <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
+                <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
+                <span className="text-blue-900 font-bold text-sm md:text-base">Personalized insights</span>
+              </div>
+            </div>
+
+            {/* Row 5 */}
+            <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
+              <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
+                <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
+                <span className="text-slate-600 font-medium text-sm md:text-base">Competition-focused</span>
+              </div>
+              <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
+                <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
+                <span className="text-blue-900 font-bold text-sm md:text-base">Growth-focused</span>
+              </div>
+            </div>
+
+          </div>
         </div>
+
       </div>
     </section>
   );

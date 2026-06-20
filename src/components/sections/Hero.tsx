@@ -20,14 +20,10 @@ const stats = [
   { value: "Founding Edition", label: "2026 Cohort" },
 ];
 
-const recentRegistrations = [
-  { name: "Aarav", city: "Delhi", class: "6" },
-  { name: "Priyanshi", city: "Lucknow", class: "7" },
-  { name: "Arjun", city: "Jaipur", class: "8" },
-  { name: "Zoya", city: "Hyderabad", class: "5" },
-  { name: "Ayaan", city: "Pune", class: "7" },
-  { name: "Karan", city: "Kanpur", class: "6" },
-  { name: "Diya", city: "Patna", class: "5" },
+const authenticMessages = [
+  "Founding Edition 2026",
+  "Early Participants Across India",
+  "Building India's Next Generation Talent Discovery Platform",
 ];
 
 const profiles = {
@@ -145,17 +141,17 @@ export default function Hero() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      setTickerIndex((prev) => (prev + 1) % recentRegistrations.length);
+      setTickerIndex((prev) => (prev + 1) % authenticMessages.length);
     }, 4000);
     return () => clearInterval(timer);
   }, []);
+
+  const currentMessage = authenticMessages[tickerIndex];
 
   useEffect(() => {
     // Keep stats static as requested by product guidelines (avoiding fake/dynamic scale indicators)
     setDynamicStats(stats);
   }, []);
-
-  const currentReg = recentRegistrations[tickerIndex];
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center overflow-hidden mesh-bg pt-20">
@@ -248,7 +244,7 @@ export default function Hero() {
                   key={tickerIndex} 
                   className="absolute left-0 w-full text-xs font-semibold text-slate-600 animate-slide-in-ticker truncate"
                 >
-                  {currentReg.name} ({currentReg.city}) · Class {currentReg.class} joined CNTS
+                  {currentMessage}
                 </span>
               </div>
             </div>
@@ -259,12 +255,12 @@ export default function Hero() {
                 unauthenticatedText="Register Candidate – Subsidized Founding Edition (₹99)"
                 className="group inline-flex items-center justify-center gap-2 px-7 py-4 bg-blue-800 text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all duration-200 shadow-xl shadow-blue-800/25 hover:shadow-blue-700/35 hover:-translate-y-0.5 w-full sm:w-auto text-center"
               />
-              <Link
-                href="/sample-report"
+              <a
+                href="#sample-profile"
                 className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-slate-700 font-semibold rounded-2xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 shadow-sm w-full sm:w-auto"
               >
-                View Sample Talent Report
-              </Link>
+                View Sample Talent Profile
+              </a>
             </div>
 
             {/* Social proof */}

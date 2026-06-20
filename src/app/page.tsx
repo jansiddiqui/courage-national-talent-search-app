@@ -4,6 +4,7 @@ import Trust from "@/components/sections/Trust";
 import FounderLetter from "@/components/sections/FounderLetter";
 import WhySubsidized from "@/components/sections/WhySubsidized";
 import WhyCNTS from "@/components/sections/WhyCNTS";
+import SampleQuestions from "@/components/sections/SampleQuestions";
 import WhatParentsDiscover from "@/components/sections/WhatParentsDiscover";
 import TalentProfile from "@/components/sections/TalentProfile";
 import ExamOverview from "@/components/sections/ExamOverview";
@@ -27,6 +28,7 @@ export default function Home() {
       <FounderLetter />
       <WhySubsidized />
       <WhyCNTS />
+      <SampleQuestions />
       <WhatParentsDiscover />
       <TalentProfile />
       <ExamOverview />

@@ -421,6 +421,45 @@ export async function saveRegistrationNote(registrationId: string, notes: string
 }
 
 /**
+ * Fetches all contact messages (Admin)
+ */
+export async function fetchContactMessages(): Promise<any[]> {
+  if (!hasSupabaseConfig) return [];
+  const { data, error } = await db
+    .from("contact_messages")
+    .select("*")
+    .order("created_at", { ascending: false });
+
+  if (error) {
+    console.error("Error fetching contact messages:", error.message);
+    return [];
+  }
+  return data || [];
+}
+
+/**
+ * Updates a contact message (Admin)
+ */
+export async function updateContactMessage(
+  id: string,
+  updates: { status?: string; admin_notes?: string; priority?: string }
+): Promise<boolean> {
+  if (!hasSupabaseConfig) return true;
+  
+  const { error } = await db
+    .from("contact_messages")
+    .update(updates)
+    .eq("id", id);
+
+  if (error) {
+    console.error("Error updating contact message:", error.message);
+    return false;
+  }
+  return true;
+}
+
+
+/**
  * Uploads a base64 candidate photo to Supabase storage
  */
 export async function uploadCandidatePhoto(registrationId: string, base64Data: string): Promise<string | null> {

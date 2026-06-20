@@ -1,12 +1,11 @@
-import { Sparkles, TrendingUp, Award, BookOpen } from "lucide-react";
+import { Sparkles, TrendingUp, Award, CheckCircle2 } from "lucide-react";
 
 const profileAreas = [
-  { label: "Verbal Reasoning", score: 94, rank: "Top 2%" },
-  { label: "Numerical Ability", score: 81, rank: "Top 8%" },
-  { label: "Spatial Intelligence", score: 77, rank: "Top 12%" },
-  { label: "Abstract Thinking", score: 89, rank: "Top 5%" },
-  { label: "General Science", score: 73, rank: "Top 15%" },
-  { label: "Environmental Awareness", score: 85, rank: "Top 7%" },
+  { label: "Reasoning", score: 82, rank: "Top 12%" },
+  { label: "Problem Solving", score: 74, rank: "Top 18%" },
+  { label: "Learning Agility", score: 90, rank: "Top 5%" },
+  { label: "Attention to Detail", score: 65, rank: "Top 25%" },
+  { label: "Creativity", score: 81, rank: "Top 15%" },
 ];
 
 const colorMap = [
@@ -15,56 +14,77 @@ const colorMap = [
   { bar: "bg-amber-500", bg: "bg-amber-50", text: "text-amber-700" },
   { bar: "bg-purple-500", bg: "bg-purple-50", text: "text-purple-700" },
   { bar: "bg-rose-500", bg: "bg-rose-50", text: "text-rose-700" },
-  { bar: "bg-cyan-500", bg: "bg-cyan-50", text: "text-cyan-700" },
 ];
 
 export default function TalentProfile() {
   return (
-    <section className="py-24 lg:py-32 bg-white">
+    <section id="sample-profile" className="py-24 lg:py-32 bg-slate-50">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Sample profile */}
-          <div className="relative">
-            <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-8 shadow-2xl shadow-slate-900/30 relative overflow-hidden">
-              {/* Background glow */}
-              <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
-              <div className="absolute bottom-0 left-0 w-48 h-48 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+          
+          {/* Left: Copy */}
+          <div className="space-y-8">
+            <div>
+              <span className="inline-block text-xs font-bold text-emerald-700 uppercase tracking-widest mb-4 bg-emerald-100 px-3 py-1 rounded-full">
+                The Outcome
+              </span>
+              <h2 className="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
+                A blueprint of your child&apos;s mind.
+              </h2>
+              <p className="text-lg text-slate-500 leading-relaxed mt-5">
+                No more vague grades. The CNTS Talent Profile gives you a precise, actionable breakdown of your child's cognitive strengths, learning style, and areas for growth.
+              </p>
+            </div>
 
-              {/* Profile header */}
-              <div className="relative flex items-center justify-between mb-8">
-                <div className="flex items-center gap-4">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-blue-600 flex items-center justify-center">
-                    <span className="font-display font-bold text-white text-xl">A</span>
-                  </div>
-                  <div>
-                    <h3 className="font-display font-bold text-white text-lg">Aryan Mehta</h3>
-                    <p className="text-blue-300 text-sm">Class 6 · Mumbai · CNTS 2026</p>
-                  </div>
+            <div className="space-y-6">
+              <div className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center shrink-0 text-blue-600">
+                  <TrendingUp size={20} />
                 </div>
-                <div className="text-right">
-                  <div className="font-display font-bold text-white text-3xl">86</div>
-                  <div className="text-blue-300 text-xs">Overall Score</div>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1">National Benchmarking</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">
+                    See exactly where your child stands against a national cohort, not just their classroom.
+                  </p>
                 </div>
               </div>
 
+              <div className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-slate-100 shadow-sm">
+                <div className="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center shrink-0 text-amber-600">
+                  <Sparkles size={20} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 mb-1">Actionable Recommendations</h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">
+                    Personalized strategies to nurture their unique talents and improve their weaknesses.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Right: Sample profile */}
+          <div className="relative">
+            <div className="bg-white rounded-3xl p-8 shadow-2xl shadow-slate-200/50 border border-slate-200 relative overflow-hidden">
+              
+              <div className="text-center mb-8 border-b border-slate-100 pb-6">
+                <h3 className="font-display font-bold text-slate-800 text-xl">Talent Snapshot</h3>
+                <p className="text-slate-500 text-sm">Class 6 Participant</p>
+              </div>
+
               {/* Score bars */}
-              <div className="space-y-4 relative">
+              <div className="space-y-5 relative mb-8 pb-8 border-b border-slate-100">
                 {profileAreas.map((area, i) => {
                   const c = colorMap[i % colorMap.length];
                   return (
                     <div key={area.label}>
-                      <div className="flex items-center justify-between mb-1.5">
-                        <span className="text-slate-300 text-sm font-medium">{area.label}</span>
-                        <div className="flex items-center gap-2">
-                          <span className={`text-xs font-bold px-2 py-0.5 rounded-full bg-white/10 ${c.text}`}>
-                            {area.rank}
-                          </span>
-                          <span className="text-white font-bold text-sm">{area.score}</span>
-                        </div>
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-slate-700 text-sm font-bold">{area.label}</span>
+                        <span className="text-slate-900 font-black text-sm">{area.score}%</span>
                       </div>
-                      <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+                      <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden">
                         <div
-                          className={`h-full ${c.bar} rounded-full opacity-90`}
+                          className={`h-full ${c.bar} rounded-full`}
                           style={{ width: `${area.score}%` }}
                         />
                       </div>
@@ -73,75 +93,59 @@ export default function TalentProfile() {
                 })}
               </div>
 
-              {/* Footer badge */}
-              <div className="relative mt-8 pt-6 border-t border-white/10 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <Award size={16} className="text-amber-400" />
-                  <span className="text-amber-300 text-sm font-semibold">Gold Certificate · All India Rank 1,243</span>
+              {/* Strengths and Weaknesses */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <div>
+                  <h4 className="font-bold text-emerald-800 mb-3 text-sm flex items-center gap-2">
+                    <CheckCircle2 size={16} />
+                    Key Strengths
+                  </h4>
+                  <ul className="space-y-2 text-sm text-slate-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-500 mt-0.5">✓</span>
+                      Strong logical thinker
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-500 mt-0.5">✓</span>
+                      Learns new concepts quickly
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-emerald-500 mt-0.5">✓</span>
+                      Excellent pattern recognition
+                    </li>
+                  </ul>
                 </div>
-                <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-blue-700 to-blue-600 flex items-center justify-center">
-                  <span className="text-white font-display font-bold text-xs">C</span>
+
+                <div>
+                  <h4 className="font-bold text-blue-800 mb-3 text-sm flex items-center gap-2">
+                    <TrendingUp size={16} />
+                    Recommended Growth Areas
+                  </h4>
+                  <ul className="space-y-2 text-sm text-slate-600">
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-0.5">✓</span>
+                      Improve attention to detail
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-blue-500 mt-0.5">✓</span>
+                      Practice multi-step reasoning
+                    </li>
+                  </ul>
                 </div>
               </div>
             </div>
 
-            {/* Floating detail card */}
-            <div className="absolute -bottom-6 -right-6 glass rounded-2xl p-4 shadow-xl shadow-slate-200/50 w-52 hidden sm:block">
-              <div className="flex items-center gap-2 mb-2">
-                <Sparkles size={14} className="text-amber-500" />
-                <span className="text-xs font-bold text-slate-700">Top Strength</span>
+            {/* Decorative badge */}
+            <div className="absolute -bottom-6 -right-6 bg-gradient-to-br from-slate-900 to-slate-800 text-white rounded-2xl p-4 shadow-xl shadow-slate-900/20 w-48 hidden sm:block border border-slate-700">
+              <div className="flex items-center gap-2 mb-1">
+                <Award size={16} className="text-amber-400" />
+                <span className="text-xs font-bold text-slate-200">Sample Report</span>
               </div>
-              <p className="text-sm font-semibold text-slate-800">Verbal Reasoning</p>
-              <p className="text-xs text-slate-500 mt-1">Suited for: Law, Journalism, Civil Services</p>
-            </div>
-          </div>
-
-          {/* Right: Copy */}
-          <div className="space-y-8 lg:pl-8">
-            <div>
-              <span className="inline-block text-xs font-bold text-emerald-700 uppercase tracking-widest mb-4 bg-emerald-50 px-3 py-1 rounded-full">
-                Talent Profile
-              </span>
-              <h2 className="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight mb-5">
-                A profile that
-                <br />
-                lasts a lifetime.
-              </h2>
-              <p className="text-lg text-slate-500 leading-relaxed">
-                Every student gets a verified, shareable CNTS Talent Profile — a multi-dimensional report that captures their intellectual DNA across 6 core ability domains.
-              </p>
+              <p className="text-[10px] text-slate-400 leading-tight">This is a preview. Your child will receive a comprehensive digital diagnostic profile on the portal.</p>
             </div>
 
-            <div className="space-y-4">
-              {[
-                {
-                  icon: TrendingUp,
-                  title: "National Percentile Rankings",
-                  desc: "See exactly where your child stands on a national percentile scale.",
-                },
-                {
-                  icon: BookOpen,
-                  title: "Subject-Wise Deep Dive",
-                  desc: "Granular topic-level analysis — not just where they scored, but what they know deeply.",
-                },
-                {
-                  icon: Award,
-                  title: "Verifiable Digital Certificate",
-                  desc: "A QR-code certificate sharable with schools, colleges, and scholarship boards.",
-                },
-              ].map((item) => (
-                <div key={item.title} className="flex gap-4 p-5 rounded-2xl bg-slate-50 border border-slate-100 hover:bg-white hover:border-blue-100 transition-all group">
-                  <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 group-hover:bg-blue-100 transition-colors">
-                    <item.icon size={18} className="text-blue-700" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-slate-800 mb-1">{item.title}</h4>
-                    <p className="text-sm text-slate-500 leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
+
         </div>
       </div>
     </section>
