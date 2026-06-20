@@ -46,6 +46,7 @@ Draft a response to this parent based on the rules.`;
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
+        max_tokens: 300,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt }
