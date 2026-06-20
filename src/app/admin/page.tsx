@@ -30,7 +30,8 @@ import {
   Search,
   Check,
   XCircle,
-  AlertCircle
+  AlertCircle,
+  Sparkles
 } from "lucide-react";
 import { fetchRegistrations, fetchSystemSettings, updateSystemSetting, fetchContactMessages, updateContactMessage } from "@/services/supabaseService";
 import { hasSupabaseConfig } from "@/lib/supabaseClient";
@@ -105,6 +106,8 @@ export default function AdminOverviewPage() {
   const [supportFilter, setSupportFilter] = useState<"pending" | "in_progress" | "resolved" | "spam">("pending");
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [adminNotesInput, setAdminNotesInput] = useState("");
+  const [draftReply, setDraftReply] = useState("");
+  const [isGeneratingReply, setIsGeneratingReply] = useState(false);
   const [updatingSupport, setUpdatingSupport] = useState(false);
 
   // Coupon Manager states
@@ -174,18 +177,44 @@ export default function AdminOverviewPage() {
     try {
       const success = await updateContactMessage(id, updates);
       if (success) {
-        // Optimistically update local state
         setContactMessages(prev => prev.map(m => m.id === id ? { ...m, ...updates } : m));
         if (selectedMessage && selectedMessage.id === id) {
           setSelectedMessage({ ...selectedMessage, ...updates });
         }
       } else {
-        alert("Failed to update message. Please check database connection.");
+        alert("Failed to update message.");
       }
     } catch (err) {
       console.error("Failed to update message:", err);
     } finally {
       setUpdatingSupport(false);
+    }
+  };
+
+  const handleGenerateReply = async () => {
+    if (!selectedMessage) return;
+    setIsGeneratingReply(true);
+    setDraftReply("");
+    try {
+      const res = await fetch("/api/admin/generate-reply", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: selectedMessage.name,
+          subject: selectedMessage.subject,
+          message: selectedMessage.message
+        })
+      });
+      const data = await res.json();
+      if (data.success && data.reply) {
+        setDraftReply(data.reply);
+      } else {
+        alert(data.error || "Failed to generate reply.");
+      }
+    } catch (err) {
+      alert("Error calling generate-reply API");
+    } finally {
+      setIsGeneratingReply(false);
     }
   };
 
@@ -1435,6 +1464,7 @@ export default function AdminOverviewPage() {
                             onClick={() => {
                               setSelectedMessage(msg);
                               setAdminNotesInput(msg.admin_notes || "");
+                              setDraftReply("");
                             }}
                             className={`p-4 border-b border-slate-50 cursor-pointer transition-colors ${
                               selectedMessage?.id === msg.id ? "bg-blue-50 border-l-4 border-l-blue-600" : "hover:bg-slate-50 border-l-4 border-l-transparent"
@@ -1526,11 +1556,32 @@ export default function AdminOverviewPage() {
                         <button
                           onClick={() => handleUpdateSupportMessage(selectedMessage.id, { admin_notes: adminNotesInput })}
                           disabled={updatingSupport}
-                          className="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700 cursor-pointer"
+                          className="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700 cursor-pointer disabled:opacity-50"
                         >
                           Save Notes
                         </button>
                       </div>
+                    </div>
+
+                    {/* AI Draft Reply */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">AI Draft Reply</h3>
+                        <button
+                          onClick={handleGenerateReply}
+                          disabled={isGeneratingReply}
+                          className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                        >
+                          <Sparkles size={12} />
+                          {isGeneratingReply ? "Generating..." : "Generate AI Reply"}
+                        </button>
+                      </div>
+                      <textarea
+                        value={draftReply}
+                        onChange={(e) => setDraftReply(e.target.value)}
+                        placeholder="Click 'Generate AI Reply' to draft a response, or type manually..."
+                        className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all min-h-[120px] bg-indigo-50/30"
+                      />
                     </div>
 
                     {/* Actions Panel */}
@@ -1539,7 +1590,7 @@ export default function AdminOverviewPage() {
                       <div className="flex flex-wrap gap-3">
                         
                         <a 
-                          href={`mailto:${selectedMessage.email}?subject=Re: ${encodeURIComponent(selectedMessage.subject || 'Your Inquiry to CNTS')}`}
+                          href={`mailto:${selectedMessage.email}?subject=Re: ${encodeURIComponent(selectedMessage.subject || 'Your Inquiry to CNTS')}&body=${encodeURIComponent(draftReply || `Hello ${selectedMessage.name},\n\nThank you for contacting CNTS.\n\nRegarding your query:\n\n[Type your response here]\n\nRegards,\nCNTS Support Team\n`)}`}
                           className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-xl text-sm font-semibold transition-all"
                         >
                           <Send size={16} />
@@ -1548,7 +1599,7 @@ export default function AdminOverviewPage() {
 
                         {selectedMessage.phone && (
                           <a 
-                            href={`https://wa.me/${selectedMessage.phone.replace(/\D/g, '')}?text=${encodeURIComponent(`Hello ${selectedMessage.name},\n\nThank you for contacting CNTS.\n\nRegarding your query:\n\n[Type your response here]\n\nRegards,\nCNTS Support Team\n`)}`}
+                            href={`https://wa.me/${selectedMessage.phone.replace(/\D/g, '')}?text=${encodeURIComponent(draftReply || `Hello ${selectedMessage.name},\n\nThank you for contacting CNTS.\n\nRegarding your query:\n\n[Type your response here]\n\nRegards,\nCNTS Support Team\n`)}`}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-semibold transition-all"
