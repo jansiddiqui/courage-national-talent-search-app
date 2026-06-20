@@ -88,6 +88,12 @@ export default function AdminOverviewPage() {
   const [loading, setLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const showToast = (msg: string) => {
+    setToastMessage(msg);
+    setTimeout(() => setToastMessage(""), 3000);
+  };
 
   // WhatsApp logs & test state
   const [waLogs, setWaLogs] = useState<any[]>([]);
@@ -181,8 +187,9 @@ export default function AdminOverviewPage() {
         if (selectedMessage && selectedMessage.id === id) {
           setSelectedMessage({ ...selectedMessage, ...updates });
         }
+        showToast("Updated successfully!");
       } else {
-        alert("Failed to update message.");
+        showToast("Failed to update message.");
       }
     } catch (err) {
       console.error("Failed to update message:", err);
@@ -209,10 +216,10 @@ export default function AdminOverviewPage() {
       if (data.success && data.reply) {
         setDraftReply(data.reply);
       } else {
-        alert(data.error || "Failed to generate reply.");
+        showToast(data.error || "Failed to generate reply.");
       }
     } catch (err) {
-      alert("Error calling generate-reply API");
+      showToast("Error calling generate-reply API");
     } finally {
       setIsGeneratingReply(false);
     }
@@ -273,7 +280,7 @@ export default function AdminOverviewPage() {
       if (data.success) {
         fetchCoupons();
       } else {
-        alert(data.message || "Failed to toggle coupon status.");
+        showToast(data.message || "Failed to toggle coupon status.");
       }
     } catch (err) {
       console.error("Failed to toggle coupon:", err);
@@ -290,7 +297,7 @@ export default function AdminOverviewPage() {
       if (data.success) {
         fetchCoupons();
       } else {
-        alert(data.message || "Failed to delete coupon.");
+        showToast(data.message || "Failed to delete coupon.");
       }
     } catch (err) {
       console.error("Failed to delete coupon:", err);
@@ -352,7 +359,7 @@ export default function AdminOverviewPage() {
     }
 
     if (targetList.length === 0) {
-      alert("No candidates match the selected audience filter.");
+      showToast("No candidates match the selected audience filter.");
       return;
     }
 
@@ -479,7 +486,7 @@ export default function AdminOverviewPage() {
       if (!success) {
         // Rollback
         setSystemSettings(prev => ({ ...prev, [key]: currentValue }));
-        alert("Failed to update system setting in database.");
+        showToast("Failed to update system setting in database.");
       }
     } catch (err) {
       console.error("Setting toggle error:", err);
@@ -515,15 +522,15 @@ export default function AdminOverviewPage() {
 
       const data = await res.json();
       if (res.ok && data.success) {
-        alert(`Success: ${data.message}`);
+        showToast(`Success: ${data.message}`);
         setBulkNotifyProgress(prev => ({ ...prev, [settingKey]: "success" }));
       } else {
-        alert(`Error: ${data.message || "Failed to send bulk notifications."}`);
+        showToast(`Error: ${data.message || "Failed to send bulk notifications."}`);
         setBulkNotifyProgress(prev => ({ ...prev, [settingKey]: "failed" }));
       }
     } catch (err: any) {
       console.error("Bulk notify error:", err);
-      alert(`Network error: ${err.message || "Could not dispatch notifications."}`);
+      showToast(`Network error: ${err.message || "Could not dispatch notifications."}`);
       setBulkNotifyProgress(prev => ({ ...prev, [settingKey]: "failed" }));
     }
   };
@@ -1645,6 +1652,12 @@ export default function AdminOverviewPage() {
 
       </main>
 
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed bottom-6 right-6 bg-slate-800 text-white px-6 py-3 rounded-xl shadow-xl z-50 text-sm font-semibold animate-in fade-in slide-in-from-bottom-5">
+          {toastMessage}
+        </div>
+      )}
     </div>
   );
 }
