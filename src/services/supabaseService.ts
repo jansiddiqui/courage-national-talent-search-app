@@ -424,17 +424,18 @@ export async function saveRegistrationNote(registrationId: string, notes: string
  * Fetches all contact messages (Admin)
  */
 export async function fetchContactMessages(): Promise<any[]> {
-  if (!hasSupabaseConfig) return [];
-  const { data, error } = await db
-    .from("contact_messages")
-    .select("*")
-    .order("created_at", { ascending: false });
-
-  if (error) {
-    console.error("Error fetching contact messages:", error.message);
+  try {
+    const res = await fetch("/api/admin/support");
+    if (!res.ok) {
+      console.warn("API support messages fetch returned status:", res.status);
+      return [];
+    }
+    const data = await res.json();
+    return data.messages || [];
+  } catch (err) {
+    console.error("fetchContactMessages error:", err);
     return [];
   }
-  return data || [];
 }
 
 /**
@@ -444,18 +445,20 @@ export async function updateContactMessage(
   id: string,
   updates: { status?: string; admin_notes?: string; priority?: string }
 ): Promise<boolean> {
-  if (!hasSupabaseConfig) return true;
-  
-  const { error } = await db
-    .from("contact_messages")
-    .update(updates)
-    .eq("id", id);
-
-  if (error) {
-    console.error("Error updating contact message:", error.message);
+  try {
+    const res = await fetch("/api/admin/support", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ id, updates }),
+    });
+    
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data.success;
+  } catch (err) {
+    console.error("updateContactMessage error:", err);
     return false;
   }
-  return true;
 }
 
 

@@ -1383,10 +1383,10 @@ export default function AdminOverviewPage() {
                   <h2 className="font-display font-bold text-xl text-slate-800 mb-6">Inbox Folders</h2>
                   <div className="space-y-2">
                     {[
-                      { id: "pending", label: "🔴 Pending", count: contactMessages.filter(m => m.status === 'pending' || !m.status).length },
-                      { id: "in_progress", label: "🟡 In Progress", count: contactMessages.filter(m => m.status === 'in_progress').length },
-                      { id: "resolved", label: "🟢 Resolved", count: contactMessages.filter(m => m.status === 'resolved').length },
-                      { id: "spam", label: "⚫ Spam", count: contactMessages.filter(m => m.status === 'spam').length }
+                      { id: "pending", label: "Pending", icon: <AlertCircle size={14} className="text-red-500" />, count: contactMessages.filter(m => m.status === 'pending' || !m.status).length },
+                      { id: "in_progress", label: "In Progress", icon: <Clock size={14} className="text-amber-500" />, count: contactMessages.filter(m => m.status === 'in_progress').length },
+                      { id: "resolved", label: "Resolved", icon: <CheckCircle size={14} className="text-emerald-500" />, count: contactMessages.filter(m => m.status === 'resolved').length },
+                      { id: "spam", label: "Spam", icon: <XCircle size={14} className="text-slate-400" />, count: contactMessages.filter(m => m.status === 'spam').length }
                     ].map(folder => (
                       <button
                         key={folder.id}
@@ -1397,7 +1397,10 @@ export default function AdminOverviewPage() {
                             : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-transparent"
                         }`}
                       >
-                        <span>{folder.label}</span>
+                        <span className="flex items-center gap-2">
+                          {folder.icon}
+                          {folder.label}
+                        </span>
                         <span className="bg-white px-2 py-0.5 rounded-lg text-xs border border-slate-200">
                           {folder.count}
                         </span>
