@@ -14,7 +14,8 @@ import {
   Building,
   User,
   BookOpen,
-  ArrowRight
+  ArrowRight,
+  Lightbulb
 } from "lucide-react";
 import Image from "next/image";
 import { saveContactMessage } from "@/services/supabaseService";
@@ -217,7 +218,7 @@ export default function ContactPage() {
                   </p>
                 </div>
                 <p className="text-[10px] text-amber-400 font-bold bg-amber-500/10 border border-amber-500/20 px-2.5 py-1.5 rounded-lg inline-block">
-                  💡 Select &quot;School Partnership Inquiry&quot; in the form
+                  <span className="flex items-center"><Lightbulb size={12} className="text-amber-500 mr-1" /> Select &quot;School Partnership Inquiry&quot; in the form</span>
                 </p>
               </div>
             </div>

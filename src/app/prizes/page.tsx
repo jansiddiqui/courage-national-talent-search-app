@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
-import { Trophy, Star, ShieldCheck, FileText, Globe, ArrowRight, Check } from "lucide-react";
+import { Trophy, Star, ShieldCheck, FileText, Globe, ArrowRight, Check, Medal } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "CNTS Prizes & National Recognition",
@@ -16,7 +16,7 @@ const podiumAwards = [
     extras: ["National Gold Trophy", "Gold Medal of Honor", "Merit Scholarship Certificate"],
     gradient: "from-amber-400 via-yellow-400 to-orange-400",
     glow: "shadow-amber-400/30",
-    badge: "🥇",
+    badge: <Medal size={48} className="text-yellow-100 drop-shadow-md" />,
     isCenter: true,
   },
   {
@@ -25,7 +25,7 @@ const podiumAwards = [
     extras: ["National Silver Trophy", "Silver Medal of Honor", "Merit Scholarship Certificate"],
     gradient: "from-slate-400 via-slate-300 to-slate-400",
     glow: "shadow-slate-400/30",
-    badge: "🥈",
+    badge: <Medal size={40} className="text-slate-100 drop-shadow-md" />,
     isCenter: false,
   },
   {
@@ -34,7 +34,7 @@ const podiumAwards = [
     extras: ["National Bronze Trophy", "Bronze Medal of Honor", "Merit Scholarship Certificate"],
     gradient: "from-orange-700 via-orange-500 to-amber-600",
     glow: "shadow-orange-500/30",
-    badge: "🥉",
+    badge: <Medal size={40} className="text-orange-200 drop-shadow-md" />,
     isCenter: false,
   },
 ];
@@ -148,7 +148,7 @@ export default function PrizesPage() {
                 }`}
               >
                 <div className="absolute inset-0 bg-white/10 opacity-30 pointer-events-none rounded-xl" />
-                <span className="text-4xl mb-2 block">{p.badge}</span>
+                <div className="mb-3 flex justify-center">{p.badge}</div>
                 <h3 className="font-display font-bold text-3xl mb-1 select-all">{p.prize}</h3>
                 <span className="text-xs font-semibold text-white/80 block uppercase tracking-wider">{p.rank}</span>
                 

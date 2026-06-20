@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Star, Trophy, Brain, Zap, CheckCircle2, AlertCircle } from "lucide-react";
+import { ArrowRight, Sparkles, Star, Trophy, Brain, Zap, CheckCircle2, AlertCircle, GraduationCap, Banknote, Calendar, ScrollText } from "lucide-react";
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import { fetchTotalRegistrationCount, fetchRegistrations } from "@/services/supabaseService";
 import { BASELINE_REGISTRATIONS, BASELINE_STATES } from "@/config/stats";
@@ -201,28 +201,28 @@ export default function Hero() {
             {/* Quick Facts Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-white/75 backdrop-blur-sm border border-slate-200/80 p-5 rounded-3xl max-w-xl shadow-sm">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-700 shrink-0 mt-0.5 text-xs">🎓</div>
+                <div className="w-6 h-6 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-700 shrink-0 mt-0.5"><GraduationCap size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Eligible Grades</span>
                   <span className="text-xs font-bold text-slate-850">Classes 5, 6, 7 & 8</span>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 shrink-0 mt-0.5 text-xs">💰</div>
+                <div className="w-6 h-6 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 shrink-0 mt-0.5"><Banknote size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Registration Fee</span>
                   <span className="text-xs font-bold text-blue-800">₹99 <span className="text-[9px] text-slate-500 font-semibold">(Subsidized)</span></span>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 mt-0.5 text-xs">📅</div>
+                <div className="w-6 h-6 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 mt-0.5"><Calendar size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Assessment Date</span>
                   <span className="text-xs font-bold text-slate-850">19 July 2026 <span className="text-[9px] text-slate-500 font-semibold">(Online)</span></span>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 shrink-0 mt-0.5 text-xs">📜</div>
+                <div className="w-6 h-6 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 shrink-0 mt-0.5"><ScrollText size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">What You Get</span>
                   <span className="text-xs font-bold text-slate-850">Cognitive Profile & Certificate</span>

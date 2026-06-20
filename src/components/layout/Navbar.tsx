@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Flame, BookOpen, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -44,9 +44,9 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
 
   const [tickerIndex, setTickerIndex] = useState(0);
   const announcements = [
-    "🔥 Seats filling fast for CNTS 2026 Founding Edition — Register now for ₹99!",
-    "📚 Official sample guides and logic practice papers are now live in the Parent Dashboard.",
-    "🛡️ Designed by expert educators. Complete cognitive profile report + verifiable merit certificates included."
+    { icon: <Flame size={14} className="text-orange-400 shrink-0" />, text: "Seats filling fast for CNTS 2026 Founding Edition — Register now for ₹99!" },
+    { icon: <BookOpen size={14} className="text-blue-400 shrink-0" />, text: "Official sample guides and logic practice papers are now live in the Parent Dashboard." },
+    { icon: <ShieldCheck size={14} className="text-emerald-400 shrink-0" />, text: "Designed by expert educators. Complete cognitive profile report + verifiable merit certificates included." }
   ];
 
   useEffect(() => {
@@ -69,13 +69,14 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
               {announcements.map((msg, idx) => (
                 <span
                   key={idx}
-                  className={`absolute transition-all duration-500 ease-in-out whitespace-nowrap truncate max-w-full ${
+                  className={`absolute transition-all duration-500 ease-in-out whitespace-nowrap truncate max-w-full flex items-center justify-center gap-1.5 ${
                     idx === tickerIndex
                       ? "opacity-100 translate-y-0 scale-100"
                       : "opacity-0 translate-y-2 scale-95 pointer-events-none"
                   }`}
                 >
-                  {msg}
+                  {msg.icon}
+                  <span>{msg.text}</span>
                 </span>
               ))}
             </div>

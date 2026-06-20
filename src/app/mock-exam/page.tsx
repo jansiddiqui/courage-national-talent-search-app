@@ -13,14 +13,15 @@ import {
   HelpCircle,
   Play,
   ArrowRight,
-  BookOpen
+  BookOpen,
+  Circle
 } from "lucide-react";
 
 interface Question {
   id: number;
   domain: string;
-  question: string;
-  options: string[];
+  question: React.ReactNode;
+  options: React.ReactNode[];
   answer: number; // Index of correct option
 }
 
@@ -28,8 +29,13 @@ const mockQuestions: Question[] = [
   {
     id: 1,
     domain: "Logical & Pattern Deduction",
-    question: "Complete the sequence: 🔴, 🔵, 🔴🔴, 🔵🔵, 🔴🔴🔴, ...",
-    options: ["🔵🔵🔵", "🔴🔴🔴🔴", "🔵🔵", "🔴🔴"],
+    question: <span className="flex items-center gap-1 flex-wrap">Complete the sequence: <Circle size={10} className="fill-red-500 text-red-500" />, <Circle size={10} className="fill-blue-500 text-blue-500" />, <Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" />, <Circle size={10} className="fill-blue-500 text-blue-500" /><Circle size={10} className="fill-blue-500 text-blue-500" />, <Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" />, ...</span>,
+    options: [
+      <span key="1" className="flex items-center gap-0.5"><Circle size={10} className="fill-blue-500 text-blue-500" /><Circle size={10} className="fill-blue-500 text-blue-500" /><Circle size={10} className="fill-blue-500 text-blue-500" /></span>, 
+      <span key="2" className="flex items-center gap-0.5"><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /></span>, 
+      <span key="3" className="flex items-center gap-0.5"><Circle size={10} className="fill-blue-500 text-blue-500" /><Circle size={10} className="fill-blue-500 text-blue-500" /></span>, 
+      <span key="4" className="flex items-center gap-0.5"><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /></span>
+    ],
     answer: 0
   },
   {

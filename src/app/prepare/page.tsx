@@ -18,7 +18,12 @@ import {
   HelpCircle as QuestionIcon,
   ShieldAlert,
   BrainCircuit,
-  MessageSquare
+  MessageSquare,
+  Check,
+  X,
+  Crown,
+  Lightbulb,
+  Sprout
 } from "lucide-react";
 import { TOTAL_QUESTIONS, EXAM_DURATION, EXAM_MODE, NEGATIVE_MARKING } from "@/config/exam";
 import Navbar from "@/components/layout/Navbar";
@@ -464,7 +469,7 @@ export default function PreparePage() {
                           ? "bg-emerald-100 text-emerald-800"
                           : "bg-slate-100 text-slate-400"
                     }`}>
-                      {qIdx < currentQuestionIndex ? "✓" : qIdx + 1}
+                      {qIdx < currentQuestionIndex ? <Check size={14} className="mx-auto mt-1" /> : qIdx + 1}
                     </div>
                     {qIdx < quizQuestions.length - 1 && (
                       <div className={`w-8 h-0.5 transition-all ${
@@ -515,8 +520,8 @@ export default function PreparePage() {
                       className={`w-full min-h-[48px] px-4 py-3 rounded-2xl border text-left text-xs font-semibold transition-all flex items-center justify-between cursor-pointer ${btnClass}`}
                     >
                       <span>{opt}</span>
-                      {isAnswered && isCorrect && <span className="text-emerald-600 font-bold">✓ Correct</span>}
-                      {isAnswered && isSelected && !isCorrect && <span className="text-red-600 font-bold">✗ Incorrect</span>}
+                      {isAnswered && isCorrect && <span className="text-emerald-600 font-bold flex items-center"><Check size={14} className="mr-1" /> Correct</span>}
+                      {isAnswered && isSelected && !isCorrect && <span className="text-red-600 font-bold flex items-center"><X size={14} className="mr-1" /> Incorrect</span>}
                     </button>
                   );
                 })}
@@ -571,7 +576,7 @@ export default function PreparePage() {
                   CNTS Cognitive Profile
                 </span>
                 <div className="font-display font-bold text-base text-slate-800">
-                  {score === 3 ? "👑 Cognitive Champion" : score === 2 ? "💡 Logical Mind" : "🌱 Analytical Starter"}
+                  {score === 3 ? <span className="flex items-center gap-1"><Crown size={20} className="text-amber-500" /> Cognitive Champion</span> : score === 2 ? <span className="flex items-center gap-1"><Lightbulb size={20} className="text-amber-500" /> Logical Mind</span> : <span className="flex items-center gap-1"><Sprout size={20} className="text-emerald-500" /> Analytical Starter</span>}
                 </div>
                 <p className="text-slate-500 text-[11px] leading-relaxed">
                   {score === 3 
