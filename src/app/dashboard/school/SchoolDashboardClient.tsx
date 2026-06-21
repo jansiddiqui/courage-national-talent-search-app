@@ -67,6 +67,33 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
     }
   };
 
+  const downloadTemplate = () => {
+    // Create first sheet (Students)
+    const wsStudents = XLSX.utils.json_to_sheet([], {
+      header: ["Student Name", "Class", "Mobile Number"]
+    });
+    
+    // Create second sheet (Instructions)
+    const instructions = [
+      { "Instruction / Guideline": "1. Fill in student details in the first tab named 'Students'." },
+      { "Instruction / Guideline": "2. Do not rename the column headers ('Student Name', 'Class', 'Mobile Number')." },
+      { "Instruction / Guideline": "3. The Class column only accepts values between 5 and 12 (or matching your eligible classes)." },
+      { "Instruction / Guideline": "4. Mobile Number must be a valid 10-digit number." },
+      { "Instruction / Guideline": `5. This template is personalized for: ${school.name}` },
+      { "Instruction / Guideline": `6. Personalized School Code: ${school.school_code}` },
+      { "Instruction / Guideline": `7. Your remaining quota capacity is: ${school.quota - school.used_quota} seats.` }
+    ];
+    const wsInstructions = XLSX.utils.json_to_sheet(instructions);
+    
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, wsStudents, "Students");
+    XLSX.utils.book_append_sheet(wb, wsInstructions, "Read Me Instructions");
+    
+    const sanitizedSchoolName = school.name.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+    const filename = `cnts_template_${sanitizedSchoolName}_${school.school_code}.xlsx`;
+    XLSX.writeFile(wb, filename);
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto space-y-8">
@@ -136,6 +163,12 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
                 {uploading ? "Uploading..." : <><FileSpreadsheet size={16}/> Select Excel File</>}
               </button>
             </div>
+            <button 
+              onClick={downloadTemplate}
+              className="w-full mt-2 py-2 px-4 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors border border-purple-100/50"
+            >
+              <Download size={14} /> Download Template
+            </button>
             {uploadError && <p className="text-xs text-red-500 mt-2">{uploadError}</p>}
           </div>
 

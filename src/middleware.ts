@@ -12,6 +12,13 @@ export async function middleware(request: NextRequest) {
     console.error("CRITICAL CONFIGURATION ERROR: SUPABASE_SERVICE_ROLE_KEY is missing!");
     throw new Error("CRITICAL CONFIGURATION ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required.");
   }
+  const { pathname } = request.nextUrl;
+
+  // Bypass parent session check for school dashboard paths
+  if (pathname.startsWith("/dashboard/school")) {
+    return NextResponse.next();
+  }
+
   const sessionCookie = request.cookies.get("cnts_session")?.value;
 
   if (!sessionCookie) {
@@ -25,8 +32,6 @@ export async function middleware(request: NextRequest) {
     response.cookies.delete("cnts_session");
     return response;
   }
-
-  const { pathname } = request.nextUrl;
 
   // Admin Route Gating
   if (pathname.startsWith("/admin")) {

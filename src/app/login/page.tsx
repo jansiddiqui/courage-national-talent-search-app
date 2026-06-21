@@ -16,11 +16,12 @@ import {
   HelpCircle,
   Mail,
   Calendar,
-  Phone
+  Phone,
+  School
 } from "lucide-react";
 import { authService } from "@/services/authService";
 
-type LoginTab = "credentials" | "magic-link";
+type LoginTab = "credentials" | "magic-link" | "school";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -38,6 +39,10 @@ export default function LoginPage() {
   
   // Forgot ID form state
   const [phone, setPhone] = useState("");
+
+  // School form state
+  const [schoolCode, setSchoolCode] = useState("");
+  const [schoolPin, setSchoolPin] = useState("");
   
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -47,11 +52,15 @@ export default function LoginPage() {
     const timer = setTimeout(() => {
       setIsHydrated(true);
       
-      // Check URL query parameters for errors
+      // Check URL query parameters for errors and tabs
       const params = new URLSearchParams(window.location.search);
       const err = params.get("error");
       if (err) {
         setError(err);
+      }
+      const tab = params.get("tab");
+      if (tab === "school") {
+        setActiveTab("school");
       }
     }, 0);
 
@@ -154,6 +163,45 @@ export default function LoginPage() {
     }
   };
 
+  const handleSchoolLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setSuccessMessage("");
+
+    if (!schoolCode.trim()) {
+      setError("Please enter the School Code");
+      return;
+    }
+    if (!schoolPin) {
+      setError("Please enter your Secure PIN");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const res = await fetch("/api/schools/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ schoolCode: schoolCode.trim().toUpperCase(), pin: schoolPin })
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setSuccessMessage("Login successful! Redirecting to school portal...");
+        setTimeout(() => {
+          router.push("/dashboard/school");
+          router.refresh();
+        }, 1200);
+      } else {
+        setError(data.message || "Invalid credentials");
+      }
+    } catch (err) {
+      setError("Network error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleBackToLogin = () => {
     setShowForgotId(false);
     setError("");
@@ -207,15 +255,17 @@ export default function LoginPage() {
             <div className="space-y-2 text-center">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-800 rounded-full border border-blue-100 text-[10px] font-bold uppercase tracking-wider mx-auto">
                 <Sparkles size={11} className="text-blue-800" />
-                Secure Parent Portal
+                {activeTab === "school" ? "School Partner Portal" : "Secure Parent Portal"}
               </div>
               <h2 className="font-display font-bold text-2xl text-slate-900 tracking-tight">
-                {showForgotId ? "Recover CNTS ID" : "Parent Login"}
+                {showForgotId ? "Recover CNTS ID" : activeTab === "school" ? "School Login" : "Parent Login"}
               </h2>
               <p className="text-slate-500 text-xs max-w-xs mx-auto leading-relaxed">
                 {showForgotId 
                   ? "Enter the registered phone number and we will send the CNTS ID to your WhatsApp number."
-                  : "Access registrations, download admit cards, view result keys, and download certified talent profiles."}
+                  : activeTab === "school"
+                    ? "Log in with your School Code and secure PIN to manage student seat quotas and view registration rosters."
+                    : "Access registrations, download admit cards, view result keys, and download certified talent profiles."}
               </p>
             </div>
 
@@ -236,7 +286,7 @@ export default function LoginPage() {
 
             {/* Tab Selection */}
             {!showForgotId && (
-              <div className="grid grid-cols-2 p-1 bg-slate-100 rounded-2xl">
+              <div className="grid grid-cols-3 p-1 bg-slate-100 rounded-2xl">
                 <button
                   type="button"
                   onClick={() => {
@@ -244,13 +294,14 @@ export default function LoginPage() {
                     setError("");
                     setSuccessMessage("");
                   }}
-                  className={`py-2 px-3 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  className={`py-2 px-1 text-[10px] sm:text-xs font-bold rounded-xl transition-all cursor-pointer truncate ${
                     activeTab === "credentials" 
                       ? "bg-white text-slate-900 shadow-sm" 
                       : "text-slate-500 hover:text-slate-800"
                   }`}
+                  title="Parent ID"
                 >
-                  CNTS ID + DOB
+                  Parent ID
                 </button>
                 <button
                   type="button"
@@ -259,13 +310,30 @@ export default function LoginPage() {
                     setError("");
                     setSuccessMessage("");
                   }}
-                  className={`py-2 px-3 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                  className={`py-2 px-1 text-[10px] sm:text-xs font-bold rounded-xl transition-all cursor-pointer truncate ${
                     activeTab === "magic-link" 
                       ? "bg-white text-slate-900 shadow-sm" 
                       : "text-slate-500 hover:text-slate-800"
                   }`}
+                  title="Email Link"
                 >
-                  Email Magic Link
+                  Email Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveTab("school");
+                    setError("");
+                    setSuccessMessage("");
+                  }}
+                  className={`py-2 px-1 text-[10px] sm:text-xs font-bold rounded-xl transition-all cursor-pointer truncate ${
+                    activeTab === "school" 
+                      ? "bg-white text-slate-900 shadow-sm" 
+                      : "text-slate-500 hover:text-slate-800"
+                  }`}
+                  title="School Portal"
+                >
+                  School Portal
                 </button>
               </div>
             )}
@@ -366,7 +434,7 @@ export default function LoginPage() {
                   <ArrowRight size={14} />
                 </button>
               </form>
-            ) : (
+            ) : activeTab === "magic-link" ? (
               /* Tab 2: Email Magic Link */
               <form onSubmit={handleSendMagicLink} className="space-y-4">
                 <div className="space-y-1.5">
@@ -395,6 +463,57 @@ export default function LoginPage() {
                   className="w-full py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-850/10 hover:shadow-blue-750/20 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
                 >
                   {loading ? "Sending link..." : "Send Login Link"}
+                  <ArrowRight size={14} />
+                </button>
+              </form>
+            ) : (
+              /* Tab 3: School Login */
+              <form onSubmit={handleSchoolLogin} className="space-y-4 animate-slide-up">
+                <div className="space-y-4">
+                  {/* School Code */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="schoolCode" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                      <School size={12} className="text-slate-400" />
+                      School Access Code
+                    </label>
+                    <input
+                      type="text"
+                      id="schoolCode"
+                      placeholder="e.g. CNTS-DEL-1234"
+                      value={schoolCode}
+                      onChange={(e) => setSchoolCode(e.target.value.toUpperCase())}
+                      className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-sm rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-850/10 transition-all font-semibold font-mono"
+                      disabled={loading}
+                      required
+                    />
+                  </div>
+
+                  {/* School PIN */}
+                  <div className="space-y-1.5">
+                    <label htmlFor="schoolPin" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                      <Lock size={12} className="text-slate-400" />
+                      Secure 4-Digit PIN
+                    </label>
+                    <input
+                      type="password"
+                      id="schoolPin"
+                      placeholder="Enter 4-Digit PIN"
+                      value={schoolPin}
+                      onChange={(e) => setSchoolPin(e.target.value)}
+                      className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-sm rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-850/10 transition-all font-semibold tracking-widest font-mono"
+                      maxLength={4}
+                      disabled={loading}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-650/10 hover:shadow-blue-600/20 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
+                >
+                  {loading ? "Authenticating..." : "Access School Portal"}
                   <ArrowRight size={14} />
                 </button>
               </form>
