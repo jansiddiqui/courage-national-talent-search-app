@@ -454,6 +454,14 @@ export default function AdminOverviewPage() {
   };
 
   useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const tab = params.get("tab");
+      if (tab && ["overview", "settings", "whatsapp", "coupons", "support", "schools"].includes(tab)) {
+        setActiveTab(tab as any);
+      }
+    }
+
     const timer = setTimeout(() => {
       loadData();
       fetchWaLogs();
