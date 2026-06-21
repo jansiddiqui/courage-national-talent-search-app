@@ -73,6 +73,13 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
       header: ["Student Name", "Class", "Mobile Number"]
     });
     
+    // Set column widths for Students sheet (wch is width in characters)
+    wsStudents['!cols'] = [
+      { wch: 30 }, // Student Name
+      { wch: 12 }, // Class
+      { wch: 20 }  // Mobile Number
+    ];
+    
     // Create second sheet (Instructions)
     const instructions = [
       { "Instruction / Guideline": "1. Fill in student details in the first tab named 'Students'." },
@@ -84,6 +91,11 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
       { "Instruction / Guideline": `7. Your remaining quota capacity is: ${school.quota - school.used_quota} seats.` }
     ];
     const wsInstructions = XLSX.utils.json_to_sheet(instructions);
+    
+    // Set column width for Instructions sheet
+    wsInstructions['!cols'] = [
+      { wch: 90 }  // Instruction / Guideline
+    ];
     
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, wsStudents, "Students");
