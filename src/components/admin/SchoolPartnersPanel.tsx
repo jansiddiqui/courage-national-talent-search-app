@@ -280,9 +280,10 @@ export default function SchoolPartnersPanel() {
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 overflow-y-auto flex justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-2xl shadow-xl relative h-fit my-auto">
-              <div className="p-6 border-b border-slate-100 flex justify-between items-center rounded-t-3xl bg-white sticky top-0 z-20">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="flex justify-center min-h-full p-4 sm:p-8">
+            <div className="bg-white rounded-3xl w-full max-w-2xl shadow-xl mt-8 mb-8 h-max">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center rounded-t-3xl bg-white">
                 <h3 className="font-display font-bold text-xl text-slate-800">Onboard New School</h3>
                 <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full p-1 transition-colors">
                   <XCircle size={24} />
@@ -374,6 +375,7 @@ export default function SchoolPartnersPanel() {
               </div>
             </div>
           </div>
+        </div>
       )}
     </div>
   );
