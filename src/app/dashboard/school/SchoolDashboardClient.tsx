@@ -205,25 +205,27 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
       <div className="max-w-6xl mx-auto space-y-8">
         
         {/* Header Section */}
-        <div className="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center shadow-inner">
-              <School size={32} className="text-blue-700" />
+        <div className="bg-white rounded-3xl p-5 sm:p-6 md:p-8 border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 bg-blue-100 rounded-2xl flex items-center justify-center shadow-inner shrink-0">
+              <School className="text-blue-700 w-6 h-6 sm:w-8 sm:h-8" />
             </div>
-            <div>
-              <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{school.name}</h1>
-              <p className="text-slate-500 font-medium">{school.city} • Code: {school.school_code}</p>
+            <div className="min-w-0">
+              <h1 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight leading-tight">{school.name}</h1>
+              <p className="text-slate-500 font-medium text-xs sm:text-sm mt-0.5 sm:mt-1">
+                {school.city} • Code: <span className="whitespace-nowrap font-semibold text-slate-700">{school.school_code}</span>
+              </p>
             </div>
           </div>
           
-          <div className="flex gap-4 w-full md:w-auto">
-            <div className="bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100 text-center flex-1 md:flex-none">
-              <p className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Total Quota</p>
-              <p className="text-2xl font-bold text-slate-900">{school.quota}</p>
+          <div className="flex gap-3 sm:gap-4 w-full md:w-auto">
+            <div className="bg-slate-50 px-4 py-3 sm:px-6 sm:py-4 rounded-2xl border border-slate-100 text-center flex-1 md:flex-none">
+              <p className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">Total Quota</p>
+              <p className="text-xl sm:text-2xl font-bold text-slate-900">{school.quota}</p>
             </div>
-            <div className="bg-blue-50 px-6 py-4 rounded-2xl border border-blue-100 text-center flex-1 md:flex-none">
-              <p className="text-xs font-bold text-blue-600 uppercase tracking-wide mb-1">Available</p>
-              <p className="text-2xl font-bold text-blue-700">{remainingQuota}</p>
+            <div className="bg-blue-50 px-4 py-3 sm:px-6 sm:py-4 rounded-2xl border border-blue-100 text-center flex-1 md:flex-none">
+              <p className="text-[10px] sm:text-xs font-bold text-blue-600 uppercase tracking-wide mb-1">Available</p>
+              <p className="text-xl sm:text-2xl font-bold text-blue-700">{remainingQuota}</p>
             </div>
           </div>
         </div>
