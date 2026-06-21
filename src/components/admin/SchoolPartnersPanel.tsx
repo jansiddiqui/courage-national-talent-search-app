@@ -281,89 +281,91 @@ export default function SchoolPartnersPanel() {
       {/* Add Modal */}
       {showAddModal && (
         <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white z-10">
+          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl overflow-hidden">
+            <div className="p-6 border-b border-slate-100 flex justify-between items-center shrink-0 bg-white">
               <h3 className="font-display font-bold text-xl text-slate-800">Onboard New School</h3>
               <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
                 <XCircle size={24} />
               </button>
             </div>
             
-            <form onSubmit={handleSave} className="p-6 space-y-6">
-              {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl">{error}</div>}
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">School Name *</label>
-                  <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl" />
+            <form onSubmit={handleSave} className="flex flex-col flex-1 overflow-hidden">
+              <div className="p-6 space-y-6 overflow-y-auto flex-1">
+                {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl">{error}</div>}
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">School Name *</label>
+                    <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">City *</label>
+                    <input required value={formData.city} onChange={e => { setFormData({...formData, city: e.target.value}); if(!formData.school_code) generateCode(); }} className="w-full px-4 py-2 border border-slate-200 rounded-xl" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">Board *</label>
+                    <select required value={formData.board} onChange={e => setFormData({...formData, board: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
+                      <option value="">Select Board</option>
+                      <option value="CBSE">CBSE</option>
+                      <option value="ICSE">ICSE</option>
+                      <option value="State Board">State Board</option>
+                      <option value="IB">IB</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">School Type</label>
+                    <select required value={formData.school_type} onChange={e => setFormData({...formData, school_type: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
+                      <option value="PRIVATE">Private</option>
+                      <option value="GOVERNMENT">Government</option>
+                      <option value="TRUST">Trust</option>
+                      <option value="COACHING">Coaching</option>
+                      <option value="OTHER">Other</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">City *</label>
-                  <input required value={formData.city} onChange={e => { setFormData({...formData, city: e.target.value}); if(!formData.school_code) generateCode(); }} className="w-full px-4 py-2 border border-slate-200 rounded-xl" />
+
+                <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">Coordinator Name *</label>
+                    <input required value={formData.coordinator_name} onChange={e => setFormData({...formData, coordinator_name: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">Mobile Number *</label>
+                    <input required value={formData.coordinator_mobile} onChange={e => setFormData({...formData, coordinator_mobile: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">Email Address</label>
+                    <input type="email" value={formData.coordinator_email} onChange={e => setFormData({...formData, coordinator_email: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">Board *</label>
-                  <select required value={formData.board} onChange={e => setFormData({...formData, board: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
-                    <option value="">Select Board</option>
-                    <option value="CBSE">CBSE</option>
-                    <option value="ICSE">ICSE</option>
-                    <option value="State Board">State Board</option>
-                    <option value="IB">IB</option>
-                    <option value="Other">Other</option>
-                  </select>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">Seat Quota *</label>
+                    <input type="number" required value={formData.quota} onChange={e => setFormData({...formData, quota: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl font-bold" />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-500 uppercase">Sponsorship Mode</label>
+                    <select value={formData.sponsorship_mode} onChange={e => setFormData({...formData, sponsorship_mode: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
+                      <option value="FULL">FULL (100% Free for Student)</option>
+                      <option value="PARTIAL">PARTIAL (Split Payment)</option>
+                    </select>
+                  </div>
                 </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">School Type</label>
-                  <select required value={formData.school_type} onChange={e => setFormData({...formData, school_type: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
-                    <option value="PRIVATE">Private</option>
-                    <option value="GOVERNMENT">Government</option>
-                    <option value="TRUST">Trust</option>
-                    <option value="COACHING">Coaching</option>
-                    <option value="OTHER">Other</option>
-                  </select>
+
+                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-center justify-between">
+                  <div>
+                    <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">Generated Credentials</p>
+                    <p className="text-sm text-blue-700">Code: <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">{formData.school_code || "-"}</span> &nbsp; PIN: <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">{formData.pin || "-"}</span></p>
+                  </div>
+                  <button type="button" onClick={generateCode} className="text-xs font-semibold text-blue-600 hover:text-blue-800 px-3 py-1.5 bg-white rounded-lg border border-blue-200 shadow-sm">
+                    Regenerate
+                  </button>
                 </div>
               </div>
 
-              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">Coordinator Name *</label>
-                  <input required value={formData.coordinator_name} onChange={e => setFormData({...formData, coordinator_name: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">Mobile Number *</label>
-                  <input required value={formData.coordinator_mobile} onChange={e => setFormData({...formData, coordinator_mobile: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">Email Address</label>
-                  <input type="email" value={formData.coordinator_email} onChange={e => setFormData({...formData, coordinator_email: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">Seat Quota *</label>
-                  <input type="number" required value={formData.quota} onChange={e => setFormData({...formData, quota: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl font-bold" />
-                </div>
-                <div className="space-y-1">
-                  <label className="text-xs font-semibold text-slate-500 uppercase">Sponsorship Mode</label>
-                  <select value={formData.sponsorship_mode} onChange={e => setFormData({...formData, sponsorship_mode: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
-                    <option value="FULL">FULL (100% Free for Student)</option>
-                    <option value="PARTIAL">PARTIAL (Split Payment)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">Generated Credentials</p>
-                  <p className="text-sm text-blue-700">Code: <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">{formData.school_code || "-"}</span> &nbsp; PIN: <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">{formData.pin || "-"}</span></p>
-                </div>
-                <button type="button" onClick={generateCode} className="text-xs font-semibold text-blue-600 hover:text-blue-800 px-3 py-1.5 bg-white rounded-lg border border-blue-200 shadow-sm">
-                  Regenerate
-                </button>
-              </div>
-
-              <div className="flex justify-end gap-3 pt-4">
+              <div className="p-6 border-t border-slate-100 bg-white shrink-0 flex justify-end gap-3">
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-6 py-2.5 text-slate-600 font-semibold hover:bg-slate-50 rounded-xl">Cancel</button>
                 <button type="submit" disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 shadow-md">
                   {saving ? "Saving..." : <><CheckCircle size={18} /> Complete Onboarding</>}
