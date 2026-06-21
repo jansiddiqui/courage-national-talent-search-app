@@ -71,16 +71,10 @@ export default function RecoverIdPage() {
 
       const data = await response.json();
 
-      if (!response.ok) {
-        setError(data.message || "Failed to recover ID. Please try again.");
-        return;
-      }
-
-      if (data.success && data.candidates) {
-        setCandidates(data.candidates);
+      if (data.success) {
         setSuccess(true);
       } else {
-        setError("No registrations found matching this contact info.");
+        setError(data.message || "No registrations found matching this contact info.");
       }
     } catch (err) {
       console.error("Recovery error:", err);
@@ -177,97 +171,49 @@ export default function RecoverIdPage() {
               </button>
             </form>
           ) : (
-            /* Display Candidates list */
-            <div className="space-y-6 animate-slide-up">
-              <div className="p-4 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-start gap-2.5 text-xs text-emerald-800">
-                <CheckCircle2 className="shrink-0 text-emerald-600 mt-0.5" size={16} />
-                <div>
-                  <h4 className="font-bold">Credential Recovery Match Found</h4>
-                  <p className="text-emerald-700 text-[11px] mt-0.5">
-                    We found {candidates.length} active registration{candidates.length > 1 ? "s" : ""} matching your search criteria.
-                  </p>
+            /* Dispatch Success Card */
+            <div className="space-y-6 animate-slide-up text-center py-6">
+              <div className="mx-auto w-16 h-16 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center mb-4">
+                <CheckCircle2 size={36} />
+              </div>
+              
+              <div className="space-y-2">
+                <h3 className="font-display font-bold text-xl text-slate-800">IDs Dispatched Successfully!</h3>
+                <p className="text-slate-500 text-sm max-w-md mx-auto leading-relaxed">
+                  If there are any candidate registrations matching <strong className="text-slate-700">{contactInfo}</strong>, their CNTS IDs and login credentials have been dispatched directly to your registered WhatsApp number and parent email.
+                </p>
+              </div>
+
+              <div className="bg-slate-50 border border-slate-200/60 rounded-2xl p-5 max-w-md mx-auto text-left space-y-3 text-xs text-slate-600 leading-normal">
+                <div className="flex gap-2.5">
+                  <span className="font-bold text-slate-750 shrink-0">1. Check WhatsApp:</span>
+                  <span>Look for a message from Courage National Talent Search with your ID(s).</span>
+                </div>
+                <div className="flex gap-2.5">
+                  <span className="font-bold text-slate-750 shrink-0">2. Check Email:</span>
+                  <span>Look in your inbox (and spam folder) for the login credentials email.</span>
+                </div>
+                <div className="flex gap-2.5">
+                  <span className="font-bold text-slate-750 shrink-0">3. Login using DOB:</span>
+                  <span>Use the recovered ID and your student's Date of Birth to access the dashboard.</span>
                 </div>
               </div>
 
-              <div className="space-y-4">
-                {candidates.map((c) => {
-                  const finalId = c.cnts_id || c.registration_id;
-                  const isPaid = c.payment_status === "PAID";
-                  return (
-                    <div 
-                      key={c.registration_id} 
-                      className="border border-slate-150 rounded-2xl p-5 hover:bg-slate-50/50 hover:border-blue-150 transition-all flex flex-col md:flex-row justify-between items-start md:items-center gap-4"
-                    >
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-2">
-                          <span className="p-1.5 bg-blue-50 text-blue-800 rounded-lg shrink-0">
-                            <User size={14} />
-                          </span>
-                          <h4 className="font-bold text-sm text-slate-800">{c.student_name}</h4>
-                          <span className="px-2 py-0.5 bg-slate-150 text-slate-700 text-[9px] font-bold rounded">
-                            Class {c.student_class}
-                          </span>
-                        </div>
-                        
-                        <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 font-medium">
-                          <span className="flex items-center gap-1">
-                            Status: 
-                            <strong className={`font-semibold ${isPaid ? "text-emerald-700" : "text-amber-705"}`}>
-                              {isPaid ? "✓ Active / Paid" : "Payment Pending"}
-                            </strong>
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
-                        {/* CNTS ID BOX */}
-                        <div className="bg-slate-100 border border-slate-200 rounded-xl px-3.5 py-2 flex items-center justify-between gap-3 font-mono text-xs text-slate-800">
-                          <span className="font-bold tracking-wider select-all">{finalId}</span>
-                          <button
-                            type="button"
-                            onClick={() => handleCopy(finalId)}
-                            className="text-slate-400 hover:text-slate-700 p-0.5 cursor-pointer"
-                            title="Copy CNTS ID"
-                          >
-                            {copiedId === finalId ? <Check size={14} className="text-emerald-600" /> : <Copy size={14} />}
-                          </button>
-                        </div>
-
-                        {isPaid ? (
-                          <Link
-                            href="/login"
-                            className="px-4 py-2.5 bg-blue-800 hover:bg-blue-750 text-white font-bold rounded-xl text-[11px] text-center transition-colors shadow-sm cursor-pointer"
-                          >
-                            Login to Dashboard
-                          </Link>
-                        ) : (
-                          <Link
-                            href={`/register?id=${c.registration_id}`}
-                            className="px-4 py-2.5 bg-amber-600 hover:bg-amber-550 text-white font-bold rounded-xl text-[11px] text-center transition-colors shadow-sm cursor-pointer"
-                          >
-                            Complete Payment (₹99)
-                          </Link>
-                        )}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-
-              <div className="flex gap-4 pt-2">
+              <div className="flex flex-col sm:flex-row gap-4 pt-4 max-w-md mx-auto">
                 <button
                   type="button"
                   onClick={() => {
                     setSuccess(false);
                     setError("");
+                    setContactInfo("");
                   }}
-                  className="flex-1 py-3 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all text-center cursor-pointer"
+                  className="flex-1 py-3.5 border border-slate-200 hover:bg-slate-50 text-slate-700 rounded-xl text-xs font-bold transition-all text-center cursor-pointer"
                 >
-                  Search Again
+                  Search Another Number
                 </button>
                 <Link
                   href="/login"
-                  className="flex-1 py-3 bg-slate-900 hover:bg-slate-850 text-white rounded-xl text-xs font-bold transition-all text-center cursor-pointer"
+                  className="flex-1 py-3.5 bg-blue-800 hover:bg-blue-750 text-white rounded-xl text-xs font-bold transition-all text-center cursor-pointer"
                 >
                   Proceed to Login
                 </Link>

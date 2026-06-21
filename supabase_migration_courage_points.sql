@@ -29,8 +29,21 @@ CREATE OR REPLACE FUNCTION public.handle_new_referral()
 RETURNS trigger AS $$
 DECLARE
     current_refs int;
+    v_is_paid_now boolean;
 BEGIN
-    IF NEW.referral_code IS NOT NULL THEN
+    -- Check if registration is paid or sponsored now
+    IF TG_OP = 'INSERT' THEN
+        v_is_paid_now := (NEW.payment_status = 'PAID' OR NEW.payment_status = 'SPONSORED');
+    ELSIF TG_OP = 'UPDATE' THEN
+        v_is_paid_now := (
+            (OLD.payment_status IS NULL OR (OLD.payment_status != 'PAID' AND OLD.payment_status != 'SPONSORED'))
+            AND (NEW.payment_status = 'PAID' OR NEW.payment_status = 'SPONSORED')
+        );
+    ELSE
+        v_is_paid_now := false;
+    END IF;
+
+    IF v_is_paid_now AND NEW.referral_code IS NOT NULL THEN
         -- Check if the referral code belongs to a valid registration
         SELECT total_referrals INTO current_refs
         FROM public.registrations
@@ -49,9 +62,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- 4. Create the trigger on the registrations table
+-- 4. Create the triggers on the registrations table
 DROP TRIGGER IF EXISTS trigger_new_registration_referral ON public.registrations;
-CREATE TRIGGER trigger_new_registration_referral
+
+DROP TRIGGER IF EXISTS trigger_new_registration_referral_insert ON public.registrations;
+CREATE TRIGGER trigger_new_registration_referral_insert
 AFTER INSERT ON public.registrations
+FOR EACH ROW
+EXECUTE FUNCTION public.handle_new_referral();
+
+DROP TRIGGER IF EXISTS trigger_new_registration_referral_update ON public.registrations;
+CREATE TRIGGER trigger_new_registration_referral_update
+AFTER UPDATE ON public.registrations
 FOR EACH ROW
 EXECUTE FUNCTION public.handle_new_referral();

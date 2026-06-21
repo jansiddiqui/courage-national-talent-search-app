@@ -3,9 +3,19 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { whatsappService } from "@/services/whatsappService";
 import { emailService } from "@/services/emailService";
+import { isRateLimited } from "@/lib/rateLimiter";
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
+    const { limited } = await isRateLimited(ip, "forgot-id", 5, 60);
+    if (limited) {
+      return NextResponse.json(
+        { success: false, message: "Too many forgot ID attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const { phoneNumber } = await request.json();
 
     if (!phoneNumber) {

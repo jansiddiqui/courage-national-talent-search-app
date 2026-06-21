@@ -24,10 +24,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Invalid session" }, { status: 401 });
     }
 
-    const { name, studentClass, mobileNumber, parentEmail, gender } = await request.json();
+    const { name, studentClass, dob, mobileNumber, parentEmail, gender } = await request.json();
 
-    if (!name || !studentClass || !mobileNumber) {
-      return NextResponse.json({ success: false, message: "Name, Class, and Parent Mobile Number are required." }, { status: 400 });
+    if (!name || !studentClass || !dob || !mobileNumber) {
+      return NextResponse.json({ success: false, message: "Name, Class, Date of Birth, and Parent Mobile Number are required." }, { status: 400 });
+    }
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
+      return NextResponse.json({ success: false, message: "Invalid Date of Birth format. Expected YYYY-MM-DD." }, { status: 400 });
     }
 
     if (!hasSupabaseAdminConfig) {
@@ -67,7 +71,7 @@ export async function POST(request: Request) {
     const { error: rpcError } = await (supabaseAdmin as any).rpc('consume_school_quota_and_register', {
       p_registration_id: regId,
       p_student_name: name,
-      p_dob: "2000-01-01", // dummy DOB since form doesn't require it
+      p_dob: dob,
       p_student_class: String(studentClass),
       p_school_name: school.name,
       p_school_city: school.city,

@@ -4,6 +4,36 @@ import { jwtVerify } from "jose";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { v4 as uuidv4 } from "uuid";
 
+function cleanExcelDob(dobVal: any): string | null {
+  if (dobVal === undefined || dobVal === null) return null;
+
+  if (typeof dobVal === "number") {
+    const days = dobVal > 59 ? dobVal - 1 : dobVal;
+    const date = new Date(Math.round((days - 25569) * 86400 * 1000));
+    if (!isNaN(date.getTime())) {
+      return date.toISOString().split("T")[0];
+    }
+  }
+
+  const dobStr = String(dobVal).trim();
+  if (!dobStr) return null;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(dobStr)) return dobStr;
+
+  const dmyMatch = dobStr.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{4})$/);
+  if (dmyMatch) {
+    const [, d, m, y] = dmyMatch;
+    return `${y}-${m.padStart(2, "0")}-${d.padStart(2, "0")}`;
+  }
+
+  const parsed = new Date(dobStr);
+  if (!isNaN(parsed.getTime())) {
+    return parsed.toISOString().split("T")[0];
+  }
+
+  return null;
+}
+
 const JWT_SECRET = new TextEncoder().encode(process.env.SUPABASE_SERVICE_ROLE_KEY || "fallback_secret_key");
 
 export async function POST(request: Request) {
@@ -70,13 +100,32 @@ export async function POST(request: Request) {
     // Process sequentially to respect quota
     for (const [index, student] of students.entries()) {
       const name = student["Student Name"] || student["Name"] || student["studentName"];
-      const cls = student["Class"] || student["studentClass"] || "Not Specified";
-      const mobile = student["Mobile Number"] || student["Mobile"] || "0000000000";
+      const cls = student["Class"] || student["studentClass"];
+      const dobVal = student["Date of Birth (DD/MM/YYYY)"] || student["Date of Birth"] || student["DOB"] || student["dob"];
+      const mobile = student["Mobile Number"] || student["Mobile"];
       
       if (!name) {
-        errors.push(`Row ${index + 1}: Name missing`);
+        errors.push(`Row ${index + 1}: Student Name is missing.`);
         continue;
       }
+
+      if (!cls) {
+        errors.push(`Row ${index + 1} (${name}): Class is missing.`);
+        continue;
+      }
+
+      const dob = cleanExcelDob(dobVal);
+      if (!dob) {
+        errors.push(`Row ${index + 1} (${name}): Date of Birth is missing or invalid. Use DD/MM/YYYY format.`);
+        continue;
+      }
+
+      if (!mobile || String(mobile).replace(/\D/g, "").length < 10) {
+        errors.push(`Row ${index + 1} (${name}): Valid 10-digit Parent Mobile Number is required.`);
+        continue;
+      }
+
+      const cleanMobile = String(mobile).replace(/\D/g, "").slice(-10);
 
       // Generate random CNTS ID
       const regId = `CNTS-${Date.now().toString().slice(-6)}-${Math.floor(Math.random() * 1000)}`;
@@ -85,15 +134,15 @@ export async function POST(request: Request) {
       const { error: rpcError } = await (supabaseAdmin as any).rpc('consume_school_quota_and_register', {
         p_registration_id: regId,
         p_student_name: name,
-        p_dob: "2000-01-01", // dummy DOB since excel might not have it
+        p_dob: dob,
         p_student_class: String(cls),
         p_school_name: school.name,
         p_school_city: school.city,
         p_school_code: sessionSchoolCode,
         p_school_id: sessionSchoolId,
         p_parent_name: "Provided by School",
-        p_mobile_number: String(mobile),
-        p_whatsapp_number: String(mobile),
+        p_mobile_number: cleanMobile,
+        p_whatsapp_number: cleanMobile,
         p_parent_email: "school_bulk@example.com",
         p_state: school.city, // assume same state roughly or dummy
         p_district: school.city,

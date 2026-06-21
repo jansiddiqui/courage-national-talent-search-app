@@ -366,3 +366,16 @@ alter table public.registrations add column school_id uuid references public.sch
 
 -- Enable RLS for schools
 alter table public.schools enable row level security;
+
+-- 22. Create rate_limit_attempts table
+create table if not exists public.rate_limit_attempts (
+  id uuid default gen_random_uuid() primary key,
+  ip_hash text not null,
+  endpoint text not null,
+  attempted_at timestamptz default now() not null
+);
+
+-- Create index for faster rate limit validation
+create index if not exists rate_limit_attempts_ip_hash_endpoint_idx 
+  on public.rate_limit_attempts(ip_hash, endpoint);
+

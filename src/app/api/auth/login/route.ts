@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { signSession } from "@/lib/sessionHelper";
+import { isRateLimited } from "@/lib/rateLimiter";
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
@@ -66,6 +67,12 @@ async function resetLoginLockout(cntsId: string) {
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
+    const { limited } = await isRateLimited(ip, "parent-login", 15, 60);
+    if (limited) {
+      return NextResponse.json({ success: false, message: "Too many login attempts. Please try again later." }, { status: 429 });
+    }
+
     if (!JWT_SECRET) {
       throw new Error("CRITICAL CONFIGURATION ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required.");
     }

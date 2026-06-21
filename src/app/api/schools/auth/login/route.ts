@@ -2,11 +2,21 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { SignJWT } from "jose";
+import { isRateLimited } from "@/lib/rateLimiter";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.SUPABASE_SERVICE_ROLE_KEY || "fallback_secret_key");
 
 export async function POST(request: Request) {
   try {
+    const ip = request.headers.get("x-forwarded-for")?.split(",")[0].trim() || "127.0.0.1";
+    const { limited } = await isRateLimited(ip, "school-login", 15, 60);
+    if (limited) {
+      return NextResponse.json(
+        { success: false, message: "Too many login attempts. Please try again later." },
+        { status: 429 }
+      );
+    }
+
     const { schoolCode, pin } = await request.json();
 
     if (!schoolCode || !pin) {

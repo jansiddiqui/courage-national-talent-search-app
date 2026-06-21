@@ -19,6 +19,7 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
   const [keepFormOpen, setKeepFormOpen] = useState(true);
   const [studentName, setStudentName] = useState("");
   const [studentClass, setStudentClass] = useState("");
+  const [studentDob, setStudentDob] = useState("");
   const [parentMobile, setParentMobile] = useState("");
   const [parentEmail, setParentEmail] = useState("");
   const [gender, setGender] = useState("");
@@ -57,25 +58,27 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
   const downloadTemplate = () => {
     // Create first sheet (Students)
     const wsStudents = XLSX.utils.json_to_sheet([], {
-      header: ["Student Name", "Class", "Mobile Number"]
+      header: ["Student Name", "Class", "Date of Birth (DD/MM/YYYY)", "Mobile Number"]
     });
     
     // Set column widths for Students sheet (wch is width in characters)
     wsStudents['!cols'] = [
       { wch: 30 }, // Student Name
       { wch: 12 }, // Class
+      { wch: 25 }, // Date of Birth (DD/MM/YYYY)
       { wch: 20 }  // Mobile Number
     ];
     
     // Create second sheet (Instructions)
     const instructions = [
       { "Instruction / Guideline": "1. Fill in student details in the first tab named 'Students'." },
-      { "Instruction / Guideline": "2. Do not rename the column headers ('Student Name', 'Class', 'Mobile Number')." },
+      { "Instruction / Guideline": "2. Do not rename the column headers ('Student Name', 'Class', 'Date of Birth (DD/MM/YYYY)', 'Mobile Number')." },
       { "Instruction / Guideline": "3. The Class column only accepts values between 5 and 12." },
-      { "Instruction / Guideline": "4. Mobile Number must be a valid 10-digit number." },
-      { "Instruction / Guideline": `5. This template is personalized for: ${school.name}` },
-      { "Instruction / Guideline": `6. Personalized School Code: ${school.school_code}` },
-      { "Instruction / Guideline": `7. Your remaining quota capacity is: ${school.quota - usedQuota} seats.` }
+      { "Instruction / Guideline": "4. Date of Birth must be in DD/MM/YYYY format (e.g. 14/05/2013)." },
+      { "Instruction / Guideline": "5. Mobile Number must be a valid 10-digit number." },
+      { "Instruction / Guideline": `6. This template is personalized for: ${school.name}` },
+      { "Instruction / Guideline": `7. Personalized School Code: ${school.school_code}` },
+      { "Instruction / Guideline": `8. Your remaining quota capacity is: ${school.quota - usedQuota} seats.` }
     ];
     const wsInstructions = XLSX.utils.json_to_sheet(instructions);
     
@@ -144,6 +147,10 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
       setFormError("Please select a class.");
       return;
     }
+    if (!studentDob) {
+      setFormError("Please enter the student's Date of Birth.");
+      return;
+    }
     if (parentMobile.length !== 10 || !/^\d+$/.test(parentMobile)) {
       setFormError("Please enter a valid 10-digit mobile number.");
       return;
@@ -157,6 +164,7 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
         body: JSON.stringify({
           name: studentName.trim(),
           studentClass,
+          dob: studentDob,
           mobileNumber: parentMobile,
           parentEmail: parentEmail.trim(),
           gender
@@ -185,6 +193,7 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
         // Reset inputs
         setStudentName("");
         setStudentClass("");
+        setStudentDob("");
         setParentMobile("");
         setParentEmail("");
         setGender("");
@@ -328,6 +337,19 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
                             value={studentName}
                             onChange={e => setStudentName(e.target.value)}
                             placeholder="e.g. Rahul Sharma"
+                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-800 text-sm shadow-inner"
+                            disabled={registering || remainingQuota <= 0}
+                          />
+                        </div>
+
+                        {/* Date of Birth */}
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Date of Birth *</label>
+                          <input 
+                            required 
+                            type="date"
+                            value={studentDob}
+                            onChange={e => setStudentDob(e.target.value)}
                             className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-800 text-sm shadow-inner"
                             disabled={registering || remainingQuota <= 0}
                           />

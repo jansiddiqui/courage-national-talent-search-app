@@ -521,7 +521,8 @@ function RegisterForm() {
         body: JSON.stringify({
           couponCode: isCouponApplied ? couponCode.trim().toUpperCase() : "",
           schoolCode: schoolSuccess && formData.schoolCode ? formData.schoolCode.trim().toUpperCase() : "",
-          email: formData.parentEmail
+          email: formData.parentEmail,
+          draftRegId: draftRegId
         })
       });
 

@@ -1,6 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
+import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
+import { verifySession } from "@/lib/sessionHelper";
+
+const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
 export async function GET(
   request: Request,
@@ -16,9 +20,28 @@ export async function GET(
     const normalizedId = id.trim().toUpperCase();
     let candidate: any = null;
 
+    // 1. Session verification check
+    const cookieStore = await cookies();
+    const token = cookieStore.get("cnts_session")?.value;
+    
+    if (!token) {
+      return new NextResponse("Unauthorized: Please log in to view this document.", { status: 401 });
+    }
+
+    const session = await verifySession(token, JWT_SECRET);
+    if (!session) {
+      return new NextResponse("Unauthorized: Invalid session.", { status: 401 });
+    }
+
+    const isAdmin = ["ADMIN", "SUPER_ADMIN", "VOLUNTEER"].includes(session.role);
+
     if (!hasSupabaseAdminConfig) {
       // Sandbox/Mock response
       if (normalizedId === "CNTS26-8XK4P") {
+        const isOwner = session.cntsId?.toUpperCase() === "CNTS260001" || session.cntsId?.toUpperCase() === "CNTS26-8XK4P";
+        if (!isAdmin && !isOwner) {
+          return new NextResponse("Forbidden: You do not have permission to view this receipt.", { status: 403 });
+        }
         candidate = {
           registration_id: "CNTS26-8XK4P",
           cnts_id: "CNTS260001",
@@ -51,6 +74,15 @@ export async function GET(
       }
 
       if (reg) {
+        const isOwner = session.cntsId && (
+          session.cntsId.toUpperCase() === reg.registration_id?.toUpperCase() || 
+          session.cntsId.toUpperCase() === reg.cnts_id?.toUpperCase()
+        );
+
+        if (!isAdmin && !isOwner) {
+          return new NextResponse("Forbidden: You do not have permission to view this receipt.", { status: 403 });
+        }
+
         candidate = reg;
       }
     }

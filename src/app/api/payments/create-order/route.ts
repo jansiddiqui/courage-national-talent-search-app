@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { couponCode, email, schoolCode } = await request.json();
+    const { couponCode, email, schoolCode, draftRegId } = await request.json();
     let finalAmount = 99; // Default price: ₹99
 
     const { supabaseAdmin, hasSupabaseAdminConfig } = await import("@/lib/supabaseAdmin");
@@ -125,6 +125,9 @@ export async function POST(request: Request) {
         amount: finalAmount * 100, // amount in paise
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
+        notes: {
+          draftRegId: draftRegId || ""
+        }
       }),
     });
 
