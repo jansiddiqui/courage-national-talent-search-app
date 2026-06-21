@@ -280,17 +280,17 @@ export default function SchoolPartnersPanel() {
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col shadow-xl overflow-hidden">
-            <div className="p-6 border-b border-slate-100 flex justify-between items-center shrink-0 bg-white">
-              <h3 className="font-display font-bold text-xl text-slate-800">Onboard New School</h3>
-              <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600">
-                <XCircle size={24} />
-              </button>
-            </div>
-            
-            <div className="flex flex-col flex-1 overflow-hidden min-h-0">
-              <div className="p-6 space-y-6 overflow-y-auto flex-1 bg-white">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 py-10">
+            <div className="bg-white rounded-3xl w-full max-w-2xl shadow-xl relative">
+              <div className="p-6 border-b border-slate-100 flex justify-between items-center rounded-t-3xl bg-white sticky top-0 z-20">
+                <h3 className="font-display font-bold text-xl text-slate-800">Onboard New School</h3>
+                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full p-1 transition-colors">
+                  <XCircle size={24} />
+                </button>
+              </div>
+              
+              <div className="p-6 space-y-6">
                 <form id="onboard-school-form" onSubmit={handleSave} className="space-y-6">
                   {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl">{error}</div>}
                   
@@ -356,7 +356,7 @@ export default function SchoolPartnersPanel() {
                   </div>
                 </form>
 
-                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-center justify-between mt-6">
+                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-center justify-between">
                   <div>
                     <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">Generated Credentials</p>
                     <p className="text-sm text-blue-700">Code: <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">{formData.school_code || "-"}</span> &nbsp; PIN: <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">{formData.pin || "-"}</span></p>
@@ -367,9 +367,9 @@ export default function SchoolPartnersPanel() {
                 </div>
               </div>
 
-              <div className="p-6 border-t border-slate-100 bg-white shrink-0 flex justify-end gap-3 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-20">
-                <button type="button" onClick={() => setShowAddModal(false)} className="px-6 py-2.5 text-slate-600 font-semibold hover:bg-slate-50 rounded-xl">Cancel</button>
-                <button type="submit" form="onboard-school-form" disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 shadow-md">
+              <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-3xl flex justify-end gap-3">
+                <button type="button" onClick={() => setShowAddModal(false)} className="px-6 py-2.5 text-slate-600 font-semibold hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">Cancel</button>
+                <button type="submit" form="onboard-school-form" disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 shadow-md transition-all active:scale-95">
                   {saving ? "Saving..." : <><CheckCircle size={18} /> Complete Onboarding</>}
                 </button>
               </div>
