@@ -288,10 +288,11 @@ export default function SchoolPartnersPanel() {
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4">
           <div 
-            className="bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
-            style={{ width: 'min(900px, 95vw)', maxHeight: '90vh' }}
+            className="bg-white rounded-2xl shadow-2xl flex flex-col w-full"
+            style={{ maxWidth: 'min(900px, 95vw)', maxHeight: '90vh' }}
           >
             {/* Header */}
             <div className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
@@ -483,6 +484,7 @@ export default function SchoolPartnersPanel() {
                 </>
               )}
             </div>
+          </div>
           </div>
         </div>
       )}
