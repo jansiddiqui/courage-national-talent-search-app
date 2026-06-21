@@ -8,6 +8,7 @@ export default function SchoolPartnersPanel() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showAddModal, setShowAddModal] = useState(false);
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -45,6 +46,18 @@ export default function SchoolPartnersPanel() {
     fetchSchools();
   }, []);
 
+  useEffect(() => {
+    if (showAddModal) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+      setIsSuccess(false); // Reset on close
+    }
+    return () => {
+      document.body.style.overflow = "unset";
+    };
+  }, [showAddModal]);
+
   const generateCode = () => {
     const cityPrefix = formData.city.substring(0, 3).toUpperCase() || "XXX";
     const randomNum = Math.floor(1000 + Math.random() * 9000);
@@ -67,13 +80,8 @@ export default function SchoolPartnersPanel() {
       const data = await res.json();
 
       if (data.success) {
-        setShowAddModal(false);
+        setIsSuccess(true);
         fetchSchools();
-        setFormData({
-          name: "", city: "", board: "", school_type: "PRIVATE", 
-          coordinator_name: "", coordinator_mobile: "", coordinator_email: "",
-          quota: "50", sponsorship_mode: "FULL", pin: "", school_code: ""
-        });
       } else {
         setError(data.message || "Failed to add school");
       }
@@ -280,99 +288,196 @@ export default function SchoolPartnersPanel() {
 
       {/* Add Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 overflow-y-auto">
-          <div className="flex justify-center min-h-full p-4 sm:p-8">
-            <div className="bg-white rounded-3xl w-full max-w-2xl shadow-xl mt-8 mb-8 h-max">
-              <div className="p-6 border-b border-slate-100 flex justify-between items-center rounded-t-3xl bg-white">
-                <h3 className="font-display font-bold text-xl text-slate-800">Onboard New School</h3>
-                <button onClick={() => setShowAddModal(false)} className="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full p-1 transition-colors">
-                  <XCircle size={24} />
-                </button>
+        <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div 
+            className="bg-white rounded-2xl shadow-2xl flex flex-col overflow-hidden"
+            style={{ width: 'min(900px, 95vw)', maxHeight: '90vh' }}
+          >
+            {/* Header */}
+            <div className="px-8 py-5 border-b border-slate-100 flex justify-between items-center bg-white shrink-0">
+              <div>
+                <h3 className="font-display font-bold text-2xl text-slate-800">Onboard New School</h3>
+                <p className="text-sm text-slate-500 mt-1">Create a new school partner and generate onboarding credentials.</p>
               </div>
-              
-              <div className="p-6 space-y-6">
-                <form id="onboard-school-form" onSubmit={handleSave} className="space-y-6">
-                  {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-xl">{error}</div>}
+              <button 
+                onClick={() => {
+                  setShowAddModal(false);
+                  if (isSuccess) {
+                    setFormData({
+                      name: "", city: "", board: "", school_type: "PRIVATE", 
+                      coordinator_name: "", coordinator_mobile: "", coordinator_email: "",
+                      quota: "50", sponsorship_mode: "FULL", pin: "", school_code: ""
+                    });
+                  }
+                }} 
+                className="text-slate-400 hover:text-slate-600 bg-slate-50 hover:bg-slate-100 rounded-full p-2 transition-colors self-start"
+              >
+                <XCircle size={24} />
+              </button>
+            </div>
+            
+            {/* Body */}
+            <div className="flex-1 overflow-y-auto p-8 custom-scrollbar">
+              {isSuccess ? (
+                <div className="flex flex-col items-center justify-center py-10 space-y-6">
+                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mb-2">
+                    <CheckCircle size={32} />
+                  </div>
+                  <h3 className="text-2xl font-bold text-slate-800 text-center">School Onboarded Successfully!</h3>
+                  <p className="text-slate-500 text-center max-w-md">The school has been added to the system. Share these credentials with the school coordinator.</p>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">School Name *</label>
-                      <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl" />
+                  <div className="w-full max-w-md bg-slate-50 p-6 rounded-2xl border border-slate-200 space-y-4">
+                    <div>
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">School Code</p>
+                      <div className="flex items-center gap-3">
+                        <code className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl text-lg font-bold text-slate-700 font-mono">
+                          {formData.school_code}
+                        </code>
+                        <button onClick={() => copyToClipboard(formData.school_code)} className="p-3 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors">
+                          {copiedCode === formData.school_code ? <Check size={20} className="text-emerald-500" /> : <Copy size={20} className="text-slate-500" />}
+                        </button>
+                      </div>
                     </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">City *</label>
-                      <input required value={formData.city} onChange={e => { setFormData({...formData, city: e.target.value}); if(!formData.school_code) generateCode(); }} className="w-full px-4 py-2 border border-slate-200 rounded-xl" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">Board *</label>
-                      <select required value={formData.board} onChange={e => setFormData({...formData, board: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
-                        <option value="">Select Board</option>
-                        <option value="CBSE">CBSE</option>
-                        <option value="ICSE">ICSE</option>
-                        <option value="State Board">State Board</option>
-                        <option value="IB">IB</option>
-                        <option value="Other">Other</option>
-                      </select>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">School Type</label>
-                      <select required value={formData.school_type} onChange={e => setFormData({...formData, school_type: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
-                        <option value="PRIVATE">Private</option>
-                        <option value="GOVERNMENT">Government</option>
-                        <option value="TRUST">Trust</option>
-                        <option value="COACHING">Coaching</option>
-                        <option value="OTHER">Other</option>
-                      </select>
+                    <div>
+                      <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Dashboard PIN</p>
+                      <div className="flex items-center gap-3">
+                        <code className="flex-1 px-4 py-3 bg-white border border-slate-200 rounded-xl text-lg font-bold text-slate-700 font-mono">
+                          {formData.pin}
+                        </code>
+                        <button onClick={() => copyToClipboard(formData.pin)} className="p-3 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl transition-colors">
+                          {copiedCode === formData.pin ? <Check size={20} className="text-emerald-500" /> : <Copy size={20} className="text-slate-500" />}
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">Coordinator Name *</label>
-                      <input required value={formData.coordinator_name} onChange={e => setFormData({...formData, coordinator_name: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">Mobile Number *</label>
-                      <input required value={formData.coordinator_mobile} onChange={e => setFormData({...formData, coordinator_mobile: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">Email Address</label>
-                      <input type="email" value={formData.coordinator_email} onChange={e => setFormData({...formData, coordinator_email: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white" />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">Seat Quota *</label>
-                      <input type="number" required value={formData.quota} onChange={e => setFormData({...formData, quota: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl font-bold" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-xs font-semibold text-slate-500 uppercase">Sponsorship Mode</label>
-                      <select value={formData.sponsorship_mode} onChange={e => setFormData({...formData, sponsorship_mode: e.target.value})} className="w-full px-4 py-2 border border-slate-200 rounded-xl bg-white">
-                        <option value="FULL">FULL (100% Free for Student)</option>
-                        <option value="PARTIAL">PARTIAL (Split Payment)</option>
-                      </select>
-                    </div>
-                  </div>
-                </form>
-
-                <div className="bg-blue-50 p-4 rounded-2xl border border-blue-100 flex items-center justify-between">
-                  <div>
-                    <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-1">Generated Credentials</p>
-                    <p className="text-sm text-blue-700">Code: <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">{formData.school_code || "-"}</span> &nbsp; PIN: <span className="font-mono font-bold bg-white px-2 py-0.5 rounded border border-blue-200">{formData.pin || "-"}</span></p>
-                  </div>
-                  <button type="button" onClick={generateCode} className="text-xs font-semibold text-blue-600 hover:text-blue-800 px-3 py-1.5 bg-white rounded-lg border border-blue-200 shadow-sm">
-                    Regenerate
+                  <button 
+                    onClick={() => printCredentials(formData)}
+                    className="mt-4 px-6 py-3 bg-blue-50 text-blue-700 font-semibold rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors flex items-center gap-2"
+                  >
+                    Download School Credentials PDF
                   </button>
                 </div>
-              </div>
+              ) : (
+                <form id="onboard-school-form" onSubmit={handleSave} className="space-y-8">
+                  {error && <div className="p-4 bg-red-50 text-red-700 text-sm rounded-xl border border-red-100 flex items-center gap-2 font-medium"><XCircle size={16} /> {error}</div>}
+                  
+                  {/* Section 1: School Information */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">School Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">School Name *</label>
+                        <input required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="e.g. Delhi Public School" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">City *</label>
+                        <input required value={formData.city} onChange={e => { setFormData({...formData, city: e.target.value}); if(!formData.school_code) generateCode(); }} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="e.g. Lucknow" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">Board *</label>
+                        <select required value={formData.board} onChange={e => setFormData({...formData, board: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none">
+                          <option value="">Select Board</option>
+                          <option value="CBSE">CBSE</option>
+                          <option value="ICSE">ICSE</option>
+                          <option value="State Board">State Board</option>
+                          <option value="IB">IB</option>
+                          <option value="Other">Other</option>
+                        </select>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">School Type</label>
+                        <select required value={formData.school_type} onChange={e => setFormData({...formData, school_type: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none">
+                          <option value="PRIVATE">Private</option>
+                          <option value="GOVERNMENT">Government</option>
+                          <option value="TRUST">Trust</option>
+                          <option value="COACHING">Coaching</option>
+                          <option value="OTHER">Other</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
 
-              <div className="p-6 border-t border-slate-100 bg-slate-50 rounded-b-3xl flex justify-end gap-3">
-                <button type="button" onClick={() => setShowAddModal(false)} className="px-6 py-2.5 text-slate-600 font-semibold hover:bg-slate-200 bg-slate-100 rounded-xl transition-colors">Cancel</button>
-                <button type="submit" form="onboard-school-form" disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 shadow-md transition-all active:scale-95">
-                  {saving ? "Saving..." : <><CheckCircle size={18} /> Complete Onboarding</>}
+                  {/* Section 2: Coordinator Information */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">Coordinator Information</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="space-y-1.5 md:col-span-2">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">Coordinator Name *</label>
+                        <input required value={formData.coordinator_name} onChange={e => setFormData({...formData, coordinator_name: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="e.g. Ramesh Kumar" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">Mobile Number *</label>
+                        <input required value={formData.coordinator_mobile} onChange={e => setFormData({...formData, coordinator_mobile: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="10-digit number" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">Email Address</label>
+                        <input type="email" value={formData.coordinator_email} onChange={e => setFormData({...formData, coordinator_email: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" placeholder="coordinator@school.com" />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Section 3: Sponsorship Settings */}
+                  <div className="space-y-4">
+                    <h4 className="text-sm font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-2">Sponsorship Settings</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">Seat Quota *</label>
+                        <input type="number" required value={formData.quota} onChange={e => setFormData({...formData, quota: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all font-bold text-lg" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-semibold text-slate-600 uppercase">Sponsorship Mode</label>
+                        <select value={formData.sponsorship_mode} onChange={e => setFormData({...formData, sponsorship_mode: e.target.value})} className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none">
+                          <option value="FULL">FULL (100% Free for Student)</option>
+                          <option value="PARTIAL">PARTIAL (Split Payment)</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Section 4: Credentials */}
+                  <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <p className="text-xs font-bold text-blue-800 uppercase tracking-wider mb-2">Generated Credentials</p>
+                      <div className="flex gap-4">
+                        <p className="text-sm text-slate-600">Code: <span className="font-mono font-bold bg-white px-2.5 py-1 rounded-md border border-blue-200 text-slate-800">{formData.school_code || "-"}</span></p>
+                        <p className="text-sm text-slate-600">PIN: <span className="font-mono font-bold bg-white px-2.5 py-1 rounded-md border border-blue-200 text-slate-800">{formData.pin || "-"}</span></p>
+                      </div>
+                    </div>
+                    <button type="button" onClick={generateCode} className="text-xs font-semibold text-blue-700 hover:text-blue-900 px-4 py-2 bg-white rounded-xl border border-blue-200 shadow-sm transition-colors whitespace-nowrap">
+                      Regenerate
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
+            
+            {/* Footer */}
+            <div className="px-8 py-5 border-t border-slate-100 bg-slate-50 shrink-0 flex justify-end gap-3">
+              {isSuccess ? (
+                <button 
+                  onClick={() => {
+                    setShowAddModal(false);
+                    setFormData({
+                      name: "", city: "", board: "", school_type: "PRIVATE", 
+                      coordinator_name: "", coordinator_mobile: "", coordinator_email: "",
+                      quota: "50", sponsorship_mode: "FULL", pin: "", school_code: ""
+                    });
+                  }} 
+                  className="px-6 py-2.5 bg-slate-800 text-white font-semibold rounded-xl hover:bg-slate-900 transition-colors"
+                >
+                  Close
                 </button>
-              </div>
+              ) : (
+                <>
+                  <button type="button" onClick={() => setShowAddModal(false)} className="px-6 py-2.5 text-slate-600 font-semibold hover:bg-slate-200 bg-white border border-slate-200 rounded-xl transition-colors shadow-sm">
+                    Cancel
+                  </button>
+                  <button type="submit" form="onboard-school-form" disabled={saving} className="px-6 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2 shadow-sm transition-all active:scale-95">
+                    {saving ? "Creating..." : <><CheckCircle size={18} /> Create School</>}
+                  </button>
+                </>
+              )}
             </div>
           </div>
         </div>
