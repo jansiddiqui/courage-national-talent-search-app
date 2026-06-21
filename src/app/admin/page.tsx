@@ -13,6 +13,7 @@ import {
   FileText,
   UserCheck,
   Settings,
+  School,
   ToggleLeft,
   ToggleRight,
   ShieldCheck,
@@ -35,6 +36,7 @@ import {
 } from "lucide-react";
 import { fetchRegistrations, fetchSystemSettings, updateSystemSetting, fetchContactMessages, updateContactMessage } from "@/services/supabaseService";
 import { hasSupabaseConfig } from "@/lib/supabaseClient";
+import SchoolPartnersPanel from "@/components/admin/SchoolPartnersPanel";
 
 interface MetricCardProps {
   title: string;
@@ -104,7 +106,7 @@ export default function AdminOverviewPage() {
   const [testResult, setTestResult] = useState<any>(null);
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support" | "schools">("overview");
 
   // Support Inbox states
   const [contactMessages, setContactMessages] = useState<any[]>([]);
@@ -648,6 +650,7 @@ export default function AdminOverviewPage() {
           <div className="max-w-7xl mx-auto flex gap-6 w-max">
             {[
               { id: "overview", label: "Overview & Analytics", icon: Trophy },
+              { id: "schools", label: "School Partners", icon: School },
               { id: "settings", label: "Global Settings", icon: Settings },
               { id: "whatsapp", label: "WhatsApp Control Center", icon: MessageSquare },
               { id: "coupons", label: "Promo & Coupon Manager", icon: Award },
@@ -1650,6 +1653,10 @@ export default function AdminOverviewPage() {
           </div>
         )}
 
+        {/* Tab 6: School Partners */}
+        {activeTab === "schools" && (
+          <SchoolPartnersPanel />
+        )}
       </main>
 
       {/* Toast Notification */}

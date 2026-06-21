@@ -71,7 +71,8 @@ export async function saveRegistration(
     student_class: data.studentClass,
     school_name: data.schoolName,
     school_city: data.schoolCity,
-    school_code: data.schoolCode || null,
+    school_code: data.schoolCode ? data.schoolCode.trim().toUpperCase() : null,
+    school_id: data.school_id || null,
     parent_name: data.parentName,
     mobile_number: data.mobile_number,
     whatsapp_number: data.whatsapp_number,
@@ -88,6 +89,7 @@ export async function saveRegistration(
     payment_id: data.payment_id || null,
     payment_status: data.payment_status || "PENDING",
     registration_status: data.registration_status || "DRAFT",
+    registration_source: data.schoolCode ? "SCHOOL" : (data.referral_code ? "REFERRAL" : "DIRECT"),
     mobile_verified: data.mobile_verified || false,
     admin_notes: data.admin_notes || null,
     user_id: data.user_id || null,
@@ -96,14 +98,44 @@ export async function saveRegistration(
   };
 
   if (hasSupabaseConfig) {
-    // 1. Insert into registrations table
-    const { error: regError } = await db
-      .from("registrations")
-      .insert(recordToInsert);
+    if (recordToInsert.payment_status === "SPONSORED" && recordToInsert.school_id) {
+      // 1a. Call the RPC to atomic consume quota and register
+      const { error: rpcError } = await db.rpc('consume_school_quota_and_register', {
+        p_registration_id: recordToInsert.registration_id,
+        p_student_name: recordToInsert.student_name,
+        p_dob: recordToInsert.dob,
+        p_student_class: recordToInsert.student_class,
+        p_school_name: recordToInsert.school_name,
+        p_school_city: recordToInsert.school_city,
+        p_school_code: recordToInsert.school_code,
+        p_school_id: recordToInsert.school_id,
+        p_parent_name: recordToInsert.parent_name,
+        p_mobile_number: recordToInsert.mobile_number,
+        p_whatsapp_number: recordToInsert.whatsapp_number,
+        p_parent_email: recordToInsert.parent_email,
+        p_state: recordToInsert.state,
+        p_district: recordToInsert.district,
+        p_language: recordToInsert.language,
+        p_why_participating: recordToInsert.why_participating,
+        p_how_heard: recordToInsert.how_heard,
+        p_payment_status: recordToInsert.payment_status,
+        p_registration_source: recordToInsert.registration_source
+      });
 
-    if (regError) {
-      console.error("Supabase registration insert failed:", regError);
-      throw new Error(`Failed to save registration: ${regError.message}`);
+      if (rpcError) {
+        console.error("Supabase RPC registration failed:", rpcError);
+        throw new Error(`Failed to process sponsored registration: ${rpcError.message}`);
+      }
+    } else {
+      // 1b. Standard Insert into registrations table
+      const { error: regError } = await db
+        .from("registrations")
+        .insert(recordToInsert);
+
+      if (regError) {
+        console.error("Supabase registration insert failed:", regError);
+        throw new Error(`Failed to save registration: ${regError.message}`);
+      }
     }
 
     // 2. Log REGISTERED milestone audit event
@@ -186,6 +218,7 @@ export async function updateRegistrationData(
     if (data.schoolName !== undefined) recordToUpdate.school_name = data.schoolName;
     if (data.schoolCity !== undefined) recordToUpdate.school_city = data.schoolCity;
     if (data.schoolCode !== undefined) recordToUpdate.school_code = data.schoolCode || null;
+    if (data.school_id !== undefined) recordToUpdate.school_id = data.school_id || null;
     if (data.parentName !== undefined) recordToUpdate.parent_name = data.parentName;
     if (data.mobile_number !== undefined) recordToUpdate.mobile_number = data.mobile_number;
     if (data.whatsapp_number !== undefined) recordToUpdate.whatsapp_number = data.whatsapp_number;

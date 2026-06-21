@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
   try {
-    const { couponCode, email } = await request.json();
+    const { couponCode, email, schoolCode } = await request.json();
     let finalAmount = 99; // Default price: ₹99
 
     const { supabaseAdmin, hasSupabaseAdminConfig } = await import("@/lib/supabaseAdmin");
@@ -56,6 +56,26 @@ export async function POST(request: Request) {
       if (discountPercent > 0) {
         // Calculate discounted amount
         finalAmount = Math.max(0, Math.round(99 * (1 - discountPercent / 100)));
+      }
+    }
+
+    if (schoolCode && finalAmount > 0) {
+      const cleanSchoolCode = schoolCode.trim().toUpperCase();
+      if (!hasSupabaseAdminConfig) {
+         if (cleanSchoolCode === "DEMO-123") {
+           finalAmount = 0;
+         }
+      } else {
+        const { data: school, error } = await (supabaseAdmin as any)
+          .from("schools")
+          .select("sponsorship_mode, quota, used_quota, status")
+          .eq("school_code", cleanSchoolCode)
+          .eq("status", "ACTIVE")
+          .maybeSingle();
+        
+        if (school && school.sponsorship_mode === "FULL" && (school.quota - school.used_quota > 0)) {
+           finalAmount = 0;
+        }
       }
     }
 

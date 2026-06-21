@@ -12,6 +12,7 @@ export interface Database {
           school_name: string;
           school_city: string;
           school_code: string | null;
+          school_id: string | null;
           parent_name: string;
           mobile_number: string | null;
           whatsapp_number: string;
@@ -32,6 +33,7 @@ export interface Database {
           mobile_verified: boolean;
           admin_notes: string | null;
           user_id: string | null;
+          registration_source: string;
           created_at: string;
         };
         Insert: {
@@ -43,6 +45,7 @@ export interface Database {
           school_name: string;
           school_city: string;
           school_code?: string | null;
+          school_id?: string | null;
           parent_name: string;
           mobile_number?: string | null;
           whatsapp_number: string;
@@ -63,6 +66,7 @@ export interface Database {
           mobile_verified?: boolean;
           admin_notes?: string | null;
           user_id?: string | null;
+          registration_source?: string;
           created_at?: string;
         };
         Update: {
@@ -74,6 +78,7 @@ export interface Database {
           school_name?: string;
           school_city?: string;
           school_code?: string | null;
+          school_id?: string | null;
           parent_name?: string;
           mobile_number?: string | null;
           whatsapp_number?: string;
@@ -94,6 +99,7 @@ export interface Database {
           mobile_verified?: boolean;
           admin_notes?: string | null;
           user_id?: string | null;
+          registration_source?: string;
           created_at?: string;
         };
       };
@@ -225,6 +231,68 @@ export interface Database {
           status?: string;
           meta_message_id?: string | null;
           created_at?: string;
+        };
+      };
+      schools: {
+        Row: {
+          id: string;
+          school_code: string;
+          name: string;
+          city: string;
+          board: string;
+          school_type: string;
+          coordinator_name: string;
+          coordinator_mobile: string;
+          coordinator_email: string;
+          quota: number;
+          used_quota: number;
+          sponsorship_mode: string;
+          pin: string;
+          status: string;
+          notes: string | null;
+          created_by: string | null;
+          is_featured: boolean;
+          joined_at: string;
+        };
+        Insert: {
+          id?: string;
+          school_code: string;
+          name: string;
+          city: string;
+          board: string;
+          school_type: string;
+          coordinator_name: string;
+          coordinator_mobile: string;
+          coordinator_email: string;
+          quota?: number;
+          used_quota?: number;
+          sponsorship_mode?: string;
+          pin: string;
+          status?: string;
+          notes?: string | null;
+          created_by?: string | null;
+          is_featured?: boolean;
+          joined_at?: string;
+        };
+        Update: {
+          id?: string;
+          school_code?: string;
+          name?: string;
+          city?: string;
+          board?: string;
+          school_type?: string;
+          coordinator_name?: string;
+          coordinator_mobile?: string;
+          coordinator_email?: string;
+          quota?: number;
+          used_quota?: number;
+          sponsorship_mode?: string;
+          pin?: string;
+          status?: string;
+          notes?: string | null;
+          created_by?: string | null;
+          is_featured?: boolean;
+          joined_at?: string;
         };
       };
     };

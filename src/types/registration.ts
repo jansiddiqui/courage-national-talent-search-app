@@ -6,6 +6,7 @@ export interface RegistrationData {
   schoolName: string;
   schoolCity: string;
   schoolCode?: string;
+  school_id?: string;
 
   // Step 2: Parent Information
   parentName: string;

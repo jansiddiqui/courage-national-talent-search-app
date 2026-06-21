@@ -140,10 +140,10 @@ export async function PUT(request: Request) {
 
     // Clean up updates payload to prevent malicious columns injection if not admin
     const allowedColumns = [
-      "student_name", "dob", "student_class", "school_name", "school_city", "school_code",
+      "student_name", "dob", "student_class", "school_name", "school_city", "school_code", "school_id",
       "parent_name", "mobile_number", "whatsapp_number", "parent_email", "state", "district",
       "language", "why_participating", "how_heard", "payment_id", "payment_status",
-      "registration_status", "mobile_verified", "user_id"
+      "registration_status", "mobile_verified", "user_id", "registration_source"
     ];
 
     const recordToUpdate: any = {};

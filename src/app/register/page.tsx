@@ -58,6 +58,12 @@ function RegisterForm() {
   const [showSandboxModal, setShowSandboxModal] = useState(false);
   const [sandboxOrderDetails, setSandboxOrderDetails] = useState<any>(null);
 
+  // School validation state
+  const [schoolData, setSchoolData] = useState<any>(null);
+  const [schoolLoading, setSchoolLoading] = useState(false);
+  const [schoolError, setSchoolError] = useState("");
+  const [schoolSuccess, setSchoolSuccess] = useState(false);
+
   // Mobile verification and registration draft states
   const [draftRegId, setDraftRegId] = useState("");
   const [showDraftSaved, setShowDraftSaved] = useState(false);
@@ -101,6 +107,7 @@ function RegisterForm() {
     const utmMedium = searchParams.get("utm_medium") || "";
     const utmCampaign = searchParams.get("utm_campaign") || "";
     const refCode = searchParams.get("ref") || searchParams.get("referral_code") || "";
+    const schoolParam = searchParams.get("school") || "";
 
     const savedStep = sessionStorage.getItem("cnts_registration_step");
     let stepToSet: RegistrationStep | null = null;
@@ -130,6 +137,7 @@ function RegisterForm() {
         utm_medium: initialData.utm_medium || utmMedium,
         utm_campaign: initialData.utm_campaign || utmCampaign,
         referral_code: initialData.referral_code || refCode,
+        schoolCode: initialData.schoolCode || schoolParam.toUpperCase(),
       }));
       if (stepToSet) {
         setCurrentStep(stepToSet);
@@ -162,6 +170,55 @@ function RegisterForm() {
       sessionStorage.setItem("cnts_registration_step", currentStep.toString());
     }
   }, [currentStep, isHydrated]);
+
+  // Real-time school code validation
+  useEffect(() => {
+    const validateSchool = async () => {
+      const code = formData.schoolCode?.trim().toUpperCase();
+      if (!code || code.length < 5) {
+        setSchoolData(null);
+        setSchoolError("");
+        setSchoolSuccess(false);
+        return;
+      }
+
+      setSchoolLoading(true);
+      setSchoolError("");
+      setSchoolSuccess(false);
+
+      try {
+        const res = await fetch(`/api/schools/validate?code=${encodeURIComponent(code)}`);
+        const data = await res.json();
+        
+        if (data.success) {
+          setSchoolData(data.school);
+          setSchoolSuccess(true);
+          // Auto-fill school details
+          setFormData(prev => ({
+            ...prev,
+            schoolName: data.school.name,
+            schoolCity: data.school.city,
+            school_id: data.school.id
+          }));
+          
+          if (data.school.sponsorship_mode === "FULL") {
+            setFinalPrice(0);
+          }
+        } else {
+          setSchoolData(null);
+          setSchoolError(data.message);
+          setFinalPrice(99); // Reset price
+        }
+      } catch (err) {
+        setSchoolError("Network error validating school code");
+      } finally {
+        setSchoolLoading(false);
+      }
+    };
+
+    const debounce = setTimeout(validateSchool, 500);
+    return () => clearTimeout(debounce);
+  }, [formData.schoolCode]);
 
 
 
@@ -463,6 +520,7 @@ function RegisterForm() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           couponCode: isCouponApplied ? couponCode.trim().toUpperCase() : "",
+          schoolCode: schoolSuccess && formData.schoolCode ? formData.schoolCode.trim().toUpperCase() : "",
           email: formData.parentEmail
         })
       });
@@ -499,7 +557,8 @@ function RegisterForm() {
             razorpaySignature: "free_checkout_verified",
             draftRegId: draftRegId,
             formData: formData,
-            couponCode: isCouponApplied ? couponCode.trim().toUpperCase() : null
+            couponCode: isCouponApplied ? couponCode.trim().toUpperCase() : null,
+            schoolCode: schoolSuccess && formData.schoolCode ? formData.schoolCode.trim().toUpperCase() : null
           })
         });
 
@@ -518,13 +577,15 @@ function RegisterForm() {
           mobile_number: formattedMobile,
           whatsapp_number: formattedWhatsapp,
           payment_id: mockPaymentId,
-          payment_status: "PAID",
+          payment_status: (schoolSuccess && formData.schoolCode) ? "SPONSORED" : "PAID",
           registration_status: "REGISTERED",
           mobile_verified: true,
-          finalPrice: finalPrice,
-          couponCode: isCouponApplied ? couponCode.trim().toUpperCase() : null
+          admin_notes: [
+            isCouponApplied ? `Applied coupon: ${couponCode}` : null,
+            (schoolSuccess && formData.schoolCode) ? `Sponsored by School: ${formData.schoolCode}` : null
+          ].filter(Boolean).join(" | ") || undefined
         };
-
+        await saveRegistration(savedData);
         sessionStorage.setItem("cnts_last_registration", JSON.stringify(savedData));
         sessionStorage.removeItem("cnts_registration_form");
         sessionStorage.removeItem("cnts_registration_step");
@@ -1124,18 +1185,38 @@ function RegisterForm() {
 
                     {/* School Code (Optional) */}
                     <div className="space-y-1.5">
-                      <label htmlFor="schoolCode" className="text-xs font-semibold text-slate-755 flex items-center gap-1">
+                      <label htmlFor="schoolCode" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
                         <Building size={13} className="text-slate-450" />
                         School Invite Code <span className="text-slate-400 font-medium">(Optional)</span>
                       </label>
-                      <input
-                        type="text"
-                        id="schoolCode"
-                        value={formData.schoolCode}
-                        onChange={(e) => handleInputChange("schoolCode", e.target.value.toUpperCase())}
-                        placeholder="e.g. SCH-512"
-                        className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm outline-none focus:border-blue-850 focus:bg-white focus:ring-4 focus:ring-blue-850/10 transition-all duration-200"
-                      />
+                      <div className="relative">
+                        <input
+                          type="text"
+                          id="schoolCode"
+                          value={formData.schoolCode}
+                          onChange={(e) => handleInputChange("schoolCode", e.target.value.toUpperCase())}
+                          placeholder="e.g. CNTS-XXX-1234"
+                          className="w-full px-4 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all duration-200"
+                        />
+                        {schoolLoading && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <div className="w-4 h-4 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                          </div>
+                        )}
+                        {schoolSuccess && !schoolLoading && (
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            <CheckCircle size={18} className="text-emerald-500" />
+                          </div>
+                        )}
+                      </div>
+                      {schoolError && formData.schoolCode && formData.schoolCode.length >= 5 && !schoolLoading && (
+                        <p className="text-xs text-red-500 font-medium">{schoolError}</p>
+                      )}
+                      {schoolSuccess && schoolData && !schoolLoading && (
+                        <p className="text-xs text-emerald-600 font-medium bg-emerald-50 p-2 rounded-lg mt-2 border border-emerald-100 flex items-center gap-1.5">
+                          <Check size={14} /> Validated: {schoolData.name} ({schoolData.city})
+                        </p>
+                      )}
                     </div>
                   </div>
 

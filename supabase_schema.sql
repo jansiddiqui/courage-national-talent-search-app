@@ -339,6 +339,30 @@ create policy "Allow parents to select their own results"
     )
   );
 
+-- 8. Create schools table
+create table public.schools (
+  id uuid default gen_random_uuid() primary key,
+  school_code text not null unique,
+  name text not null,
+  city text not null,
+  board text not null,
+  school_type text not null,
+  coordinator_name text not null,
+  coordinator_mobile text not null,
+  coordinator_email text not null,
+  quota integer not null default 0,
+  used_quota integer not null default 0,
+  sponsorship_mode text not null default 'FULL',
+  pin text not null,
+  status text not null default 'ACTIVE',
+  notes text,
+  created_by uuid references public.admin_users(id),
+  is_featured boolean default false not null,
+  joined_at timestamptz default now() not null
+);
 
+-- Alter registrations to link school_id
+alter table public.registrations add column school_id uuid references public.schools(id);
 
-
+-- Enable RLS for schools
+alter table public.schools enable row level security;
