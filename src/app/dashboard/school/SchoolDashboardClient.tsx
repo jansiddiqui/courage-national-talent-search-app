@@ -395,8 +395,8 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
                         </div>
                       </div>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-                        <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold text-slate-600">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pt-4 border-t border-slate-100">
+                        <label className="flex items-center gap-2 cursor-pointer select-none text-xs font-semibold text-slate-650">
                           <input 
                             type="checkbox"
                             checked={keepFormOpen}
@@ -406,18 +406,18 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
                           Keep form open after save (Quick Add Mode)
                         </label>
                         
-                        <div className="flex gap-2">
+                        <div className="flex flex-col-reverse sm:flex-row gap-2 w-full md:w-auto">
                           <button 
                             type="button" 
                             onClick={() => setShowAddForm(false)} 
-                            className="px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-650 rounded-xl text-xs font-bold transition-all shadow-sm"
+                            className="w-full sm:w-auto text-center px-4 py-2 border border-slate-200 hover:bg-slate-50 text-slate-650 rounded-xl text-xs font-bold transition-all shadow-sm"
                           >
                             Cancel
                           </button>
                           <button 
                             type="submit"
                             disabled={registering || remainingQuota <= 0}
-                            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md active:scale-95"
+                            className="w-full sm:w-auto justify-center px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md active:scale-95"
                           >
                             {registering ? "Registering..." : <><Plus size={14} /> Register Student</>}
                           </button>
@@ -513,17 +513,51 @@ export default function SchoolDashboardClient({ school, registrations }: { schoo
 
         {/* Registrations List */}
         <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
-          <div className="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-            <h2 className="font-bold text-lg text-slate-900 flex items-center gap-2">
-              <Users size={20} className="text-blue-600" />
+          <div className="px-6 py-5 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-slate-50/50">
+            <h2 className="font-bold text-base sm:text-lg text-slate-900 flex items-center gap-2">
+              <Users size={20} className="text-blue-600 shrink-0" />
               Registered Students Roster
             </h2>
-            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm font-bold shadow-sm">
+            <span className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold shadow-sm self-start sm:self-auto shrink-0">
               {studentList.length} Total
             </span>
           </div>
           
-          <div className="overflow-x-auto">
+          {/* Mobile-optimized list view */}
+          <div className="block lg:hidden divide-y divide-slate-100">
+            {studentList.length > 0 ? (
+              studentList.map((reg, idx) => (
+                <div key={idx} className="p-4 flex justify-between items-center hover:bg-slate-50/20 transition-colors">
+                  <div className="space-y-1 min-w-0 pr-2">
+                    <p className="font-semibold text-slate-900 text-sm truncate">{reg.student_name}</p>
+                    <div className="flex items-center gap-1.5 text-xs text-slate-400 font-medium">
+                      <span>Class {reg.student_class}</span>
+                      <span>•</span>
+                      <span className="font-mono text-[10px]">{reg.registration_id}</span>
+                    </div>
+                  </div>
+                  <div className="flex flex-col items-end gap-1.5 shrink-0">
+                    <span className="text-[10px] font-semibold text-slate-400">
+                      {new Date(reg.created_at).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric'
+                      })}
+                    </span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-200">
+                      {reg.registration_status}
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="p-8 text-center text-slate-400 italic text-sm">
+                No registrations recorded yet. Add students using the form above or share your invite link.
+              </div>
+            )}
+          </div>
+
+          {/* Desktop-optimized table view */}
+          <div className="hidden lg:block overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-slate-50 text-slate-500 text-xs uppercase tracking-wider">
