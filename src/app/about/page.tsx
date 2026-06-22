@@ -44,7 +44,7 @@ export default function AboutPage() {
               in <span className="text-blue-400">every single</span> child.
             </h1>
             <p className="text-slate-350 text-sm md:text-base leading-relaxed">
-              CNTS is not a race for raw marks. We are a talent discovery engine built to identify cognitive strengths, logical capabilities, and creative intelligence—revealing who your child is, not just what they memorized.
+              CNTS is not a race for raw marks. We are a talent discovery engine built to identify cognitive strengths, logical capabilities, and creative intelligence—revealing who your child is, not just what they memorized. <strong>Courage National Talent Search (CNTS) is an official program operated by Courage Library.</strong>
             </p>
           </div>
 

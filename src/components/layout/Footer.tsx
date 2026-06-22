@@ -12,6 +12,7 @@ import {
 const footerLinks = {
   Platform: [
     { label: "Home", href: "/" },
+    { label: "CNTS Landing", href: "/cnts" },
     { label: "About CNTS", href: "/about" },
     { label: "For Schools", href: "/for-schools" },
     { label: "Contact Us", href: "/contact" },
@@ -59,8 +60,7 @@ export default function Footer() {
               </div>
             </div>
             <p className="text-xs md:text-sm leading-relaxed text-slate-500 max-w-xs">
-              India&apos;s premier talent discovery platform. We help parents and
-              students understand true potential — beyond marks and memory.
+              <strong>Courage National Talent Search (CNTS) is an official program operated by Courage Library.</strong> We help parents and students understand true potential — beyond marks and memory.
             </p>
 
             {/* Contact */}
@@ -110,7 +110,10 @@ export default function Footer() {
 
         {/* Bottom bar */}
         <div className="py-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-600">
-          <p>© 2026 Courage National Talent Search. All rights reserved.</p>
+          <div className="space-y-1">
+            <p>© 2026 Courage National Talent Search. All rights reserved.</p>
+            <p className="text-[10px] text-slate-500 font-medium">Courage National Talent Search (CNTS) — Official Program of Courage Library</p>
+          </div>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             <span>Platform operational · Founding Edition 2026</span>

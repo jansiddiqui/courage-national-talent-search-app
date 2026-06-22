@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
+import JsonLd from "@/components/shared/JsonLd";
 import { 
   Sparkles, 
   Brain, 
@@ -29,16 +30,119 @@ export const metadata: Metadata = {
     "Courage National Talent Search",
     "Courage Library",
     "Talent Search Exam",
-    "National Assessment",
-    "Student Competition",
-    "School Talent Program",
-    "Student Scholarship Exam"
-  ]
+    "Student Assessment",
+    "School Assessment",
+    "National Talent Discovery Program"
+  ],
+  alternates: {
+    canonical: "https://thecouragelibrary.com/cnts",
+  },
+  openGraph: {
+    title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
+    description: "Courage National Talent Search (CNTS) is the official talent discovery and assessment program operated by Courage Library for school students across India.",
+    url: "https://thecouragelibrary.com/cnts",
+    images: [
+      {
+        url: "/og-cnts.png",
+        width: 1200,
+        height: 630,
+        alt: "CNTS Open Graph Banner",
+      },
+    ],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
+    description: "Courage National Talent Search (CNTS) is the official talent discovery and assessment program operated by Courage Library for school students across India.",
+    images: ["/og-cnts.png"],
+  },
 };
 
 export default function CntsLandingPage() {
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "What is the Courage National Talent Search (CNTS)?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The Courage National Talent Search (CNTS) is the official talent discovery and assessment program operated by Courage Library for students in Classes 5–8 across India."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Who can participate in CNTS?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Students currently studying in Classes 5, 6, 7, and 8 from any recognized school board in India (CBSE, ICSE, State Boards, or International Boards) are eligible."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "What is the registration fee for CNTS?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "The registration fee is ₹99 per student. It is all-inclusive and covers access to mock assessments, final online test, detailed cognitive profile report, and verified merit certificate."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "How are CNTS results and certificates released?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "National rankings are published on 28 July 2026. Detailed diagnostic reports and digital verifiable certificates are unlocked in the Parent Dashboard on 30 July 2026."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Can schools participate in CNTS?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Yes, schools can onboard as official partners. Partner schools receive school dashboard access, bulk onboarding tools via Excel, and detailed institutional diagnostics comparison matrices."
+        }
+      }
+    ]
+  };
+
+  const pageSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    "@id": "https://thecouragelibrary.com/cnts/#webpage",
+    "url": "https://thecouragelibrary.com/cnts",
+    "name": "Courage National Talent Search (CNTS) | Official Program by Courage Library",
+    "isPartOf": {
+      "@type": "WebSite",
+      "@id": "https://thecouragelibrary.com/#website",
+      "name": "Courage Library",
+      "url": "https://thecouragelibrary.com"
+    }
+  };
+
+  const breadcrumbSchema = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://thecouragelibrary.com"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "CNTS",
+        "item": "https://thecouragelibrary.com/cnts"
+      }
+    ]
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 flex flex-col font-sans antialiased text-slate-600">
+      <JsonLd schema={[faqSchema, pageSchema, breadcrumbSchema]} />
       <Navbar theme="dark" />
 
       {/* Hero Section */}
@@ -69,8 +173,8 @@ export default function CntsLandingPage() {
             India&apos;s Talent Discovery and Assessment Program for School Students
           </p>
 
-          <p className="text-sm sm:text-base text-slate-350 max-w-2xl mx-auto leading-relaxed">
-            The Courage National Talent Search (CNTS) is an educational initiative of Courage Library designed to identify, assess, and celebrate student talent through a structured national-level assessment experience.
+          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
+            <strong>Courage National Talent Search (CNTS) is an official program operated by Courage Library.</strong> The program is designed to identify, assess, and recognize student talent through structured national-level assessments and talent profiling initiatives.
           </p>
 
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4">
