@@ -296,14 +296,14 @@ interface BloomsTaxonomyPyramidProps {
 }
 
 export const BloomsTaxonomyPyramid: React.FC<BloomsTaxonomyPyramidProps> = ({ title, levels, legends }) => {
-  // Pyramid row width styles
-  const widths = [
-    "w-[100%] md:w-[90%]",
-    "w-[95%] md:w-[85%]",
-    "w-[90%] md:w-[80%]",
-    "w-[85%] md:w-[75%]",
-    "w-[80%] md:w-[70%]",
-    "w-[75%] md:w-[65%]"
+  // Staggered widths for the central pyramid cards on desktop, full-width on mobile
+  const cardWidths = [
+    "w-full md:w-[50%]",
+    "w-full md:w-[60%]",
+    "w-full md:w-[70%]",
+    "w-full md:w-[80%]",
+    "w-full md:w-[90%]",
+    "w-full"
   ];
 
   // Modern vibrant violet/indigo color palette
@@ -317,7 +317,7 @@ export const BloomsTaxonomyPyramid: React.FC<BloomsTaxonomyPyramidProps> = ({ ti
   ];
 
   return (
-    <div className="my-8 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm">
+    <div className="my-8 bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm overflow-hidden">
       {title && (
         <h4 className="text-center font-display font-bold text-lg md:text-xl text-slate-800 mb-6 tracking-tight">
           {title}
@@ -343,10 +343,10 @@ export const BloomsTaxonomyPyramid: React.FC<BloomsTaxonomyPyramidProps> = ({ ti
       )}
 
       {/* The Pyramid */}
-      <div className="flex flex-col items-center gap-2.5">
+      <div className="flex flex-col items-center gap-3">
         {levels.map((level, idx) => {
           const bg = colors[idx] || "from-slate-400 to-slate-500";
-          const width = widths[idx] || "w-full";
+          const cardWidth = cardWidths[idx] || "w-full";
 
           const isScholarshipFocus = level.focus === "scholarship" || level.focus === "both";
           const isSchoolFocus = level.focus === "school" || level.focus === "both";
@@ -354,45 +354,41 @@ export const BloomsTaxonomyPyramid: React.FC<BloomsTaxonomyPyramidProps> = ({ ti
           return (
             <div 
               key={level.id} 
-              className={`flex flex-col md:flex-row items-center gap-3 ${width}`}
+              className="w-full flex items-center justify-between gap-4 md:gap-6"
             >
-              {/* Left Indicator (Scholarship) */}
-              <div className="hidden md:flex items-center justify-end w-24 text-right">
+              {/* Left Indicator (Scholarship) - Vertically aligned column */}
+              <div className="hidden md:flex items-center justify-end w-28 text-right flex-shrink-0">
                 {isScholarshipFocus ? (
-                  <span className="text-[10px] font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2 py-0.5 rounded tracking-wide uppercase">
+                  <span className="text-[10px] font-extrabold text-indigo-600 bg-indigo-50 border border-indigo-100 px-2.5 py-1 rounded-full tracking-wide uppercase">
                     Aptitude Focus
                   </span>
-                ) : (
-                  <span className="h-[1px]" />
-                )}
+                ) : null}
               </div>
 
-              {/* Pyramid Tier Card */}
-              <div className={`flex-1 w-full bg-gradient-to-r ${bg} px-4 py-3 rounded-2xl shadow-sm transition-all hover:scale-[1.02] flex items-center justify-between gap-3`}>
-                <div className="flex items-center gap-3">
-                  <span className="font-display font-black text-lg opacity-85 leading-none w-6">
+              {/* Central Column - Centers the staggered pyramid card */}
+              <div className="flex-1 flex justify-center min-w-0">
+                <div className={`${cardWidth} bg-gradient-to-r ${bg} px-5 py-3.5 rounded-2xl shadow-sm transition-all hover:scale-[1.02] flex items-center gap-4`}>
+                  <span className="font-display font-black text-xl opacity-90 leading-none w-6 flex-shrink-0">
                     {level.id}
                   </span>
-                  <div>
-                    <h5 className="font-display font-bold text-sm md:text-base leading-tight">
+                  <div className="min-w-0">
+                    <h5 className="font-display font-bold text-sm md:text-base leading-tight truncate">
                       {level.name}
                     </h5>
-                    <p className="text-[11px] opacity-80 font-normal leading-tight mt-0.5">
+                    <p className="text-[11px] opacity-80 font-normal leading-tight mt-0.5 break-words">
                       {level.desc}
                     </p>
                   </div>
                 </div>
               </div>
 
-              {/* Right Indicator (School) */}
-              <div className="hidden md:flex items-center justify-start w-24 text-left">
+              {/* Right Indicator (School) - Vertically aligned column */}
+              <div className="hidden md:flex items-center justify-start w-28 text-left flex-shrink-0">
                 {isSchoolFocus ? (
-                  <span className="text-[10px] font-extrabold text-slate-500 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded tracking-wide uppercase">
+                  <span className="text-[10px] font-extrabold text-slate-500 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full tracking-wide uppercase">
                     School Tests
                   </span>
-                ) : (
-                  <span className="h-[1px]" />
-                )}
+                ) : null}
               </div>
             </div>
           );
