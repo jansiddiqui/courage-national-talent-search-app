@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getLatestBlogPosts } from "@/lib/blog";
 import RegisterClient from "./RegisterClient";
 
 export const metadata: Metadata = {
@@ -30,5 +31,6 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <RegisterClient />;
+  const posts = getLatestBlogPosts(3);
+  return <RegisterClient initialPosts={posts} />;
 }

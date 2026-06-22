@@ -33,8 +33,9 @@ import { Country, State, City } from "country-state-city";
 import SearchableSelect from "@/components/registration/SearchableSelect";
 import { saveRegistration, updateRegistrationStatus, updateRegistrationData, uploadCandidatePhoto } from "@/services/supabaseService";
 import PhotoUploader from "@/components/registration/PhotoUploader";
+import { BlogPost } from "@/lib/blog";
 
-function RegisterForm() {
+function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -1716,6 +1717,38 @@ function RegisterForm() {
             </div>
             
           </form>
+
+          {/* Guides for Parents */}
+          {initialPosts && initialPosts.length > 0 && (
+            <div className="mt-12 pt-8 border-t border-slate-200">
+              <h3 className="font-display font-bold text-slate-800 text-xs uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Sparkles size={14} className="text-amber-500" />
+                Why Participate? Parent Guides
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {initialPosts.map((post) => (
+                  <Link
+                    key={post.slug}
+                    href={`/blog/${post.slug}`}
+                    target="_blank"
+                    className="group p-4 bg-slate-50 border border-slate-250/60 rounded-2xl hover:border-blue-500/30 transition-all flex flex-col justify-between"
+                  >
+                    <div className="space-y-1.5">
+                      <h4 className="font-display font-bold text-slate-900 group-hover:text-blue-800 transition-colors text-xs leading-snug">
+                        {post.title}
+                      </h4>
+                      <p className="text-slate-500 text-[10px] leading-relaxed line-clamp-2">
+                        {post.description}
+                      </p>
+                    </div>
+                    <span className="text-blue-850 text-[10px] font-bold group-hover:underline mt-3">
+                      Read Guide &rarr;
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </section>
       </div>
@@ -1723,14 +1756,14 @@ function RegisterForm() {
   );
 }
 
-export default function RegisterPage() {
+export default function RegisterPage({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   return (
     <Suspense fallback={
       <div className="min-h-screen flex items-center justify-center bg-[#F8FAFF]">
         <div className="w-12 h-12 border-4 border-blue-200 border-t-blue-800 rounded-full animate-spin"></div>
       </div>
     }>
-      <RegisterForm />
+      <RegisterForm initialPosts={initialPosts} />
     </Suspense>
   );
 }

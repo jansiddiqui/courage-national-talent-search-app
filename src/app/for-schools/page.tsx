@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getLatestBlogPosts } from "@/lib/blog";
 import ForSchoolsClient from "./ForSchoolsClient";
 
 export const metadata: Metadata = {
@@ -30,5 +31,6 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <ForSchoolsClient />;
+  const posts = getLatestBlogPosts(3);
+  return <ForSchoolsClient initialPosts={posts} />;
 }

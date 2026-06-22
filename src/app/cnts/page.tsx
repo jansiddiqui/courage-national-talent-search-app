@@ -3,6 +3,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
 import JsonLd from "@/components/shared/JsonLd";
+import { getLatestBlogPosts } from "@/lib/blog";
 import { 
   Sparkles, 
   Brain, 
@@ -60,6 +61,7 @@ export const metadata: Metadata = {
 };
 
 export default function CntsLandingPage() {
+  const latestPosts = getLatestBlogPosts(3);
   const faqSchema = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
@@ -744,6 +746,49 @@ export default function CntsLandingPage() {
           </div>
         </div>
       </section>
+
+      {/* Recommended Reading Section */}
+      {latestPosts.length > 0 && (
+        <section className="py-16 bg-slate-50 border-t border-slate-200/50">
+          <div className="max-w-4xl mx-auto px-6">
+            <h2 className="font-display font-black text-2xl text-slate-900 mb-8 text-center">
+              Recommended Reading for Parents &amp; Schools
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {latestPosts.map((post) => (
+                <Link
+                  key={post.slug}
+                  href={`/blog/${post.slug}`}
+                  className="group block bg-white border border-slate-200 rounded-3xl p-5 hover:shadow-md transition-all flex flex-col justify-between"
+                >
+                  <div className="space-y-3">
+                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                      {post.category}
+                    </span>
+                    <h3 className="font-display font-bold text-slate-900 group-hover:text-blue-600 transition-colors text-sm leading-snug line-clamp-3">
+                      {post.title}
+                    </h3>
+                    <p className="text-slate-550 text-xs leading-relaxed line-clamp-2">
+                      {post.description}
+                    </p>
+                  </div>
+                  <span className="text-blue-600 text-xs font-semibold group-hover:underline inline-flex items-center gap-1 mt-4">
+                    Read Article &rarr;
+                  </span>
+                </Link>
+              ))}
+            </div>
+            <div className="text-center mt-8">
+              <Link
+                href="/blog"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-900 hover:text-blue-600 underline transition-colors"
+              >
+                View all articles in Courage Library &rarr;
+              </Link>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Footer */}
       <footer className="bg-slate-900 text-slate-400 pt-16 pb-12 px-6 border-t border-slate-800 shrink-0">

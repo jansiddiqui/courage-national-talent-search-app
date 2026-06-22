@@ -21,6 +21,7 @@ import StickyMobileCTA from "@/components/layout/StickyMobileCTA";
 import FAQBubble from "@/components/layout/FAQBubble";
 import Footer from "@/components/layout/Footer";
 import JsonLd from "@/components/shared/JsonLd";
+import LatestArticles from "@/components/sections/LatestArticles";
 
 export const metadata: Metadata = {
   title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
@@ -119,6 +120,7 @@ export default function Home() {
       <HowItWorks />
       <TimelineReassurance />
       <ParentBenefits />
+      <LatestArticles />
       <FAQ />
       <NeedHelp />
       <CTA />
