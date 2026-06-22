@@ -15,6 +15,7 @@ const footerLinks = {
     { label: "CNTS Landing", href: "/cnts" },
     { label: "About CNTS", href: "/about" },
     { label: "For Schools", href: "/for-schools" },
+    { label: "Blog & Resources", href: "/blog" },
     { label: "Contact Us", href: "/contact" },
   ],
   "Important Links": [

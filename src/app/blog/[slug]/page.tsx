@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { getAllBlogPosts, getBlogPostBySlug, getRelatedPosts } from "@/lib/blog";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -180,6 +181,30 @@ export default async function BlogPostPage({ params }: PageProps) {
     },
     blockquote: ({ children, ...props }: any) => {
       return <blockquote className="border-l-4 border-blue-600 bg-slate-50 pl-4 py-1 italic my-6 text-slate-700" {...props}>{children}</blockquote>;
+    },
+    table: ({ children, ...props }: any) => {
+      return (
+        <div className="overflow-x-auto my-8 border border-slate-200 rounded-3xl shadow-sm">
+          <table className="w-full text-left border-collapse text-xs md:text-sm" {...props}>
+            {children}
+          </table>
+        </div>
+      );
+    },
+    thead: ({ children, ...props }: any) => {
+      return <thead className="bg-slate-50 border-b border-slate-200 text-slate-900 font-bold" {...props}>{children}</thead>;
+    },
+    tbody: ({ children, ...props }: any) => {
+      return <tbody className="divide-y divide-slate-100 bg-white" {...props}>{children}</tbody>;
+    },
+    tr: ({ children, ...props }: any) => {
+      return <tr className="hover:bg-slate-50/50 transition-colors" {...props}>{children}</tr>;
+    },
+    th: ({ children, ...props }: any) => {
+      return <th className="p-4 font-semibold text-slate-800" {...props}>{children}</th>;
+    },
+    td: ({ children, ...props }: any) => {
+      return <td className="p-4 text-slate-600 leading-normal" {...props}>{children}</td>;
     }
   };
 
@@ -214,6 +239,17 @@ export default async function BlogPostPage({ params }: PageProps) {
             </div>
           </div>
 
+          {/* Featured Image */}
+          {post.featuredImage && (
+            <div className="relative w-full h-[240px] md:h-[400px] rounded-3xl overflow-hidden mb-8 border border-slate-200 shadow-sm bg-slate-100">
+              <img
+                src={post.featuredImage}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+
           {/* Layout Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             {/* Sidebar Table of Contents (Sticky on Desktop) */}
@@ -225,7 +261,7 @@ export default async function BlogPostPage({ params }: PageProps) {
 
             {/* Main Content Area */}
             <div className={`prose prose-slate max-w-none ${showTOC ? "lg:col-span-8" : "lg:col-span-12"} order-1 lg:order-2`}>
-              <ReactMarkdown components={markdownComponents}>
+              <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
                 {post.content}
               </ReactMarkdown>
 

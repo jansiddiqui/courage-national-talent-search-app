@@ -44,11 +44,19 @@ function parseMarkdown(fileContent: string, slug: string): BlogPost {
     }
   }
 
+  let featuredImage = metadata.featuredImage || "/images/logo.png";
+  if (featuredImage.startsWith("/")) {
+    const fullPath = path.join(process.cwd(), "public", featuredImage);
+    if (!fs.existsSync(fullPath)) {
+      featuredImage = "/og-cnts.png";
+    }
+  }
+
   return {
     title: metadata.title || "Untitled",
     slug,
     description: metadata.description || "",
-    featuredImage: metadata.featuredImage || "/images/logo.png",
+    featuredImage,
     author: metadata.author || "Courage Library Team",
     publishDate: metadata.publishDate || new Date().toISOString().split("T")[0],
     updatedDate: metadata.updatedDate || new Date().toISOString().split("T")[0],
