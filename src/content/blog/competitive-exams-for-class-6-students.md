@@ -77,15 +77,30 @@ Verbal reasoning assessments evaluate a student’s ability to understand semant
 
 In contrast, cognitive verbal assessments require students to perform logical deductions based on text. For instance, they might have to evaluate the validity of an argument, identify assumptions, or determine the relationship between words. This builds the deep reading comprehension skills required for advanced literature, scientific analysis, and essay writing.
 
-```
-       Traditional Rote Learning vs. Cognitive Diagnostics
-       
-       [ Rote Learning Approach ]           [ Cognitive Diagnostic Approach ]
-       
-       * Syllabus-bound memorization        * Board-independent aptitude
-       * Formula-based calculation          * Pattern recognition & logic
-       * Direct recall of facts             * Semantic & spatial synthesis
-       * Short-term working memory          * Long-term critical thinking
+```comparison-exams
+{
+  "title": "Traditional Rote Learning vs. Cognitive Diagnostics",
+  "left": {
+    "title": "Rote Learning Approach",
+    "subtitle": "Traditional school testing",
+    "points": [
+      "Syllabus-bound memorization of textbook contents.",
+      "Formula-based calculation and procedural repetition.",
+      "Direct recall of facts and definitions.",
+      "High reliance on short-term working memory."
+    ]
+  },
+  "right": {
+    "title": "Cognitive Diagnostic Approach",
+    "subtitle": "CNTS & Aptitude style",
+    "points": [
+      "Board-independent aptitude and thinking capability.",
+      "Pattern recognition, logic, and abstract connections.",
+      "Semantic and spatial synthesis of new information.",
+      "Fostering long-term critical thinking skills."
+    ]
+  }
+}
 ```
 
 By focusing on cognitive development rather than syllabus recall, assessments like the [Courage National Talent Search](/cnts) help students build learning skills that are applicable across all academic subjects.

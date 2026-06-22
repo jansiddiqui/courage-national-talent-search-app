@@ -121,17 +121,22 @@ For almost all prestigious competitive scholarship exams in India—especially N
 
 While the SAT evaluates curriculum knowledge (Mathematics, Science, and Social Studies), the MAT measures logical reasoning, pattern recognition, spatial visualization, and semantic processing. Unfortunately, standard school curricula focus heavily on the lower tiers of **Bloom's Taxonomy**—namely *Remembering* and *Understanding*. This approach relies on rote memorization, which is ineffective when a student is presented with the higher-order reasoning challenges of a MAT paper.
 
-```
-                  BLOOM'S TAXONOMY IN SCHOOL VS. SCHOLARSHIP EXAMS
-                  
-       [ High-Stakes MAT / Scholarship Exams ]       [ Traditional School Exams ]
-                  
-               /\   6. Creating (Synthesize ideas)            
-              /  \  5. Evaluating (Assess arguments)         
-             /====\ 4. Analyzing (Deduce logical links)   <-- Focus of MAT / Aptitude
-            /------\ 3. Applying (Use math in new ways)
-           /--------\ 2. Understanding (Explain concepts) <-- Focus of School Tests
-          /----------\ 1. Remembering (Recall formulas)   <-- Focus of School Tests
+```blooms-taxonomy-pyramid
+{
+  "title": "BLOOM'S TAXONOMY IN SCHOOL VS. SCHOLARSHIP EXAMS",
+  "levels": [
+    { "id": 6, "name": "Creating", "desc": "Synthesize ideas and formulate new structures", "focus": "scholarship" },
+    { "id": 5, "name": "Evaluating", "desc": "Assess reasoning and defend arguments", "focus": "scholarship" },
+    { "id": 4, "name": "Analyzing", "desc": "Deduct logical links and relationships", "focus": "both" },
+    { "id": 3, "name": "Applying", "desc": "Transfer math & logic to new formats", "focus": "both" },
+    { "id": 2, "name": "Understanding", "desc": "Explain concepts and interpret data", "focus": "school" },
+    { "id": 1, "name": "Remembering", "desc": "Recall formulas, definitions, and rote facts", "focus": "school" }
+  ],
+  "legends": {
+    "school": "Focus of Traditional School Exams",
+    "scholarship": "Focus of High-Stakes MAT / CNTS Exams"
+  }
+}
 ```
 
 This is where early diagnostic evaluations become invaluable. **Courage National Talent Search (CNTS) is an official program operated by Courage Library.** The [Courage National Talent Search](/cnts) does not test how well a student can memorize a textbook. Instead, it serves as a scientifically backed diagnostic that maps a student's cognitive architecture, evaluating three core dimensions:

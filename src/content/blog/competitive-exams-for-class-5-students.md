@@ -41,16 +41,30 @@ The traditional Indian school curriculum is naturally constrained by board requi
 
 Critical assessments and cognitive diagnostic exams flip this paradigm. Rather than asking *what* a student knows, they evaluate *how* a student thinks.
 
-```
-                    [ Traditional Rote Exams vs. Critical Assessments ]
-  
-        Rote Memorization Exams                      Critical Diagnostic Exams
-  ┌─────────────────────────────────┐        ┌───────────────────────────────────┐
-  │ • Textbook-bound questions      │        │ • Unfamiliar, novel scenarios     │
-  │ • Direct recall of formulas     │   VS   │ • Multi-layered pattern analysis  │
-  │ • Focuses on final answer only  │        │ • Focuses on cognitive pathways   │
-  │ • Subject to curriculum bias    │        │ • Board-agnostic & diagnostic     │
-  └─────────────────────────────────┘        └───────────────────────────────────┘
+```comparison-exams
+{
+  "title": "Traditional Rote Exams vs. Critical Assessments",
+  "left": {
+    "title": "Rote Memorization Exams",
+    "subtitle": "Traditional school testing",
+    "points": [
+      "Textbook-bound questions that test memorized answers.",
+      "Direct recall of formulas and step-by-step procedures.",
+      "Focuses on final answer only without assessing the logical process.",
+      "Subject to curriculum bias (CBSE, ICSE, or State Board boundaries)."
+    ]
+  },
+  "right": {
+    "title": "Critical Diagnostic Exams",
+    "subtitle": "Aptitude & CNTS style",
+    "points": [
+      "Unfamiliar, novel scenarios that test real conceptual transfer.",
+      "Multi-layered pattern analysis requiring logical deduction.",
+      "Focuses on cognitive pathways and understanding problem-solving steps.",
+      "Board-agnostic and curriculum-independent (level playing field)."
+    ]
+  }
+}
 ```
 
 Early exposure to logical thinking and critical assessment provides several fundamental advantages:

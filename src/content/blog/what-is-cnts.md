@@ -28,13 +28,22 @@ However, high academic grades do not always correlate with high cognitive potent
 
 We can analyze this pedagogical difference through the framework of **Bloom's Taxonomy**, which classifies learning objectives into levels of cognitive complexity:
 
-```
-       ▲  [ Create ]      - Formulating new structures or patterns
-      / \ [ Evaluate ]    - Critiquing, checking, and making judgments
-     /   \ [ Analyze ]     - Deconstructing elements, identifying relationships
-    /     \ [ Apply ]       - Transferring concepts to unfamiliar situations
-   /       \ [ Understand ] - Explaining ideas, translation, and interpreting
-  /_________\ [ Remember ]   - Retrieving, recalling, and rote memorizing
+```blooms-taxonomy-pyramid
+{
+  "title": "BLOOM'S TAXONOMY IN SCHOOL VS. SCHOLARSHIP EXAMS",
+  "levels": [
+    { "id": 6, "name": "Creating", "desc": "Synthesize ideas and formulate new structures", "focus": "scholarship" },
+    { "id": 5, "name": "Evaluating", "desc": "Assess reasoning and defend arguments", "focus": "scholarship" },
+    { "id": 4, "name": "Analyzing", "desc": "Deduct logical links and relationships", "focus": "both" },
+    { "id": 3, "name": "Applying", "desc": "Transfer math & logic to new formats", "focus": "both" },
+    { "id": 2, "name": "Understanding", "desc": "Explain concepts and interpret data", "focus": "school" },
+    { "id": 1, "name": "Remembering", "desc": "Recall formulas, definitions, and rote facts", "focus": "school" }
+  ],
+  "legends": {
+    "school": "Focus of Traditional School Tests",
+    "scholarship": "Focus of High-Stakes MAT / CNTS Exams"
+  }
+}
 ```
 
 Traditional school assessments rarely venture beyond the bottom two tiers of Bloom's Taxonomy: *Remembering* and *Understanding*. When students cram for a standard history or science test, they primarily exercise recall. 
@@ -49,18 +58,10 @@ As students advance to higher education and face highly competitive national ent
 
 The CNTS assessment does not require students to study textbook chapters or memorize factual trivia. Instead, the test is divided into four modules, each meticulously designed to map a distinct cognitive domain:
 
-```mermaid
-graph TD
-    A["Courage National Talent Search (CNTS)"] --> B["Cognitive Aptitude"]
-    A --> C["Verbal Reasoning"]
-    A --> D["Mathematical Logic"]
-    A --> E["Critical Thinking"]
-    
-    B --> B1["Abstract and Spatial Reasoning"]
-    C --> C1["Semantic and Contextual Aptitude"]
-    D --> D1["Numerical and Quantitative Aptitude"]
-    E --> E1["Problem-Solving and Logical Fallacy Analysis"]
-```
+* **1. Cognitive Aptitude**: Abstract and Spatial Reasoning (evaluating mental rotation and non-verbal pattern completions).
+* **2. Verbal Reasoning**: Semantic and Contextual Aptitude (assessing vocabulary relationships, analogical connections, and reading comprehension).
+* **3. Mathematical Logic**: Numerical and Quantitative Aptitude (checking numeric sequences, quantitative patterns, and deduction).
+* **4. Critical Thinking**: Problem-Solving and Logical Fallacy Analysis (evaluating argument structures, assumptions, and validation).
 
 ### 1. Cognitive Aptitude (Abstract & Spatial Reasoning)
 This section evaluates a student's ability to process non-verbal, visual information. Questions involve mental rotation, pattern synthesis, matrix completion, and spatial folding.

@@ -24,13 +24,22 @@ By integrating the [Courage National Talent Search](/cnts) into your academic ca
 
 For decades, international educational frameworks have emphasized the need to move up the ladder of **Bloom’s Taxonomy**. Standard classroom assessments typically target lower-order thinking skills (recall and comprehension). When students cram for a science or history test, they exercise their short-term working memory. However, critical thinking, conceptual transfer, and novel problem-solving—located at the top of Bloom’s Taxonomy (Analysis, Evaluation, and Creation)—are rarely evaluated in a structured manner.
 
-```
-       ▲  [ Create ]      - Designing, constructing, or inventing new ideas
-      / \ [ Evaluate ]    - Appraising, defending, or critiquing situations
-     /   \ [ Analyze ]     - Deconstructing, finding patterns, organizing
-    /     \ [ Apply ]       - Using knowledge in new or unfamiliar contexts
-   /       \ [ Understand ] - Explaining concepts, classifying information
-  /_________\ [ Remember ]   - Recalling facts, vocabulary, and rote answers
+```blooms-taxonomy-pyramid
+{
+  "title": "BLOOM'S TAXONOMY IN SCHOOL VS. SCHOLARSHIP EXAMS",
+  "levels": [
+    { "id": 6, "name": "Creating", "desc": "Designing, constructing, or inventing new ideas", "focus": "scholarship" },
+    { "id": 5, "name": "Evaluating", "desc": "Appraising, defending, or critiquing situations", "focus": "scholarship" },
+    { "id": 4, "name": "Analyzing", "desc": "Deconstructing, finding patterns, and organizing", "focus": "both" },
+    { "id": 3, "name": "Applying", "desc": "Using knowledge in new or unfamiliar contexts", "focus": "both" },
+    { "id": 2, "name": "Understanding", "desc": "Explaining concepts, classifying information", "focus": "school" },
+    { "id": 1, "name": "Remembering", "desc": "Recalling facts, vocabulary, and rote answers", "focus": "school" }
+  ],
+  "legends": {
+    "school": "Focus of Traditional School Assessments",
+    "scholarship": "Focus of High-Stakes MAT / CNTS Exams"
+  }
+}
 ```
 
 Cognitive development is not a natural byproduct of aging; it must be intentionally stimulated and systematically measured. The CNTS assessment framework bypasses the curriculum constraints of individual boards (e.g., CBSE, ICSE, IB, or State Boards) and focuses on three core intellectual domains:
@@ -85,17 +94,16 @@ A school cannot evaluate its excellence in a vacuum. A class average of 85% in a
 
 CNTS solves this benchmarking problem through its **National Peer Benchmarking Matrix**. Every student's score is evaluated against thousands of participants nationwide. Rather than raw marks, the reports emphasize state-level and national percentiles. 
 
-```
-               [ National Cohort Benchmark Comparison ]
-
-       Percentile
-         100 |                                 ◆ [National Avg]
-          80 |                 ◆ [State Avg]
-          60 |   ◆ [Your School]
-          40 |
-          20 |
-           0 +-------------------------------------------------
-                Logical        Verbal        Spatial
+```cohort-benchmark-chart
+{
+  "title": "National Cohort Benchmark Comparison",
+  "categories": ["Logical Reasoning", "Verbal Ability", "Spatial Aptitude"],
+  "datasets": [
+    { "label": "Your School Average", "data": [60, 55, 65], "color": "bg-slate-400" },
+    { "label": "State Average", "data": [80, 75, 82], "color": "bg-blue-400" },
+    { "label": "National Average", "data": [100, 95, 98], "color": "bg-indigo-600" }
+  ]
+}
 ```
 
 This matrix provides school management boards and directors with critical data:
@@ -126,17 +134,10 @@ CNTS features a robust recognition program designed to celebrate the dedication 
 
 If you are ready to transition your school from traditional rote testing to cognitive diagnostics, the onboarding process is designed to be completed in four straightforward phases:
 
-```mermaid
-graph TD
-    A["Phase 1: Institutional Registration"] --> B["Phase 2: Bulk Enrollment & Upload"]
-    B --> C["Phase 3: Cognitive Assessment Administration"]
-    C --> D["Phase 4: Diagnostics & Professional Training"]
-    
-    style A fill:#f9f,stroke:#333,stroke-width:2px
-    style B fill:#bbf,stroke:#333,stroke-width:2px
-    style C fill:#bfb,stroke:#333,stroke-width:2px
-    style D fill:#fbb,stroke:#333,stroke-width:2px
-```
+* **Phase 1: Institutional Registration**: Visit the schools portal, complete the school profile, and verify the coordinator dashboard.
+* **Phase 2: Bulk Enrollment & Portal Management**: Download the school's Excel roster template, fill in student lists, and upload it to generate individual candidate login credentials.
+* **Phase 3: Cognitive Assessment Administration**: Administer the online evaluation via web-enabled devices under coordinated schedules.
+* **Phase 4: Diagnostics & Professional Training**: Download detailed aggregated cohort cognitive metrics and schedule teacher briefings.
 
 ### Phase 1: Institutional Registration
 Visit the [For Schools](/for-schools) portal and complete the brief Institutional Profile. Once verified, your dedicated School Coordinator account will be activated, giving you access to the School Dashboard.

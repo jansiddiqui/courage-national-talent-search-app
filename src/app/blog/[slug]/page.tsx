@@ -11,6 +11,13 @@ import AuthorProfile from "@/components/blog/AuthorProfile";
 import RelatedArticles from "@/components/blog/RelatedArticles";
 import JsonLd from "@/components/shared/JsonLd";
 import { BlogPostViewsTracker } from "@/components/blog/BlogPostViewsTracker";
+import { 
+  ComparisonBox, 
+  CognitiveTransition, 
+  PathwayMapping, 
+  BloomsTaxonomyPyramid, 
+  CohortBenchmarkChart 
+} from "@/components/blog/BlogDiagrams";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -205,6 +212,63 @@ export default async function BlogPostPage({ params }: PageProps) {
     },
     td: ({ children, ...props }: any) => {
       return <td className="p-4 text-slate-600 leading-normal" {...props}>{children}</td>;
+    },
+    code: ({ className, children, ...props }: any) => {
+      const match = /language-(\w+)/.exec(className || "");
+      const lang = match ? match[1] : "";
+      const content = String(children).replace(/\n$/, "");
+
+      if (lang === "comparison-exams") {
+        try {
+          const data = JSON.parse(content);
+          return <ComparisonBox {...data} />;
+        } catch (e) {
+          console.error("Failed to parse comparison-exams JSON: ", e);
+        }
+      }
+      if (lang === "cognitive-transition") {
+        try {
+          const data = JSON.parse(content);
+          return <CognitiveTransition {...data} />;
+        } catch (e) {
+          console.error("Failed to parse cognitive-transition JSON: ", e);
+        }
+      }
+      if (lang === "pathway-mapping") {
+        try {
+          const data = JSON.parse(content);
+          return <PathwayMapping {...data} />;
+        } catch (e) {
+          console.error("Failed to parse pathway-mapping JSON: ", e);
+        }
+      }
+      if (lang === "blooms-taxonomy-pyramid") {
+        try {
+          const data = JSON.parse(content);
+          return <BloomsTaxonomyPyramid {...data} />;
+        } catch (e) {
+          console.error("Failed to parse blooms-taxonomy-pyramid JSON: ", e);
+        }
+      }
+      if (lang === "cohort-benchmark-chart") {
+        try {
+          const data = JSON.parse(content);
+          return <CohortBenchmarkChart {...data} />;
+        } catch (e) {
+          console.error("Failed to parse cohort-benchmark-chart JSON: ", e);
+        }
+      }
+
+      const isInline = !className && !String(children).includes("\n");
+      if (isInline) {
+        return <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono text-slate-800" {...props}>{children}</code>;
+      }
+
+      return (
+        <pre className="bg-slate-950 text-slate-200 p-4 rounded-2xl overflow-x-auto text-xs font-mono my-6 border border-slate-800 shadow-inner">
+          <code className={className} {...props}>{children}</code>
+        </pre>
+      );
     }
   };
 

@@ -24,20 +24,34 @@ The Courage National Talent Search (CNTS) is an official program operated by [Co
 
 To understand why Class 7 is so vital, we must look to developmental psychology. Around ages 11 to 13, children transition from Jean Piaget's **Concrete Operational Stage** to the **Formal Operational Stage** of cognitive development. 
 
-```
-   COGNITIVE TRANSITION IN MIDDLE SCHOOL (AGES 11-13)
-   ┌──────────────────────────────────────────────────────────┐
-   │  CONCRETE OPERATIONAL STAGE (Class 1-6)                   │
-   │  - Focuses on tangible, physical facts and procedures.   │
-   │  - High reliance on memorized algorithms (rote steps).   │
-   └──────────────────────────┬───────────────────────────────┘
-                              │
-                              ▼ [The Class 7 Inflection Point]
-   ┌──────────────────────────────────────────────────────────┐
-   │  FORMAL OPERATIONAL STAGE (Class 7 & Beyond)              │
-   │  - Thinks abstractly, systematically, and logically.     │
-   │  - Applies generalized concepts to novel problem contexts.│
-   └──────────────────────────────────────────────────────────┘
+```cognitive-transition
+{
+  "title": "COGNITIVE TRANSITION IN MIDDLE SCHOOL (AGES 11-13)",
+  "stages": [
+    {
+      "name": "CONCRETE OPERATIONAL STAGE",
+      "subtitle": "Class 1-6",
+      "color": "slate",
+      "points": [
+        "Focuses on tangible, physical facts, concrete examples, and rote procedures.",
+        "Displays high reliance on memorized algorithms (rote steps) to solve problems."
+      ]
+    },
+    {
+      "name": "FORMAL OPERATIONAL STAGE",
+      "subtitle": "Class 7 & Beyond",
+      "color": "indigo",
+      "points": [
+        "Thinks abstractly, systematically, and logically.",
+        "Applies generalized, multi-dimensional concepts to novel, unfamiliar problem contexts."
+      ]
+    }
+  ],
+  "transition": {
+    "title": "The Class 7 Inflection Point",
+    "description": "Ages 11-13 transition window"
+  }
+}
 ```
 
 In the concrete operational stage, a child's thinking is heavily tied to physical reality. They can solve mathematical problems if they follow a familiar, step-by-step algorithm, and they can score well on science tests by memorizing definitions. 
@@ -117,20 +131,30 @@ One of the most challenging tasks for parents of Class 7 students is navigating 
 
 Historically, these decisions have been delayed until Class 11, often resulting in hasty choices driven by peer pressure or inflated Class 10 board marks. By analyzing the cognitive profile maps generated in the [CNTS results](/results), parents can make informed, stress-free decisions based on objective data.
 
-```
-       CNTS COGNITIVE PROFILE & PATHWAY MAPPING
-       
-       [Spatial-Abstract Visualization] (High) ───────┐
-                                                      ├─► STEM / Engineering (JEE Path)
-       [Logical-Mathematical Aptitude]  (High) ───────┘
-       
-       [Analytical Science Aptitude]    (High) ───────┐
-                                                      ├─► Life Sciences / Medicine (NEET Path)
-       [Verbal-Semantic Reasoning]      (High) ───────┘
-       
-       [Verbal-Semantic Reasoning]      (High) ───────┐
-                                                      ├─► Humanities / Law / Management
-       [Logical Reasoning & MAT]        (High) ───────┘
+```pathway-mapping
+{
+  "title": "CNTS COGNITIVE PROFILE & PATHWAY MAPPING",
+  "pathways": [
+    {
+      "title": "STEM / Engineering",
+      "subtitle": "JEE Path",
+      "color": "blue",
+      "skills": ["Spatial-Abstract Visualization (High)", "Logical-Mathematical Aptitude (High)"]
+    },
+    {
+      "title": "Life Sciences / Medicine",
+      "subtitle": "NEET Path",
+      "color": "emerald",
+      "skills": ["Analytical Science Aptitude (High)", "Verbal-Semantic Reasoning (High)"]
+    },
+    {
+      "title": "Humanities / Law / Management",
+      "subtitle": "CLAT / CAT Path",
+      "color": "purple",
+      "skills": ["Verbal-Semantic Reasoning (High)", "Logical Reasoning & MAT (High)"]
+    }
+  ]
+}
 ```
 
 The CNTS dashboard measures three distinct cognitive vectors to help guide these paths:
