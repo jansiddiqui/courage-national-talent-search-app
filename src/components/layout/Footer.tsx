@@ -14,7 +14,7 @@ import {
 const footerLinks = {
   Platform: [
     { label: "Home", href: "/" },
-    { label: "CNTS Landing", href: "/cnts" },
+    { label: "Why CNTS?", href: "/why-cnts" },
     { label: "About CNTS", href: "/about" },
     { label: "For Schools", href: "/for-schools" },
     { label: "Blog & Resources", href: "/blog" },

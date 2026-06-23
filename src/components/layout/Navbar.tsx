@@ -34,8 +34,8 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
 
   const links = [
     { label: "Home", href: "/" },
-    { label: "CNTS", href: "/cnts" },
-    { label: "About CNTS", href: "/about" },
+    { label: "Why CNTS?", href: "/why-cnts" },
+    { label: "About", href: "/about" },
     { label: "Exam", href: "/#exam" },
     { label: "Prizes", href: "/prizes" },
     { label: "Timeline", href: "/timeline" },
