@@ -38,7 +38,7 @@ export default async function SchoolDashboardPage() {
       
       const { data: rData } = await (supabaseAdmin as any)
         .from("registrations")
-        .select("student_name, student_class, registration_status, created_at, registration_id")
+        .select("student_name, student_class, registration_status, created_at, registration_id, photo_url")
         .eq("school_id", school.id)
         .order("created_at", { ascending: false });
         
