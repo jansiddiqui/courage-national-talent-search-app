@@ -2,7 +2,7 @@ import { CheckCircle2, XCircle } from "lucide-react";
 
 export default function WhyCNTS() {
   return (
-    <section id="why-cnts" className="py-24 lg:py-32 mesh-bg">
+    <section id="why-cnts" className="py-12 md:py-24 lg:py-32 mesh-bg">
       <div className="max-w-6xl mx-auto px-6">
         
         {/* Section header */}
@@ -11,15 +11,15 @@ export default function WhyCNTS() {
             Why CNTS
           </span>
           <h2 className="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight mb-5">
-            Parents don&apos;t buy features.
+            What makes CNTS different
             <br />
-            <span className="gradient-text">They buy outcomes.</span>
+            <span className="gradient-text">from school exams?</span>
           </h2>
           
           <div className="mt-8 p-6 md:p-8 rounded-3xl bg-blue-800 text-white shadow-xl shadow-blue-900/20 text-left md:text-center relative overflow-hidden">
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-400 via-emerald-400 to-amber-400"></div>
             <p className="text-xl md:text-2xl font-medium leading-relaxed">
-              "A child can score 95% in school and still struggle with reasoning, decision making, creativity, or problem solving. CNTS helps uncover those hidden strengths."
+              &ldquo;A child can score 95% in school exams and still struggle with real-world logic, reasoning, or problem solving. CNTS helps discover those hidden strengths.&rdquo;
             </p>
           </div>
         </div>
@@ -41,11 +41,11 @@ export default function WhyCNTS() {
             <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
               <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
                 <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
-                <span className="text-slate-600 font-medium text-sm md:text-base">Measures what a child remembers</span>
+                <span className="text-slate-600 font-medium text-sm md:text-base">Tests what a child remembers</span>
               </div>
               <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
                 <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
-                <span className="text-blue-900 font-bold text-sm md:text-base">Measures how a child thinks</span>
+                <span className="text-blue-900 font-bold text-sm md:text-base">Tests how a child thinks and reasons</span>
               </div>
             </div>
 
@@ -53,11 +53,11 @@ export default function WhyCNTS() {
             <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
               <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
                 <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
-                <span className="text-slate-600 font-medium text-sm md:text-base">Focus on marks</span>
+                <span className="text-slate-600 font-medium text-sm md:text-base">Focuses only on school marks</span>
               </div>
               <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
                 <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
-                <span className="text-blue-900 font-bold text-sm md:text-base">Focus on potential</span>
+                <span className="text-blue-900 font-bold text-sm md:text-base">Focuses on real future potential</span>
               </div>
             </div>
 
@@ -65,11 +65,11 @@ export default function WhyCNTS() {
             <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
               <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
                 <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
-                <span className="text-slate-600 font-medium text-sm md:text-base">One final score</span>
+                <span className="text-slate-600 font-medium text-sm md:text-base">Gives only one total score</span>
               </div>
               <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
                 <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
-                <span className="text-blue-900 font-bold text-sm md:text-base">Multi-dimensional talent profile</span>
+                <span className="text-blue-900 font-bold text-sm md:text-base">Gives a Detailed Brain Strength Report</span>
               </div>
             </div>
 
@@ -77,11 +77,11 @@ export default function WhyCNTS() {
             <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
               <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
                 <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
-                <span className="text-slate-600 font-medium text-sm md:text-base">Limited feedback</span>
+                <span className="text-slate-600 font-medium text-sm md:text-base">No details on strengths & weaknesses</span>
               </div>
               <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
                 <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
-                <span className="text-blue-900 font-bold text-sm md:text-base">Personalized insights</span>
+                <span className="text-blue-900 font-bold text-sm md:text-base">Personalized tips on how your child learns best</span>
               </div>
             </div>
 
@@ -89,11 +89,11 @@ export default function WhyCNTS() {
             <div className="grid grid-cols-2 hover:bg-slate-50/50 transition-colors">
               <div className="p-5 md:p-6 border-r border-slate-100 flex items-center gap-3">
                 <XCircle className="text-slate-300 shrink-0 hidden md:block" size={20} />
-                <span className="text-slate-600 font-medium text-sm md:text-base">Competition-focused</span>
+                <span className="text-slate-600 font-medium text-sm md:text-base">Increases student stress</span>
               </div>
               <div className="p-5 md:p-6 bg-blue-50/30 flex items-center gap-3">
                 <CheckCircle2 className="text-blue-600 shrink-0 hidden md:block" size={20} />
-                <span className="text-blue-900 font-bold text-sm md:text-base">Growth-focused</span>
+                <span className="text-blue-900 font-bold text-sm md:text-base">Helps your child learn and grow</span>
               </div>
             </div>
 

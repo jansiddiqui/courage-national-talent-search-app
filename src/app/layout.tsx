@@ -20,20 +20,20 @@ export const metadata: Metadata = {
     siteName: "CNTS",
     images: [
       {
-        url: "/images/logo.png",
-        width: 512,
-        height: 512,
-        alt: "CNTS Logo",
+        url: "/og-cnts.png",
+        width: 1200,
+        height: 630,
+        alt: "Courage National Talent Search (CNTS) 2026",
       },
     ],
     locale: "en_IN",
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "CNTS 2026 Founding Edition – Courage National Talent Search",
     description: "India's premier talent discovery platform for students in Classes 5–8. Uncover your child's unique strengths and unlock a future-ready profile.",
-    images: ["/images/logo.png"],
+    images: ["/og-cnts.png"],
   },
 };
 

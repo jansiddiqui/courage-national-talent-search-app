@@ -13,7 +13,7 @@ const faqs = [
   },
   {
     q: "Is CNTS an Olympiad?",
-    a: "No. CNTS is a Talent Discovery Platform, not an Olympiad. Olympiads rank students by marks in a subject. CNTS builds a multi-dimensional profile of cognitive strengths, reasoning ability, and intellectual aptitude — revealing who the student is, not just what they memorized.",
+    a: "No. Most Olympiads rank students by memorizing facts from textbooks. CNTS is different — it tests your child's logic, reasoning, and thinking ability. It shows how they solve problems, not just what they remember.",
   },
   {
     q: "In which language is the exam conducted?",
@@ -21,7 +21,7 @@ const faqs = [
   },
   {
     q: "How are results communicated?",
-    a: "Results are published within 21 days of the exam. Parents receive a detailed PDF Talent Profile report via email, including national rank, percentile, domain-wise scores, strength areas, and a counselor-written guidance note.",
+    a: "Results are published online within 21 days. You will get a Detailed Brain Strength Report (PDF) directly in your email and Parent Dashboard, showing their national rank, subject-wise logic scores, strength areas, and learning tips.",
   },
   {
     q: "Can my child prepare for CNTS? Is there a syllabus?",
@@ -29,7 +29,7 @@ const faqs = [
   },
   {
     q: "How is this different from other talent searches?",
-    a: "CNTS is the only talent search in India that produces a verified, shareable Talent Profile — not just a score or rank. It covers cognitive ability across 6 domains, offers bilingual testing, and provides a counseling report that parents can actually act on.",
+    a: "Unlike regular exams that only give marks, CNTS gives a Detailed Brain Strength Report. It tests thinking skills in 6 key areas, lets you choose English or Hindi, and gives you clear tips to help your child grow.",
   },
   {
     q: "What if my child's school doesn't participate?",
@@ -41,7 +41,7 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-24 lg:py-32 mesh-bg">
+    <section id="faq" className="py-12 md:py-24 lg:py-32 mesh-bg">
       <div className="max-w-4xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-14">

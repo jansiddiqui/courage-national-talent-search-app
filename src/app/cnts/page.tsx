@@ -631,7 +631,7 @@ export default function CntsLandingPage() {
             <div className="border border-slate-200 rounded-3xl p-6 space-y-3">
               <h3 className="font-display font-bold text-slate-900 text-lg">Dedicated Support</h3>
               <p className="text-slate-600 text-sm leading-relaxed">
-                Fast resolution support over email and official WhatsApp contact points.
+                Fast resolution support over email and our online helpdesk.
               </p>
             </div>
           </div>

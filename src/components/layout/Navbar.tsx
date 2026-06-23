@@ -88,7 +88,9 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
       <nav
         className={`fixed left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
-            ? "top-0 glass shadow-sm shadow-blue-900/5 py-3"
+            ? theme === "dark"
+              ? "top-0 bg-slate-950/95 border-b border-slate-850/60 shadow-sm py-3 backdrop-blur-md"
+              : "top-0 bg-white/95 border-b border-slate-200/80 shadow-sm py-3 backdrop-blur-md"
             : "top-[38px] bg-transparent py-5"
         }`}
       >
@@ -183,24 +185,38 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
 
       {/* Mobile Menu */}
       {menuOpen && (
-        <div className="md:hidden mt-2 mx-4 glass rounded-2xl p-4 shadow-xl">
+        <div className={`md:hidden mt-2 mx-4 rounded-2xl p-4 shadow-xl border backdrop-blur-lg ${
+          theme === "dark"
+            ? "bg-slate-950/98 border-slate-800 text-white"
+            : "bg-white/98 border-slate-200/85 text-slate-950"
+        }`}>
           {links.map((l) => (
             <Link
               key={l.href}
               href={l.href}
               onClick={() => setMenuOpen(false)}
-              className="block px-4 py-3 text-sm font-medium text-slate-700 hover:text-blue-800 hover:bg-blue-50 rounded-xl transition-all"
+              className={`block px-4 py-3 text-sm font-semibold rounded-xl transition-all ${
+                theme === "dark"
+                  ? "text-slate-300 hover:text-white hover:bg-white/5"
+                  : "text-slate-700 hover:text-blue-800 hover:bg-blue-50"
+              }`}
             >
               {l.label}
             </Link>
           ))}
-          <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col gap-2">
+          <div className={`mt-3 pt-3 border-t flex flex-col gap-2 ${
+            theme === "dark" ? "border-white/10" : "border-slate-100"
+          }`}>
             {isAuthenticated ? (
               <>
                 <Link
                   href="/dashboard"
                   onClick={() => setMenuOpen(false)}
-                  className="block w-full text-center px-5 py-3 bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl"
+                  className={`block w-full text-center px-5 py-3 text-sm font-semibold rounded-xl ${
+                    theme === "dark"
+                      ? "bg-white/10 text-white hover:bg-white/15"
+                      : "bg-slate-100 text-slate-800 hover:bg-slate-200"
+                  }`}
                 >
                   Dashboard
                 </Link>
@@ -210,14 +226,18 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                 <Link
                   href="/login"
                   onClick={() => setMenuOpen(false)}
-                  className="block w-full text-center px-5 py-3 bg-slate-100 text-slate-800 text-sm font-semibold rounded-xl"
+                  className={`block w-full text-center px-5 py-3 text-sm font-semibold rounded-xl ${
+                    theme === "dark"
+                      ? "bg-white/10 text-white hover:bg-white/15"
+                      : "bg-slate-100 text-slate-850 hover:bg-slate-200"
+                  }`}
                 >
                   Login
                 </Link>
                 <Link
                   href="/register"
                   onClick={() => setMenuOpen(false)}
-                  className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl"
+                  className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700"
                 >
                   Register Now
                 </Link>

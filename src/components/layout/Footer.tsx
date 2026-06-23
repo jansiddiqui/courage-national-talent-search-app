@@ -7,6 +7,8 @@ import {
   Share2,
   Globe,
   Link2,
+  MessageSquare,
+  Phone,
 } from "lucide-react";
 
 const footerLinks = {
@@ -74,6 +76,26 @@ export default function Footer() {
                 <div>
                   <span className="text-slate-550 block text-[8px] font-bold uppercase tracking-wider leading-none mb-0.5">Support Email</span>
                   <span className="text-xs font-semibold text-slate-400 group-hover:text-white transition-colors">cnts@thecouragelibrary.com</span>
+                </div>
+              </a>
+              <Link
+                href="/contact"
+                className="flex items-center gap-2.5 hover:text-white transition-colors group"
+              >
+                <MessageSquare size={13} className="text-blue-500 shrink-0" />
+                <div>
+                  <span className="text-slate-550 block text-[8px] font-bold uppercase tracking-wider leading-none mb-0.5">Website Support</span>
+                  <span className="text-xs font-semibold text-slate-400 group-hover:text-white transition-colors">Submit Support Ticket</span>
+                </div>
+              </Link>
+              <a
+                href="tel:+918360603173"
+                className="flex items-center gap-2.5 hover:text-white transition-colors group"
+              >
+                <Phone size={13} className="text-blue-400 shrink-0" />
+                <div>
+                  <span className="text-slate-550 block text-[8px] font-bold uppercase tracking-wider leading-none mb-0.5">Call Support (Calls Only)</span>
+                  <span className="text-xs font-semibold text-slate-400 group-hover:text-white transition-colors">+91 83606 03173</span>
                 </div>
               </a>
               <div className="flex items-center gap-2.5 text-[11px] text-slate-500 font-medium">

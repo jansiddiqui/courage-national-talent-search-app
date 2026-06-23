@@ -27,7 +27,7 @@ const faqs: FAQItem[] = [
   },
   {
     q: "How can I receive regular updates?",
-    a: "Join our official WhatsApp Channel for alerts, syllabus files, and daily quiz reminders."
+    a: "Check the 'Updates' page in your Parent Dashboard regularly for alerts, announcements, and preparation guides."
   }
 ];
 
@@ -118,19 +118,17 @@ export default function FAQBubble() {
           })}
         </div>
 
-        {/* WhatsApp Channel Call to Action */}
+        {/* Website Contact Call to Action */}
         <div className="pt-3 border-t border-slate-100 space-y-2">
           <p className="text-[10px] text-slate-400 font-semibold text-center leading-normal">
-            Have more questions? Join our official community channel for direct updates.
+            Have more questions? Contact our support team directly.
           </p>
           <a
-            href="https://whatsapp.com/channel/0029Vb8NYaiEquiRSLwDD338"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-full py-3 bg-[#25D366] hover:bg-[#20ba59] text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-emerald-500/10 cursor-pointer"
+            href="/contact"
+            className="w-full py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-blue-850/10 cursor-pointer"
           >
             <MessageSquare size={13} />
-            Join Official WhatsApp Channel
+            Write to Support Desk
           </a>
         </div>
       </div>

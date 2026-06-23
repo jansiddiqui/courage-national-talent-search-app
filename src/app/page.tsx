@@ -1,19 +1,13 @@
 import type { Metadata } from "next";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
-import Trust from "@/components/sections/Trust";
-import FounderLetter from "@/components/sections/FounderLetter";
+import PathwaySplit from "@/components/sections/PathwaySplit";
 import BrandingSection from "@/components/sections/BrandingSection";
 import WhySubsidized from "@/components/sections/WhySubsidized";
 import WhyCNTS from "@/components/sections/WhyCNTS";
-import SampleQuestions from "@/components/sections/SampleQuestions";
 import WhatParentsDiscover from "@/components/sections/WhatParentsDiscover";
-import TalentProfile from "@/components/sections/TalentProfile";
-import ExamOverview from "@/components/sections/ExamOverview";
 import PrizePool from "@/components/sections/PrizePool";
 import HowItWorks from "@/components/sections/HowItWorks";
-import TimelineReassurance from "@/components/sections/TimelineReassurance";
-import ParentBenefits from "@/components/sections/ParentBenefits";
 import FAQ from "@/components/sections/FAQ";
 import NeedHelp from "@/components/layout/NeedHelp";
 import CTA from "@/components/sections/CTA";
@@ -21,7 +15,11 @@ import StickyMobileCTA from "@/components/layout/StickyMobileCTA";
 import FAQBubble from "@/components/layout/FAQBubble";
 import Footer from "@/components/layout/Footer";
 import JsonLd from "@/components/shared/JsonLd";
-import LatestArticles from "@/components/sections/LatestArticles";
+import Trust from "@/components/sections/Trust";
+import FounderLetter from "@/components/sections/FounderLetter";
+import ExamOverview from "@/components/sections/ExamOverview";
+import TimelineReassurance from "@/components/sections/TimelineReassurance";
+import ParentBenefits from "@/components/sections/ParentBenefits";
 
 export const metadata: Metadata = {
   title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
@@ -35,19 +33,19 @@ export const metadata: Metadata = {
     url: "https://thecouragelibrary.com",
     images: [
       {
-        url: "/images/logo.png",
-        width: 512,
-        height: 512,
-        alt: "CNTS Logo",
+        url: "/og-cnts.png",
+        width: 1200,
+        height: 630,
+        alt: "Courage National Talent Search (CNTS) 2026",
       },
     ],
     type: "website",
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
     description: "India's premier talent discovery platform for students in Classes 5–8. Operated by Courage Library to identify cognitive strengths and award verified merit profiles.",
-    images: ["/images/logo.png"],
+    images: ["/og-cnts.png"],
   },
 };
 
@@ -109,20 +107,18 @@ export default function Home() {
       <Hero />
       <Trust />
       <FounderLetter />
-      <BrandingSection />
-      <WhySubsidized />
+      <PathwaySplit />
       <WhyCNTS />
-      <SampleQuestions />
       <WhatParentsDiscover />
-      <TalentProfile />
       <ExamOverview />
-      <PrizePool />
+      <WhySubsidized />
       <HowItWorks />
       <TimelineReassurance />
+      <PrizePool />
       <ParentBenefits />
-      <LatestArticles />
-      <FAQ />
+      <BrandingSection />
       <NeedHelp />
+      <FAQ />
       <CTA />
       <StickyMobileCTA />
       <FAQBubble />

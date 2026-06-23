@@ -19,6 +19,9 @@ import {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
+import Trust from "@/components/sections/Trust";
+import ParentBenefits from "@/components/sections/ParentBenefits";
+import InspiredByGreatMinds from "@/components/sections/InspiredByGreatMinds";
 
 export default function WhyCNTSPage() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -161,6 +164,11 @@ export default function WhyCNTSPage() {
             </p>
           </div>
         </div>
+
+        {/* Migrated Homepage Sections for SEO & Educational Authority */}
+        <Trust />
+        <ParentBenefits />
+        <InspiredByGreatMinds />
 
         {/* CTA Banner */}
         <div className="bg-slate-900 text-white rounded-3xl p-8 text-center space-y-6 shadow-lg shadow-slate-900/10 border border-slate-800 relative overflow-hidden">

@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowRight, Sparkles, Star, Trophy, Brain, Zap, CheckCircle2, AlertCircle, GraduationCap, Banknote, Calendar, ScrollText } from "lucide-react";
+import { ArrowRight, Sparkles, Star, Trophy, Brain, Zap, CheckCircle2, AlertCircle, GraduationCap, Banknote, Calendar, ScrollText, Award } from "lucide-react";
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import { fetchTotalRegistrationCount, fetchRegistrations } from "@/services/supabaseService";
 import { BASELINE_REGISTRATIONS, BASELINE_STATES } from "@/config/stats";
@@ -26,64 +26,10 @@ const authenticMessages = [
   "Building India's Next Generation Talent Discovery Platform",
 ];
 
-const profiles = {
-  Aarav: {
-    name: "Aarav Gupta",
-    classInfo: "Class 6 · Delhi",
-    score: 84,
-    percentile: "Top 7%",
-    strengths: [
-      { icon: Brain, label: "Critical Thinking", color: "bg-blue-50 text-blue-700 border-blue-100" },
-      { icon: Trophy, label: "Problem Solving", color: "bg-purple-50 text-purple-700 border-purple-100" }
-    ],
-    skills: [
-      { label: "Logical Reasoning", val: 89, tag: "Advanced", color: "bg-blue-600" },
-      { label: "Language Analysis", val: 78, tag: "Strong", color: "bg-emerald-500" },
-      { label: "Quantitative Thinking", val: 85, tag: "Strong", color: "bg-amber-500" },
-    ],
-    learningPattern: "Visual-Analytical",
-    award: "National Merit Certificate"
-  },
-  Priyanshi: {
-    name: "Priyanshi Singh",
-    classInfo: "Class 7 · Lucknow",
-    score: 91,
-    percentile: "Top 2%",
-    strengths: [
-      { icon: Zap, label: "Logical Reasoning", color: "bg-amber-50 text-amber-700 border-amber-100" },
-      { icon: Star, label: "Creative Intelligence", color: "bg-emerald-50 text-emerald-700 border-emerald-100" }
-    ],
-    skills: [
-      { label: "Logical Reasoning", val: 94, tag: "Advanced", color: "bg-blue-600" },
-      { label: "Language Analysis", val: 92, tag: "Advanced", color: "bg-emerald-500" },
-      { label: "Quantitative Thinking", val: 76, tag: "Developing", color: "bg-amber-500" },
-    ],
-    learningPattern: "Verbal-Logical",
-    award: "National Topper Medal"
-  },
-  Arjun: {
-    name: "Arjun Sharma",
-    classInfo: "Class 8 · Jaipur",
-    score: 88,
-    percentile: "Top 4%",
-    strengths: [
-      { icon: Brain, label: "Critical Thinking", color: "bg-blue-50 text-blue-700 border-blue-100" },
-      { icon: Zap, label: "Logical Reasoning", color: "bg-amber-50 text-amber-700 border-amber-100" }
-    ],
-    skills: [
-      { label: "Logical Reasoning", val: 81, tag: "Developing", color: "bg-blue-600" },
-      { label: "Language Analysis", val: 85, tag: "Strong", color: "bg-emerald-500" },
-      { label: "Quantitative Thinking", val: 92, tag: "Advanced", color: "bg-amber-500" },
-    ],
-    learningPattern: "Structured-Quantitative",
-    award: "Mathematical Excellence Award"
-  }
-};
-
 export default function Hero() {
   const [tickerIndex, setTickerIndex] = useState(0);
   const [dynamicStats, setDynamicStats] = useState(stats);
-  const [selectedProfileKey, setSelectedProfileKey] = useState<"Aarav" | "Priyanshi" | "Arjun">("Aarav");
+  const [dbCount, setDbCount] = useState<number | null>(null);
 
   // Eligibility Checker State
   const [checkClass, setCheckClass] = useState("");
@@ -149,8 +95,31 @@ export default function Hero() {
   const currentMessage = authenticMessages[tickerIndex];
 
   useEffect(() => {
-    // Keep stats static as requested by product guidelines (avoiding fake/dynamic scale indicators)
-    setDynamicStats(stats);
+    const getCount = async () => {
+      try {
+        const count = await fetchTotalRegistrationCount();
+        setDbCount(count);
+        
+        if (count > 0) {
+          setDynamicStats([
+            { value: "Classes 5–8", label: "Eligibility" },
+            { value: "Online Assessment", label: "Format" },
+            { value: `${count.toLocaleString()}+`, label: "Students Registered" },
+            { value: "India & International", label: "Reach" }
+          ]);
+        } else {
+          setDynamicStats([
+            { value: "Classes 5–8", label: "Eligibility" },
+            { value: "Online Assessment", label: "Format" },
+            { value: "100+", label: "Registered Students" },
+            { value: "India & International", label: "Reach" }
+          ]);
+        }
+      } catch (err) {
+        console.error("Failed to fetch registration count:", err);
+      }
+    };
+    getCount();
   }, []);
 
   return (
@@ -172,16 +141,21 @@ export default function Hero() {
         />
       </div>
 
-      <div className="relative max-w-7xl mx-auto px-6 py-20 lg:py-32">
+      <div className="relative max-w-7xl mx-auto px-6 py-10 md:py-20 lg:py-32">
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left: Copy */}
           <div className="space-y-8">
             {/* Eyebrow */}
-            <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full">
-              <Sparkles size={14} className="text-blue-700" />
-              <span className="text-blue-800 text-xs font-semibold tracking-wide uppercase">
-                India&apos;s Talent Discovery Platform
-              </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 border border-blue-100 rounded-full">
+                <Sparkles size={14} className="text-blue-700" />
+                <span className="text-blue-800 text-xs font-semibold tracking-wide uppercase">
+                  India&apos;s Talent Discovery Platform
+                </span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-800 font-bold text-[10px] uppercase tracking-wider">
+                ✓ Hindi & English (दोनों भाषाओं में उपलब्ध)
+              </div>
             </div>
 
             {/* Headline */}
@@ -195,7 +169,7 @@ export default function Hero() {
 
             {/* Subtext */}
             <p className="text-lg text-slate-500 leading-relaxed max-w-xl">
-              A National Assessment for Classes 5–8. Designed to identify reasoning ability, mathematical thinking, language skills, and learning potential.
+              Discover what your child is naturally good at. A national test for Classes 5–8 to find their real strengths, thinking ability, and learning potential.
             </p>
 
             {/* Quick Facts Grid */}
@@ -203,21 +177,21 @@ export default function Hero() {
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-700 shrink-0 mt-0.5"><GraduationCap size={14} /></div>
                 <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Eligible Grades</span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">For Classes</span>
                   <span className="text-xs font-bold text-slate-850">Classes 5, 6, 7 & 8</span>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 shrink-0 mt-0.5"><Banknote size={14} /></div>
                 <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Registration Fee</span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Exam Fee</span>
                   <span className="text-xs font-bold text-blue-800">₹99 <span className="text-[9px] text-slate-500 font-semibold">(Subsidized)</span></span>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 mt-0.5"><Calendar size={14} /></div>
                 <div>
-                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Assessment Date</span>
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Exam Date</span>
                   <span className="text-xs font-bold text-slate-850">19 July 2026 <span className="text-[9px] text-slate-500 font-semibold">(Online)</span></span>
                 </div>
               </div>
@@ -225,7 +199,7 @@ export default function Hero() {
                 <div className="w-6 h-6 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 shrink-0 mt-0.5"><ScrollText size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">What You Get</span>
-                  <span className="text-xs font-bold text-slate-850">Cognitive Profile & Certificate</span>
+                  <span className="text-xs font-bold text-slate-850">Detailed Brain Strength Report & Certificate</span>
                 </div>
               </div>
             </div>
@@ -252,15 +226,30 @@ export default function Hero() {
             {/* CTAs */}
             <div className="flex flex-col sm:flex-row gap-4">
               <RegisterCTA
-                unauthenticatedText="Register Candidate – Subsidized Founding Edition (₹99)"
-                className="group inline-flex items-center justify-center gap-2 px-7 py-4 bg-blue-800 text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all duration-200 shadow-xl shadow-blue-800/25 hover:shadow-blue-700/35 hover:-translate-y-0.5 w-full sm:w-auto text-center"
+                unauthenticatedText="Secure Your Child's Spot — ₹99"
+                rightIcon={<ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />}
+                className="group inline-flex items-center justify-center gap-2 px-7 py-4 bg-blue-800 text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all duration-200 shadow-xl shadow-blue-800/25 hover:shadow-blue-700/35 hover:-translate-y-0.5 w-full sm:w-auto text-center font-display"
               />
               <a
                 href="#sample-profile"
-                className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-slate-700 font-semibold rounded-2xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 shadow-sm w-full sm:w-auto"
+                className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-slate-700 font-semibold rounded-2xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 shadow-sm w-full sm:w-auto font-display"
               >
                 View Sample Talent Profile
               </a>
+            </div>
+
+            {/* Trust badge strip & Legitimacy subtitle */}
+            <div className="space-y-3 pt-2">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-[11px] font-bold text-slate-600">
+                <span className="flex items-center gap-1"><CheckCircle2 size={12} className="text-emerald-500 shrink-0" /> Classes 5–8</span>
+                <span className="flex items-center gap-1"><CheckCircle2 size={12} className="text-emerald-500 shrink-0" /> Online Assessment</span>
+                <span className="flex items-center gap-1"><CheckCircle2 size={12} className="text-emerald-500 shrink-0" /> Digital Certificate</span>
+                <span className="flex items-center gap-1"><CheckCircle2 size={12} className="text-emerald-500 shrink-0" /> Talent Profile Report</span>
+              </div>
+              <div className="text-xs text-slate-500 font-semibold leading-relaxed">
+                <p>Trusted by students, parents and schools across India.</p>
+                <p className="text-[10px] text-slate-400 font-medium mt-0.5">Founding Edition 2026 • Classes 5–8 • Online Nationwide</p>
+              </div>
             </div>
 
             {/* Social proof */}
@@ -289,162 +278,81 @@ export default function Hero() {
                   ))}
                 </div>
                 <p className="text-xs text-slate-500 mt-0.5">
-                  Join the <strong className="text-slate-700">Founding Edition of CNTS 2026</strong>
+                  {dbCount && dbCount > 0 ? (
+                    <>
+                      Join over <strong className="text-blue-800">{dbCount.toLocaleString()} students</strong> in the <strong className="text-slate-700">Founding Edition of CNTS 2026</strong>
+                    </>
+                  ) : (
+                    <>
+                      Registrations Open Nationwide — <strong className="text-slate-700">Founding Edition 2026</strong>
+                    </>
+                  )}
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Right: Talent Profile Card */}
-          <div className="relative flex flex-col items-center lg:items-end justify-center">
-            {/* Profile Toggle Tabs */}
-            <div className="flex gap-1 p-1 bg-slate-100/90 backdrop-blur-sm border border-slate-200/50 rounded-2xl mb-4 w-full max-w-[340px] sm:max-w-[380px]">
-              {(Object.keys(profiles) as Array<keyof typeof profiles>).map((profileKey) => (
-                <button
-                  key={profileKey}
-                  type="button"
-                  onClick={() => setSelectedProfileKey(profileKey)}
-                  className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    selectedProfileKey === profileKey
-                      ? "bg-white text-blue-900 shadow-md shadow-blue-900/5"
-                      : "text-slate-500 hover:text-slate-800"
-                  }`}
-                >
-                  {profileKey}
-                </button>
-              ))}
+          {/* Right: Premium Bento Grid of Program Assets */}
+          <div className="relative w-full max-w-lg mx-auto lg:mx-0 grid grid-cols-1 sm:grid-cols-2 gap-4">
+            
+            {/* Box 1: Verified National Certificate */}
+            <div className="col-span-1 sm:col-span-2 bg-white rounded-3xl p-5 border border-slate-200/80 shadow-lg relative overflow-hidden group hover:border-blue-300 transition-all duration-300">
+              <div className="absolute top-0 right-0 w-24 h-24 bg-blue-50 rounded-bl-full pointer-events-none" />
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 shrink-0">
+                  <Award size={22} className="stroke-[1.5]" />
+                </div>
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-full uppercase tracking-wider">Verified Certificate</span>
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full uppercase tracking-wider flex items-center gap-0.5">
+                      ✓ Secure QR
+                    </span>
+                  </div>
+                  <h4 className="font-display font-bold text-slate-800 text-sm">National Merit & Participation Certificate</h4>
+                  <p className="text-[11px] text-slate-500 leading-normal">
+                    Every candidate receives a verified certificate, marked with a unique QR code register ID for institutional verify.
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="relative animate-float">
-              {/* Main card */}
-              <div className="w-full max-w-[340px] sm:w-[380px] bg-white rounded-3xl shadow-2xl shadow-blue-900/15 border border-slate-100/80 overflow-hidden">
-                {/* Card header */}
-                <div className="bg-gradient-to-br from-blue-800 via-blue-700 to-blue-600 p-6 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-                  <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/5 rounded-full translate-y-1/2 -translate-x-1/2" />
-                  <div className="relative">
-                    <div className="flex items-center justify-between mb-4">
-                      <span className="text-blue-200 text-xs font-medium uppercase tracking-widest font-sans">
-                        CNTS Talent Profile
-                      </span>
-                      <div className="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center">
-                        <Star size={10} className="text-white fill-white" />
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-4">
-                      <div className="w-14 h-14 rounded-2xl bg-white/20 flex items-center justify-center border border-white/30 text-white font-display font-bold text-xl">
-                        {profiles[selectedProfileKey].name[0]}
-                      </div>
-                      <div>
-                        <h3 className="font-display font-bold text-white text-lg leading-tight">
-                          {profiles[selectedProfileKey].name}
-                        </h3>
-                        <p className="text-blue-200 text-sm mt-0.5">{profiles[selectedProfileKey].classInfo}</p>
-                      </div>
-                    </div>
-                  </div>
+            {/* Box 2: Detailed Strength Report Preview */}
+            <div className="col-span-1 bg-white rounded-3xl p-5 border border-slate-200/80 shadow-lg relative overflow-hidden group hover:border-blue-300 transition-all duration-300 flex flex-col justify-between min-h-[170px]">
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-700">
+                  <Brain size={18} className="stroke-[1.5]" />
                 </div>
-
-                {/* Talent score ring */}
-                <div className="px-6 py-5 border-b border-slate-50">
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-semibold text-slate-500 uppercase tracking-wide">
-                      Overall Talent Score
-                    </span>
-                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full">
-                      {profiles[selectedProfileKey].percentile}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="relative w-16 h-16">
-                      <svg viewBox="0 0 64 64" className="w-full h-full -rotate-90">
-                        <circle cx="32" cy="32" r="26" fill="none" stroke="#EFF6FF" strokeWidth="7" />
-                        <circle
-                          cx="32" cy="32" r="26"
-                          fill="none"
-                          stroke="url(#scoreGrad)"
-                          strokeWidth="7"
-                          strokeLinecap="round"
-                          strokeDasharray={`${2 * Math.PI * 26 * (profiles[selectedProfileKey].score / 100)} ${2 * Math.PI * 26}`}
-                        />
-                        <defs>
-                          <linearGradient id="scoreGrad" x1="0" y1="0" x2="1" y2="0">
-                            <stop offset="0%" stopColor="#1E40AF" />
-                            <stop offset="100%" stopColor="#10B981" />
-                          </linearGradient>
-                        </defs>
-                      </svg>
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <span className="font-display font-bold text-slate-800 text-sm">{profiles[selectedProfileKey].score}</span>
-                      </div>
-                    </div>
-                    <div className="flex-1 space-y-2">
-                      {profiles[selectedProfileKey].skills.map((s) => (
-                        <div key={s.label}>
-                          <div className="flex justify-between text-[11px] mb-0.5">
-                            <span className="text-slate-500 font-semibold">{s.label}</span>
-                            <span className="font-bold text-slate-800">{s.val}% <span className="text-[9px] text-slate-400 font-bold uppercase">({s.tag})</span></span>
-                          </div>
-                          <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                            <div
-                              className={`h-full ${s.color} rounded-full`}
-                              style={{ width: `${s.val}%` }}
-                            />
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                <h4 className="font-display font-bold text-slate-800 text-xs">Detailed Strength Report</h4>
+                <p className="text-[10px] text-slate-550 leading-normal">
+                  6-domain logic and reasoning skills evaluation.
+                </p>
+              </div>
+              <div className="mt-3 space-y-1">
+                <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-blue-600 rounded-full w-[85%]" />
                 </div>
-
-                {/* Talent tags & Learning pattern */}
-                <div className="px-6 py-4 border-b border-slate-50">
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs font-semibold text-slate-400 uppercase tracking-wide">
-                      Discovered Strengths
-                    </p>
-                    <span className="text-[10px] font-bold text-blue-800 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100 font-sans">
-                      {profiles[selectedProfileKey].learningPattern}
-                    </span>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {profiles[selectedProfileKey].strengths.map((b) => (
-                      <span
-                        key={b.label}
-                        className={`inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-full border ${b.color}`}
-                      >
-                        <b.icon size={10} />
-                        {b.label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Award badge */}
-                <div className="mx-6 my-4 p-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-2xl border border-amber-100 flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center shadow-lg shadow-amber-300/40">
-                    <Trophy size={16} className="text-white" />
-                  </div>
-                  <div>
-                    <div className="text-xs font-bold text-amber-800">{profiles[selectedProfileKey].award}</div>
-                    <div className="text-[10px] text-amber-600 mt-0.5">Founding Edition Participant • 2026 Cohort</div>
-                  </div>
+                <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                  <div className="h-full bg-emerald-500 rounded-full w-[72%]" />
                 </div>
               </div>
+            </div>
 
-              {/* Floating micro-cards */}
-              <div className="absolute -top-5 -right-6 animate-float-slow hidden sm:flex" style={{ animationDelay: "1s" }}>
-                <div className="glass rounded-2xl px-4 py-2.5 shadow-lg shadow-blue-900/10 flex items-center gap-2">
-                  <div className="w-2 h-2 bg-emerald-400 rounded-full" />
-                  <span className="text-xs font-semibold text-slate-700">Talent profile active</span>
+            {/* Box 3: Medal & Trophy Honors */}
+            <div className="col-span-1 bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-3xl p-5 border border-slate-850 shadow-xl relative overflow-hidden group hover:border-slate-700 transition-all duration-300 flex flex-col justify-between min-h-[170px]">
+              <div className="absolute -right-6 -bottom-6 w-20 h-20 bg-white/5 rounded-full pointer-events-none" />
+              <div className="space-y-2">
+                <div className="w-10 h-10 rounded-xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-400">
+                  <Trophy size={18} className="stroke-[1.5]" />
                 </div>
+                <h4 className="font-display font-bold text-white text-xs">National Medals & Ranks</h4>
+                <p className="text-[10px] text-slate-400 leading-normal">
+                  All India Rankings with trophies & physical gold/silver/bronze medals for toppers.
+                </p>
               </div>
-              <div className="absolute -bottom-4 -left-8 animate-float-slow hidden sm:flex" style={{ animationDelay: "2s" }}>
-                <div className="glass rounded-2xl px-4 py-2.5 shadow-lg shadow-blue-900/10 flex items-center gap-2">
-                  <Trophy size={13} className="text-amber-500" />
-                  <span className="text-xs font-semibold text-slate-700">Cohort member verified</span>
-                </div>
-              </div>
+              <span className="text-[9px] font-bold text-amber-400 uppercase tracking-widest block pt-2 border-t border-white/5">
+                AIR Rankings 1–50
+              </span>
             </div>
           </div>
         </div>

@@ -4,7 +4,7 @@ import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 export default function CTA() {
   return (
-    <section id="register" className="py-24 lg:py-32 bg-white">
+    <section id="register" className="py-12 md:py-24 lg:py-32 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         <div className="relative rounded-[2.5rem] overflow-hidden mesh-dark noise">
           {/* Background elements */}
@@ -12,7 +12,7 @@ export default function CTA() {
           <div className="absolute bottom-0 right-0 w-80 h-80 bg-emerald-50/15 rounded-full blur-3xl translate-x-1/2 translate-y-1/2 pointer-events-none" />
           <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-amber-50/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
 
-          <div className="relative px-8 py-16 lg:py-20 text-center max-w-3xl mx-auto">
+          <div className="relative px-8 py-10 md:py-16 lg:py-20 text-center max-w-3xl mx-auto">
             {/* Badge */}
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 border border-white/20 rounded-full mb-8">
               <CalendarDays size={13} className="text-amber-400" />

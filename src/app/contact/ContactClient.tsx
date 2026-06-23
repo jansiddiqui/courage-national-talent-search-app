@@ -201,6 +201,21 @@ export default function ContactPage() {
                   </div>
                 </a>
 
+                {/* Call Support */}
+                <a 
+                  href="tel:+918360603173"
+                  className="flex items-start gap-3 p-3 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
+                >
+                  <div className="p-2.5 rounded-xl bg-amber-50 text-amber-700 shrink-0">
+                    <Phone size={16} />
+                  </div>
+                  <div>
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Call Support (Calls Only)</span>
+                    <span className="text-sm font-semibold text-slate-700 group-hover:text-amber-850 transition-colors">+91 83606 03173</span>
+                    <p className="text-[10px] text-slate-400 mt-0.5">For phone calls only. Use contact form for other issues.</p>
+                  </div>
+                </a>
+
               </div>
             </div>
 

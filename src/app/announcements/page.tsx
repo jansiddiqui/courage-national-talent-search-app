@@ -349,27 +349,26 @@ export default function AnnouncementsPage() {
           </div>
         )}
 
-        {/* WhatsApp CTA */}
-        <div className="bg-gradient-to-br from-slate-900 to-emerald-950 text-white rounded-3xl p-8 md:p-10 border border-emerald-900 shadow-lg flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
+        {/* Support Helpdesk CTA */}
+        <div className="bg-gradient-to-br from-slate-900 to-blue-950 text-white rounded-3xl p-8 md:p-10 border border-blue-900 shadow-lg flex flex-col md:flex-row justify-between items-center gap-6 relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none" />
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-emerald-400 text-xs font-bold uppercase tracking-wider mb-1">
+            <div className="flex items-center gap-2 text-blue-400 text-xs font-bold uppercase tracking-wider mb-1">
               <CheckCircle2 size={13} />
-              Zero-spam, announcements only
+              Quick Resolution Support
             </div>
-            <h3 className="font-display font-bold text-white text-xl">Want instant alerts?</h3>
+            <h3 className="font-display font-bold text-white text-xl">Have any questions?</h3>
             <p className="text-[13px] text-slate-400 max-w-sm leading-relaxed">
-              Join the official CNTS parent WhatsApp broadcast channel for automatic reminders
-              about admit card issuance, exam day prep, and result announcements.
+              Contact our official CNTS Parent Support Desk. We reply to support tickets and queries within 2 hours.
             </p>
           </div>
           <Link
-            href="/updates"
-            className="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold rounded-2xl transition-all shadow-md shrink-0 flex items-center gap-2"
+            href="/contact"
+            className="px-6 py-3.5 bg-blue-800 hover:bg-blue-750 text-white text-sm font-bold rounded-2xl transition-all shadow-md shrink-0 flex items-center gap-2"
           >
             <MessageSquare size={15} />
-            Join WhatsApp Channel
-            <ExternalLink size={13} />
+            Write to Support Desk
+            <ChevronRight size={13} />
           </Link>
         </div>
 

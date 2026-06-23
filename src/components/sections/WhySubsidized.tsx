@@ -3,22 +3,22 @@ import Link from "next/link";
 
 export default function WhySubsidized() {
   return (
-    <section className="py-20 bg-white">
+    <section className="py-10 md:py-20 bg-white">
       <div className="max-w-6xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* Left: Heading and Mission */}
           <div className="space-y-6">
             <span className="inline-block text-[10px] font-bold text-blue-700 uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full">
-              Registration Subsidy & Mission
+              Reduced Fee & Mission
             </span>
             <h2 className="font-display text-3xl md:text-4xl font-bold text-slate-900 leading-tight tracking-tight">
-              Why is the CNTS registration fee only ₹99?
+              Why is the CNTS exam fee only ₹99?
             </h2>
             <p className="text-slate-600 text-sm leading-relaxed">
-              Standard cognitive profiling tests and diagnostic evaluations in India typically cost between ₹1,500 and ₹5,000, making them inaccessible to the majority of student families.
+              In India, logic and reasoning test reports usually cost ₹1,500 to ₹5,000. Most parents cannot afford this.
             </p>
             <p className="text-slate-600 text-sm leading-relaxed">
-              To ensure that high-quality cognitive diagnostics are accessible to every student regardless of their economic background, the <strong>Courage Library Foundation</strong> has subsidized the Founding Edition registration fee to a nominal <strong>₹99</strong>. There are no hidden charges or upsells.
+              To make sure every student gets this opportunity, the <strong>Courage Library Foundation</strong> has reduced the fee to only <strong>₹99</strong>. There are no hidden fees, and no books or courses will be sold to you later.
             </p>
             <div className="pt-2">
               <Link
@@ -37,9 +37,9 @@ export default function WhySubsidized() {
               <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
                 <Landmark size={18} className="text-blue-700" />
               </div>
-              <h4 className="font-bold text-slate-800 text-sm">Foundation Subsidized</h4>
+              <h4 className="font-bold text-slate-800 text-sm">Reduced Fee (Sponsor Backed)</h4>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Funded by the Courage Library Foundation to foster cognitive and academic potential across India.
+                Supported by the Courage Library Foundation to help students discover their natural talents across India.
               </p>
             </div>
 
@@ -47,9 +47,9 @@ export default function WhySubsidized() {
               <div className="w-9 h-9 rounded-xl bg-emerald-50 flex items-center justify-center">
                 <ShieldCheck size={18} className="text-emerald-700" />
               </div>
-              <h4 className="font-bold text-slate-800 text-sm">One-Time Fee</h4>
+              <h4 className="font-bold text-slate-800 text-sm">Pay Only Once</h4>
               <p className="text-xs text-slate-500 leading-relaxed">
-                A flat ₹99 fee covers registration, practice mock tests, the final exam, and the diagnostic report.
+                A single ₹99 fee covers registration, practice papers, the main online exam, and the Brain Strength Report.
               </p>
             </div>
 
@@ -57,9 +57,9 @@ export default function WhySubsidized() {
               <div className="w-9 h-9 rounded-xl bg-purple-50 flex items-center justify-center">
                 <HeartHandshake size={18} className="text-purple-700" />
               </div>
-              <h4 className="font-bold text-slate-800 text-sm">No Commercial Upsells</h4>
+              <h4 className="font-bold text-slate-800 text-sm">No Extra Sales (Coaching/Books)</h4>
               <p className="text-xs text-slate-500 leading-relaxed">
-                We do not sell test prep courses, subscription plans, or reference books. Our focus is pure diagnostics.
+                We do not sell books, courses, or coaching classes later. Our only goal is to evaluate your child's strengths.
               </p>
             </div>
 
@@ -67,9 +67,9 @@ export default function WhySubsidized() {
               <div className="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
                 <HelpCircle size={18} className="text-amber-700" />
               </div>
-              <h4 className="font-bold text-slate-800 text-sm">Dedicated SLA Support</h4>
+              <h4 className="font-bold text-slate-800 text-sm">Quick Help (2-Hour Reply)</h4>
               <p className="text-xs text-slate-500 leading-relaxed">
-                Includes priority parent email support and WhatsApp updates, backed by our pre-exam response commitment.
+                Get direct assistance via our online support system and Email. Our support team replies within 2 hours to help you.
               </p>
             </div>
           </div>

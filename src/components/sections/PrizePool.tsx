@@ -40,7 +40,7 @@ const moreAwards = [
 
 export default function PrizePool() {
   return (
-    <section id="prizes" className="py-24 lg:py-32 bg-white">
+    <section id="prizes" className="py-12 md:py-24 lg:py-32 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center max-w-2xl mx-auto mb-16">

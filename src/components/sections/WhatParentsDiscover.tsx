@@ -1,3 +1,6 @@
+"use client";
+
+import React from "react";
 import { Brain, Sparkles, TrendingUp, Lightbulb } from "lucide-react";
 
 const discoveries = [
@@ -38,7 +41,7 @@ export default function WhatParentsDiscover() {
           <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 tracking-tight leading-tight">
             What Parents Discover
           </h2>
-          <p className="text-sm md:text-base text-slate-505 leading-relaxed">
+          <p className="text-sm md:text-base text-slate-550 leading-relaxed">
             CNTS is not just a test. It is a diagnostic mirror designed to reveal how your child approaches learning and problem solving.
           </p>
         </div>
