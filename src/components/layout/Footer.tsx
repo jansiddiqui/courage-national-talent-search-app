@@ -20,19 +20,29 @@ const footerLinks = {
     { label: "Blog & Resources", href: "/blog" },
     { label: "Contact Us", href: "/contact" },
   ],
-  "Important Links": [
-    { label: "Important Dates", href: "/timeline" },
+  "Exam & Prep": [
     { label: "Exam Syllabus", href: "/prepare" },
+    { label: "Exam Pattern", href: "/exam-pattern" },
+    { label: "Test Day Guidelines", href: "/exam-instructions" },
+    { label: "Sample Brain Report", href: "/sample-report" },
+    { label: "Parent's Guide", href: "/parent-guide" },
     { label: "Download Admit Card", href: "/admit-card-portal" },
-    { label: "Results Portal", href: "/results" },
-    { label: "Certificate Verification", href: "/verify" },
-    { label: "FAQs & Support", href: "/faq" },
   ],
-  Legal: [
+  "Recognition & Updates": [
+    { label: "Prizes & Rankings", href: "/prizes" },
+    { label: "Achievers Hall of Fame", href: "/achievers" },
+    { label: "Important Dates", href: "/timeline" },
+    { label: "Notice Board", href: "/announcements" },
+    { label: "WhatsApp Community", href: "/updates" },
+    { label: "Results Portal", href: "/results" },
+  ],
+  "Legal & Support": [
+    { label: "FAQs & Support", href: "/faq" },
+    { label: "Verify Certificate", href: "/verify" },
     { label: "Privacy Policy", href: "/privacy" },
     { label: "Terms of Use", href: "/terms" },
     { label: "Refund Policy", href: "/refund" },
-    { label: "Data Deletion Instructions", href: "/data-deletion" },
+    { label: "Data Deletion", href: "/data-deletion" },
   ],
 };
 

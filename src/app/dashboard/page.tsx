@@ -472,7 +472,13 @@ export default function DashboardPage() {
                       <Play size={20} />
                     </div>
                     <h4 className="text-sm font-bold text-slate-800">Mock Test</h4>
-                    <p className="text-xs text-slate-500 mt-1">Familiarize yourself with the 10-minute simulated testing environment.</p>
+                    <p className="text-xs text-slate-500 mt-1">
+                      Familiarize yourself with the 10-minute simulated testing environment. Run the{" "}
+                      <Link href="/system-check" className="text-blue-600 font-semibold hover:underline">
+                        System Check
+                      </Link>{" "}
+                      first to verify your device compatibility.
+                    </p>
                   </div>
                   <Link href="/mock-exam" className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold text-center flex items-center justify-center gap-2 transition-colors">
                     <Play size={14} className="fill-current" /> Start Practice Test
