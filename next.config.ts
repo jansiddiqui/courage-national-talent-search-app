@@ -14,6 +14,11 @@ const nextConfig: NextConfig = {
         destination: '/terms',
         permanent: true,
       },
+      {
+        source: '/cnts',
+        destination: '/',
+        permanent: true,
+      },
     ];
   },
 };

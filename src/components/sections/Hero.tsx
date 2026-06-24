@@ -231,7 +231,7 @@ export default function Hero() {
                 className="group inline-flex items-center justify-center gap-2 px-7 py-4 bg-blue-800 text-white font-semibold rounded-2xl hover:bg-blue-700 transition-all duration-200 shadow-xl shadow-blue-800/25 hover:shadow-blue-700/35 hover:-translate-y-0.5 w-full sm:w-auto text-center font-display"
               />
               <a
-                href="#sample-profile"
+                href="/sample-report"
                 className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-white text-slate-700 font-semibold rounded-2xl border border-slate-200 hover:border-blue-200 hover:bg-blue-50 transition-all duration-200 shadow-sm w-full sm:w-auto font-display"
               >
                 View Sample Talent Profile
