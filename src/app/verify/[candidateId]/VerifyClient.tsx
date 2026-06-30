@@ -221,7 +221,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
               </div>
 
               {/* Grid Layout fields */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-6 text-slate-800">
+              <div className="grid grid-cols-2 gap-y-4 gap-x-6 text-slate-800">
                 {/* Candidate Name */}
                 <div className="flex gap-3">
                   <User className="text-slate-400 w-4 h-4 shrink-0 mt-0.5" />
@@ -241,7 +241,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                 </div>
 
                 {/* Class */}
-                <div className="flex gap-3 border-t border-slate-50 pt-3 sm:border-none sm:pt-0">
+                <div className="flex gap-3">
                   <GraduationCap className="text-slate-400 w-4 h-4 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Class</span>
@@ -250,7 +250,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                 </div>
 
                 {/* State */}
-                <div className="flex gap-3 border-t border-slate-50 pt-3 sm:border-none sm:pt-0">
+                <div className="flex gap-3">
                   <MapPin className="text-slate-400 w-4 h-4 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">State</span>
