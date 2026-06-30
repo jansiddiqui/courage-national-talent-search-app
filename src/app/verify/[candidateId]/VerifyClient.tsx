@@ -5,7 +5,6 @@ import Link from "next/link";
 import { 
   CheckCircle2, 
   XCircle, 
-  ShieldAlert,
   ShieldCheck,
   Calendar,
   User,
@@ -122,41 +121,63 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
     <div className="min-h-screen bg-[#F8FAFF] flex flex-col font-sans">
       <Navbar theme="dark" />
 
-      {/* Hero background banner element */}
-      <div className="h-64 bg-slate-900 w-full absolute top-0 left-0 z-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-95 shrink-0" />
+      {/* Hero Header Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 px-6 text-center w-full shrink-0">
+        {/* Background elements */}
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
 
-      <main className="flex-1 max-w-2xl w-full mx-auto px-6 pt-32 pb-24 relative z-10 flex flex-col justify-center">
-        {loading ? (
-          /* Loading State */
-          <div className="bg-white border border-slate-200/80 rounded-3xl p-12 text-center shadow-md space-y-6">
-            <div className="relative w-16 h-16 mx-auto">
-              <div className="absolute inset-0 rounded-full border-4 border-slate-100"></div>
-              <div className="absolute inset-0 rounded-full border-4 border-blue-850 border-t-transparent animate-spin"></div>
+        <div className="max-w-xl mx-auto space-y-6 relative z-10 animate-slide-up">
+          {loading ? (
+            <div className="space-y-4">
+              <div className="relative w-14 h-14 mx-auto">
+                <div className="absolute inset-0 rounded-full border-4 border-white/10"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-blue-400 border-t-transparent animate-spin"></div>
+              </div>
+              <h3 className="font-semibold text-white/90 text-sm tracking-wide uppercase">Cryptographic Verification</h3>
+              <p className="text-slate-400 text-xs">Validating credentials against CNTS Registry...</p>
             </div>
-            <div>
-              <h3 className="font-semibold text-slate-800 text-sm tracking-wide uppercase">Cryptographic Verification</h3>
-              <p className="text-slate-405 text-xs mt-1 font-medium">Validating credentials against CNTS Registry...</p>
+          ) : errorMsg ? (
+            <div className="space-y-4">
+              <div className="mx-auto w-20 h-20 bg-red-500/10 text-red-400 rounded-full flex items-center justify-center border-4 border-red-500/20 shadow-inner animate-bounce">
+                <XCircle size={44} className="stroke-[1.5]" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+                  Candidate Not Found
+                </h1>
+                <p className="text-slate-350 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+                  This registration could not be verified. Please check the QR code or contact CNTS Support.
+                </p>
+              </div>
             </div>
-          </div>
-        ) : errorMsg ? (
-          /* Verification Failed Page */
+          ) : (
+            <div className="space-y-4">
+              <div className="mx-auto w-20 h-20 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center border-4 border-emerald-500/20 shadow-inner scale-up-bounce">
+                <CheckCircle2 size={44} className="stroke-[1.5]" />
+              </div>
+              <div className="space-y-2">
+                <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+                  Registration Successfully Verified
+                </h1>
+                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-medium">
+                  This candidate is officially registered for the Courage National Talent Search (CNTS) – Founding Edition 2026.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-2xl w-full mx-auto px-6 pb-24 relative z-10 -mt-10 sm:-mt-14">
+        {loading ? null : errorMsg ? (
+          /* Verification Failed Page Body */
           <div className="bg-white border border-slate-200/80 rounded-3xl p-8 sm:p-12 text-center shadow-md space-y-8 animate-in fade-in zoom-in-95 duration-300">
-            {/* Animated Red Cross Icon */}
-            <div className="mx-auto w-20 h-20 bg-red-50 text-red-500 rounded-full flex items-center justify-center border-4 border-red-100/50 shadow-inner animate-bounce">
-              <XCircle size={44} className="stroke-[1.5]" />
-            </div>
-
-            <div className="space-y-3">
-              <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
-                Candidate Not Found
-              </h1>
-              <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
-                This registration could not be verified. Please check the QR code or contact CNTS Support if you believe this is an error.
-              </p>
-            </div>
-
+            <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+              If you scanned a printed copy, check that the CNTS ID matches the text below the code.
+            </p>
             <div className="h-px bg-slate-100 w-full" />
-
             <div className="flex flex-col sm:flex-row gap-3 justify-center">
               <Link 
                 href="/"
@@ -179,23 +200,8 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
             </div>
           </div>
         ) : (
-          /* Success Verification Experience */
+          /* Success Verification Experience Body */
           <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-300">
-            {/* Animated Checkmark and Headline */}
-            <div className="text-center space-y-4">
-              <div className="mx-auto w-24 h-24 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center border-4 border-emerald-100/50 shadow-inner scale-up-bounce">
-                <CheckCircle2 size={52} className="stroke-[1.5]" />
-              </div>
-              <div className="space-y-2">
-                <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
-                  Registration Successfully Verified
-                </h1>
-                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-medium">
-                  This candidate is officially registered for the Courage National Talent Search (CNTS) – Founding Edition 2026.
-                </p>
-              </div>
-            </div>
-
             {/* Modern Verification Card */}
             <div className="bg-white border border-slate-200/80 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
               {/* Decorative shield icon background watermark */}
@@ -257,7 +263,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                   <Calendar className="text-slate-400 w-4 h-4 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Registration Date</span>
-                    <strong className="text-xs font-bold text-slate-850">
+                    <strong className="text-xs font-bold text-slate-855">
                       {candidate && new Date(candidate.created_at).toLocaleDateString("en-IN", {
                         day: "numeric",
                         month: "long",
@@ -272,7 +278,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                   <Calendar className="text-slate-400 w-4 h-4 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Exam Date</span>
-                    <strong className="text-xs font-bold text-slate-850">19 July 2026</strong>
+                    <strong className="text-xs font-bold text-slate-855">19 July 2026</strong>
                   </div>
                 </div>
 
@@ -281,7 +287,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                   <Clock className="text-slate-400 w-4 h-4 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Session</span>
-                    <strong className="text-xs font-bold text-slate-850">Online / Portal</strong>
+                    <strong className="text-xs font-bold text-slate-855">Online / Portal</strong>
                   </div>
                 </div>
 
@@ -290,7 +296,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                   <Clock className="text-slate-400 w-4 h-4 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Verification Timestamp</span>
-                    <strong className="text-xs font-bold text-slate-850">{verifyTime}</strong>
+                    <strong className="text-xs font-bold text-slate-855">{verifyTime}</strong>
                   </div>
                 </div>
               </div>
