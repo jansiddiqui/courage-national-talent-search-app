@@ -97,21 +97,18 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
     if (status === "CANCELLED") {
       return {
         label: "CANCELLED",
-        color: "bg-red-500/10 text-red-500 border-red-500/20",
-        indicator: "🔴"
+        color: "bg-red-500/10 text-red-500 border-red-500/20"
       };
     }
     if (payment === "PAID" || status === "REGISTERED") {
       return {
         label: "ACTIVE",
-        color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
-        indicator: "🟢"
+        color: "bg-emerald-500/10 text-emerald-600 border-emerald-500/20"
       };
     }
     return {
       label: "PENDING",
-      color: "bg-amber-500/10 text-amber-600 border-amber-500/20",
-      indicator: "🟡"
+      color: "bg-amber-500/10 text-amber-600 border-amber-500/20"
     };
   };
 
@@ -174,7 +171,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
         {loading ? null : errorMsg ? (
           /* Verification Failed Page Body */
           <div className="bg-white border border-slate-200/80 rounded-3xl p-8 sm:p-12 text-center shadow-md space-y-8 animate-in fade-in zoom-in-95 duration-300">
-            <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+            <p className="text-slate-505 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
               If you scanned a printed copy, check that the CNTS ID matches the text below the code.
             </p>
             <div className="h-px bg-slate-100 w-full" />
@@ -214,8 +211,11 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                   <ShieldCheck size={16} /> Credential Validated
                 </div>
                 {statusInfo && (
-                  <span className={`px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${statusInfo.color}`}>
-                    {statusInfo.indicator} {statusInfo.label}
+                  <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[9px] font-black uppercase tracking-widest ${statusInfo.color}`}>
+                    <svg className="w-1.5 h-1.5 fill-current shrink-0" viewBox="0 0 8 8">
+                      <circle cx="4" cy="4" r="3" />
+                    </svg>
+                    {statusInfo.label}
                   </span>
                 )}
               </div>
