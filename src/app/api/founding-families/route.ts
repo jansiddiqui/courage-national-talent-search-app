@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
-import { saveFoundingFamily } from "@/services/supabaseService";
+import { saveFoundingFamily, checkFoundingFamilyDuplicate } from "@/services/supabaseService";
 import { whatsappService } from "@/services/whatsappService";
+import { emailService } from "@/services/emailService";
 
 export async function POST(request: Request) {
   try {
@@ -13,40 +14,39 @@ export async function POST(request: Request) {
       );
     }
 
+    // Check for duplicate mobile/email before inserting
+    const duplicate = await checkFoundingFamilyDuplicate(mobileNumber, parentEmail);
+    if (duplicate.exists) {
+      return NextResponse.json(
+        { success: false, error: duplicate.message, isDuplicate: true },
+        { status: 409 }
+      );
+    }
+
     // Save to database
-    const dbResult = await saveFoundingFamily({
-      parentName,
-      mobileNumber,
-      parentEmail,
-    });
+    const dbResult = await saveFoundingFamily({ parentName, mobileNumber, parentEmail });
 
     if (!dbResult.success) {
       return NextResponse.json(
-        { success: false, error: "Failed to register" },
+        { success: false, error: "Failed to register. Please try again." },
         { status: 500 }
       );
     }
 
-    // Dispatch Simulated/Meta WhatsApp Confirmation
-    try {
-      await whatsappService.sendFoundingFamilyWelcome(
-        mobileNumber,
-        parentName,
-        dbResult.familyId
-      );
-    } catch (wsErr) {
-      console.error("[API founding-families] WhatsApp dispatch failed:", wsErr);
-    }
+    // Dispatch WhatsApp (non-blocking — never fail the request)
+    whatsappService
+      .sendFoundingFamilyWelcome(mobileNumber, parentName, dbResult.familyId)
+      .catch((e) => console.error("[founding-families] WhatsApp failed:", e));
 
-    return NextResponse.json({
-      success: true,
-      familyId: dbResult.familyId,
-    });
-  } catch (err: any) {
+    // Dispatch Email (non-blocking — never fail the request)
+    emailService
+      .sendFoundingFamilyEmail(parentEmail, parentName, dbResult.familyId)
+      .catch((e) => console.error("[founding-families] Email failed:", e));
+
+    return NextResponse.json({ success: true, familyId: dbResult.familyId });
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Internal Server Error";
     console.error("[API founding-families] Handler error:", err);
-    return NextResponse.json(
-      { success: false, error: err.message || "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: false, error: message }, { status: 500 });
   }
 }

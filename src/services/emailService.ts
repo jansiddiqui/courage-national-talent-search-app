@@ -3,7 +3,8 @@ import {
   getRegistrationSuccessTemplate, 
   getPaymentSuccessTemplate, 
   getResultReleaseTemplate,
-  getRecoveryTemplate
+  getRecoveryTemplate,
+  getFoundingFamilyTemplate
 } from "@/lib/emailTemplates";
 
 export class EmailService {
@@ -126,6 +127,20 @@ export class EmailService {
   ): Promise<boolean> {
     const subject = "CNTS Candidate ID Recovery";
     const htmlContent = getRecoveryTemplate(candidateId);
+    const res = await this.sendEmail(to, subject, htmlContent);
+    return res.success;
+  }
+
+  /**
+   * Sends the Founding Family welcome email
+   */
+  public async sendFoundingFamilyEmail(
+    to: string,
+    parentName: string,
+    familyId: string
+  ): Promise<boolean> {
+    const subject = `🎉 Welcome to CNTS Founding Families — Your ID: ${familyId}`;
+    const htmlContent = getFoundingFamilyTemplate(parentName, familyId);
     const res = await this.sendEmail(to, subject, htmlContent);
     return res.success;
   }

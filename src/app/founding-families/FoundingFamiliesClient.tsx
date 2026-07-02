@@ -58,11 +58,16 @@ export default function FoundingFamiliesClient() {
   const [countdown, setCountdown]           = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
   const [openFaq, setOpenFaq]               = useState<number | null>(0);
   const [puzzleAnswer, setPuzzleAnswer]     = useState<number | null>(null);
+  const [registrationIsOpen, setRegistrationIsOpen] = useState(false);
   const canvasRef                           = useRef<HTMLCanvasElement | null>(null);
 
   /* Lifecycle */
   useEffect(() => {
     setMounted(true);
+
+    // Check if registration is now open (July 15 2026 10:00 AM)
+    const regOpenDate = new Date(`${TIMELINE.REGISTRATION_OPEN}T10:00:00`);
+    setRegistrationIsOpen(new Date() >= regOpenDate);
 
     fetchFoundingFamiliesCount().then(setFamilyCount).catch(() => {});
 
@@ -370,12 +375,11 @@ export default function FoundingFamiliesClient() {
             <button onClick={downloadCard} className="btn-secondary flex items-center justify-center gap-2 w-full sm:w-auto">
               <Download size={15} /> Download Digital Pass
             </button>
-            <button
-              onClick={() => { localStorage.removeItem("cnts_founding_family_data"); setSubmitted(null); }}
-              className="btn-outline w-full sm:w-auto"
-            >
-              Register Another Family
-            </button>
+            {registrationIsOpen && (
+              <a href="/register" className="btn-outline w-full sm:w-auto flex items-center justify-center gap-2">
+                <ArrowRight size={15} /> Register Now
+              </a>
+            )}
           </div>
         </div>
 
@@ -515,6 +519,15 @@ export default function FoundingFamiliesClient() {
               ))}
             </div>
           </div>
+
+          {/* Registration open banner — shown only after July 15 */}
+          {registrationIsOpen && (
+            <div className="inline-flex items-center gap-2 px-5 py-3 bg-emerald-50 border border-emerald-200 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-xs font-bold text-emerald-700">Registrations are now open!</span>
+              <a href="/register" className="text-xs font-black text-emerald-800 underline underline-offset-2">Register →</a>
+            </div>
+          )}
 
           {/* Progress line */}
           <div className="max-w-xs mx-auto space-y-2">

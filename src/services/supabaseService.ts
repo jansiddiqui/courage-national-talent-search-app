@@ -605,3 +605,50 @@ export async function fetchFoundingFamiliesCount(): Promise<number> {
     return 342;
   }
 }
+
+export async function checkFoundingFamilyDuplicate(
+  mobileNumber: string,
+  email: string
+): Promise<{ exists: boolean; message: string }> {
+  if (!hasSupabaseConfig) {
+    // In sandbox mode, allow all registrations
+    return { exists: false, message: "" };
+  }
+  try {
+    const { data, error } = await db
+      .from("founding_families")
+      .select("mobile_number, parent_email")
+      .or(`mobile_number.eq.${mobileNumber},parent_email.eq.${email}`);
+
+    if (error) {
+      console.error("checkFoundingFamilyDuplicate error:", error);
+      return { exists: false, message: "" }; // Fail open — don't block on DB error
+    }
+
+    if (!data || data.length === 0) return { exists: false, message: "" };
+
+    const mobileMatch = data.some((r: { mobile_number: string; parent_email: string }) => r.mobile_number === mobileNumber);
+    const emailMatch  = data.some((r: { mobile_number: string; parent_email: string }) => r.parent_email  === email);
+
+    if (mobileMatch && emailMatch) {
+      return {
+        exists: true,
+        message: "This mobile number and email are already registered as a Founding Family. Each family can register only once.",
+      };
+    }
+    if (mobileMatch) {
+      return {
+        exists: true,
+        message: "This WhatsApp number is already registered as a Founding Family. Each family can register only once.",
+      };
+    }
+    return {
+      exists: true,
+      message: "This email address is already registered as a Founding Family. Each family can register only once.",
+    };
+  } catch (err) {
+    console.error("checkFoundingFamilyDuplicate exception:", err);
+    return { exists: false, message: "" }; // Fail open
+  }
+}
+
