@@ -117,74 +117,202 @@ export default function FoundingFamiliesClient() {
     }
   };
 
-  /* Canvas card download — Premium redesign */
+  /* Canvas card download — Rich Creative Redesign */
   const downloadCard = () => {
     if (!canvasRef.current || !submitted) return;
     const cvs = canvasRef.current, ctx = cvs.getContext("2d");
     if (!ctx) return;
 
-    const W = 900, H = 520;
+    const W = 950, H = 550;
     cvs.width = W; cvs.height = H;
 
     // ── Background gradient ──────────────────────────────────
     const bg = ctx.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0,   "#080e1f");
-    bg.addColorStop(0.5, "#0d1635");
-    bg.addColorStop(1,   "#0a0f22");
+    bg.addColorStop(0,   "#060a16");
+    bg.addColorStop(0.5, "#0b122c");
+    bg.addColorStop(1,   "#070b1c");
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, W, H);
 
-    // ── Decorative radial glow top-right ─────────────────────
-    const glow1 = ctx.createRadialGradient(W, 0, 0, W, 0, 380);
+    // ── Grid blueprint bg pattern (24px grids) ────────────────
+    ctx.strokeStyle = "rgba(255, 255, 255, 0.015)";
+    ctx.lineWidth = 0.8;
+    for (let x = 0; x < W; x += 24) {
+      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
+    }
+    for (let y = 0; y < H; y += 24) {
+      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
+    }
+
+    // ── Radial glows ──────────────────────────────────────────
+    const glow1 = ctx.createRadialGradient(W - 100, 100, 0, W - 100, 100, 400);
     glow1.addColorStop(0,   "rgba(99,102,241,0.22)");
-    glow1.addColorStop(0.5, "rgba(59,130,246,0.10)");
+    glow1.addColorStop(0.5, "rgba(59,130,246,0.08)");
     glow1.addColorStop(1,   "transparent");
     ctx.fillStyle = glow1;
     ctx.fillRect(0, 0, W, H);
 
-    // Glow bottom-left
-    const glow2 = ctx.createRadialGradient(0, H, 0, 0, H, 300);
-    glow2.addColorStop(0,   "rgba(245,158,11,0.10)");
+    const glow2 = ctx.createRadialGradient(100, H - 100, 0, 100, H - 100, 350);
+    glow2.addColorStop(0,   "rgba(245,158,11,0.09)");
     glow2.addColorStop(1,   "transparent");
     ctx.fillStyle = glow2;
     ctx.fillRect(0, 0, W, H);
 
-    // ── Outer border ─────────────────────────────────────────
-    ctx.strokeStyle = "rgba(255,255,255,0.06)";
+    // ── Concentric wave/radar lines (Brainwaves) ──────────────
+    const cx = W - 160, cy = H / 2 - 20;
+    ctx.strokeStyle = "rgba(255,255,255,0.02)";
     ctx.lineWidth = 1;
-    roundRect(ctx, 16, 16, W - 32, H - 32, 16);
+    for (let r = 80; r <= 320; r += 40) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    // ── Outer border ─────────────────────────────────────────
+    ctx.strokeStyle = "rgba(255,255,255,0.07)";
+    ctx.lineWidth = 1.2;
+    roundRect(ctx, 16, 16, W - 32, H - 32, 18);
     ctx.stroke();
 
-    // ── Gold accent bar — top ─────────────────────────────────
+    // ── Gold top bar ──────────────────────────────────────────
     const gold = ctx.createLinearGradient(0, 0, W, 0);
-    gold.addColorStop(0,   "#b45309");
+    gold.addColorStop(0,   "#9a3412");
     gold.addColorStop(0.3, "#f59e0b");
-    gold.addColorStop(0.6, "#fde68a");
-    gold.addColorStop(1,   "#d97706");
+    gold.addColorStop(0.6, "#fef08a");
+    gold.addColorStop(1,   "#b45309");
     ctx.fillStyle = gold;
     roundRect(ctx, 0, 0, W, 6, { tl: 0, tr: 0, br: 0, bl: 0 });
     ctx.fill();
 
-    // ── Dot-matrix decorative pattern (top-right area) ───────
-    ctx.fillStyle = "rgba(255,255,255,0.04)";
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 12; c++) {
-        ctx.beginPath();
-        ctx.arc(W - 280 + c * 22, 40 + r * 22, 2, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    // ── Left accent vertical bar ──────────────────────────────
+    // ── Left vertical bar ─────────────────────────────────────
     const leftBar = ctx.createLinearGradient(0, 80, 0, H - 80);
     leftBar.addColorStop(0,   "transparent");
-    leftBar.addColorStop(0.5, "rgba(245,158,11,0.6)");
+    leftBar.addColorStop(0.5, "rgba(245,158,11,0.5)");
     leftBar.addColorStop(1,   "transparent");
     ctx.fillStyle = leftBar;
-    ctx.fillRect(36, 80, 3, H - 160);
+    ctx.fillRect(36, 80, 2.5, H - 160);
 
-    // ── Hexagon emblem — right side ───────────────────────────
-    const hx = W - 140, hy = H / 2, hr = 72;
+    // ── PRIMARY BRAND: Courage National Talent Search ──────────
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 16px sans-serif";
+    ctx.letterSpacing = "2.5px";
+    ctx.fillText("COURAGE NATIONAL TALENT SEARCH", 58, 68);
+    ctx.letterSpacing = "0px";
+
+    ctx.fillStyle = "rgba(255,255,255,0.45)";
+    ctx.font = "700 8px sans-serif";
+    ctx.letterSpacing = "1.5px";
+    ctx.fillText("A PROGRAM BY COURAGE LIBRARY  ·  FOUNDING EDITION 2026", 58, 86);
+    ctx.letterSpacing = "0px";
+
+    // Divider
+    const sep = ctx.createLinearGradient(58, 0, W - 240, 0);
+    sep.addColorStop(0,   "rgba(245,158,11,0.5)");
+    sep.addColorStop(0.7, "rgba(245,158,11,0.1)");
+    sep.addColorStop(1,   "transparent");
+    ctx.strokeStyle = sep;
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(58, 102); ctx.lineTo(W - 240, 102); ctx.stroke();
+
+    // ── Title ─────────────────────────────────────────────────
+    const titleGrad = ctx.createLinearGradient(58, 0, 500, 0);
+    titleGrad.addColorStop(0, "#fef08a");
+    titleGrad.addColorStop(0.5, "#fbbf24");
+    titleGrad.addColorStop(1, "#d97706");
+    ctx.fillStyle = titleGrad;
+    ctx.font = "800 28px sans-serif";
+    ctx.fillText("FOUNDING FAMILY MEMBER", 58, 150);
+
+    ctx.fillStyle = "rgba(255,255,255,0.25)";
+    ctx.font = "9px sans-serif";
+    ctx.fillText("SINCE JULY 2026  ·  OFFICIAL PRE-LAUNCH INVITATIONAL ASSURANCE PASS", 58, 170);
+
+    // Main center divider
+    ctx.strokeStyle = "rgba(255,255,255,0.06)";
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(58, 198); ctx.lineTo(W - 240, 198); ctx.stroke();
+
+    // ── Member Column ─────────────────────────────────────────
+    ctx.fillStyle = "rgba(148,163,184,0.6)";
+    ctx.font = "700 9px sans-serif";
+    ctx.fillText("REGISTERED MEMBER", 58, 238);
+
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 32px sans-serif";
+    ctx.fillText(submitted.parentName.toUpperCase(), 58, 276);
+
+    // ID Pill Box
+    ctx.fillStyle = "rgba(16,185,129,0.07)";
+    roundRect(ctx, 56, 298, 260, 44, 8);
+    ctx.fill();
+    ctx.strokeStyle = "rgba(16,185,129,0.22)";
+    ctx.lineWidth = 1;
+    roundRect(ctx, 56, 298, 260, 44, 8);
+    ctx.stroke();
+
+    ctx.fillStyle = "rgba(52,211,153,0.55)";
+    ctx.font = "700 8px sans-serif";
+    ctx.fillText("FAMILY ID", 70, 314);
+
+    ctx.fillStyle = "#34d399";
+    ctx.font = "bold 20px monospace";
+    ctx.fillText(submitted.familyId, 70, 335);
+
+    // ── Benefits Checklist Column (Fills Center Blank Space) ──
+    const bx_start = 360, by_start = 230;
+    ctx.fillStyle = "rgba(245,158,11,0.75)";
+    ctx.font = "700 9px sans-serif";
+    ctx.letterSpacing = "1.5px";
+    ctx.fillText("UNLOCKED PRIVILEGES", bx_start, by_start);
+    ctx.letterSpacing = "0px";
+
+    const privileges = [
+      "✔  COGNITIVE APTITUDE MAPPING REPORT (VALUE ₹999)",
+      "✔  PRIORITY REGISTRATION SEAT ASSURED (JULY 15)",
+      "✔  ZERO-QUEUE ENROLLMENT ON SITE LAUNCH",
+      "✔  FREE REASONING STUDY PRACTICE KIT"
+    ];
+    ctx.font = "bold 10px sans-serif";
+    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+    for (let i = 0; i < privileges.length; i++) {
+      ctx.fillText(privileges[i], bx_start, by_start + 24 + i * 22);
+    }
+
+    // ── Valid Box (Fills Center-Bottom Space) ────────────────
+    ctx.fillStyle = "rgba(148,163,184,0.4)";
+    ctx.font = "8px sans-serif";
+    ctx.fillText("STATUS ASSURANCE", 58, 382);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "bold 12px sans-serif";
+    ctx.fillText("FIRST COHORT PRIORITY GUARANTEE", 58, 398);
+    ctx.fillStyle = "rgba(148,163,184,0.4)";
+    ctx.font = "8px sans-serif";
+    ctx.fillText("VALID FOR THE OFFICIAL FOUNDING EDITION 2026 REGISTRATION ONLY", 58, 412);
+
+    // ── Barcode area (Fills Bottom-Right Blank Space) ────────
+    const barX = W - 280, barY = 380, barW = 220, barH = 34;
+    ctx.fillStyle = "rgba(255,255,255,0.06)";
+    roundRect(ctx, barX - 10, barY - 10, barW + 20, barH + 34, 6);
+    ctx.fill();
+
+    // Draw barcode lines
+    ctx.fillStyle = "rgba(255,255,255,0.45)";
+    let curX = barX;
+    const barcodeWidths = [2, 1, 3, 1, 4, 1, 2, 3, 1, 4, 2, 2, 1, 3, 4, 1, 2, 1, 3, 1, 4, 2, 1, 3, 2, 2, 4, 1, 2, 3, 1, 4];
+    for (let i = 0; i < barcodeWidths.length; i++) {
+      const w = barcodeWidths[i];
+      ctx.fillRect(curX, barY, w, barH);
+      curX += w + (i % 3 === 0 ? 3 : 1);
+      if (curX >= barX + barW) break;
+    }
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.font = "bold 9px monospace";
+    ctx.textAlign = "center";
+    ctx.fillText(submitted.familyId, barX + barW / 2, barY + barH + 16);
+    ctx.textAlign = "left";
+
+    // ── Hexagon Emblem (Right-Center) ─────────────────────────
+    const hx = W - 160, hy = H / 2 - 50, hr = 64;
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI / 3) * i - Math.PI / 6;
@@ -196,104 +324,38 @@ export default function FoundingFamiliesClient() {
     ctx.strokeStyle = "rgba(245,158,11,0.35)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
-    // Inner hex
+
     ctx.beginPath();
     for (let i = 0; i < 6; i++) {
       const angle = (Math.PI / 3) * i - Math.PI / 6;
-      const px = hx + (hr - 14) * Math.cos(angle);
-      const py = hy + (hr - 14) * Math.sin(angle);
+      const px = hx + (hr - 10) * Math.cos(angle);
+      const py = hy + (hr - 10) * Math.sin(angle);
       i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
     }
     ctx.closePath();
-    ctx.strokeStyle = "rgba(245,158,11,0.15)";
+    ctx.strokeStyle = "rgba(245,158,11,0.12)";
     ctx.stroke();
-    // CNTS inside hex
-    ctx.fillStyle = "rgba(245,158,11,0.7)";
+
+    ctx.fillStyle = "rgba(245,158,11,0.8)";
     ctx.font = "bold 13px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("CNTS", hx, hy - 6);
-    ctx.font = "9px sans-serif";
-    ctx.fillStyle = "rgba(255,255,255,0.3)";
-    ctx.fillText("2026", hx, hy + 10);
+    ctx.fillText("CNTS", hx, hy - 4);
+    ctx.font = "bold 9px sans-serif";
+    ctx.fillStyle = "rgba(255,255,255,0.35)";
+    ctx.fillText("STARTER", hx, hy + 10);
     ctx.textAlign = "left";
 
-    // ── COURAGE LIBRARY wordmark ──────────────────────────────
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 15px sans-serif";
-    ctx.letterSpacing = "3px";
-    ctx.fillText("COURAGE LIBRARY", 58, 72);
-    ctx.letterSpacing = "0px";
+    // ── Dot matrix decorative grids ──────────────────────────
+    ctx.fillStyle = "rgba(255,255,255,0.03)";
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 12; c++) {
+        ctx.beginPath();
+        ctx.arc(W - 280 + c * 20, 48 + r * 20, 1.8, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
 
-    ctx.fillStyle = "rgba(96,165,250,0.9)";
-    ctx.font = "700 9px sans-serif";
-    ctx.fillText("CNTS  ·  FOUNDING FAMILY PASS  ·  FOUNDING EDITION 2026", 58, 90);
-
-    // ── Thin separator line ───────────────────────────────────
-    const sep = ctx.createLinearGradient(58, 0, W - 200, 0);
-    sep.addColorStop(0,   "rgba(245,158,11,0.6)");
-    sep.addColorStop(0.7, "rgba(245,158,11,0.1)");
-    sep.addColorStop(1,   "transparent");
-    ctx.strokeStyle = sep;
-    ctx.lineWidth = 0.8;
-    ctx.beginPath(); ctx.moveTo(58, 106); ctx.lineTo(W - 200, 106); ctx.stroke();
-
-    // ── FOUNDING FAMILY MEMBER title ──────────────────────────
-    const titleGrad = ctx.createLinearGradient(58, 0, 600, 0);
-    titleGrad.addColorStop(0, "#fde68a");
-    titleGrad.addColorStop(0.5, "#f59e0b");
-    titleGrad.addColorStop(1, "#d97706");
-    ctx.fillStyle = titleGrad;
-    ctx.font = "800 28px sans-serif";
-    ctx.fillText("FOUNDING FAMILY MEMBER", 58, 158);
-
-    ctx.fillStyle = "rgba(255,255,255,0.28)";
-    ctx.font = "10px sans-serif";
-    ctx.fillText("SINCE JULY 2026  ·  COURAGE NATIONAL TALENT SEARCH", 58, 178);
-
-    // ── Divider ───────────────────────────────────────────────
-    ctx.strokeStyle = "rgba(255,255,255,0.06)";
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(58, 210); ctx.lineTo(W - 200, 210); ctx.stroke();
-
-    // ── Member name ───────────────────────────────────────────
-    ctx.fillStyle = "rgba(148,163,184,0.7)";
-    ctx.font = "700 9px sans-serif";
-    ctx.fillText("REGISTERED MEMBER", 58, 246);
-
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 32px sans-serif";
-    ctx.fillText(submitted.parentName.toUpperCase(), 58, 288);
-
-    // ── Family ID block ───────────────────────────────────────
-    // ID background pill
-    ctx.fillStyle = "rgba(16,185,129,0.08)";
-    roundRect(ctx, 56, 308, 260, 44, 8);
-    ctx.fill();
-    ctx.strokeStyle = "rgba(16,185,129,0.25)";
-    ctx.lineWidth = 1;
-    roundRect(ctx, 56, 308, 260, 44, 8);
-    ctx.stroke();
-
-    ctx.fillStyle = "rgba(52,211,153,0.6)";
-    ctx.font = "700 8px sans-serif";
-    ctx.fillText("FAMILY ID", 70, 324);
-
-    ctx.fillStyle = "#34d399";
-    ctx.font = "bold 20px monospace";
-    ctx.fillText(submitted.familyId, 70, 345);
-
-    // ── Valid label ───────────────────────────────────────────
-    ctx.fillStyle = "rgba(148,163,184,0.5)";
-    ctx.font = "8px sans-serif";
-    ctx.fillText("VALID FOR", 340, 324);
-    ctx.fillStyle = "rgba(255,255,255,0.7)";
-    ctx.font = "bold 11px sans-serif";
-    ctx.fillText("CNTS 2026 REGISTRATION", 340, 340);
-    ctx.fillStyle = "rgba(148,163,184,0.5)";
-    ctx.font = "8px sans-serif";
-    ctx.fillText("PRIORITY ACCESS · FIRST ACCESS GUARANTEED", 340, 355);
-
-    // ── Holographic shimmer bar — bottom ──────────────────────
+    // ── Holographic shimmer strip — bottom ──────────────────────
     const shimmer = ctx.createLinearGradient(0, H - 28, W, H - 28);
     shimmer.addColorStop(0,    "rgba(99,102,241,0.0)");
     shimmer.addColorStop(0.15, "rgba(167,139,250,0.35)");
@@ -308,7 +370,7 @@ export default function FoundingFamiliesClient() {
     ctx.fillStyle = "rgba(255,255,255,0.12)";
     ctx.font = "7px sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("COURAGE LIBRARY  ·  CNTS FOUNDING EDITION 2026  ·  thecouragelibrary.com", W / 2, H - 10);
+    ctx.fillText("COURAGE NATIONAL TALENT SEARCH (CNTS)  ·  FOUNDING EDITION 2026  ·  thecouragelibrary.com", W / 2, H - 10);
     ctx.textAlign = "left";
 
     const url = cvs.toDataURL("image/png");
@@ -591,12 +653,18 @@ export default function FoundingFamiliesClient() {
         <div className="lg:col-span-2 lg:sticky lg:top-24 space-y-4 order-first lg:order-last">
 
           {/* Live preview card — Premium pass design */}
-          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl" style={{ background: "linear-gradient(135deg, #080e1f 0%, #0d1635 60%, #0a0f22 100%)" }}>
+          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative" style={{ background: "linear-gradient(135deg, #060a16 0%, #0b122c 60%, #070b1c 100%)" }}>
+
+            {/* Grid blueprint bg lines effect */}
+            <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{
+              backgroundImage: "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
+              backgroundSize: "20px 20px"
+            }} />
 
             {/* Gold top bar */}
-            <div className="h-1.5 w-full" style={{ background: "linear-gradient(90deg, #b45309, #f59e0b, #fde68a, #d97706)" }} />
+            <div className="h-1.5 w-full relative z-10" style={{ background: "linear-gradient(90deg, #9a3412, #f59e0b, #fef08a, #b45309)" }} />
 
-            <div className="p-5 relative overflow-hidden">
+            <div className="p-5 relative overflow-hidden z-10">
 
               {/* Dot matrix bg */}
               <div className="absolute top-0 right-0 w-48 h-32 opacity-[0.07]" style={{
@@ -610,56 +678,88 @@ export default function FoundingFamiliesClient() {
               {/* Top row — brand + hex emblem */}
               <div className="flex items-start justify-between relative">
                 <div>
-                  <p className="text-white font-bold text-xs tracking-[0.18em] uppercase">Courage Library</p>
-                  <p className="text-blue-400 text-[9px] font-bold tracking-widest uppercase mt-0.5">CNTS · Founding Family Pass</p>
+                  <p className="text-white font-bold text-[10px] sm:text-xs tracking-[0.12em] uppercase">COURAGE NATIONAL TALENT SEARCH</p>
+                  <p className="text-blue-400 text-[8px] font-bold tracking-widest uppercase mt-0.5">A PROGRAM BY COURAGE LIBRARY · FOUNDING EDITION</p>
                 </div>
                 {/* Hex emblem */}
-                <div className="w-10 h-10 shrink-0 flex items-center justify-center" style={{
+                <div className="w-9 h-9 shrink-0 flex items-center justify-center" style={{
                   clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-                  background: "linear-gradient(135deg, rgba(245,158,11,0.25), rgba(245,158,11,0.08))",
-                  border: "1px solid rgba(245,158,11,0.3)"
+                  background: "linear-gradient(135deg, rgba(245,158,11,0.22), rgba(245,158,11,0.06))",
+                  border: "1px solid rgba(245,158,11,0.25)"
                 }}>
-                  <span className="text-[8px] font-black text-amber-400 tracking-tight leading-none text-center">CNTS<br/>2026</span>
+                  <span className="text-[7px] font-black text-amber-400 tracking-tight leading-none text-center">CNTS<br/>2026</span>
                 </div>
               </div>
 
               {/* Gold divider */}
-              <div className="mt-3 mb-3 h-px" style={{ background: "linear-gradient(90deg, rgba(245,158,11,0.6), transparent)" }} />
+              <div className="mt-3 mb-3 h-px" style={{ background: "linear-gradient(90deg, rgba(245,158,11,0.5), transparent)" }} />
 
-              {/* Title */}
+              {/* Title & Name */}
               <div>
-                <p className="text-[9px] font-bold uppercase tracking-widest" style={{ color: "rgba(245,158,11,0.8)" }}>Founding Family Member</p>
-                <p className="font-display font-black text-white text-lg mt-0.5 truncate uppercase tracking-wide">
+                <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(245,158,11,0.8)" }}>Founding Family Member</p>
+                <p className="font-display font-black text-white text-base sm:text-lg mt-0.5 truncate uppercase tracking-wide">
                   {parentName.trim() || "Your Name Here..."}
                 </p>
-                <p className="text-[9px] mt-0.5" style={{ color: "rgba(255,255,255,0.25)" }}>SINCE JULY 2026 · COURAGE NATIONAL TALENT SEARCH</p>
+                <p className="text-[8px] mt-0.5" style={{ color: "rgba(255,255,255,0.2)" }}>SINCE JULY 2026 · OFFICIAL INVITATIONAL ASSURANCE PASS</p>
+              </div>
+
+              {/* Unlocked Privileges Box (Fills center blank space) */}
+              <div className="mt-4 space-y-1.5 text-[9px] font-semibold text-slate-300 bg-white/[0.03] border border-white/5 rounded-xl p-3 relative z-20">
+                <p className="text-[8px] font-bold text-amber-400 tracking-widest uppercase mb-1">UNLOCKED PRIVILEGES</p>
+                <p className="flex items-center gap-1.5">
+                  <span className="text-emerald-400">✔</span> Cognitive Aptitude Mapping (Value ₹999)
+                </p>
+                <p className="flex items-center gap-1.5">
+                  <span className="text-emerald-400">✔</span> Priority Registration Seat Assured (July 15)
+                </p>
+                <p className="flex items-center gap-1.5">
+                  <span className="text-emerald-400">✔</span> Zero-Queue Enrollment on Launch
+                </p>
               </div>
 
               {/* Divider */}
-              <div className="mt-3 mb-3 h-px bg-white/5" />
+              <div className="mt-4 mb-3.5 h-px bg-white/5" />
 
-              {/* Bottom row — ID + validity */}
+              {/* Bottom row — ID + Barcode */}
               <div className="flex items-end justify-between gap-3">
                 <div className="rounded-lg px-3 py-2 border" style={{ background: "rgba(16,185,129,0.07)", borderColor: "rgba(16,185,129,0.2)" }}>
-                  <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(52,211,153,0.6)" }}>Family ID</p>
-                  <p className="text-xs font-black font-mono text-emerald-400 tracking-wider">CNTS-FF-XXXXX</p>
+                  <p className="text-[7px] font-bold uppercase tracking-widest" style={{ color: "rgba(52,211,153,0.55)" }}>Family ID</p>
+                  <p className="text-xs font-black font-mono text-emerald-400 tracking-wider">
+                    CNTS-FF-XXXXX
+                  </p>
                 </div>
-                <div className="text-right">
-                  <p className="text-[8px] uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.3)" }}>Valid For</p>
-                  <p className="text-[10px] font-bold text-white">CNTS 2026</p>
-                  <p className="text-[8px]" style={{ color: "rgba(255,255,255,0.25)" }}>Priority Access</p>
+                {/* Mock barcode */}
+                <div className="flex flex-col items-end opacity-60">
+                  <div className="flex items-center gap-[1px] h-6 bg-white/10 px-1 py-0.5 rounded border border-white/5">
+                    <div className="w-[1px] h-full bg-white" />
+                    <div className="w-[3px] h-full bg-white" />
+                    <div className="w-[1px] h-full bg-white" />
+                    <div className="w-[2px] h-full bg-white" />
+                    <div className="w-[1px] h-full bg-white" />
+                    <div className="w-[4px] h-full bg-white" />
+                    <div className="w-[1px] h-full bg-white" />
+                    <div className="w-[2px] h-full bg-white" />
+                    <div className="w-[3px] h-full bg-white" />
+                    <div className="w-[1px] h-full bg-white" />
+                    <div className="w-[2px] h-full bg-white" />
+                  </div>
+                  <p className="text-[7px] font-mono text-white/40 mt-1 uppercase tracking-wider">
+                    CNTS-FF-XXXXX
+                  </p>
                 </div>
               </div>
 
               {/* Holographic shimmer strip */}
-              <div className="mt-4 h-1.5 w-full rounded-full" style={{
+              <div className="mt-4 h-1 w-full rounded-full" style={{
                 background: "linear-gradient(90deg, rgba(167,139,250,0.6), rgba(96,165,250,0.6), rgba(52,211,153,0.6), rgba(251,191,36,0.6), rgba(239,68,68,0.4))"
               }} />
 
             </div>
 
-            <div className="px-5 py-2.5 border-t" style={{ background: "rgba(255,255,255,0.03)", borderColor: "rgba(255,255,255,0.06)" }}>
-              <p className="text-[9px] font-medium" style={{ color: "rgba(255,255,255,0.3)" }}>← Your name appears on the pass as you type</p>
+            <div className="px-5 py-2.5 border-t" style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
+              <p className="text-[9px] font-medium" style={{ color: "rgba(255,255,255,0.35)" }}>
+                {submitted ? "✓ Your dynamic pass is ready for download above" : "← Your name appears on the pass as you type"}
+              </p>
             </div>
           </div>
 
