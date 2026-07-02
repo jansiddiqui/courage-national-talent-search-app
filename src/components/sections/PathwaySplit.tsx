@@ -3,6 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Sparkles, School, User, Award, BarChart3, FileSpreadsheet } from "lucide-react";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 export default function PathwaySplit() {
   const parentBenefits = [
@@ -84,13 +85,12 @@ export default function PathwaySplit() {
             </div>
 
             <div className="pt-8">
-              <Link
-                href="/register"
+              <RegisterCTA
+                unauthenticatedText="Register Your Child — ₹99"
+                authenticatedText="Register Another Child — ₹99"
                 className="w-full py-4 bg-blue-800 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-blue-800/10 hover:shadow-blue-700/20"
-              >
-                Register Your Child — ₹99
-                <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
-              </Link>
+                rightIcon={<ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />}
+              />
             </div>
           </div>
 

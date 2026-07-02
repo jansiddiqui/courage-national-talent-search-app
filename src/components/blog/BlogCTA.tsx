@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowRight, School, Sparkles } from "lucide-react";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 export default function BlogCTA() {
   return (
@@ -18,13 +19,12 @@ export default function BlogCTA() {
             Assess cognitive aptitude, verbal reasoning, mathematical logic, and critical thinking. Complete mapping reports + digital verifiable certificates included.
           </p>
         </div>
-        <Link
-          href="/register"
+        <RegisterCTA
+          unauthenticatedText="Register Candidate Now"
+          authenticatedText="Register Another Child"
           className="inline-flex items-center justify-center gap-2 w-full py-3 bg-blue-600 hover:bg-blue-550 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-500/10 hover:shadow-blue-500/20 cursor-pointer"
-        >
-          Register Candidate Now
-          <ArrowRight size={14} />
-        </Link>
+          rightIcon={<ArrowRight size={14} />}
+        />
       </div>
 
       {/* School Partnership Card */}

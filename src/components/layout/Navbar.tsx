@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Menu, X, Flame, BookOpen, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 interface NavbarProps {
   theme?: "light" | "dark";
@@ -160,12 +161,11 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
               >
                 Login
               </Link>
-              <Link
-                href="/register"
+              <RegisterCTA
+                unauthenticatedText="Register Now"
+                authenticatedText="Register Another Child"
                 className="px-5 py-2.5 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-lg shadow-blue-800/25 hover:shadow-blue-700/30 hover:-translate-y-0.5"
-              >
-                Register Now
-              </Link>
+              />
             </>
           )}
         </div>
@@ -234,13 +234,12 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                 >
                   Login
                 </Link>
-                <Link
-                  href="/register"
+                <RegisterCTA
+                  unauthenticatedText="Register Now"
+                  authenticatedText="Register Another Child"
+                  className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700 font-bold"
                   onClick={() => setMenuOpen(false)}
-                  className="block w-full text-center px-5 py-3 bg-blue-800 text-white text-sm font-semibold rounded-xl hover:bg-blue-700"
-                >
-                  Register Now
-                </Link>
+                />
               </>
             )}
           </div>

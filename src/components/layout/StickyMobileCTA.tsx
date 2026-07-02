@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { RegisterCTA } from "@/components/shared/RegisterCTA";
 
 export default function StickyMobileCTA() {
   const [isVisible, setIsVisible] = useState(false);
@@ -57,14 +58,14 @@ export default function StickyMobileCTA() {
           <ArrowRight size={12} />
         </Link>
       ) : (
-        <Link
-          href="/register"
-          className="bg-blue-800 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-blue-800/10 active:scale-[0.98] transition-all"
-        >
-          Register Now
-          <ArrowRight size={12} />
-        </Link>
+        <RegisterCTA
+          unauthenticatedText="Register Now"
+          authenticatedText="Register Another"
+          className="bg-blue-800 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl text-xs flex items-center gap-1.5 shadow-lg shadow-blue-800/10 active:scale-[0.98] transition-all font-bold"
+          rightIcon={<ArrowRight size={12} />}
+        />
       )}
     </div>
   );
 }
+
