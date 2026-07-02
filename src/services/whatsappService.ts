@@ -125,7 +125,7 @@ export class WhatsAppService {
       "payment_success": "en",
       "forgot_id_recovery": "en",
       "result_available": "en",
-      "founding_family_welcome": "en",
+      "_founding_family_welcome": "en",
     };
 
     const languageCode = templateLanguageMap[templateName] || "en_US";
@@ -266,7 +266,7 @@ export class WhatsAppService {
   ): Promise<boolean> {
     return this.sendTemplateMessage(
       phoneNumber,
-      "founding_family_welcome",
+      "_founding_family_welcome",
       [parentName, familyId],
       "FOUNDING_FAMILY_WELCOME"
     );
