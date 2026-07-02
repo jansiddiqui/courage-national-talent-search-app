@@ -106,10 +106,18 @@ export function RegisterCTA({
 
   // If a registered Founding Family is viewing the site before launch, show premium multi-line timer
   if (mounted && !isRegistrationOpen && isFoundingFamily && !isAuthenticated) {
-    const countdownClasses = appliedClasses
-      .replace("inline-flex", "flex")
-      .replace("items-center", "items-center flex-col justify-center py-2.5")
-      .replace("gap-2", "gap-1");
+    const classList = appliedClasses.split(" ");
+    const filteredList = classList.filter(c => 
+      c !== "inline-flex" && 
+      c !== "flex" && 
+      c !== "block" && 
+      c !== "items-center" && 
+      c !== "justify-center" && 
+      c !== "text-center" && 
+      !c.startsWith("gap-") && 
+      !c.startsWith("py-")
+    );
+    const countdownClasses = filteredList.join(" ") + " flex flex-col items-center justify-center text-center gap-1.5 py-2.5";
 
     return (
       <Link href="/founding-families" className={countdownClasses} onClick={onClick}>
