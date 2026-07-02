@@ -28,6 +28,7 @@ import { RESULT_DATE } from "@/config/exam";
 import { hasSupabaseConfig } from "@/lib/supabaseClient";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { TIMELINE_LABELS } from "@/config/timeline";
 import NeedHelp from "@/components/layout/NeedHelp";
 
 export default function ResultsPage() {
@@ -204,7 +205,7 @@ export default function ResultsPage() {
               <div className="h-px bg-slate-100 my-2" />
               <div className="py-2">
                 <span className="text-xs uppercase tracking-widest text-slate-400 font-bold block mb-1">Expected Release Date</span>
-                <strong className="text-2xl text-blue-900 font-extrabold">28 July 2026</strong>
+                <strong className="text-2xl text-blue-900 font-extrabold">{TIMELINE_LABELS.RESULTS_DATE}</strong>
               </div>
               <p className="text-slate-500 text-xs leading-relaxed max-w-sm mx-auto font-medium">
                 Your Talent Profile will be available after evaluation is completed.
@@ -865,7 +866,7 @@ export default function ResultsPage() {
                 <div className="space-y-1 text-right font-mono">
                   <p className="text-[8px] md:text-[10px] text-slate-400">ID: [SAMPLE-ID]</p>
                   <p className="font-bold text-slate-800 font-sans">Registrar of Evaluation</p>
-                  <p className="text-[8px] text-slate-400 font-mono">Date: 28 July 2026</p>
+                  <p className="text-[8px] text-slate-400 font-mono">Date: {TIMELINE_LABELS.RESULTS_DATE}</p>
                 </div>
               </div>
             </div>

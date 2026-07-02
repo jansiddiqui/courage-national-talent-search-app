@@ -37,6 +37,7 @@ import {
 import { fetchRegistrations, fetchSystemSettings } from "@/services/supabaseService";
 import { hasSupabaseConfig } from "@/lib/supabaseClient";
 import NeedHelp from "@/components/layout/NeedHelp";
+import { TIMELINE_LABELS, TIMELINE } from "@/config/timeline";
 
 interface Candidate {
   id: string;
@@ -229,7 +230,7 @@ export default function DashboardPage() {
     {
       key: "assessment",
       label: "Assessment Window Pending",
-      date: "Scheduled: 19 July 2026",
+      date: `Scheduled: ${TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}`,
       completed: false
     },
     ...(systemSettings.result_status === "RELEASED" ? [
@@ -354,15 +355,15 @@ export default function DashboardPage() {
                   </div>
                   <div className="md:px-4">
                     <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-1">Admit Card Release</span>
-                    <strong className="text-slate-800 text-sm font-bold">15 July 2026</strong>
+                    <strong className="text-slate-800 text-sm font-bold">{TIMELINE_LABELS.ADMIT_CARD_RELEASE}</strong>
                   </div>
                   <div className="md:px-4">
                     <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-1">Assessment Date</span>
-                    <strong className="text-slate-800 text-sm font-bold">19 July 2026</strong>
+                    <strong className="text-slate-800 text-sm font-bold">{TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}</strong>
                   </div>
                   <div className="md:px-4">
                     <span className="text-[10px] uppercase tracking-wider font-bold text-slate-400 block mb-1">Results Release</span>
-                    <strong className="text-slate-800 text-sm font-bold">28 July 2026</strong>
+                    <strong className="text-slate-800 text-sm font-bold">{TIMELINE_LABELS.RESULTS_DATE}</strong>
                   </div>
                 </div>
               </div>
@@ -413,7 +414,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <h4 className="text-slate-600 font-bold text-sm">Upcoming: Admit Card Release</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">Scheduled for 15 July 2026. You will be notified via WhatsApp.</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Scheduled for {TIMELINE_LABELS.ADMIT_CARD_RELEASE}. You will be notified via WhatsApp.</p>
                     </div>
                   </div>
 
@@ -427,7 +428,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <h4 className="text-slate-600 font-bold text-sm">Upcoming: Assessment Day</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">Scheduled for 19 July 2026. Ensure devices are ready.</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Scheduled for {TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}. Ensure devices are ready.</p>
                     </div>
                   </div>
 
@@ -441,7 +442,7 @@ export default function DashboardPage() {
                     </div>
                     <div>
                       <h4 className="text-slate-600 font-bold text-sm">Upcoming: Talent Profile Release</h4>
-                      <p className="text-xs text-slate-500 mt-0.5">Scheduled for 28 July 2026. Detailed diagnostic report will be available.</p>
+                      <p className="text-xs text-slate-500 mt-0.5">Scheduled for {TIMELINE_LABELS.RESULTS_DATE}. Detailed diagnostic report will be available.</p>
                     </div>
                   </div>
 
@@ -497,7 +498,7 @@ export default function DashboardPage() {
                         <div className="grid grid-cols-2 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
                           <div>
                             <span className="block text-[10px] uppercase font-bold text-slate-400">Date & Time</span>
-                            <strong className="text-sm text-slate-800">19 July 2026, 10:00 AM</strong>
+                            <strong className="text-sm text-slate-800">{TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}, 10:00 AM</strong>
                           </div>
                           <div>
                             <span className="block text-[10px] uppercase font-bold text-slate-400">Technical Requirements</span>
@@ -523,7 +524,7 @@ export default function DashboardPage() {
                         </div>
                         <div>
                           <h4 className="text-sm font-bold text-slate-700">Assessment Window Locked</h4>
-                          <p className="text-xs text-slate-500 mt-1">The official admit card and examination instructions will appear here on 15 July 2026.</p>
+                          <p className="text-xs text-slate-500 mt-1">The official admit card and examination instructions will appear here on {TIMELINE_LABELS.ADMIT_CARD_RELEASE}.</p>
                         </div>
                       </div>
                     </div>

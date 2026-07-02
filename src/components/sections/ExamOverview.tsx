@@ -1,4 +1,5 @@
 import { Clock, BookOpen, Monitor, CalendarDays, FileQuestion, Languages } from "lucide-react";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 const subjects = [
   { name: "Mental Ability", topics: "Logical Reasoning, Analogy, Series, Pattern", weight: "40%" },
@@ -7,16 +8,17 @@ const subjects = [
   { name: "General Awareness", topics: "Science, Environment, Current Affairs, India GK", weight: "15%" },
 ];
 
-const examCards = [
+const getExamCards = () => [
   { icon: FileQuestion, label: "Total Questions", value: "100 MCQs", color: "text-blue-700 bg-blue-50" },
   { icon: Clock, label: "Duration", value: "2.5 Hours", color: "text-amber-700 bg-amber-50" },
   { icon: Languages, label: "Medium", value: "Hindi & English", color: "text-emerald-700 bg-emerald-50" },
   { icon: Monitor, label: "Mode", value: "Online + OMR", color: "text-purple-700 bg-purple-50" },
-  { icon: CalendarDays, label: "Exam Date", value: "19 July 2026", color: "text-rose-700 bg-rose-50" },
+  { icon: CalendarDays, label: "Exam Date", value: TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', ''), color: "text-rose-700 bg-rose-50" },
   { icon: BookOpen, label: "Eligible Classes", value: "5, 6, 7 & 8", color: "text-cyan-700 bg-cyan-50" },
 ];
 
 export default function ExamOverview() {
+  const examCards = getExamCards();
   return (
     <section id="exam" className="py-24 lg:py-32 mesh-bg">
       <div className="max-w-7xl mx-auto px-6">

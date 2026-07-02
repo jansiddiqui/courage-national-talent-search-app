@@ -80,7 +80,7 @@ export default function ParentBenefits() {
                 We are currently registering our first batch of students for the CNTS 2026 Founding Edition.
               </p>
               <p className="text-slate-350 text-xs md:text-sm leading-relaxed">
-                Rather than showcasing simulated reviews, we are building this platform on absolute transparency. Once the July 2026 talent profiles are delivered, parent feedback will be published here live and unedited.
+                Rather than showcasing simulated reviews, we are building this platform on absolute transparency. Once the September 2026 talent profiles are delivered, parent feedback will be published here live and unedited.
               </p>
             </div>
             <div className="pt-8 mt-8 border-t border-white/10 flex items-center gap-4 relative z-10">
@@ -89,7 +89,7 @@ export default function ParentBenefits() {
               </div>
               <div>
                 <h4 className="font-bold text-sm text-white">CNTS Founding Edition</h4>
-                <p className="text-xs text-blue-300">July 2026 Batch · Now Registering</p>
+                <p className="text-xs text-blue-300">August 2026 Batch · Now Registering</p>
               </div>
             </div>
           </div>

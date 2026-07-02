@@ -4,6 +4,7 @@ import { useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Search, ChevronRight, HelpCircle, Phone, Mail, MessageSquare, Sparkles } from "lucide-react";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 interface FAQItem {
   q: string;
@@ -133,7 +134,7 @@ const faqs: FAQItem[] = [
   {
     category: "results",
     q: "When and how will the results be announced?",
-    a: "The national rankings will be published on 28 July 2026. Detailed Talent Profile reports and digital certificates will be released in the parent portal on 30 July 2026.",
+    a: `The national rankings will be published on ${TIMELINE_LABELS.RESULTS_DATE}. Detailed Talent Profile reports and digital certificates will be released in the parent portal on ${TIMELINE_LABELS.TALENT_PROFILE_DATE} and ${TIMELINE_LABELS.CERTIFICATE_DATE} respectively.`,
   },
   {
     category: "results",

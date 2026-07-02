@@ -1,8 +1,9 @@
 "use client";
 
 import { CheckCircle2, FileText, CreditCard, Clipboard, Trophy, Award } from "lucide-react";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
-const events = [
+const getEvents = () => [
   {
     title: "Registration Complete",
     date: "Immediate",
@@ -11,7 +12,7 @@ const events = [
     status: "done", // done, active, pending
   },
   {
-    title: "Practice Papers Released",
+    title: "Practice Sample Papers Released",
     date: "Available Now",
     desc: "Access mock cognitive questions and prep resources instantly inside the dashboard.",
     icon: FileText,
@@ -19,28 +20,28 @@ const events = [
   },
   {
     title: "Admit Card Issued",
-    date: "July 10, 2026",
+    date: TIMELINE_LABELS.ADMIT_CARD_RELEASE,
     desc: "Roll Number & login details generated. Receive official Entry Pass with detailed examination guidelines.",
     icon: CreditCard,
     status: "pending",
   },
   {
     title: "National Exam Day",
-    date: "July 19, 2026",
+    date: TIMELINE_LABELS.EXAM_DATE,
     desc: "Online 2-hour conceptual evaluation. Multiple time slots with structured session scheduling.",
     icon: Clipboard,
     status: "pending",
   },
   {
     title: "Talent Scorecard & Ranks",
-    date: "July 28, 2026",
+    date: TIMELINE_LABELS.RESULTS_DATE,
     desc: "Get cognitive strengths profile mapping, detailed subject analysis, and national rankings.",
     icon: Trophy,
     status: "pending",
   },
   {
     title: "Certificates & Medals",
-    date: "August 5, 2026",
+    date: TIMELINE_LABELS.CERTIFICATE_DATE,
     desc: "Verifiable certificates generated. Medals and physical kits dispatched to achievers.",
     icon: Award,
     status: "pending",
@@ -48,6 +49,7 @@ const events = [
 ];
 
 export default function TimelineReassurance() {
+  const events = getEvents();
   return (
     <section className="py-24 bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white relative overflow-hidden">
       {/* Background decorations */}

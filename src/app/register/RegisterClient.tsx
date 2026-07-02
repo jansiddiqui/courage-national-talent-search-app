@@ -34,6 +34,7 @@ import SearchableSelect from "@/components/registration/SearchableSelect";
 import { saveRegistration, updateRegistrationStatus, updateRegistrationData, uploadCandidatePhoto } from "@/services/supabaseService";
 import PhotoUploader from "@/components/registration/PhotoUploader";
 import { BlogPost } from "@/lib/blog";
+import { TIMELINE, getTimelineDates } from "@/config/timeline";
 
 function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   const router = useRouter();
@@ -41,6 +42,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   
   // Hydrated state flag to prevent server-client mismatch
   const [isHydrated, setIsHydrated] = useState(false);
+  const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
   const [currentStep, setCurrentStep] = useState<RegistrationStep>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState("");
@@ -120,6 +122,12 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
     }
 
     const timer = setTimeout(() => {
+      const dates = getTimelineDates();
+      if (new Date() < dates.registrationOpen) {
+        setIsRegistrationOpen(false);
+        router.replace("/founding-families");
+        return;
+      }
       setIsHydrated(true);
       
       const cleanMobile = initialData.mobile_number?.startsWith("+91")
@@ -757,6 +765,18 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
     setShowSandboxModal(false);
     setSubmitError("Sandbox Transaction Cancelled or Failed.");
   };
+
+  // Intercept if registration is closed/pre-registration is active
+  if (!isRegistrationOpen) {
+    return (
+      <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center">
+        <div className="animate-pulse space-y-2 text-center">
+          <div className="w-8 h-8 rounded-full border-4 border-blue-600 border-t-transparent animate-spin mx-auto"></div>
+          <p className="text-slate-400 text-xs font-semibold">Redirecting to Founding Families Cohort...</p>
+        </div>
+      </main>
+    );
+  }
 
   // Prevent rendering before hydration to avoid hydration mismatch
   if (!isHydrated) {

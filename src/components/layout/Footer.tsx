@@ -121,7 +121,7 @@ export default function Footer() {
 
           {/* Links */}
           {Object.entries(footerLinks).map(([category, links]) => (
-            <div key={category} className="col-span-2 sm:col-span-1 lg:col-span-1">
+            <div key={category} className="col-span-1 lg:col-span-1">
               <h4 className="font-semibold text-white text-sm mb-3.5">
                 {category}
               </h4>

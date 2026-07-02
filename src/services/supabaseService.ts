@@ -525,3 +525,83 @@ export async function uploadCandidatePhoto(registrationId: string, base64Data: s
     return null;
   }
 }
+
+interface FoundingFamilyInput {
+  parentName: string;
+  mobileNumber: string;
+  parentEmail: string;
+}
+
+export async function saveFoundingFamily(data: FoundingFamilyInput): Promise<{ success: boolean; familyId: string }> {
+  try {
+    let nextNum = 342; // Fallback initial counter
+    
+    if (hasSupabaseConfig) {
+      const { count, error: countErr } = await db
+        .from("founding_families")
+        .select("*", { count: "exact", head: true });
+      
+      if (!countErr && count !== null) {
+        nextNum = 342 + count;
+      }
+    } else {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("cnts_founding_families_sim_count");
+        const currentCount = stored ? parseInt(stored) : 0;
+        nextNum = 342 + currentCount;
+        localStorage.setItem("cnts_founding_families_sim_count", (currentCount + 1).toString());
+      }
+    }
+
+    const familyId = `CNTS-FF-${nextNum.toString().padStart(5, "0")}`;
+    
+    const recordToInsert = {
+      family_id: familyId,
+      parent_name: data.parentName,
+      mobile_number: data.mobileNumber,
+      parent_email: data.parentEmail,
+    };
+
+    if (hasSupabaseConfig) {
+      const { error } = await db
+        .from("founding_families")
+        .insert([recordToInsert]);
+      
+      if (error) {
+        console.error("Supabase founding_families insert failed:", error);
+        return { success: false, familyId: "" };
+      }
+    } else {
+      console.log("Supabase not configured. Simulated founding family save:", recordToInsert);
+    }
+
+    return { success: true, familyId };
+  } catch (err) {
+    console.error("saveFoundingFamily error:", err);
+    return { success: false, familyId: "" };
+  }
+}
+
+export async function fetchFoundingFamiliesCount(): Promise<number> {
+  try {
+    let count = 0;
+    if (hasSupabaseConfig) {
+      const { count: dbCount, error } = await db
+        .from("founding_families")
+        .select("*", { count: "exact", head: true });
+      
+      if (!error && dbCount !== null) {
+        count = dbCount;
+      }
+    } else {
+      if (typeof window !== "undefined") {
+        const stored = localStorage.getItem("cnts_founding_families_sim_count");
+        count = stored ? parseInt(stored) : 0;
+      }
+    }
+    return 342 + count;
+  } catch (err) {
+    console.error("fetchFoundingFamiliesCount error:", err);
+    return 342;
+  }
+}

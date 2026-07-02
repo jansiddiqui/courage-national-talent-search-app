@@ -23,6 +23,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import NeedHelp from "@/components/layout/NeedHelp";
 import { CandidateIdentityCard } from "@/components/shared/CandidateIdentityCard";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 interface VerifyClientProps {
   candidateId: string;
@@ -278,7 +279,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                   <Calendar className="text-slate-400 w-4 h-4 shrink-0 mt-0.5" />
                   <div>
                     <span className="text-[9px] uppercase tracking-wider text-slate-400 font-bold block">Exam Date</span>
-                    <strong className="text-xs font-bold text-slate-855">19 July 2026</strong>
+                    <strong className="text-xs font-bold text-slate-855">{TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}</strong>
                   </div>
                 </div>
 

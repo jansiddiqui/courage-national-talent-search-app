@@ -10,15 +10,16 @@ import {
   HeartHandshake
 } from "lucide-react";
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 export default function ParentGuidePage() {
   const journeySteps = [
     { step: 1, title: "Online Registration", desc: "Complete guardian contact and candidate profile. Fee: ₹99." },
     { step: 2, title: "Syllabus & Practice Mock", desc: "Access sample cognitive puzzles and standard formats inside the dashboard." },
-    { step: 3, title: "Official Admit Card", desc: "Released on 10 July 2026. Entry Pass details slot timings and portal link." },
-    { step: 4, title: "Final conceptual exam day", desc: "Conducted online on 19 July 2026. Designed for self-evaluation." },
-    { step: 5, title: "Cognitive Profile Report", desc: "Delivered on 28 July 2026, mapping strengths across 6 key domains." },
-    { step: 6, title: "Verified Achievement Certificates", desc: "Issued on 5 August 2026 with verified registration ID & QR lookup." },
+    { step: 3, title: "Official Admit Card", desc: `Released on ${TIMELINE_LABELS.ADMIT_CARD_RELEASE}. Entry Pass details slot timings and portal link.` },
+    { step: 4, title: "Final conceptual exam day", desc: `Conducted online on ${TIMELINE_LABELS.EXAM_DATE}. Designed for self-evaluation.` },
+    { step: 5, title: "Cognitive Profile Report", desc: `Delivered on ${TIMELINE_LABELS.TALENT_PROFILE_DATE}, mapping strengths across 6 key domains.` },
+    { step: 6, title: "Verified Achievement Certificates", desc: `Issued on ${TIMELINE_LABELS.CERTIFICATE_DATE} with verified registration ID & QR lookup.` },
   ];
 
   return (
@@ -123,7 +124,7 @@ export default function ParentGuidePage() {
                   When and how are results delivered?
                 </h4>
                 <p className="text-xs text-slate-505 leading-relaxed pl-6">
-                  Multi-dimensional talent reports are released inside the Candidate Dashboard on July 28, 2026. Parents receive instant notification logs on WhatsApp.
+                  Multi-dimensional talent reports are released inside the Candidate Dashboard on {TIMELINE_LABELS.TALENT_PROFILE_DATE}. Parents receive instant notification logs on WhatsApp.
                 </p>
               </div>
             </div>

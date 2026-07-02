@@ -44,7 +44,7 @@ const defaultAnnouncements: Announcement[] = [
     tagVariant: "red",
     icon: AlertTriangle,
     title: "Registration Deadline Approaching — Secure Your Slot",
-    date: "10 June 2026",
+    date: "20 August 2026",
     content:
       "Early registration for the CNTS 2026 Founding Edition closes soon. After the early-bird window ends, the registration fee reverts from ₹99 to ₹299. Parents are advised to complete registration at the earliest. Each registration generates a unique candidate ID that cannot be transferred.",
     importance: "critical",
@@ -58,7 +58,7 @@ const defaultAnnouncements: Announcement[] = [
     tagVariant: "blue",
     icon: BookOpen,
     title: "Class 5–8 Official Mock Sample Papers Released",
-    date: "25 June 2026",
+    date: "20 July 2026",
     content:
       "Official practice tests structured with 80 questions and a 90-minute time limit are now available for free download in the Prepare section. Candidates are advised to attempt all sets and review their logic before test week.",
     importance: "important",
@@ -71,7 +71,7 @@ const defaultAnnouncements: Announcement[] = [
     tagVariant: "amber",
     icon: Megaphone,
     title: "Founding Edition 2026 Registrations Now Open",
-    date: "15 June 2026",
+    date: "15 July 2026",
     content:
       "The early registration gateway is officially operational. Parents can register candidates in Classes 5–8 from any recognized school board for a token fee of ₹99. Founding Edition registrations are capped — once slots fill, registration closes.",
     importance: "normal",
@@ -84,7 +84,7 @@ const defaultAnnouncements: Announcement[] = [
     tagVariant: "slate",
     icon: FileText,
     title: "Official CNTS 2026 Assessment Pattern Finalized",
-    date: "10 June 2026",
+    date: "10 July 2026",
     content:
       "The CNTS 2026 academic council has frozen the assessment structure. The exam will contain 80 objective questions across Quantitative Aptitude, Language Comprehension, Logical Reasoning, and Critical Thinking. There is no negative marking. Both Hindi and English mediums are supported.",
     importance: "normal",

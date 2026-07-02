@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
@@ -717,7 +718,7 @@ export async function GET(
         <div class="id-card-footer-row">
           <div class="id-card-footer-item">
             <span class="id-card-label" style="font-size: 6px;">Exam Date</span>
-            <span class="id-card-value" style="font-size: 10px; font-weight: 700;">19 July 2026</span>
+            <span class="id-card-value" style="font-size: 10px; font-weight: 700;">${TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}</span>
           </div>
           <div class="id-card-footer-item">
             <span class="id-card-label" style="font-size: 6px;">Slot Venue</span>
@@ -732,7 +733,7 @@ export async function GET(
       <div class="schedule-grid">
         <div class="schedule-item">
           <h4>Exam Date</h4>
-          <p>19 July 2026</p>
+          <p>${TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}</p>
         </div>
         <div class="schedule-item">
           <h4>Exam Time</h4>

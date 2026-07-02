@@ -379,3 +379,26 @@ create table if not exists public.rate_limit_attempts (
 create index if not exists rate_limit_attempts_ip_hash_endpoint_idx 
   on public.rate_limit_attempts(ip_hash, endpoint);
 
+-- 23. Create founding_families table for pre-registrations
+create table if not exists public.founding_families (
+  id uuid default gen_random_uuid() primary key,
+  family_id text not null unique,
+  parent_name text not null,
+  mobile_number text not null,
+  parent_email text not null,
+  created_at timestamptz default now() not null
+);
+
+-- Enable RLS for founding_families
+alter table public.founding_families enable row level security;
+
+-- Allow anonymous inserts to founding_families
+create policy "Allow anonymous inserts to founding_families" 
+  on public.founding_families for insert 
+  with check (true);
+
+-- Allow anonymous select for counting/registry check
+create policy "Allow anonymous select for founding_families"
+  on public.founding_families for select
+  using (true);
+

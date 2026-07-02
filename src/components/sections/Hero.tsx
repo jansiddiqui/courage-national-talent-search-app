@@ -5,6 +5,7 @@ import { ArrowRight, Sparkles, Star, Trophy, Brain, Zap, CheckCircle2, AlertCirc
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import { fetchTotalRegistrationCount, fetchRegistrations } from "@/services/supabaseService";
 import { BASELINE_REGISTRATIONS, BASELINE_STATES } from "@/config/stats";
+import { TIMELINE_LABELS, getContextualRegistrationEndsLabel } from "@/config/timeline";
 
 const talentBadges = [
   { icon: Brain, label: "Critical Thinking", color: "bg-blue-50 text-blue-700 border-blue-100" },
@@ -192,7 +193,7 @@ export default function Hero() {
                 <div className="w-6 h-6 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 mt-0.5"><Calendar size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Exam Date</span>
-                  <span className="text-xs font-bold text-slate-850">19 July 2026 <span className="text-[9px] text-slate-500 font-semibold">(Online)</span></span>
+                  <span className="text-xs font-bold text-slate-855">{TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')} <span className="text-[9px] text-slate-500 font-semibold">(Online)</span></span>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -224,7 +225,7 @@ export default function Hero() {
             </div>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
               <RegisterCTA
                 unauthenticatedText="Secure Your Child's Spot — ₹99"
                 rightIcon={<ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />}
@@ -236,6 +237,15 @@ export default function Hero() {
               >
                 View Sample Talent Profile
               </a>
+            </div>
+
+            {/* Contextual Timeline Status Alert */}
+            <div className="text-[11px] font-bold text-slate-500 flex items-center gap-1.5 justify-center sm:justify-start pt-1">
+              <span className="flex h-1.5 w-1.5 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-blue-500"></span>
+              </span>
+              <span>{getContextualRegistrationEndsLabel()}</span>
             </div>
 
             {/* Trust badge strip & Legitimacy subtitle */}

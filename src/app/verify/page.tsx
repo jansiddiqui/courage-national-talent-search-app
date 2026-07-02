@@ -23,6 +23,7 @@ import Footer from "@/components/layout/Footer";
 import NeedHelp from "@/components/layout/NeedHelp";
 import { fetchSystemSettings } from "@/services/supabaseService";
 import { RESULT_DATE } from "@/config/exam";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 export default function CertificateVerifyPage() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -241,7 +242,7 @@ export default function CertificateVerifyPage() {
               <div className="h-px bg-slate-100 my-2" />
               <div className="py-2">
                 <span className="text-xs uppercase tracking-widest text-slate-400 font-bold block mb-1">Expected Release Date</span>
-                <strong className="text-2xl text-blue-900 font-extrabold">28 July 2026</strong>
+                <strong className="text-2xl text-blue-900 font-extrabold">{TIMELINE_LABELS.RESULTS_DATE}</strong>
               </div>
               <p className="text-slate-505 text-xs leading-relaxed max-w-sm mx-auto font-medium">
                 Official certificates and student verification records will be available after evaluation is completed.

@@ -3,7 +3,21 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
-import { Calendar, Sparkles, Clock, Play, BookOpen, AlertCircle, ShieldAlert, BadgeCheck, FileBarChart, Trophy, ArrowRight } from "lucide-react";
+import { 
+  Calendar, 
+  Sparkles, 
+  Clock, 
+  Play, 
+  BookOpen, 
+  AlertCircle, 
+  ShieldAlert, 
+  BadgeCheck, 
+  FileBarChart, 
+  Trophy, 
+  ArrowRight,
+  ClipboardCheck
+} from "lucide-react";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 interface TimelineEvent {
   phase: number;
@@ -15,21 +29,21 @@ interface TimelineEvent {
   bulletColor: string;
 }
 
-const timelineEvents: TimelineEvent[] = [
+const getTimelineEvents = (): TimelineEvent[] => [
   {
     phase: 1,
     title: "Registrations Open",
-    date: "15 June 2026",
+    date: TIMELINE_LABELS.REGISTRATION_OPEN,
     desc: "Parents register their children online for the Founding Edition. Select class (5–8), medium (English/Hindi), and testing mode (online/OMR). Registrations are capped at 500 candidates for this founding pilot.",
-    status: "upcoming", // Today is 10 June 2026, so it's opening soon!
+    status: "upcoming",
     icon: Play,
     bulletColor: "bg-blue-600 border-blue-200 text-white",
   },
   {
     phase: 2,
     title: "Practice Sample Papers Released",
-    date: "18 June 2026",
-    desc: "Detailed syllabus outlines and class-specific mock question papers are unlocked in the parent dashboard. Completely free resources to understand the critical reasoning exam style.",
+    date: "20 July 2026",
+    desc: "Detailed syllabus outlines and class-specific mock question papers are unlocked in the parent dashboard. Completely free prep resources to understand the critical reasoning exam style.",
     status: "upcoming",
     icon: BookOpen,
     bulletColor: "bg-amber-500 border-amber-200 text-white",
@@ -37,8 +51,8 @@ const timelineEvents: TimelineEvent[] = [
   {
     phase: 3,
     title: "Registration Deadline",
-    date: "10 July 2026",
-    desc: "The registration window closes officially at 11:59 PM. No late entries can be admitted to ensure stable AI remote proctoring configurations for the examination servers.",
+    date: TIMELINE_LABELS.REGISTRATION_CLOSE,
+    desc: "The registration window closes officially at 11:59 PM. No late entries can be admitted to ensure stable remote proctoring configurations for the examination servers.",
     status: "upcoming",
     icon: AlertCircle,
     bulletColor: "bg-red-500 border-red-200 text-white",
@@ -46,7 +60,7 @@ const timelineEvents: TimelineEvent[] = [
   {
     phase: 4,
     title: "Admit Cards & Logins Available",
-    date: "12 July 2026",
+    date: TIMELINE_LABELS.ADMIT_CARD_RELEASE,
     desc: "Candidate roll numbers, technical testing guidelines, and exam portal logins are generated and dispatched. Parents receive immediate setup instructions on their registered WhatsApp numbers.",
     status: "upcoming",
     icon: ShieldAlert,
@@ -55,8 +69,8 @@ const timelineEvents: TimelineEvent[] = [
   {
     phase: 5,
     title: "CNTS National Talent Assessment",
-    date: "19 July 2026",
-    desc: "The official 2.5-hour cognitive evaluation. Students appear online from home following standard independent self-evaluation guidelines, or at their partner school campus using paper assessments. Focuses on logic, reasoning, and learning potential.",
+    date: TIMELINE_LABELS.EXAM_DATE,
+    desc: "The official online cognitive evaluation. Students appear online from home following standard independent self-evaluation guidelines, or at their partner school campus. Focuses on logic, reasoning, and learning potential.",
     status: "upcoming",
     icon: Calendar,
     bulletColor: "bg-purple-600 border-purple-200 text-white",
@@ -64,8 +78,8 @@ const timelineEvents: TimelineEvent[] = [
   {
     phase: 6,
     title: "Evaluation & Analysis Period",
-    date: "20–25 July 2026",
-    desc: "Educational psychologists and scoring scripts process the multi-dimensional assessments. Every question is analyzed to map spatial logic, mathematical reasoning, and linguistic capability.",
+    date: "31 August - 10 September 2026",
+    desc: "Educational experts and scoring scripts process the multi-dimensional assessments. Every question is analyzed to map spatial logic, mathematical reasoning, and linguistic capability.",
     status: "upcoming",
     icon: Clock,
     bulletColor: "bg-slate-400 border-slate-200 text-white",
@@ -73,7 +87,7 @@ const timelineEvents: TimelineEvent[] = [
   {
     phase: 7,
     title: "National Rankings Released",
-    date: "28 July 2026",
+    date: TIMELINE_LABELS.RESULTS_DATE,
     desc: "Overall percentiles, school topper standings, and state ranks are published on the CNTS Result Portal. Rankings are tracked separately for Junior and Senior categories.",
     status: "upcoming",
     icon: FileBarChart,
@@ -81,17 +95,26 @@ const timelineEvents: TimelineEvent[] = [
   },
   {
     phase: 8,
-    title: "Talent Profiles & Certificates Released",
-    date: "30 July 2026",
-    desc: "The comprehensive PDF reports mapping discovered strengths and actionable advice are released in parent dashboards, alongside verifiable digital certificates with secure verification QR codes.",
+    title: "Talent Profiles Released",
+    date: TIMELINE_LABELS.TALENT_PROFILE_DATE,
+    desc: "The comprehensive PDF reports mapping discovered cognitive strengths and actionable growth advice are released in parent dashboards.",
     status: "upcoming",
     icon: BadgeCheck,
     bulletColor: "bg-emerald-500 border-emerald-200 text-white",
   },
   {
     phase: 9,
+    title: "Certificates Released",
+    date: TIMELINE_LABELS.CERTIFICATE_DATE,
+    desc: "Verifiable digital certificates with secure verification QR codes are issued to all candidates.",
+    status: "upcoming",
+    icon: ClipboardCheck,
+    bulletColor: "bg-emerald-600 border-emerald-200 text-white",
+  },
+  {
+    phase: 10,
     title: "Awards & Recognition Announcement",
-    date: "31 July 2026",
+    date: TIMELINE_LABELS.AWARDS_DATE,
     desc: "Honoring achievement. School topper medals, state merit trophies, and national podium stars are declared. Verifiable credentials are synchronized with school registries.",
     status: "upcoming",
     icon: Trophy,
@@ -100,6 +123,8 @@ const timelineEvents: TimelineEvent[] = [
 ];
 
 export default function TimelinePage() {
+  const events = getTimelineEvents();
+
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
       <Navbar theme="dark" />
@@ -121,7 +146,7 @@ export default function TimelinePage() {
             Assessment <span className="text-blue-400">Timeline</span>.
           </h1>
           <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
-            A fast-paced, high-momentum schedule. Register in June, test in July, and receive your child&apos;s cognitive roadmap before the new school term fully settles.
+            A fast-paced, high-momentum schedule. Register in July/August, test in August, and receive your child&apos;s cognitive roadmap before the new school term fully settles.
           </p>
         </div>
       </section>
@@ -138,7 +163,7 @@ export default function TimelinePage() {
 
           {/* Events list */}
           <div className="space-y-12">
-            {timelineEvents.map((evt, i) => {
+            {events.map((evt, i) => {
               const isEven = i % 2 === 0;
               const EvtIcon = evt.icon;
               
@@ -175,7 +200,7 @@ export default function TimelinePage() {
                       <h3 className="font-display font-bold text-slate-800 text-lg mb-3 relative z-10">
                         {evt.title}
                       </h3>
-                      <p className="text-slate-500 text-xs md:text-sm leading-relaxed relative z-10">
+                      <p className="text-slate-505 text-xs md:text-sm leading-relaxed relative z-10">
                         {evt.desc}
                       </p>
                     </div>
@@ -203,10 +228,10 @@ export default function TimelinePage() {
             Accelerated Outcomes. No Long Waiting.
           </h3>
           <p className="text-slate-500 text-xs md:text-sm max-w-md mx-auto">
-            Secure your child&apos;s spot in the Founding Edition for ₹99. Complete the assessment in July, get verified credentials before August.
+            Secure your child&apos;s spot in the Founding Edition for Rs. 99. Complete the assessment in August, get verified credentials before September.
           </p>
           <RegisterCTA
-            unauthenticatedText="Register Now – ₹99"
+            unauthenticatedText="Register Now – Rs. 99"
             rightIcon={<ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
             className="inline-flex items-center gap-2 px-8 py-4 bg-blue-800 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold shadow-lg shadow-blue-850/20 transition-all hover:-translate-y-0.5 cursor-pointer group"
           />

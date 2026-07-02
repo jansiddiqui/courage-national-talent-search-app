@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Scale, FileText, ArrowLeft, AlertTriangle } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 export default function TermsOfUsePage() {
   const [activeSection, setActiveSection] = useState("eligibility");
@@ -187,7 +188,7 @@ export default function TermsOfUsePage() {
                 <span className="text-blue-600">3.</span> Exam Schedule Adjustments
               </h2>
               <p>
-                While the official calendar is set (e.g., Exam Date scheduled for <strong>July 19, 2026</strong>), Courage National Talent Search reserves the absolute right to reschedule, postpone, or adjust the assessment timeline due to:
+                While the official calendar is set (e.g., Exam Date scheduled for <strong>{TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}</strong>), Courage National Talent Search reserves the absolute right to reschedule, postpone, or adjust the assessment timeline due to:
               </p>
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid gap-3 my-2 text-xs">
                 <p><strong>Operational Reasons:</strong> Logistical modifications in physical OMR center distribution, school calendar conflicts, or state mandates.</p>

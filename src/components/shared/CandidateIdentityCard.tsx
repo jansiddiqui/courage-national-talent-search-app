@@ -1,5 +1,6 @@
 import React from "react";
 import { User } from "lucide-react";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 interface CandidateIdentityCardProps {
   candidate: {
@@ -91,7 +92,7 @@ export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps)
             <div className="grid grid-cols-2 divide-x divide-white/10">
               <div className="p-2 sm:p-4 text-center">
                 <span className="text-[7px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Exam Date</span>
-                <strong className="text-white text-[10px] sm:text-sm font-bold">19 July 2026</strong>
+                <strong className="text-white text-[10px] sm:text-sm font-bold">{TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}</strong>
               </div>
               <div className="p-2 sm:p-4 text-center">
                 <span className="text-[7px] sm:text-[9px] text-white/40 uppercase font-black tracking-widest block mb-1">Slot Venue</span>

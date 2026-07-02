@@ -21,6 +21,7 @@ import {
   Star,
   MessageSquare
 } from "lucide-react";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 interface RegDetails {
   registrationId: string;
@@ -361,14 +362,14 @@ export default function SuccessPage() {
                 step: 3,
                 title: "Diagnostic Portal Login Credentials",
                 desc: "Parent and child diagnostic test portal logins will be generated. We will notify you via SMS & WhatsApp.",
-                badge: "Release Date: 10 July",
+                badge: `Release Date: ${TIMELINE_LABELS.ADMIT_CARD_RELEASE}`,
                 badgeColor: "bg-amber-50 text-amber-700 border-amber-200"
               },
               {
                 step: 4,
                 title: "Final CNTS Talent Discovery Exam",
                 desc: "Log in to the diagnostic portal to complete the talent search test.",
-                badge: "Exam Date: 19 July",
+                badge: `Exam Date: ${TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}`,
                 badgeColor: "bg-indigo-50 text-indigo-700 border-indigo-200"
               }
             ].map((item, index, array) => (

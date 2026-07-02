@@ -49,7 +49,7 @@ export default function CTA() {
             </div>
 
             <p className="mt-6 text-blue-300/70 text-sm">
-              Secure payment · Instant confirmation · Quick results in July 2026
+              Secure payment · Instant confirmation · Quick results in September 2026
             </p>
 
             {/* School CTA */}
