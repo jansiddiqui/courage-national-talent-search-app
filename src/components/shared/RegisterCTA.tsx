@@ -24,7 +24,7 @@ export function RegisterCTA({
   const [mounted, setMounted] = useState(false);
   const [isRegistrationOpen, setIsRegistrationOpen] = useState(true);
   const [isFoundingFamily, setIsFoundingFamily] = useState(false);
-  const [countdownText, setCountdownText] = useState("");
+  const [countdown, setCountdown] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
   useEffect(() => {
     setMounted(true);
@@ -57,7 +57,7 @@ export function RegisterCTA({
     const updateCountdown = () => {
       const diff = target - Date.now();
       if (diff <= 0) {
-        setCountdownText("");
+        setCountdown({ d: 0, h: 0, m: 0, s: 0 });
         setIsRegistrationOpen(true);
         return;
       }
@@ -66,11 +66,7 @@ export function RegisterCTA({
       const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
       const s = Math.floor((diff % (1000 * 60)) / 1000);
       
-      if (d > 0) {
-        setCountdownText(`${d}d ${h}h`);
-      } else {
-        setCountdownText(`${h}h ${m}m ${s}s`);
-      }
+      setCountdown({ d, h, m, s });
     };
 
     updateCountdown();
@@ -98,13 +94,39 @@ export function RegisterCTA({
         targetHref = "/register";
       } else {
         if (isFoundingFamily) {
-          currentText = `Founding Pass Active • Opens in ${countdownText || "July 15"}`;
+          // Handled separately below in return block
+          targetHref = "/founding-families";
         } else {
           currentText = "Become a Founding Family";
+          targetHref = "/founding-families";
         }
-        targetHref = "/founding-families";
       }
     }
+  }
+
+  // If a registered Founding Family is viewing the site before launch, show premium multi-line timer
+  if (mounted && !isRegistrationOpen && isFoundingFamily && !isAuthenticated) {
+    const countdownClasses = appliedClasses
+      .replace("inline-flex", "flex")
+      .replace("items-center", "items-center flex-col justify-center py-2.5")
+      .replace("gap-2", "gap-1");
+
+    return (
+      <Link href="/founding-families" className={countdownClasses} onClick={onClick}>
+        <span className="text-[9px] uppercase tracking-widest text-slate-200/90 font-bold block leading-tight">
+          Registration Opens In
+        </span>
+        <span className="text-sm font-black tracking-wider font-mono flex items-center gap-1.5 leading-none mt-1">
+          <span>{String(countdown.d).padStart(2, "0")}</span>
+          <span className="opacity-40 animate-pulse">:</span>
+          <span>{String(countdown.h).padStart(2, "0")}</span>
+          <span className="opacity-40 animate-pulse">:</span>
+          <span>{String(countdown.m).padStart(2, "0")}</span>
+          <span className="opacity-40 animate-pulse">:</span>
+          <span className="text-amber-400">{String(countdown.s).padStart(2, "0")}</span>
+        </span>
+      </Link>
+    );
   }
 
   return (
@@ -115,4 +137,5 @@ export function RegisterCTA({
     </Link>
   );
 }
+
 
