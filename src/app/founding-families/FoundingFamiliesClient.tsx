@@ -377,17 +377,17 @@ export default function FoundingFamiliesClient() {
       ctx.restore();
     }
 
-    // Seal bottom arc text
-    const bottomLabel = "FOUNDING EDITION 2026";
-    const bCharCount = bottomLabel.length;
-    const bStartAngle = Math.PI * 0.1;
-    const bTotalArc = Math.PI * 0.8;
-    for (let i = 0; i < bCharCount; i++) {
-      const charAngle = bStartAngle + (bTotalArc / (bCharCount - 1)) * i;
-      ctx.save();
-      ctx.rotate(charAngle - Math.PI / 2);
-      ctx.fillText(bottomLabel[i], -3, arcRadius);
-      ctx.restore();
+    // Decorative bottom tick marks (instead of upside-down arc text)
+    const tickCount = 7;
+    for (let i = 0; i < tickCount; i++) {
+      const tAngle = Math.PI * 0.25 + (Math.PI * 0.5 / (tickCount - 1)) * i;
+      const outer = 56, inner = i === 3 ? 46 : 51;
+      ctx.beginPath();
+      ctx.moveTo(Math.cos(tAngle) * outer, Math.sin(tAngle) * outer);
+      ctx.lineTo(Math.cos(tAngle) * inner, Math.sin(tAngle) * inner);
+      ctx.strokeStyle = i === 3 ? "rgba(245,158,11,0.5)" : "rgba(245,158,11,0.2)";
+      ctx.lineWidth = i === 3 ? 1.2 : 0.7;
+      ctx.stroke();
     }
     ctx.restore();
 
@@ -749,15 +749,25 @@ export default function FoundingFamiliesClient() {
                       <circle cx="50" cy="50" r="37" fill="none" stroke="rgba(245,158,11,0.14)" strokeWidth="0.6"/>
                       <defs>
                         <path id="cArc" d="M 8,50 A 42,42 0 0,1 92,50"/>
-                        <path id="cArcB" d="M 14,56 A 37,37 0 0,0 86,56"/>
                       </defs>
                       <text fontSize="7" fill="rgba(245,158,11,0.65)" fontFamily="Arial" letterSpacing="1.2">
                         <textPath href="#cArc" startOffset="2%">COURAGE NATIONAL TALENT SEARCH</textPath>
                       </text>
-                      <text fontSize="6.5" fill="rgba(245,158,11,0.48)" fontFamily="Arial" letterSpacing="1">
-                        <textPath href="#cArcB" startOffset="10%">FOUNDING EDITION 2026</textPath>
-                      </text>
+                      {/* Decorative bottom ticks */}
+                      {[0.28, 0.35, 0.42, 0.5, 0.58, 0.65, 0.72].map((f, i) => {
+                        const a = Math.PI * f;
+                        const outer = 44, inner = i === 3 ? 36 : 40;
+                        return (
+                          <line key={i}
+                            x1={(50 + Math.cos(a) * outer).toFixed(2)} y1={(50 + Math.sin(a) * outer).toFixed(2)}
+                            x2={(50 + Math.cos(a) * inner).toFixed(2)} y2={(50 + Math.sin(a) * inner).toFixed(2)}
+                            stroke={i === 3 ? "rgba(245,158,11,0.5)" : "rgba(245,158,11,0.22)"}
+                            strokeWidth={i === 3 ? "1.2" : "0.7"}
+                          />
+                        );
+                      })}
                     </svg>
+
                     <div className="text-center z-10 relative">
                       <div className="text-[13px] sm:text-[15px] font-bold" style={{ color: "rgba(245,158,11,0.88)", fontFamily: "Georgia, serif" }}>CNTS</div>
                       <div className="text-[6px] font-medium tracking-[3px] mt-0.5" style={{ color: "rgba(255,255,255,0.25)" }}>2026</div>
