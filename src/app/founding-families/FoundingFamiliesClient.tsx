@@ -117,265 +117,316 @@ export default function FoundingFamiliesClient() {
     }
   };
 
-  /* Canvas card download — Rich Creative Redesign */
+  /* Canvas card download — Premium Credential Redesign */
   const downloadCard = () => {
     if (!canvasRef.current || !submitted) return;
     const cvs = canvasRef.current, ctx = cvs.getContext("2d");
     if (!ctx) return;
 
-    const W = 950, H = 550;
+    const W = 1040, H = 580;
     cvs.width = W; cvs.height = H;
+    const SPLIT = 590; // Left panel ends here
+    const PAD = 52;
 
-    // ── Background gradient ──────────────────────────────────
-    const bg = ctx.createLinearGradient(0, 0, W, H);
-    bg.addColorStop(0,   "#060a16");
-    bg.addColorStop(0.5, "#0b122c");
-    bg.addColorStop(1,   "#070b1c");
-    ctx.fillStyle = bg;
-    ctx.fillRect(0, 0, W, H);
+    // ─── Card Base ─────────────────────────────────────────────────
+    ctx.fillStyle = "#05080f";
+    roundRect(ctx, 0, 0, W, H, 20);
+    ctx.fill();
 
-    // ── Grid blueprint bg pattern (24px grids) ────────────────
-    ctx.strokeStyle = "rgba(255, 255, 255, 0.015)";
-    ctx.lineWidth = 0.8;
-    for (let x = 0; x < W; x += 24) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-    for (let y = 0; y < H; y += 24) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
+    // ─── Right Panel: Security Pattern Background ──────────────────
+    ctx.save();
+    ctx.beginPath();
+    // Clip to right panel with diagonal left edge
+    ctx.moveTo(SPLIT + 40, 0);
+    ctx.lineTo(W, 0);
+    ctx.lineTo(W, H);
+    ctx.lineTo(SPLIT - 40, H);
+    ctx.closePath();
+    ctx.clip();
 
-    // ── Radial glows ──────────────────────────────────────────
-    const glow1 = ctx.createRadialGradient(W - 100, 100, 0, W - 100, 100, 400);
-    glow1.addColorStop(0,   "rgba(99,102,241,0.22)");
-    glow1.addColorStop(0.5, "rgba(59,130,246,0.08)");
-    glow1.addColorStop(1,   "transparent");
-    ctx.fillStyle = glow1;
-    ctx.fillRect(0, 0, W, H);
+    // Right panel bg — slightly lighter deep navy
+    ctx.fillStyle = "#0a0f1e";
+    ctx.fillRect(SPLIT - 40, 0, W - SPLIT + 40, H);
 
-    const glow2 = ctx.createRadialGradient(100, H - 100, 0, 100, H - 100, 350);
-    glow2.addColorStop(0,   "rgba(245,158,11,0.09)");
-    glow2.addColorStop(1,   "transparent");
-    ctx.fillStyle = glow2;
-    ctx.fillRect(0, 0, W, H);
-
-    // ── Concentric wave/radar lines (Brainwaves) ──────────────
-    const cx = W - 160, cy = H / 2 - 20;
-    ctx.strokeStyle = "rgba(255,255,255,0.02)";
-    ctx.lineWidth = 1;
-    for (let r = 80; r <= 320; r += 40) {
+    // Guilloche — concentric sinusoidal wave pattern (security print)
+    ctx.lineWidth = 0.6;
+    for (let row = 0; row < 28; row++) {
+      const yBase = (H / 28) * row + H / 56;
       ctx.beginPath();
-      ctx.arc(cx, cy, r, 0, Math.PI * 2);
+      const amp = 4 + (row % 3) * 2;
+      const freq = 0.035 + (row % 5) * 0.005;
+      for (let x = SPLIT - 40; x <= W; x += 2) {
+        const y = yBase + Math.sin(x * freq + row * 0.8) * amp;
+        x === SPLIT - 40 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+      }
+      // Alternating amber and white for security-print feel
+      const alpha = 0.04 + (row % 4 === 0 ? 0.03 : 0);
+      ctx.strokeStyle = row % 6 === 0
+        ? `rgba(245,158,11,${alpha + 0.02})`
+        : `rgba(255,255,255,${alpha})`;
       ctx.stroke();
     }
 
-    // ── Outer border ─────────────────────────────────────────
-    ctx.strokeStyle = "rgba(255,255,255,0.07)";
-    ctx.lineWidth = 1.2;
-    roundRect(ctx, 16, 16, W - 32, H - 32, 18);
+    // Rosette: concentric rings at center-right
+    const rx = SPLIT + (W - SPLIT) / 2 + 10, ry = H / 2;
+    for (let ring = 3; ring <= 22; ring++) {
+      ctx.beginPath();
+      ctx.arc(rx, ry, ring * 11, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(245,158,11,${ring % 4 === 0 ? 0.06 : 0.025})`;
+      ctx.lineWidth = ring % 4 === 0 ? 0.8 : 0.4;
+      ctx.stroke();
+    }
+
+    // Star-burst lines from rosette center
+    for (let i = 0; i < 24; i++) {
+      const angle = (Math.PI * 2 / 24) * i;
+      ctx.beginPath();
+      ctx.moveTo(rx + Math.cos(angle) * 30, ry + Math.sin(angle) * 30);
+      ctx.lineTo(rx + Math.cos(angle) * 200, ry + Math.sin(angle) * 200);
+      ctx.strokeStyle = "rgba(245,158,11,0.04)";
+      ctx.lineWidth = 0.5;
+      ctx.stroke();
+    }
+
+    ctx.restore();
+
+    // ─── Diagonal Divider Line ─────────────────────────────────────
+    const divGrad = ctx.createLinearGradient(SPLIT - 40, 0, SPLIT - 40, H);
+    divGrad.addColorStop(0, "rgba(245,158,11,0.0)");
+    divGrad.addColorStop(0.2, "rgba(245,158,11,0.5)");
+    divGrad.addColorStop(0.8, "rgba(245,158,11,0.5)");
+    divGrad.addColorStop(1, "rgba(245,158,11,0.0)");
+    ctx.strokeStyle = divGrad;
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(SPLIT + 40, 0);
+    ctx.lineTo(SPLIT - 40, H);
     ctx.stroke();
 
-    // ── Gold top bar ──────────────────────────────────────────
-    const gold = ctx.createLinearGradient(0, 0, W, 0);
-    gold.addColorStop(0,   "#9a3412");
-    gold.addColorStop(0.3, "#f59e0b");
-    gold.addColorStop(0.6, "#fef08a");
-    gold.addColorStop(1,   "#b45309");
-    ctx.fillStyle = gold;
-    roundRect(ctx, 0, 0, W, 6, { tl: 0, tr: 0, br: 0, bl: 0 });
+    // ─── Gold Foil Top Strip ───────────────────────────────────────
+    const foil = ctx.createLinearGradient(0, 0, W, 0);
+    foil.addColorStop(0,    "#7c2d12");
+    foil.addColorStop(0.15, "#d97706");
+    foil.addColorStop(0.35, "#fef3c7");
+    foil.addColorStop(0.5,  "#fbbf24");
+    foil.addColorStop(0.65, "#fef3c7");
+    foil.addColorStop(0.85, "#d97706");
+    foil.addColorStop(1,    "#92400e");
+    ctx.fillStyle = foil;
+    roundRect(ctx, 0, 0, W, 5, { tl: 20, tr: 20, br: 0, bl: 0 });
     ctx.fill();
 
-    // ── Left vertical bar ─────────────────────────────────────
-    const leftBar = ctx.createLinearGradient(0, 80, 0, H - 80);
-    leftBar.addColorStop(0,   "transparent");
-    leftBar.addColorStop(0.5, "rgba(245,158,11,0.5)");
-    leftBar.addColorStop(1,   "transparent");
-    ctx.fillStyle = leftBar;
-    ctx.fillRect(36, 80, 2.5, H - 160);
+    // ─── Outer Border ──────────────────────────────────────────────
+    ctx.strokeStyle = "rgba(245,158,11,0.2)";
+    ctx.lineWidth = 1;
+    roundRect(ctx, 0.5, 0.5, W - 1, H - 1, 20);
+    ctx.stroke();
 
-    // ── PRIMARY BRAND: Courage National Talent Search ──────────
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 16px sans-serif";
-    ctx.letterSpacing = "2.5px";
-    ctx.fillText("COURAGE NATIONAL TALENT SEARCH", 58, 68);
+    // ─── LEFT PANEL CONTENT ───────────────────────────────────────
+
+    // Brand name — small, tracked, dignified
+    ctx.fillStyle = "rgba(255,255,255,0.5)";
+    ctx.font = "600 9px 'Helvetica Neue', Arial, sans-serif";
+    ctx.letterSpacing = "3px";
+    ctx.fillText("COURAGE NATIONAL TALENT SEARCH", PAD, 58);
+
+    ctx.fillStyle = "rgba(245,158,11,0.6)";
+    ctx.font = "500 8px Arial, sans-serif";
+    ctx.letterSpacing = "2px";
+    ctx.fillText("FOUNDING EDITION 2026", PAD, 76);
     ctx.letterSpacing = "0px";
 
-    ctx.fillStyle = "rgba(255,255,255,0.45)";
-    ctx.font = "700 8px sans-serif";
-    ctx.letterSpacing = "1.5px";
-    ctx.fillText("A PROGRAM BY COURAGE LIBRARY  ·  FOUNDING EDITION 2026", 58, 86);
-    ctx.letterSpacing = "0px";
-
-    // Divider
-    const sep = ctx.createLinearGradient(58, 0, W - 240, 0);
-    sep.addColorStop(0,   "rgba(245,158,11,0.5)");
-    sep.addColorStop(0.7, "rgba(245,158,11,0.1)");
-    sep.addColorStop(1,   "transparent");
-    ctx.strokeStyle = sep;
+    // Thin amber rule
+    const rule1 = ctx.createLinearGradient(PAD, 0, SPLIT - 80, 0);
+    rule1.addColorStop(0, "rgba(245,158,11,0.7)");
+    rule1.addColorStop(1, "rgba(245,158,11,0.0)");
+    ctx.strokeStyle = rule1;
     ctx.lineWidth = 0.8;
-    ctx.beginPath(); ctx.moveTo(58, 102); ctx.lineTo(W - 240, 102); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(PAD, 90); ctx.lineTo(SPLIT - 80, 90); ctx.stroke();
 
-    // ── Title ─────────────────────────────────────────────────
-    const titleGrad = ctx.createLinearGradient(58, 0, 500, 0);
-    titleGrad.addColorStop(0, "#fef08a");
-    titleGrad.addColorStop(0.5, "#fbbf24");
-    titleGrad.addColorStop(1, "#d97706");
-    ctx.fillStyle = titleGrad;
-    ctx.font = "800 28px sans-serif";
-    ctx.fillText("FOUNDING FAMILY MEMBER", 58, 150);
+    // ─── TITLE: Founding Family Member ────────────────────────────
+    // Subtle amber glow behind title text
+    const titleGlow = ctx.createRadialGradient(PAD + 200, 155, 0, PAD + 200, 155, 220);
+    titleGlow.addColorStop(0, "rgba(245,158,11,0.08)");
+    titleGlow.addColorStop(1, "transparent");
+    ctx.fillStyle = titleGlow;
+    ctx.fillRect(PAD, 100, 450, 100);
 
-    ctx.fillStyle = "rgba(255,255,255,0.25)";
-    ctx.font = "9px sans-serif";
-    ctx.fillText("SINCE JULY 2026  ·  OFFICIAL PRE-LAUNCH INVITATIONAL ASSURANCE PASS", 58, 170);
+    // Title line 1 — large word with gold gradient fill
+    const titleFill = ctx.createLinearGradient(PAD, 130, PAD + 500, 175);
+    titleFill.addColorStop(0,   "#fef3c7");
+    titleFill.addColorStop(0.3, "#fbbf24");
+    titleFill.addColorStop(0.7, "#f59e0b");
+    titleFill.addColorStop(1,   "#d97706");
+    ctx.fillStyle = titleFill;
+    ctx.font = "300 42px 'Georgia', serif";
+    ctx.fillText("Founding", PAD, 148);
+    ctx.font = "700 42px 'Georgia', serif";
+    ctx.fillText("Family Member", PAD, 195);
 
-    // Main center divider
+    // Small italic tagline
+    ctx.fillStyle = "rgba(255,255,255,0.22)";
+    ctx.font = "italic 10px 'Georgia', serif";
+    ctx.fillText("Since July 2026  ·  Pre-Launch Invitational Pass", PAD, 216);
+
+    // ─── Thin rule 2 ───────────────────────────────────────────────
     ctx.strokeStyle = "rgba(255,255,255,0.06)";
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(58, 198); ctx.lineTo(W - 240, 198); ctx.stroke();
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(PAD, 234); ctx.lineTo(SPLIT - 80, 234); ctx.stroke();
 
-    // ── Member Column ─────────────────────────────────────────
-    ctx.fillStyle = "rgba(148,163,184,0.6)";
-    ctx.font = "700 9px sans-serif";
-    ctx.fillText("REGISTERED MEMBER", 58, 238);
+    // ─── MEMBER NAME BLOCK ─────────────────────────────────────────
+    ctx.fillStyle = "rgba(245,158,11,0.55)";
+    ctx.font = "600 7.5px Arial, sans-serif";
+    ctx.letterSpacing = "3px";
+    ctx.fillText("REGISTERED MEMBER", PAD, 262);
+    ctx.letterSpacing = "0px";
 
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 32px sans-serif";
-    ctx.fillText(submitted.parentName.toUpperCase(), 58, 276);
+    // Name — large, dignified, mixed case
+    const name = submitted.parentName
+      .split(" ")
+      .map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+      .join(" ");
+    ctx.fillStyle = "#f8fafc";
+    ctx.font = "700 38px 'Georgia', serif";
+    ctx.fillText(name, PAD, 305);
 
-    // ID Pill Box
-    ctx.fillStyle = "rgba(16,185,129,0.07)";
-    roundRect(ctx, 56, 298, 260, 44, 8);
+    // ─── Thin rule 3 ───────────────────────────────────────────────
+    ctx.strokeStyle = "rgba(255,255,255,0.05)";
+    ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(PAD, 325); ctx.lineTo(SPLIT - 80, 325); ctx.stroke();
+
+    // ─── Family ID + Status row ────────────────────────────────────
+    // ID block
+    ctx.fillStyle = "rgba(16,185,129,0.08)";
+    roundRect(ctx, PAD - 2, 340, 230, 56, 8);
     ctx.fill();
-    ctx.strokeStyle = "rgba(16,185,129,0.22)";
-    ctx.lineWidth = 1;
-    roundRect(ctx, 56, 298, 260, 44, 8);
+    ctx.strokeStyle = "rgba(16,185,129,0.18)";
+    ctx.lineWidth = 0.8;
+    roundRect(ctx, PAD - 2, 340, 230, 56, 8);
     ctx.stroke();
 
-    ctx.fillStyle = "rgba(52,211,153,0.55)";
-    ctx.font = "700 8px sans-serif";
-    ctx.fillText("FAMILY ID", 70, 314);
+    ctx.fillStyle = "rgba(52,211,153,0.5)";
+    ctx.font = "600 7px Arial, sans-serif";
+    ctx.letterSpacing = "2.5px";
+    ctx.fillText("FAMILY ID", PAD + 10, 357);
+    ctx.letterSpacing = "0px";
 
     ctx.fillStyle = "#34d399";
-    ctx.font = "bold 20px monospace";
-    ctx.fillText(submitted.familyId, 70, 335);
+    ctx.font = "700 19px 'Courier New', monospace";
+    ctx.fillText(submitted.familyId, PAD + 10, 382);
 
-    // ── Benefits Checklist Column (Fills Center Blank Space) ──
-    const bx_start = 360, by_start = 230;
-    ctx.fillStyle = "rgba(245,158,11,0.75)";
-    ctx.font = "700 9px sans-serif";
-    ctx.letterSpacing = "1.5px";
-    ctx.fillText("UNLOCKED PRIVILEGES", bx_start, by_start);
+    // Validity block (right of ID)
+    ctx.fillStyle = "rgba(148,163,184,0.4)";
+    ctx.font = "600 7px Arial, sans-serif";
+    ctx.letterSpacing = "2px";
+    ctx.fillText("VALID FOR", PAD + 255, 357);
     ctx.letterSpacing = "0px";
 
-    const privileges = [
-      "✔  COGNITIVE APTITUDE MAPPING REPORT (VALUE ₹999)",
-      "✔  PRIORITY REGISTRATION SEAT ASSURED (JULY 15)",
-      "✔  ZERO-QUEUE ENROLLMENT ON SITE LAUNCH",
-      "✔  FREE REASONING STUDY PRACTICE KIT"
-    ];
-    ctx.font = "bold 10px sans-serif";
-    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
-    for (let i = 0; i < privileges.length; i++) {
-      ctx.fillText(privileges[i], bx_start, by_start + 24 + i * 22);
-    }
+    ctx.fillStyle = "rgba(255,255,255,0.75)";
+    ctx.font = "700 12px 'Helvetica Neue', Arial, sans-serif";
+    ctx.fillText("CNTS 2026", PAD + 255, 373);
 
-    // ── Valid Box (Fills Center-Bottom Space) ────────────────
-    ctx.fillStyle = "rgba(148,163,184,0.4)";
-    ctx.font = "8px sans-serif";
-    ctx.fillText("STATUS ASSURANCE", 58, 382);
-    ctx.fillStyle = "#ffffff";
-    ctx.font = "bold 12px sans-serif";
-    ctx.fillText("FIRST COHORT PRIORITY GUARANTEE", 58, 398);
-    ctx.fillStyle = "rgba(148,163,184,0.4)";
-    ctx.font = "8px sans-serif";
-    ctx.fillText("VALID FOR THE OFFICIAL FOUNDING EDITION 2026 REGISTRATION ONLY", 58, 412);
+    ctx.fillStyle = "rgba(148,163,184,0.35)";
+    ctx.font = "500 8.5px Arial, sans-serif";
+    ctx.fillText("Priority · First Access", PAD + 255, 388);
 
-    // ── Barcode area (Fills Bottom-Right Blank Space) ────────
-    const barX = W - 280, barY = 380, barW = 220, barH = 34;
-    ctx.fillStyle = "rgba(255,255,255,0.06)";
-    roundRect(ctx, barX - 10, barY - 10, barW + 20, barH + 34, 6);
+    // ─── Micro fine-print assurance text ──────────────────────────
+    ctx.fillStyle = "rgba(148,163,184,0.22)";
+    ctx.font = "400 7.5px Arial, sans-serif";
+    ctx.fillText("This pass guarantees priority access to the Founding Edition 2026 registration.", PAD, 430);
+    ctx.fillText("Non-transferable. Valid for one registered family only.", PAD, 444);
+
+    // ─── RIGHT PANEL: CNTS Seal ────────────────────────────────────
+    const sx = rx, sy = ry;
+
+    // Outer seal ring
+    ctx.beginPath();
+    ctx.arc(sx, sy, 68, 0, Math.PI * 2);
+    const sealRingGrad = ctx.createRadialGradient(sx, sy, 44, sx, sy, 68);
+    sealRingGrad.addColorStop(0, "rgba(245,158,11,0.0)");
+    sealRingGrad.addColorStop(0.7, "rgba(245,158,11,0.12)");
+    sealRingGrad.addColorStop(1, "rgba(245,158,11,0.25)");
+    ctx.fillStyle = sealRingGrad;
     ctx.fill();
-
-    // Draw barcode lines
-    ctx.fillStyle = "rgba(255,255,255,0.45)";
-    let curX = barX;
-    const barcodeWidths = [2, 1, 3, 1, 4, 1, 2, 3, 1, 4, 2, 2, 1, 3, 4, 1, 2, 1, 3, 1, 4, 2, 1, 3, 2, 2, 4, 1, 2, 3, 1, 4];
-    for (let i = 0; i < barcodeWidths.length; i++) {
-      const w = barcodeWidths[i];
-      ctx.fillRect(curX, barY, w, barH);
-      curX += w + (i % 3 === 0 ? 3 : 1);
-      if (curX >= barX + barW) break;
-    }
-    ctx.fillStyle = "rgba(255,255,255,0.35)";
-    ctx.font = "bold 9px monospace";
-    ctx.textAlign = "center";
-    ctx.fillText(submitted.familyId, barX + barW / 2, barY + barH + 16);
-    ctx.textAlign = "left";
-
-    // ── Hexagon Emblem (Right-Center) ─────────────────────────
-    const hx = W - 160, hy = H / 2 - 50, hr = 64;
-    ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-      const angle = (Math.PI / 3) * i - Math.PI / 6;
-      const px = hx + hr * Math.cos(angle);
-      const py = hy + hr * Math.sin(angle);
-      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-    }
-    ctx.closePath();
     ctx.strokeStyle = "rgba(245,158,11,0.35)";
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.2;
     ctx.stroke();
 
+    // Inner seal ring
     ctx.beginPath();
-    for (let i = 0; i < 6; i++) {
-      const angle = (Math.PI / 3) * i - Math.PI / 6;
-      const px = hx + (hr - 10) * Math.cos(angle);
-      const py = hy + (hr - 10) * Math.sin(angle);
-      i === 0 ? ctx.moveTo(px, py) : ctx.lineTo(px, py);
-    }
-    ctx.closePath();
-    ctx.strokeStyle = "rgba(245,158,11,0.12)";
+    ctx.arc(sx, sy, 52, 0, Math.PI * 2);
+    ctx.strokeStyle = "rgba(245,158,11,0.18)";
+    ctx.lineWidth = 0.7;
     ctx.stroke();
 
-    ctx.fillStyle = "rgba(245,158,11,0.8)";
-    ctx.font = "bold 13px sans-serif";
+    // Seal text along top arc
+    ctx.save();
+    ctx.translate(sx, sy);
+    const sealLabel = "COURAGE NATIONAL TALENT SEARCH";
+    const charCount = sealLabel.length;
+    const arcRadius = 58;
+    const startAngle = -Math.PI * 0.75;
+    const totalArc = Math.PI * 1.15;
+    ctx.font = "600 6.5px Arial, sans-serif";
+    ctx.fillStyle = "rgba(245,158,11,0.65)";
+    for (let i = 0; i < charCount; i++) {
+      const charAngle = startAngle + (totalArc / (charCount - 1)) * i;
+      ctx.save();
+      ctx.rotate(charAngle + Math.PI / 2);
+      ctx.fillText(sealLabel[i], -3, -arcRadius);
+      ctx.restore();
+    }
+
+    // Seal bottom arc text
+    const bottomLabel = "FOUNDING EDITION 2026";
+    const bCharCount = bottomLabel.length;
+    const bStartAngle = Math.PI * 0.1;
+    const bTotalArc = Math.PI * 0.8;
+    for (let i = 0; i < bCharCount; i++) {
+      const charAngle = bStartAngle + (bTotalArc / (bCharCount - 1)) * i;
+      ctx.save();
+      ctx.rotate(charAngle - Math.PI / 2);
+      ctx.fillText(bottomLabel[i], -3, arcRadius);
+      ctx.restore();
+    }
+    ctx.restore();
+
+    // CNTS center text
     ctx.textAlign = "center";
-    ctx.fillText("CNTS", hx, hy - 4);
-    ctx.font = "bold 9px sans-serif";
-    ctx.fillStyle = "rgba(255,255,255,0.35)";
-    ctx.fillText("STARTER", hx, hy + 10);
+    ctx.fillStyle = "rgba(245,158,11,0.9)";
+    ctx.font = "700 22px 'Georgia', serif";
+    ctx.fillText("CNTS", sx, sy + 8);
+    ctx.fillStyle = "rgba(255,255,255,0.25)";
+    ctx.font = "500 8px Arial, sans-serif";
+    ctx.letterSpacing = "3px";
+    ctx.fillText("2026", sx, sy + 26);
+    ctx.letterSpacing = "0px";
     ctx.textAlign = "left";
 
-    // ── Dot matrix decorative grids ──────────────────────────
-    ctx.fillStyle = "rgba(255,255,255,0.03)";
-    for (let r = 0; r < 8; r++) {
-      for (let c = 0; c < 12; c++) {
-        ctx.beginPath();
-        ctx.arc(W - 280 + c * 20, 48 + r * 20, 1.8, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
+    // ─── Bottom holographic strip ──────────────────────────────────
+    const holo = ctx.createLinearGradient(0, H - 22, W, H - 22);
+    holo.addColorStop(0,    "rgba(0,0,0,0)");
+    holo.addColorStop(0.08, "rgba(139,92,246,0.4)");
+    holo.addColorStop(0.22, "rgba(59,130,246,0.5)");
+    holo.addColorStop(0.38, "rgba(16,185,129,0.45)");
+    holo.addColorStop(0.5,  "rgba(245,158,11,0.55)");
+    holo.addColorStop(0.62, "rgba(239,68,68,0.35)");
+    holo.addColorStop(0.78, "rgba(139,92,246,0.4)");
+    holo.addColorStop(0.92, "rgba(59,130,246,0.3)");
+    holo.addColorStop(1,    "rgba(0,0,0,0)");
+    ctx.fillStyle = holo;
+    ctx.fillRect(0, H - 22, W, 22);
 
-    // ── Holographic shimmer strip — bottom ──────────────────────
-    const shimmer = ctx.createLinearGradient(0, H - 28, W, H - 28);
-    shimmer.addColorStop(0,    "rgba(99,102,241,0.0)");
-    shimmer.addColorStop(0.15, "rgba(167,139,250,0.35)");
-    shimmer.addColorStop(0.35, "rgba(96,165,250,0.5)");
-    shimmer.addColorStop(0.5,  "rgba(52,211,153,0.4)");
-    shimmer.addColorStop(0.65, "rgba(251,191,36,0.5)");
-    shimmer.addColorStop(0.85, "rgba(239,68,68,0.3)");
-    shimmer.addColorStop(1,    "rgba(99,102,241,0.0)");
-    ctx.fillStyle = shimmer;
-    ctx.fillRect(0, H - 28, W, 28);
-
-    ctx.fillStyle = "rgba(255,255,255,0.12)";
-    ctx.font = "7px sans-serif";
+    // Footer micro text
+    ctx.fillStyle = "rgba(255,255,255,0.1)";
+    ctx.font = "400 7px Arial, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("COURAGE NATIONAL TALENT SEARCH (CNTS)  ·  FOUNDING EDITION 2026  ·  thecouragelibrary.com", W / 2, H - 10);
+    ctx.fillText("CNTS · FOUNDING EDITION 2026 · thecouragelibrary.com · Non-transferable credential", W / 2, H - 7);
     ctx.textAlign = "left";
 
     const url = cvs.toDataURL("image/png");
     const a = document.createElement("a");
-    a.download = `CNTS-Pass-${submitted.familyId}.png`;
+    a.download = `CNTS-Founding-Pass-${submitted.familyId}.png`;
     a.href = url; a.click();
   };
 
@@ -652,116 +703,139 @@ export default function FoundingFamiliesClient() {
         {/* Form — shown FIRST on mobile via order, sticky on desktop */}
         <div className="lg:col-span-2 lg:sticky lg:top-24 space-y-4 order-first lg:order-last">
 
-          {/* Live preview card — Premium pass design */}
-          <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl relative" style={{ background: "linear-gradient(135deg, #060a16 0%, #0b122c 60%, #070b1c 100%)" }}>
+          {/* Live preview card — Premium two-panel credential */}
+          <div className="rounded-2xl overflow-hidden shadow-2xl relative select-none" style={{ background: "#05080f", border: "1px solid rgba(245,158,11,0.18)" }}>
 
-            {/* Grid blueprint bg lines effect */}
-            <div className="absolute inset-0 opacity-[0.02] pointer-events-none" style={{
-              backgroundImage: "linear-gradient(to right, #fff 1px, transparent 1px), linear-gradient(to bottom, #fff 1px, transparent 1px)",
-              backgroundSize: "20px 20px"
-            }} />
+            {/* Gold foil top strip */}
+            <div className="h-[5px] w-full" style={{ background: "linear-gradient(90deg, #7c2d12, #d97706, #fef3c7, #fbbf24, #fef3c7, #d97706, #92400e)" }} />
 
-            {/* Gold top bar */}
-            <div className="h-1.5 w-full relative z-10" style={{ background: "linear-gradient(90deg, #9a3412, #f59e0b, #fef08a, #b45309)" }} />
+            {/* Two-panel body */}
+            <div className="flex min-h-[230px] sm:min-h-[270px] relative overflow-hidden">
 
-            <div className="p-5 relative overflow-hidden z-10">
+              {/* RIGHT PANEL — guilloche security pattern */}
+              <div className="absolute right-0 top-0 bottom-0 w-[40%] overflow-hidden" style={{ background: "#0a0f1e" }}>
+                <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 200 270">
+                  {Array.from({ length: 22 }, (_, i) => {
+                    const y = (270 / 22) * i + 6;
+                    const amp = 3 + (i % 3) * 2;
+                    const freq = 0.04 + (i % 5) * 0.006;
+                    const d = Array.from({ length: 100 }, (_, j) => {
+                      const x = j * 2;
+                      const py = y + Math.sin(x * freq + i * 0.8) * amp;
+                      return `${j === 0 ? "M" : "L"}${x},${py.toFixed(2)}`;
+                    }).join(" ");
+                    return <path key={i} d={d} fill="none"
+                      stroke={i % 6 === 0 ? "rgba(245,158,11,0.14)" : "rgba(255,255,255,0.055)"}
+                      strokeWidth={i % 4 === 0 ? "0.8" : "0.45"} />;
+                  })}
+                  {[65, 53, 41, 29, 17].map(r => (
+                    <circle key={r} cx="100" cy="135" r={r} fill="none"
+                      stroke={r === 65 ? "rgba(245,158,11,0.1)" : "rgba(245,158,11,0.04)"} strokeWidth="0.5" />
+                  ))}
+                  {Array.from({ length: 16 }, (_, i) => {
+                    const a = (Math.PI * 2 / 16) * i;
+                    return <line key={i}
+                      x1={(100 + Math.cos(a) * 14).toFixed(1)} y1={(135 + Math.sin(a) * 14).toFixed(1)}
+                      x2={(100 + Math.cos(a) * 68).toFixed(1)} y2={(135 + Math.sin(a) * 68).toFixed(1)}
+                      stroke="rgba(245,158,11,0.04)" strokeWidth="0.4" />;
+                  })}
+                </svg>
 
-              {/* Dot matrix bg */}
-              <div className="absolute top-0 right-0 w-48 h-32 opacity-[0.07]" style={{
-                backgroundImage: "radial-gradient(circle, #fff 1px, transparent 1px)",
-                backgroundSize: "16px 16px"
-              }} />
-
-              {/* Radial glow */}
-              <div className="absolute top-0 right-0 w-40 h-40 rounded-full blur-3xl" style={{ background: "rgba(99,102,241,0.18)" }} />
-
-              {/* Top row — brand + hex emblem */}
-              <div className="flex items-start justify-between relative">
-                <div>
-                  <p className="text-white font-bold text-[10px] sm:text-xs tracking-[0.12em] uppercase">COURAGE NATIONAL TALENT SEARCH</p>
-                  <p className="text-blue-400 text-[8px] font-bold tracking-widest uppercase mt-0.5">A PROGRAM BY COURAGE LIBRARY · FOUNDING EDITION</p>
-                </div>
-                {/* Hex emblem */}
-                <div className="w-9 h-9 shrink-0 flex items-center justify-center" style={{
-                  clipPath: "polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)",
-                  background: "linear-gradient(135deg, rgba(245,158,11,0.22), rgba(245,158,11,0.06))",
-                  border: "1px solid rgba(245,158,11,0.25)"
-                }}>
-                  <span className="text-[7px] font-black text-amber-400 tracking-tight leading-none text-center">CNTS<br/>2026</span>
-                </div>
-              </div>
-
-              {/* Gold divider */}
-              <div className="mt-3 mb-3 h-px" style={{ background: "linear-gradient(90deg, rgba(245,158,11,0.5), transparent)" }} />
-
-              {/* Title & Name */}
-              <div>
-                <p className="text-[8px] font-bold uppercase tracking-widest" style={{ color: "rgba(245,158,11,0.8)" }}>Founding Family Member</p>
-                <p className="font-display font-black text-white text-base sm:text-lg mt-0.5 truncate uppercase tracking-wide">
-                  {parentName.trim() || "Your Name Here..."}
-                </p>
-                <p className="text-[8px] mt-0.5" style={{ color: "rgba(255,255,255,0.2)" }}>SINCE JULY 2026 · OFFICIAL INVITATIONAL ASSURANCE PASS</p>
-              </div>
-
-              {/* Unlocked Privileges Box (Fills center blank space) */}
-              <div className="mt-4 space-y-1.5 text-[9px] font-semibold text-slate-300 bg-white/[0.03] border border-white/5 rounded-xl p-3 relative z-20">
-                <p className="text-[8px] font-bold text-amber-400 tracking-widest uppercase mb-1">UNLOCKED PRIVILEGES</p>
-                <p className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">✔</span> Cognitive Aptitude Mapping (Value ₹999)
-                </p>
-                <p className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">✔</span> Priority Registration Seat Assured (July 15)
-                </p>
-                <p className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">✔</span> Zero-Queue Enrollment on Launch
-                </p>
-              </div>
-
-              {/* Divider */}
-              <div className="mt-4 mb-3.5 h-px bg-white/5" />
-
-              {/* Bottom row — ID + Barcode */}
-              <div className="flex items-end justify-between gap-3">
-                <div className="rounded-lg px-3 py-2 border" style={{ background: "rgba(16,185,129,0.07)", borderColor: "rgba(16,185,129,0.2)" }}>
-                  <p className="text-[7px] font-bold uppercase tracking-widest" style={{ color: "rgba(52,211,153,0.55)" }}>Family ID</p>
-                  <p className="text-xs font-black font-mono text-emerald-400 tracking-wider">
-                    CNTS-FF-XXXXX
-                  </p>
-                </div>
-                {/* Mock barcode */}
-                <div className="flex flex-col items-end opacity-60">
-                  <div className="flex items-center gap-[1px] h-6 bg-white/10 px-1 py-0.5 rounded border border-white/5">
-                    <div className="w-[1px] h-full bg-white" />
-                    <div className="w-[3px] h-full bg-white" />
-                    <div className="w-[1px] h-full bg-white" />
-                    <div className="w-[2px] h-full bg-white" />
-                    <div className="w-[1px] h-full bg-white" />
-                    <div className="w-[4px] h-full bg-white" />
-                    <div className="w-[1px] h-full bg-white" />
-                    <div className="w-[2px] h-full bg-white" />
-                    <div className="w-[3px] h-full bg-white" />
-                    <div className="w-[1px] h-full bg-white" />
-                    <div className="w-[2px] h-full bg-white" />
+                {/* CNTS Seal */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="relative w-[72px] h-[72px] sm:w-[84px] sm:h-[84px] flex items-center justify-center">
+                    <svg viewBox="0 0 100 100" className="absolute inset-0 w-full h-full">
+                      <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(245,158,11,0.28)" strokeWidth="0.9"/>
+                      <circle cx="50" cy="50" r="37" fill="none" stroke="rgba(245,158,11,0.14)" strokeWidth="0.6"/>
+                      <defs>
+                        <path id="cArc" d="M 8,50 A 42,42 0 0,1 92,50"/>
+                        <path id="cArcB" d="M 14,56 A 37,37 0 0,0 86,56"/>
+                      </defs>
+                      <text fontSize="7" fill="rgba(245,158,11,0.65)" fontFamily="Arial" letterSpacing="1.2">
+                        <textPath href="#cArc" startOffset="2%">COURAGE NATIONAL TALENT SEARCH</textPath>
+                      </text>
+                      <text fontSize="6.5" fill="rgba(245,158,11,0.48)" fontFamily="Arial" letterSpacing="1">
+                        <textPath href="#cArcB" startOffset="10%">FOUNDING EDITION 2026</textPath>
+                      </text>
+                    </svg>
+                    <div className="text-center z-10 relative">
+                      <div className="text-[13px] sm:text-[15px] font-bold" style={{ color: "rgba(245,158,11,0.88)", fontFamily: "Georgia, serif" }}>CNTS</div>
+                      <div className="text-[6px] font-medium tracking-[3px] mt-0.5" style={{ color: "rgba(255,255,255,0.25)" }}>2026</div>
+                    </div>
                   </div>
-                  <p className="text-[7px] font-mono text-white/40 mt-1 uppercase tracking-wider">
-                    CNTS-FF-XXXXX
-                  </p>
                 </div>
               </div>
 
-              {/* Holographic shimmer strip */}
-              <div className="mt-4 h-1 w-full rounded-full" style={{
-                background: "linear-gradient(90deg, rgba(167,139,250,0.6), rgba(96,165,250,0.6), rgba(52,211,153,0.6), rgba(251,191,36,0.6), rgba(239,68,68,0.4))"
+              {/* Diagonal divider */}
+              <div className="absolute top-0 bottom-0 pointer-events-none" style={{
+                right: "calc(40% - 1px)",
+                width: "1px",
+                background: "linear-gradient(to bottom, transparent 0%, rgba(245,158,11,0.45) 20%, rgba(245,158,11,0.45) 80%, transparent 100%)",
               }} />
 
+              {/* LEFT PANEL */}
+              <div className="w-[62%] p-4 sm:p-5 flex flex-col justify-between relative z-10 gap-3">
+
+                {/* Brand */}
+                <div>
+                  <p className="text-[8px] sm:text-[9px] font-semibold tracking-[0.2em] uppercase" style={{ color: "rgba(255,255,255,0.48)" }}>
+                    Courage National Talent Search
+                  </p>
+                  <p className="text-[7px] font-medium tracking-[0.15em] uppercase mt-0.5" style={{ color: "rgba(245,158,11,0.58)" }}>
+                    Founding Edition 2026
+                  </p>
+                  <div className="mt-2.5 h-px" style={{ background: "linear-gradient(90deg, rgba(245,158,11,0.55), transparent)" }} />
+                </div>
+
+                {/* Title */}
+                <div>
+                  <p className="text-[10px] font-light leading-none" style={{ color: "#fef3c7", fontFamily: "Georgia, serif" }}>Founding</p>
+                  <p className="text-sm sm:text-[15px] font-bold leading-tight mt-0.5" style={{ color: "#fbbf24", fontFamily: "Georgia, serif" }}>
+                    Family Member
+                  </p>
+                  <p className="text-[7px] italic mt-1" style={{ color: "rgba(255,255,255,0.18)", fontFamily: "Georgia, serif" }}>
+                    Since July 2026 · Pre-Launch Pass
+                  </p>
+                </div>
+
+                {/* Member name */}
+                <div>
+                  <p className="text-[7px] font-semibold tracking-[0.22em] uppercase mb-1" style={{ color: "rgba(245,158,11,0.52)" }}>
+                    Registered Member
+                  </p>
+                  <p className="text-sm sm:text-base font-bold truncate" style={{ color: "#f8fafc", fontFamily: "Georgia, serif" }}>
+                    {parentName.trim()
+                      ? parentName.split(" ").map((w: string) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ")
+                      : <span style={{ color: "rgba(255,255,255,0.18)", fontStyle: "italic" }}>Your Name Here…</span>
+                    }
+                  </p>
+
+                  <div className="mt-2.5 h-px" style={{ background: "rgba(255,255,255,0.05)" }} />
+
+                  {/* Family ID */}
+                  <div className="mt-2 inline-flex flex-col rounded-lg px-2.5 py-1.5" style={{ background: "rgba(16,185,129,0.07)", border: "1px solid rgba(16,185,129,0.17)" }}>
+                    <span className="text-[6.5px] font-semibold tracking-[0.22em] uppercase" style={{ color: "rgba(52,211,153,0.5)" }}>Family ID</span>
+                    <span className="text-[11px] sm:text-xs font-bold font-mono mt-0.5" style={{ color: "#34d399" }}>
+                      CNTS-FF-XXXXX
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <div className="px-5 py-2.5 border-t" style={{ background: "rgba(255,255,255,0.02)", borderColor: "rgba(255,255,255,0.06)" }}>
-              <p className="text-[9px] font-medium" style={{ color: "rgba(255,255,255,0.35)" }}>
-                {submitted ? "✓ Your dynamic pass is ready for download above" : "← Your name appears on the pass as you type"}
+            {/* Holographic strip */}
+            <div className="h-[6px] w-full" style={{
+              background: "linear-gradient(90deg, transparent 0%, rgba(139,92,246,0.5) 10%, rgba(59,130,246,0.55) 25%, rgba(16,185,129,0.5) 40%, rgba(245,158,11,0.6) 55%, rgba(239,68,68,0.4) 70%, rgba(139,92,246,0.45) 85%, transparent 100%)"
+            }} />
+
+            {/* Footer */}
+            <div className="px-4 py-2" style={{ background: "rgba(255,255,255,0.015)", borderTop: "1px solid rgba(255,255,255,0.04)" }}>
+              <p className="text-[8px] font-medium" style={{ color: "rgba(255,255,255,0.28)" }}>
+                ← Your name appears on the pass as you type
               </p>
             </div>
           </div>
+
 
           {/* Form card */}
           <div className="card-primary space-y-5">
