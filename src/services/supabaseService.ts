@@ -537,12 +537,19 @@ export async function saveFoundingFamily(data: FoundingFamilyInput): Promise<{ s
     let nextNum = 342; // Fallback initial counter
     
     if (hasSupabaseConfig) {
-      const { count, error: countErr } = await db
+      // Use MAX family_id to avoid collisions when rows are deleted
+      const { data: maxRow } = await db
         .from("founding_families")
-        .select("*", { count: "exact", head: true });
-      
-      if (!countErr && count !== null) {
-        nextNum = 342 + count;
+        .select("family_id")
+        .order("family_id", { ascending: false })
+        .limit(1);
+
+      if (maxRow && maxRow.length > 0) {
+        // Parse the numeric suffix from e.g. "CNTS-FF-00343"
+        const lastNum = parseInt(maxRow[0].family_id.replace("CNTS-FF-", ""), 10);
+        nextNum = isNaN(lastNum) ? 343 : lastNum + 1;
+      } else {
+        nextNum = 342; // First ever registration
       }
     } else {
       if (typeof window !== "undefined") {
