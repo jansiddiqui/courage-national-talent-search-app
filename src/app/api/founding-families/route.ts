@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
     if (!dbResult.success) {
       return NextResponse.json(
-        { success: false, error: "Failed to register. Please try again." },
+        { success: false, error: dbResult.error ?? "Failed to register. Please try again." },
         { status: 500 }
       );
     }

@@ -532,7 +532,7 @@ interface FoundingFamilyInput {
   parentEmail: string;
 }
 
-export async function saveFoundingFamily(data: FoundingFamilyInput): Promise<{ success: boolean; familyId: string }> {
+export async function saveFoundingFamily(data: FoundingFamilyInput): Promise<{ success: boolean; familyId: string; error?: string }> {
   try {
     let nextNum = 342; // Fallback initial counter
     
@@ -569,7 +569,7 @@ export async function saveFoundingFamily(data: FoundingFamilyInput): Promise<{ s
       
       if (error) {
         console.error("Supabase founding_families insert failed:", error);
-        return { success: false, familyId: "" };
+        return { success: false, familyId: "", error: error.message ?? JSON.stringify(error) };
       }
     } else {
       console.log("Supabase not configured. Simulated founding family save:", recordToInsert);
@@ -577,8 +577,9 @@ export async function saveFoundingFamily(data: FoundingFamilyInput): Promise<{ s
 
     return { success: true, familyId };
   } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
     console.error("saveFoundingFamily error:", err);
-    return { success: false, familyId: "" };
+    return { success: false, familyId: "", error: msg };
   }
 }
 
