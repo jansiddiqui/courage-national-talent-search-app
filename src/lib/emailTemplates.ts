@@ -297,59 +297,7 @@ export function getCertificateTemplate(studentName: string, candidateId: string)
 
 export function getFoundingFamilyTemplate(parentName: string, familyId: string): string {
   const content = `
-    <!-- Hero welcome -->
-    <!-- Hero welcome — Two-Panel Credential Card -->
-    <div style="text-align:center; padding: 10px 0 25px;">
-      <div style="display:inline-block; background: #05080f; border: 1px solid rgba(245,158,11,0.18); border-radius:16px; overflow:hidden; width:100%; max-width:480px; box-sizing:border-box; text-align: left;">
-        
-        <!-- Gold foil top strip -->
-        <div style="height:5px; background: linear-gradient(90deg, #7c2d12, #d97706, #fef3c7, #fbbf24, #fef3c7, #d97706, #92400e);"></div>
-        
-        <!-- Two-Panel Table -->
-        <table style="width: 100%; border-collapse: collapse; background: #05080f;" cellpadding="0" cellspacing="0">
-          <tr>
-            <!-- LEFT PANEL (Info) -->
-            <td style="width: 62%; padding: 18px 16px 18px 20px; vertical-align: middle;">
-              <p style="margin:0 0 2px; color:rgba(255,255,255,0.45); font-size:7.5px; font-weight:600; text-transform:uppercase; letter-spacing:1.5px; font-family: Arial, sans-serif;">Courage National Talent Search</p>
-              <p style="margin:0 0 10px; color:rgba(245,158,11,0.5); font-size:7px; font-weight:600; text-transform:uppercase; letter-spacing:1.2px; font-family: Arial, sans-serif;">Founding Edition 2026</p>
-              
-              <div style="margin: 0 0 8px;">
-                <span style="color:#fef3c7; font-family: Georgia, serif; font-size:9.5px; font-style:italic; display:block; line-height:1;">Founding</span>
-                <span style="color:#fbbf24; font-family: Georgia, serif; font-size:14.5px; font-weight:bold; display:block; line-height:1.1; margin-top:2px;">Family Member</span>
-              </div>
-              
-              <p style="margin:0 0 3px; color:rgba(245,158,11,0.48); font-size:6.5px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; font-family: Arial, sans-serif;">Registered Member</p>
-              <p style="margin:0 0 10px; color:#f8fafc; font-family: Georgia, serif; font-size:15px; font-weight:bold; line-height:1.2;">
-                ${parentName.split(" ").map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(" ")}
-              </p>
-              
-              <!-- Family ID Pill -->
-              <div style="display:inline-block; background:rgba(16,185,129,0.07); border:1px solid rgba(16,185,129,0.17); border-radius:6px; padding:4px 10px;">
-                <span style="color:rgba(52,211,153,0.5); font-size:6px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; font-family: Arial, sans-serif; display:block;">Family ID</span>
-                <span style="color:#34d399; font-size:11px; font-weight:bold; font-family: monospace; letter-spacing:1.5px; margin-top:1px; display:block;">${familyId}</span>
-              </div>
-            </td>
 
-            <!-- VERTICAL DIVIDER -->
-            <td style="width: 1px; background: linear-gradient(to bottom, transparent, rgba(245,158,11,0.3) 20%, rgba(245,158,11,0.3) 80%, transparent);"></td>
-
-            <!-- RIGHT PANEL (Seal) -->
-            <td style="width: 37%; padding: 18px 16px; text-align: center; vertical-align: middle; background: #0a0f1e;">
-              <!-- CNTS Seal -->
-              <div style="display:inline-block; width: 72px; height: 72px; border: 1px solid rgba(245,158,11,0.22); border-radius: 50%; text-align: center; vertical-align: middle; background: rgba(245,158,11,0.02); position: relative;">
-                <div style="padding-top: 18px;">
-                  <span style="color: rgba(245,158,11,0.85); font-family: Georgia, serif; font-size: 14px; font-weight: bold; display: block; line-height: 1.1;">CNTS</span>
-                  <span style="color: rgba(255,255,255,0.2); font-family: Arial, sans-serif; font-size: 6px; font-weight: 500; letter-spacing: 2px; display: block; margin-top: 3px; text-transform: uppercase;">2026</span>
-                </div>
-              </div>
-            </td>
-          </tr>
-        </table>
-
-        <!-- Holographic strip -->
-        <div style="height:5px; background: linear-gradient(90deg, rgba(139,92,246,0.5) 10%, rgba(59,130,246,0.55) 25%, rgba(16,185,129,0.5) 40%, rgba(245,158,11,0.6) 55%, rgba(239,68,68,0.4) 70%, rgba(139,92,246,0.45) 85%);"></div>
-      </div>
-    </div>
 
 
     <h2 style="margin:0 0 8px; color:#0f172a; font-size:22px; font-weight:800;">You're officially a Founding Family! 🎉</h2>
