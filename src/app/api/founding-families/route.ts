@@ -33,15 +33,23 @@ export async function POST(request: Request) {
       );
     }
 
-    // Dispatch WhatsApp (non-blocking — never fail the request)
+    // Dispatch WhatsApp (non-blocking)
     whatsappService
       .sendFoundingFamilyWelcome(mobileNumber, parentName, dbResult.familyId)
-      .catch((e) => console.error("[founding-families] WhatsApp failed:", e));
+      .then((ok) => {
+        if (ok) console.log(`[founding-families] ✅ WhatsApp sent to ${mobileNumber}`);
+        else    console.error(`[founding-families] ❌ WhatsApp FAILED for ${mobileNumber} — check template name & token`);
+      })
+      .catch((e) => console.error("[founding-families] WhatsApp exception:", e));
 
-    // Dispatch Email (non-blocking — never fail the request)
+    // Dispatch Email (non-blocking)
     emailService
       .sendFoundingFamilyEmail(parentEmail, parentName, dbResult.familyId)
-      .catch((e) => console.error("[founding-families] Email failed:", e));
+      .then((ok) => {
+        if (ok) console.log(`[founding-families] ✅ Email sent to ${parentEmail}`);
+        else    console.error(`[founding-families] ❌ Email FAILED for ${parentEmail} — check Brevo API key & sender domain`);
+      })
+      .catch((e) => console.error("[founding-families] Email exception:", e));
 
     return NextResponse.json({ success: true, familyId: dbResult.familyId });
   } catch (err: unknown) {
