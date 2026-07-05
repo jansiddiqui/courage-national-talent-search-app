@@ -28,6 +28,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/terms",
     "/refund",
     "/data-deletion",
+    "/academy",
+    "/academy/reasoning",
+    "/academy/mathematics",
+    "/academy/language",
+    "/academy/critical",
+    "/founding-families",
+    "/blog",
   ];
 
   const staticSitemaps = staticRoutes.map((route) => ({

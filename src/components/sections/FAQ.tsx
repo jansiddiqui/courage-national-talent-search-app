@@ -25,7 +25,7 @@ const faqs = [
   },
   {
     q: "Can my child prepare for CNTS? Is there a syllabus?",
-    a: "Yes. CNTS releases a detailed syllabus, 5 sample papers, and video guidance — all free on the platform. The best preparation is understanding reasoning concepts, not memorizing facts.",
+    a: "Yes. CNTS provides a detailed syllabus and an interactive Learning Academy — all free on the platform. The Academy includes bilingual lessons, flashcard drills, and solved examples across Reasoning, Mathematics, Language, and Critical Thinking. The best preparation is understanding reasoning concepts, not memorizing facts.",
   },
   {
     q: "How is this different from other talent searches?",

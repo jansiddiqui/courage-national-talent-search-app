@@ -229,7 +229,7 @@ export default function ContactPage() {
                 <div className="space-y-1">
                   <h3 className="font-display font-bold text-white text-base">For School Partners</h3>
                   <p className="text-xs text-slate-300 leading-relaxed">
-                    Interested in conducting the Courage National Talent Search diagnostic at your school? We offer custom coordination, offline OMR options, and school-wide comparison matrices.
+                    Interested in conducting the Courage National Talent Search diagnostic at your school? We offer custom coordination, flexible online school-wide setups, and comprehensive comparison matrices.
                   </p>
                 </div>
                 <p className="text-[10px] text-amber-400 font-bold bg-amber-500/10 border border-amber-500/20 px-2.5 py-1.5 rounded-lg inline-block">

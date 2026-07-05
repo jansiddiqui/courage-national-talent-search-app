@@ -295,62 +295,107 @@ export function getCertificateTemplate(studentName: string, candidateId: string)
 }
 
 
+function getFoundingFamilyFooter(): string {
+  return `
+    <div style="padding: 30px 40px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
+      <h3 style="margin: 0 0 5px; color: #0f172a; font-size: 16px; font-weight: 700;">Courage National Talent Search (CNTS)</h3>
+      <p style="margin: 0 0 20px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Talent Discovery Auditing</p>
+      
+      <div style="margin-bottom: 20px; font-size: 14px;">
+        <a href="${WEBSITE_URL}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Website</a> | 
+        <a href="mailto:support@thecouragelibrary.com" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Support</a>
+      </div>
+      
+      <p style="margin: 0; color: #94a3b8; font-size: 12px;">You are receiving this email because you registered as a Founding Family.</p>
+    </div>
+  `;
+}
+
+function wrapFoundingFamilyLayout(content: string, preheader: string = ""): string {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>CNTS Notification</title>
+    </head>
+    <body style="margin: 0; padding: 20px; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+      <div style="display: none; max-height: 0px; overflow: hidden; mso-hide: all; font-size: 0; line-height: 0;">
+        ${preheader}
+      </div>
+      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+        ${getHeader()}
+        <div style="padding: 40px;">
+          ${content}
+        </div>
+        ${getFoundingFamilyFooter()}
+      </div>
+    </body>
+    </html>
+  `;
+}
+
 export function getFoundingFamilyTemplate(parentName: string, familyId: string): string {
   const content = `
-
-
-
-    <h2 style="margin:0 0 8px; color:#0f172a; font-size:22px; font-weight:800;">You're officially a Founding Family! 🎉</h2>
-    <p style="margin:0 0 24px; color:#334155; font-size:16px; line-height:1.7;">Dear <strong>${parentName}</strong>, your spot in the <strong>CNTS Founding Families</strong> program has been confirmed. You are among the first parents to support a new way of discovering children's true potential.</p>
+    <h2 style="margin:0 0 12px; color:#0f172a; font-size:22px; font-weight:800; font-family: Georgia, serif; line-height: 1.2;">You are officially a Founding Family.</h2>
+    <p style="margin:0 0 24px; color:#334155; font-size:15px; line-height:1.6;">Dear <strong>${parentName}</strong>, your spot in the <strong>CNTS Founding Families</strong> program has been confirmed. You are among the first parents to support a new way of discovering children's true potential.</p>
 
     <!-- ID highlight box -->
-    <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-left:4px solid #10b981; border-radius:8px; padding:20px 24px; margin-bottom:24px;">
-      <p style="margin:0 0 4px; color:#059669; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px;">Your Founding Family ID</p>
-      <p style="margin:0; color:#065f46; font-size:28px; font-weight:900; font-family:monospace; letter-spacing:2px;">${familyId}</p>
-      <p style="margin:6px 0 0; color:#6b7280; font-size:12px;">Keep this ID safe — it is your priority access token for CNTS 2026 registration.</p>
+    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-left:4px solid #1e40af; border-radius:8px; padding:20px 24px; margin-bottom:28px;">
+      <p style="margin:0 0 4px; color:#64748b; font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; font-family: Arial, sans-serif;">Your Founding Family ID</p>
+      <p style="margin:0; color:#0f172a; font-size:28px; font-weight:900; font-family:monospace; letter-spacing:2px;">${familyId}</p>
+      <p style="margin:6px 0 0; color:#64748b; font-size:12px; line-height: 1.5;">Keep this ID safe — it is your priority access token for CNTS 2026 registration.</p>
     </div>
 
     <!-- What happens next -->
-    <h3 style="margin:0 0 16px; color:#0f172a; font-size:16px; font-weight:700;">What happens next</h3>
-    <table style="width:100%; border-collapse:collapse; margin-bottom:24px;">
-      <tr>
-        <td style="padding:12px 16px; background:#f8fafc; border-radius:8px 8px 0 0; border-bottom:1px solid #e2e8f0; vertical-align:top; width:40px;">
-          <span style="font-size:20px;">📲</span>
-        </td>
-        <td style="padding:12px 16px; background:#f8fafc; border-radius:8px 8px 0 0; border-bottom:1px solid #e2e8f0; vertical-align:top;">
-          <p style="margin:0 0 2px; color:#0f172a; font-size:14px; font-weight:700;">WhatsApp Priority Alert — 15 July 2026</p>
-          <p style="margin:0; color:#64748b; font-size:13px;">At 10:00 AM, you will receive a direct registration link via WhatsApp before the general public.</p>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:12px 16px; background:#f8fafc; border-bottom:1px solid #e2e8f0; vertical-align:top;">
-          <span style="font-size:20px;">📚</span>
-        </td>
-        <td style="padding:12px 16px; background:#f8fafc; border-bottom:1px solid #e2e8f0; vertical-align:top;">
-          <p style="margin:0 0 2px; color:#0f172a; font-size:14px; font-weight:700;">Free Reasoning Worksheets</p>
-          <p style="margin:0; color:#64748b; font-size:13px;">Practice sets for Classes 5–8 will be emailed to you shortly.</p>
-        </td>
-      </tr>
-      <tr>
-        <td style="padding:12px 16px; background:#f8fafc; border-radius:0 0 8px 8px; vertical-align:top;">
-          <span style="font-size:20px;">🏆</span>
-        </td>
-        <td style="padding:12px 16px; background:#f8fafc; border-radius:0 0 8px 8px; vertical-align:top;">
-          <p style="margin:0 0 2px; color:#0f172a; font-size:14px; font-weight:700;">Priority Registration Slot</p>
-          <p style="margin:0; color:#64748b; font-size:13px;">Slots are capped. Founding Families get first access — no queue, no waiting.</p>
-        </td>
-      </tr>
-    </table>
+    <h3 style="margin:0 0 20px; color:#0f172a; font-size:16px; font-weight:700; font-family: Georgia, serif;">What happens next</h3>
+    
+    <div style="margin-bottom: 24px;">
+      <!-- Step 1 -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+        <tr>
+          <td style="width: 40px; vertical-align: top; padding-right: 12px;">
+            <div style="font-family: monospace; font-size: 14px; font-weight: bold; color: #1e40af; background: #eff6ff; border-radius: 4px; width: 28px; height: 28px; line-height: 28px; text-align: center;">01</div>
+          </td>
+          <td style="vertical-align: top;">
+            <h4 style="margin: 0 0 4px; color: #0f172a; font-size: 14px; font-weight: 700;">WhatsApp Priority Alert — 15 July 2026</h4>
+            <p style="margin: 0; color: #64748b; font-size: 13px; line-height: 1.5;">At 10:00 AM, you will receive a direct registration link via WhatsApp before the general public.</p>
+          </td>
+        </tr>
+      </table>
 
-    <!-- CTA -->
-    <div style="text-align:center; margin:30px 0;">
-      <a href="https://www.thecouragelibrary.com/founding-families" style="display:inline-block; background:#1e40af; color:#ffffff; padding:14px 32px; text-decoration:none; border-radius:8px; font-weight:700; font-size:15px; letter-spacing:0.5px;">View Your Founding Pass</a>
+      <!-- Step 2 -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+        <tr>
+          <td style="width: 40px; vertical-align: top; padding-right: 12px;">
+            <div style="font-family: monospace; font-size: 14px; font-weight: bold; color: #1e40af; background: #eff6ff; border-radius: 4px; width: 28px; height: 28px; line-height: 28px; text-align: center;">02</div>
+          </td>
+          <td style="vertical-align: top;">
+            <h4 style="margin: 0 0 4px; color: #0f172a; font-size: 14px; font-weight: 700;">Free Reasoning Worksheets</h4>
+            <p style="margin: 0; color: #64748b; font-size: 13px; line-height: 1.5;">Practice sets for Classes 5–8 will be emailed to you shortly.</p>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Step 3 -->
+      <table style="width: 100%; border-collapse: collapse; margin-bottom: 16px;">
+        <tr>
+          <td style="width: 40px; vertical-align: top; padding-right: 12px;">
+            <div style="font-family: monospace; font-size: 14px; font-weight: bold; color: #1e40af; background: #eff6ff; border-radius: 4px; width: 28px; height: 28px; line-height: 28px; text-align: center;">03</div>
+          </td>
+          <td style="vertical-align: top;">
+            <h4 style="margin: 0 0 4px; color: #0f172a; font-size: 14px; font-weight: 700;">Priority Registration Slot</h4>
+            <p style="margin: 0; color: #64748b; font-size: 13px; line-height: 1.5;">Slots are capped. Founding Families get first access — no queue, no waiting.</p>
+          </td>
+        </tr>
+      </table>
     </div>
 
     <!-- No spam note -->
-    <div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:8px; padding:16px 20px; margin-top:8px; text-align:center;">
-      <p style="margin:0; color:#94a3b8; font-size:12px; line-height:1.6;">🔒 No spam, ever. You will only hear from us when registration opens (July 15) and for critical exam timeline updates. You can unsubscribe at any time.</p>
+    <div style="background:#fafafa; border:1px solid #e2e8f0; border-radius:8px; padding:16px 20px; margin-top:20px; text-align:center;">
+      <p style="margin:0; color:#94a3b8; font-size:12px; line-height:1.6;">No spam, ever. You will only hear from us when registration opens (July 15) and for critical exam timeline updates. You can unsubscribe at any time.</p>
     </div>
   `;
-  return wrapLayout(content, `Welcome to CNTS Founding Families, ${parentName}! Your Family ID is ${familyId}.`);
+  return wrapFoundingFamilyLayout(content, `Welcome to CNTS Founding Families, ${parentName}. Your Family ID is ${familyId}.`);
 }

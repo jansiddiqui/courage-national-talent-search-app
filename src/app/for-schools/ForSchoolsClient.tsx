@@ -228,8 +228,8 @@ Remarks: ${formData.message || "None provided"}
             {
               Icon: MapPin,
               color: "text-amber-600 bg-amber-50 border-amber-100",
-              title: "No-Cost Center Hosting",
-              desc: "Host the OMR-based offline test right in your classrooms. We provide complete testing materials, guidelines, and OMR packets at zero cost."
+              title: "Flexible Online Hosting",
+              desc: "Host the online assessment right in your computer labs or classrooms. We provide complete institutional setups and technical guidelines at zero cost."
             },
             {
               Icon: ShieldCheck,

@@ -1,18 +1,26 @@
 import { Clock, BookOpen, Monitor, CalendarDays, FileQuestion, Languages } from "lucide-react";
 import { TIMELINE_LABELS } from "@/config/timeline";
+import { 
+  EXAM_DOMAINS, 
+  EXAM_MODE,
+  SUB_JUNIOR_QUESTIONS,
+  JUNIOR_QUESTIONS,
+  SUB_JUNIOR_DURATION,
+  JUNIOR_DURATION
+} from "@/config/exam";
 
 const subjects = [
-  { name: "Mental Ability", topics: "Logical Reasoning, Analogy, Series, Pattern", weight: "40%" },
-  { name: "Language & Reading", topics: "Comprehension, Vocabulary, Grammar", weight: "25%" },
-  { name: "Mathematics", topics: "Arithmetic, Geometry, Data, Problem Solving", weight: "20%" },
-  { name: "General Awareness", topics: "Science, Environment, Current Affairs, India GK", weight: "15%" },
+  { name: EXAM_DOMAINS[0].name, topics: "Logical Reasoning, Analogy, Series, Spatial Pattern", weight: "25%" },
+  { name: EXAM_DOMAINS[1].name, topics: "Conceptual Arithmetic, Number Logic, Patterns", weight: "25%" },
+  { name: EXAM_DOMAINS[2].name, topics: "Reading Comprehension, Vocabulary, Sentence Logic", weight: "25%" },
+  { name: EXAM_DOMAINS[3].name, topics: "Critical Reasoning, Cause & Effect, Information Synthesis", weight: "25%" },
 ];
 
 const getExamCards = () => [
-  { icon: FileQuestion, label: "Total Questions", value: "100 MCQs", color: "text-blue-700 bg-blue-50" },
-  { icon: Clock, label: "Duration", value: "2.5 Hours", color: "text-amber-700 bg-amber-50" },
+  { icon: FileQuestion, label: "Total Questions", value: `${SUB_JUNIOR_QUESTIONS} / ${JUNIOR_QUESTIONS} MCQs`, color: "text-blue-700 bg-blue-50" },
+  { icon: Clock, label: "Duration", value: `${SUB_JUNIOR_DURATION} / ${JUNIOR_DURATION}`, color: "text-amber-700 bg-amber-50" },
   { icon: Languages, label: "Medium", value: "Hindi & English", color: "text-emerald-700 bg-emerald-50" },
-  { icon: Monitor, label: "Mode", value: "Online + OMR", color: "text-purple-700 bg-purple-50" },
+  { icon: Monitor, label: "Mode", value: EXAM_MODE, color: "text-purple-700 bg-purple-50" },
   { icon: CalendarDays, label: "Exam Date", value: TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', ''), color: "text-rose-700 bg-rose-50" },
   { icon: BookOpen, label: "Eligible Classes", value: "5, 6, 7 & 8", color: "text-cyan-700 bg-cyan-50" },
 ];

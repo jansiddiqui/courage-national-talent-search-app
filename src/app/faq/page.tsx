@@ -67,7 +67,7 @@ const faqs: FAQItem[] = [
   {
     category: "exam",
     q: "What is the mode of the exam? Is it online or offline?",
-    a: "Both modes are supported. Students can take the online exam from home using any computer, tablet, or smartphone (no webcam required), or partner schools can organize on-campus assessments.",
+    a: "The assessment is conducted 100% online. Students can take the test from home using any computer, tablet, or smartphone (no webcam required) during their allocated slot.",
   },
   {
     category: "exam",
@@ -82,7 +82,7 @@ const faqs: FAQItem[] = [
   {
     category: "exam",
     q: "How many questions are in the exam, and what is the duration?",
-    a: "The exam consists of 60 multiple-choice questions (MCQs) to be answered in 120 minutes (2 hours). The questions are divided into Reasoning, Math Logic, Language, and Science Application.",
+    a: "The structure is tailored by class category: for Classes 5 & 6 (Sub-Junior), it consists of 60 MCQs to be answered in 75 minutes. For Classes 7 & 8 (Junior), it consists of 80 MCQs to be answered in 90 minutes. Questions are split equally (25% each) across our 4 cognitive domains.",
   },
   {
     category: "exam",
@@ -144,7 +144,7 @@ const faqs: FAQItem[] = [
   {
     category: "results",
     q: "How are national rankings calculated?",
-    a: "Students are evaluated within their specific classes. Ranks are determined by class percentile scores. Separate rankings (podiums) are maintained for the Junior (Classes 5-6) and Senior (Classes 7-8) divisions.",
+    a: "Students are evaluated within their specific classes. Ranks are determined by class percentile scores. Separate rankings (podiums) are maintained for the Sub-Junior (Classes 5-6) and Junior (Classes 7-8) categories.",
   },
   {
     category: "results",
@@ -165,7 +165,7 @@ const faqs: FAQItem[] = [
   {
     category: "support",
     q: "Is there a syllabus or study material provided?",
-    a: "Yes. After registering, parents can download sample question papers configured for their child's class directly from the success screen. Full study syllabus outlines are available on the portal.",
+    a: "Yes. All registered candidates receive immediate, unlimited access to the CNTS Learning Academy, which features interactive lessons, flashcard drills, and solved practice sets across all four cognitive domains.",
   },
   {
     category: "support",

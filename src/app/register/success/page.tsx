@@ -126,7 +126,7 @@ export default function SuccessPage() {
     ? "Sub-Junior Talent Category (Class 5–6)" 
     : "Junior Talent Category (Class 7–8)";
     
-  const samplePaperPath = `/sample-papers/class${regDetails.studentClass}.pdf`;
+
 
   return (
     <main className="min-h-screen mesh-bg py-12 px-6 flex flex-col justify-center items-center">
@@ -327,19 +327,18 @@ export default function SuccessPage() {
             {[
               {
                 step: 1,
-                title: "Download Sample Question Paper",
-                desc: "Immediately practice with mock questions configured for Class " + regDetails.studentClass + ".",
+                title: "Start Preparing in the Learning Academy",
+                desc: "Immediately access interactive bilingual lessons, flashcard drills, and solved examples across all exam domains for Class " + regDetails.studentClass + ".",
                 badge: "Immediate Action",
                 badgeColor: "bg-blue-50 text-blue-700 border-blue-200",
                 action: (
-                  <a
-                    href={samplePaperPath}
-                    download={`CNTS_Class${regDetails.studentClass}_Sample_Paper.pdf`}
+                  <Link
+                    href="/academy"
                     className="inline-flex items-center gap-2 mt-3 px-5 py-2.5 bg-blue-700 text-white text-sm font-bold rounded-xl hover:bg-blue-600 shadow-lg shadow-blue-700/20 transition-all cursor-pointer"
                   >
-                    <Download size={14} />
-                    Download Class {regDetails.studentClass} Paper
-                  </a>
+                    <Sparkles size={14} className="animate-pulse" />
+                    Enter Learning Academy
+                  </Link>
                 )
               },
               {
@@ -415,14 +414,13 @@ export default function SuccessPage() {
             <Download size={14} />
             Print Payment Receipt
           </a>
-          <a
-            href={samplePaperPath}
-            download={`CNTS_Class${regDetails.studentClass}_Sample_Paper.pdf`}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-white text-slate-700 hover:bg-slate-50 rounded-2xl text-sm font-semibold border border-slate-200 shadow-sm transition-all cursor-pointer text-center"
+          <Link
+            href="/academy"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-sm font-semibold shadow-lg shadow-blue-500/10 transition-all cursor-pointer text-center"
           >
-            <Download size={14} />
-            Download Sample Paper
-          </a>
+            <Sparkles size={14} className="animate-pulse" />
+            Enter Learning Academy
+          </Link>
         </div>
 
       </div>

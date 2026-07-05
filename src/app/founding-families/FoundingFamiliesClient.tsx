@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { ArrowRight, Check, Download, HelpCircle, ChevronDown, Sparkles, BookOpen, MessageSquare, ShieldCheck, Clock, Award, Star, Zap, Brain, Trophy } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -537,24 +538,27 @@ export default function FoundingFamiliesClient() {
           </div>
         </div>
 
-        {/* Free worksheets */}
+        {/* CNTS Learning Academy */}
         <div className="card-primary space-y-4">
           <div className="flex items-center gap-3">
             <div className="w-9 h-9 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-700 shrink-0">
-              <BookOpen size={18} />
+              <Award size={18} />
             </div>
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Unlocked For You</p>
-              <h2 className="font-display font-bold text-lg text-slate-900">Free Reasoning Worksheets</h2>
+              <p className="text-xs font-bold uppercase tracking-widest text-blue-600">Access Granted</p>
+              <h2 className="font-display font-bold text-lg text-slate-900">CNTS Learning Academy</h2>
             </div>
           </div>
+          <p className="text-xs text-slate-500 max-w-xl leading-relaxed">
+            Start preparation for the national exam inside the interactive Learning Academy. Access bilingually explained reasoning, arithmetic, grammar, and critical logic path modules.
+          </p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             {[5, 6, 7, 8].map(cls => (
-              <a key={cls} href={`/sample-papers/class${cls}.pdf`} download
+              <Link key={cls} href="/academy"
                 className="card-data flex flex-col items-center gap-2 text-center hover:border-blue-200 hover:bg-blue-50/20 group transition-all">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 font-mono">Class {cls}</span>
-                <span className="text-xs font-bold text-slate-700 group-hover:text-blue-700 transition-colors">Download PDF</span>
-              </a>
+                <span className="text-xs font-bold text-slate-700 group-hover:text-blue-700 transition-colors">Start Practice</span>
+              </Link>
             ))}
           </div>
         </div>

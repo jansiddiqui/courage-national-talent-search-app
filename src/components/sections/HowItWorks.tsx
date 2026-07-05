@@ -7,40 +7,40 @@ const steps = [
     icon: UserPlus,
     step: "Register",
     title: "Sign up in 3 minutes",
-    desc: "Parents register their child with basic details. Choose class level, preferred language, and exam mode (online or OMR).",
+    desc: "Parents register their child with basic details. Choose class level and preferred language medium (English or Hindi).",
     color: "text-blue-700 bg-blue-50",
     connector: "bg-blue-200",
   },
   {
     icon: BookOpen,
     step: "Prepare",
-    title: "Free prep resources",
-    desc: "Access CNTS practice sets, sample papers, and video walkthroughs — all free. Understand the exam pattern deeply.",
-    color: "text-amber-700 bg-amber-50",
-    connector: "bg-amber-200",
+    title: "Interactive Learning Academy",
+    desc: "Access the CNTS Learning Academy — bilingual interactive lessons, flashcard drills, and solved examples across Reasoning, Mathematics, Language, and Critical Thinking.",
+    color: "text-indigo-700 bg-indigo-50",
+    connector: "bg-indigo-200",
   },
   {
     icon: ClipboardList,
     step: "Appear",
     title: "Take the exam",
-    desc: "Sit for the 2.5-hour assessment from home or at your nearest CNTS exam center. No stress, fair evaluation.",
-    color: "text-emerald-700 bg-emerald-50",
-    connector: "bg-emerald-200",
+    desc: "Take the 75 or 90-minute online assessment comfortably from home during your allocated slot. No stress, authentic evaluation.",
+    color: "text-sky-700 bg-sky-50",
+    connector: "bg-sky-200",
   },
   {
     icon: BarChart2,
     step: "Discover",
     title: "Receive your Talent Profile",
     desc: "Within 21 days, receive a full diagnostic report with national rank, percentile, subject scores, and strength mapping.",
-    color: "text-purple-700 bg-purple-50",
-    connector: "bg-purple-200",
+    color: "text-blue-600 bg-blue-50/70",
+    connector: "bg-blue-200",
   },
   {
     icon: Award,
     step: "Shine",
     title: "Awards & recognition",
     desc: "Top rankers receive scholarships, medals, and national recognition. Every participant gets a verifiable certificate.",
-    color: "text-rose-700 bg-rose-50",
+    color: "text-indigo-600 bg-indigo-50/70",
     connector: null,
   },
 ];
@@ -67,7 +67,7 @@ export default function HowItWorks() {
         {/* Steps */}
         <div className="relative">
           {/* Connecting line (desktop) */}
-          <div className="hidden lg:block absolute top-[72px] left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-amber-200 via-emerald-200 to-rose-200 mx-[calc(10%)] pointer-events-none" />
+          <div className="hidden lg:block absolute top-[72px] left-0 right-0 h-0.5 bg-gradient-to-r from-blue-200 via-indigo-200 to-blue-200 mx-[calc(10%)] pointer-events-none" />
 
           <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-6">
             {steps.map((s, i) => (

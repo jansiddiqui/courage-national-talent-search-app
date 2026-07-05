@@ -217,7 +217,7 @@ export default function PrivacyPolicyPage() {
               </p>
               <ul className="list-disc pl-5 space-y-2">
                 <li>
-                  <strong>Enrollment & Verification:</strong> To allocate unique CNTS Registration IDs, assign specific exam modes (Online or physical OMR sheets), and check candidate eligibility.
+                  <strong>Enrollment & Verification:</strong> To allocate unique CNTS Registration IDs, verify candidate details, and check candidate eligibility.
                 </li>
                 <li>
                   <strong>Admit Cards & Practice Packs:</strong> To compile and deliver personalized study syllabi, generate student admit cards, and host model mock test questionnaires in parent dashboards.

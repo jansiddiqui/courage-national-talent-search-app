@@ -191,7 +191,7 @@ export default function TermsOfUsePage() {
                 While the official calendar is set (e.g., Exam Date scheduled for <strong>{TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')}</strong>), Courage National Talent Search reserves the absolute right to reschedule, postpone, or adjust the assessment timeline due to:
               </p>
               <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 grid gap-3 my-2 text-xs">
-                <p><strong>Operational Reasons:</strong> Logistical modifications in physical OMR center distribution, school calendar conflicts, or state mandates.</p>
+                <p><strong>Operational Reasons:</strong> Logistical modifications in partner school testing schedules, school calendar conflicts, or state mandates.</p>
                 <p><strong>Technical Requirements:</strong> Server upgrades, online testing platform maintenance, or unexpected server load handling adjustments.</p>
                 <p><strong>Force Majeure:</strong> Natural events, public restrictions, or connectivity issues that impact large candidate groups.</p>
               </div>

@@ -399,8 +399,8 @@ export default function DashboardPage() {
                         Current Step
                         <span className="text-[9px] uppercase tracking-wider bg-blue-200 text-blue-800 px-2 py-0.5 rounded font-black hidden sm:inline-block">Action Required</span>
                       </h4>
-                      <p className="text-sm text-blue-800 font-medium mt-1">Download Sample Papers & Start Mock Test</p>
-                      <p className="text-xs text-blue-600/80 mt-1">Familiarize the candidate with the exam pattern and testing interface.</p>
+                      <p className="text-sm text-blue-800 font-medium mt-1">Practice in Academy & Start Mock Test</p>
+                      <p className="text-xs text-blue-600/80 mt-1">Strengthen the candidate's core cognitive reasoning and take a simulated mock exam.</p>
                     </div>
                   </div>
 
@@ -452,18 +452,18 @@ export default function DashboardPage() {
               {/* Section 4: Action Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                 
-                {/* Sample Papers */}
+                {/* Learning Academy */}
                 <div className="bg-white border border-slate-200 p-5 rounded-2xl flex flex-col justify-between space-y-4 hover:border-blue-300 hover:shadow-md transition-all">
                   <div>
                     <div className="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3">
-                      <BookOpen size={20} />
+                      <Award size={20} />
                     </div>
-                    <h4 className="text-sm font-bold text-slate-800">Sample Papers</h4>
-                    <p className="text-xs text-slate-500 mt-1">Download Class {c.student_class} logical reasoning and language papers.</p>
+                    <h4 className="text-sm font-bold text-slate-800">Learning Academy</h4>
+                    <p className="text-xs text-slate-500 mt-1">Access interactive lessons, practice flashcards, and bilingually explained questions for Class {c.student_class}.</p>
                   </div>
-                  <a href={`/sample-papers/class${c.student_class}.pdf`} download={`CNTS_Class${c.student_class}_Sample_Paper.pdf`} className="w-full py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-100 hover:text-blue-800 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-2 transition-colors">
-                    <Download size={14} /> Download Papers
-                  </a>
+                   <Link href="/academy" className="w-full py-2.5 bg-blue-600 text-white hover:bg-blue-700 rounded-xl text-xs font-bold text-center flex items-center justify-center gap-2 transition-colors">
+                    Enter Academy <ArrowRight size={14} />
+                  </Link>
                 </div>
 
                 {/* Mock Test */}

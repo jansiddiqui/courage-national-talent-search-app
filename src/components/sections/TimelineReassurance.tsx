@@ -12,9 +12,9 @@ const getEvents = () => [
     status: "done", // done, active, pending
   },
   {
-    title: "Practice Sample Papers Released",
+    title: "Learning Academy Live",
     date: "Available Now",
-    desc: "Access mock cognitive questions and prep resources instantly inside the dashboard.",
+    desc: "Access bilingual interactive lessons, flashcard drills, and solved examples across all four exam domains inside the Academy.",
     icon: FileText,
     status: "done",
   },
@@ -28,7 +28,7 @@ const getEvents = () => [
   {
     title: "National Exam Day",
     date: TIMELINE_LABELS.EXAM_DATE,
-    desc: "Online 2-hour conceptual evaluation. Multiple time slots with structured session scheduling.",
+    desc: "Online 75 or 90-minute conceptual evaluation. Multiple time slots with structured session scheduling.",
     icon: Clipboard,
     status: "pending",
   },
@@ -79,7 +79,7 @@ export default function TimelineReassurance() {
                 <div
                   className={`absolute -left-[17px] md:left-0 top-0 md:-top-[22px] w-9 h-9 rounded-full flex items-center justify-center border-2 transition-all duration-300 z-20 ${
                     e.status === "done"
-                      ? "bg-emerald-500 border-emerald-400 text-white shadow-lg shadow-emerald-500/20"
+                      ? "bg-blue-600 border-blue-400 text-white shadow-lg shadow-blue-500/20"
                       : "bg-slate-800 border-slate-700 text-slate-400 group-hover:border-blue-400 group-hover:text-blue-400"
                   }`}
                 >
@@ -96,8 +96,8 @@ export default function TimelineReassurance() {
                   <span
                     className={`inline-block text-[9px] font-extrabold uppercase tracking-wider px-2 py-0.5 rounded mb-2 ${
                       e.status === "done"
-                        ? "bg-emerald-500/20 text-emerald-300"
-                        : "bg-blue-500/20 text-blue-300"
+                        ? "bg-blue-500/20 text-blue-300"
+                        : "bg-blue-950/40 text-blue-400 border border-blue-900/50"
                     }`}
                   >
                     {e.date}
