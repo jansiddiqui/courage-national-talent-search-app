@@ -193,7 +193,7 @@ export default function SuccessPage() {
               <h2 className="font-display font-bold text-3xl text-slate-900 tracking-tight">
                 Candidate Record Created
               </h2>
-              <p className="text-slate-505 text-sm max-w-md mx-auto">
+              <p className="text-slate-500 text-sm max-w-md mx-auto">
                 Officially enrolled in the Founding Edition 2026.
               </p>
             </div>

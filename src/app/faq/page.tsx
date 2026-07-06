@@ -200,25 +200,20 @@ export default function FAQPage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Header Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 md:pb-28 px-6 text-center">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+      <section className="pt-36 pb-12 px-6 text-center border-b border-slate-100 bg-white">
         
-        <div className="max-w-3xl mx-auto space-y-6 relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10">
-            <Sparkles size={12} className="text-amber-400" />
-            <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
-              Information Hub
-            </span>
+        <div className="max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-blue-700 mx-auto uppercase tracking-wider">
+            <Sparkles size={12} className="text-amber-500 fill-amber-500 animate-pulse" />
+            <span>Information Hub</span>
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
-            Frequently Asked <span className="text-blue-400">Questions</span>.
+          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-tight">
+            Frequently Asked <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Questions</span>.
           </h1>
-          <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-xl mx-auto font-medium">
             Everything you need to know about the CNTS 2026 registration, exam format, syllabus, results process, and support.
           </p>
 
@@ -230,7 +225,7 @@ export default function FAQPage() {
                 placeholder="Search FAQs (e.g., fee, language, OMR)..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-3.5 bg-white text-slate-800 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-800/15 focus:border-blue-850 shadow-lg text-sm"
+                className="w-full pl-12 pr-4 py-3.5 bg-white text-slate-800 rounded-2xl border border-slate-200 outline-none focus:ring-4 focus:ring-blue-800/15 focus:border-blue-800 shadow-lg text-sm"
               />
               <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
             </div>
@@ -279,7 +274,7 @@ export default function FAQPage() {
                   }}
                   className={`shrink-0 px-4 py-2 rounded-xl text-xs font-semibold border cursor-pointer transition-all ${
                     activeCategory === cat.id
-                      ? "bg-blue-800 text-white border-blue-850"
+                      ? "bg-blue-800 text-white border-blue-800"
                       : "bg-white text-slate-600 border-slate-100 hover:border-slate-250"
                   }`}
                 >
@@ -335,7 +330,7 @@ export default function FAQPage() {
               <div className="text-center py-12 bg-white rounded-3xl border border-slate-100 p-8 space-y-3">
                 <HelpCircle size={40} className="text-slate-300 mx-auto" />
                 <h3 className="font-display font-bold text-slate-800 text-base">No matching questions found</h3>
-                <p className="text-slate-400 text-xs max-w-sm mx-auto">
+                <p className="text-slate-500 text-xs max-w-sm mx-auto">
                   Try adjusting your keywords or search for general terms like &quot;fee&quot;, &quot;OMR&quot;, or &quot;results&quot;.
                 </p>
               </div>

@@ -187,7 +187,7 @@ export default function HowItWorks() {
                         ? "bg-blue-800 border-blue-800 text-white shadow-lg shadow-blue-800/25 scale-110"
                         : isCompleted
                         ? "bg-blue-50 border-blue-200 text-blue-800 hover:bg-blue-100/60"
-                        : "bg-white border-slate-200 text-slate-400 hover:border-slate-350 hover:text-slate-655"
+                        : "bg-white border-slate-200 text-slate-400 hover:border-slate-300 hover:text-slate-700"
                     }`}
                   >
                     <StepIcon size={16} className={isActive ? "scale-110" : ""} />
@@ -207,7 +207,7 @@ export default function HowItWorks() {
             <button
               onClick={handlePrev}
               disabled={currentStep === 0}
-              className="hidden md:flex w-12 h-12 rounded-2xl border border-slate-200 bg-white items-center justify-center text-slate-400 shadow-sm hover:bg-slate-50 hover:text-slate-800 hover:border-slate-350 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer shrink-0"
+              className="hidden md:flex w-12 h-12 rounded-2xl border border-slate-200 bg-white items-center justify-center text-slate-400 shadow-sm hover:bg-slate-50 hover:text-slate-800 hover:border-slate-300 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer shrink-0"
               aria-label="Previous step"
             >
               <ChevronLeft size={20} className="stroke-[2.5]" />
@@ -325,7 +325,7 @@ export default function HowItWorks() {
             <button
               onClick={handleNext}
               disabled={currentStep === stepsData.length - 1}
-              className="hidden md:flex w-12 h-12 rounded-2xl border border-slate-200 bg-white items-center justify-center text-slate-400 shadow-sm hover:bg-slate-50 hover:text-slate-800 hover:border-slate-350 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer shrink-0"
+              className="hidden md:flex w-12 h-12 rounded-2xl border border-slate-200 bg-white items-center justify-center text-slate-400 shadow-sm hover:bg-slate-50 hover:text-slate-800 hover:border-slate-300 disabled:opacity-20 disabled:pointer-events-none transition-all cursor-pointer shrink-0"
               aria-label="Next step"
             >
               <ChevronRight size={20} className="stroke-[2.5]" />

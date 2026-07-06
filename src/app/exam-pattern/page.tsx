@@ -67,21 +67,21 @@ const domainColors: Record<string, { bg: string; border: string; text: string; b
 export default function ExamPatternPage() {
   return (
     <div className="min-h-screen bg-[#F8FAFF] flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-24 px-6">
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+      <section className="relative overflow-hidden bg-gradient-to-b from-blue-50/40 via-white to-[#F8FAFF] pt-36 pb-24 px-6 border-b border-slate-100/80">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-100/60 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-indigo-100/40 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
         <div className="max-w-4xl mx-auto text-center relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-300 uppercase tracking-wider">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200/70 text-xs font-bold text-blue-600 uppercase tracking-wider">
             <BookOpen size={12} /> Examination Blueprint
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
+          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-tight">
             CNTS Exam Pattern{" "}
-            <span className="text-blue-400">&amp; Syllabus</span>
+            <span className="text-blue-600">&amp; Syllabus</span>
           </h1>
-          <p className="text-slate-300 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-500 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
             A fully online cognitive assessment with two age-appropriate categories.
             Four equal domains. No negative marking. Results within 21 days.
           </p>
@@ -93,7 +93,7 @@ export default function ExamPatternPage() {
             />
             <Link
               href="/academy"
-              className="bg-white/5 hover:bg-white/10 text-white border border-white/10 font-semibold py-3.5 px-8 rounded-xl transition-all text-sm flex items-center gap-2"
+              className="bg-slate-900 hover:bg-slate-800 text-white border border-slate-900 font-semibold py-3.5 px-8 rounded-xl transition-all text-sm flex items-center gap-2"
             >
               <Sparkles size={14} /> Learning Academy
             </Link>

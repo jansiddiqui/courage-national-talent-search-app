@@ -201,25 +201,20 @@ export default function CertificateVerifyPage() {
 
   return (
     <div className="min-h-screen bg-[#F8FAFF] flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 md:pb-28 px-6 text-center w-full shrink-0">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+      <section className="pt-36 pb-12 px-6 text-center border-b border-slate-100 bg-white w-full shrink-0">
         
-        <div className="max-w-3xl mx-auto space-y-6 relative z-10 animate-slide-up">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10">
-            <ShieldCheck size={12} className="text-amber-400" />
-            <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
-              Credential Registry
-            </span>
+        <div className="max-w-3xl mx-auto space-y-4 relative z-10 animate-slide-up">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-blue-700 mx-auto uppercase tracking-wider">
+            <ShieldCheck size={12} className="text-amber-500 fill-amber-500 animate-pulse" />
+            <span>Credential Registry</span>
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
-            Certificate <span className="text-blue-400">Verification</span>.
+          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-tight">
+            Certificate <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Verification</span>.
           </h1>
-          <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-xl mx-auto font-medium">
             Third-party organizations (schools, institutes, or partners) can verify the validity of CNTS certificates using this official search portal.
           </p>
         </div>
@@ -230,7 +225,7 @@ export default function CertificateVerifyPage() {
           /* Settings Loading State */
           <div className="text-center py-16">
             <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-            <p className="text-slate-505 text-xs font-medium">Connecting to verification registry...</p>
+            <p className="text-slate-500 text-xs font-medium">Connecting to verification registry...</p>
           </div>
         ) : !isVerifyPortalActive ? (
           /* Verification Portal Pending Gate (Simple, Honest, Professional Release Window) */
@@ -244,7 +239,7 @@ export default function CertificateVerifyPage() {
                 <span className="text-xs uppercase tracking-widest text-slate-400 font-bold block mb-1">Expected Release Date</span>
                 <strong className="text-2xl text-blue-900 font-extrabold">{TIMELINE_LABELS.RESULTS_DATE}</strong>
               </div>
-              <p className="text-slate-505 text-xs leading-relaxed max-w-sm mx-auto font-medium">
+              <p className="text-slate-500 text-xs leading-relaxed max-w-sm mx-auto font-medium">
                 Official certificates and student verification records will be available after evaluation is completed.
               </p>
               
@@ -440,7 +435,7 @@ export default function CertificateVerifyPage() {
 
                     {/* Summary Box */}
                     <div className="mt-6 pt-5 border-t border-slate-100">
-                      <p className="text-slate-505 text-[11px] leading-relaxed">
+                      <p className="text-slate-500 text-[11px] leading-relaxed">
                         {getCertificateTier(verifiedCertificate.student_class).desc}
                       </p>
                     </div>

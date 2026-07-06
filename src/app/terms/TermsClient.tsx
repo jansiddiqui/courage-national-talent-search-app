@@ -70,11 +70,11 @@ export default function TermsOfUsePage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero section */}
-      <div className="bg-slate-900 text-white pt-36 pb-16 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-40" />
+      <div className="bg-white border-b border-slate-100 text-slate-800 pt-36 pb-16 ">
+        
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <Link 
             href="/" 
@@ -88,10 +88,10 @@ export default function TermsOfUsePage() {
             </div>
             <span className="text-xs font-bold uppercase tracking-widest text-blue-400">Operating Terms</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-white mb-3">
+          <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-slate-900 mb-3">
             Terms of Use
           </h1>
-          <p className="text-slate-400 text-sm max-w-xl">
+          <p className="text-slate-500 text-sm max-w-xl">
             Last Updated: June 10, 2026. General terms governing student registration, test participation, scoring guidelines, and platform conduct.
           </p>
         </div>

@@ -16,19 +16,19 @@ import {
 export default function ExamInstructionsPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
-      <section className="bg-slate-900 text-white pt-36 pb-20 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-50" />
+      <section className="bg-white border-b border-slate-100 text-slate-800 pt-36 pb-20 ">
+        
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400 mb-6 uppercase tracking-wider mx-auto">
             <Clipboard size={12} /> Test Day Protocol
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-white mb-6 max-w-4xl mx-auto leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-slate-900 mb-6 max-w-4xl mx-auto leading-tight">
             Candidate Exam Guidelines & Rules
           </h1>
-          <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto mb-8">
             Essential instructions for candidates preparing to take the CNTS 2026 assessment.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -70,7 +70,7 @@ export default function ExamInstructionsPage() {
               <Globe size={20} />
             </div>
             <h4 className="font-bold text-slate-800 text-sm">Internet & Power</h4>
-            <p className="text-xs text-slate-505 leading-relaxed">
+            <p className="text-xs text-slate-500 leading-relaxed">
               Requires a stable internet connection (minimum 1 Mbps). Ensure your testing device is fully charged or connected to power.
             </p>
           </div>

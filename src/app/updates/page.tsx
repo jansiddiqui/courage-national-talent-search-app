@@ -37,7 +37,7 @@ export default function UpdatesPage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 md:pb-28 px-6 text-center w-full">
@@ -46,13 +46,13 @@ export default function UpdatesPage() {
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
         
         <div className="max-w-3xl mx-auto space-y-6 relative z-10 animate-slide-up">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 text-blue-700">
             <BellRing size={12} className="text-amber-400 animate-pulse" />
             <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
               Updates Channel
             </span>
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
+          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-tight">
             Parent <span className="text-blue-400">Community</span>.
           </h1>
           <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">

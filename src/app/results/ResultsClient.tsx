@@ -167,25 +167,20 @@ export default function ResultsPage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 md:pb-28 px-6 text-center w-full">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+      <section className="pt-36 pb-12 px-6 text-center border-b border-slate-100 bg-white w-full">
         
-        <div className="max-w-3xl mx-auto space-y-6 relative z-10 animate-slide-up">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10">
-            <Trophy size={12} className="text-amber-400" />
-            <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
-              Evaluation Results
-            </span>
+        <div className="max-w-3xl mx-auto space-y-4 relative z-10">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-blue-700 mx-auto uppercase tracking-wider">
+            <Trophy size={12} className="text-amber-500 fill-amber-500 animate-pulse" />
+            <span>Evaluation Results</span>
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
-            National Cohort <span className="text-blue-400">Performance Summary</span>
+          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-tight">
+            National Cohort <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Performance Summary</span>
           </h1>
-          <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto font-sans">
+          <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-xl mx-auto font-medium">
             Retrieve candidate cognitive profiles, national benchmarking reports, and verified cohort certificates.
           </p>
         </div>
@@ -245,7 +240,7 @@ export default function ResultsPage() {
                         placeholder="CNTS26-8XK4P"
                         value={registrationId}
                         onChange={(e) => setRegistrationId(e.target.value.toUpperCase())}
-                        className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-850/10 transition-all font-semibold font-mono"
+                        className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all font-semibold font-mono"
                         disabled={searching}
                       />
                     </div>
@@ -261,7 +256,7 @@ export default function ResultsPage() {
                         id="dob"
                         value={dob}
                         onChange={(e) => setDob(e.target.value)}
-                        className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-850/10 transition-all font-semibold"
+                        className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all font-semibold"
                         disabled={searching}
                       />
                     </div>
@@ -270,7 +265,7 @@ export default function ResultsPage() {
                   <button
                     type="submit"
                     disabled={searching}
-                    className="w-full py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-850/10 hover:shadow-blue-750/20 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
+                    className="w-full py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 hover:shadow-blue-750/20 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60"
                   >
                     {searching ? "Searching..." : "Retrieve Report"}
                     <ChevronRight size={14} />
@@ -301,7 +296,7 @@ export default function ResultsPage() {
                       <h3 className="font-display font-bold text-lg text-slate-900 leading-tight">
                         {candidateResult.candidate.student_name}
                       </h3>
-                      <p className="text-xs text-slate-505 font-medium">
+                      <p className="text-xs text-slate-500 font-medium">
                         ID: <strong className="font-mono text-slate-800 font-bold">{candidateResult.candidate.cnts_id || candidateResult.candidate.registration_id}</strong>
                       </p>
                     </div>
@@ -381,7 +376,7 @@ export default function ResultsPage() {
                   <h4 className="font-display font-bold text-slate-800 text-xs uppercase tracking-wider">
                     Educational Growth Recommendations
                   </h4>
-                  <ul className="list-disc pl-4 space-y-1.5 text-slate-505">
+                  <ul className="list-disc pl-4 space-y-1.5 text-slate-500">
                     <li>Nurture critical reasoning by introducing abstract math puzzles and logical card games outside class curriculums.</li>
                     <li>Promote conceptual reading habits (biographies, logic digests) rather than syllabus textbooks to expand semantic logic.</li>
                     <li>Encourage explaining the 'why' behind problems to shift study habits from simple memorization to structural comprehension.</li>
@@ -392,7 +387,7 @@ export default function ResultsPage() {
                 <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
                   <button
                     onClick={() => window.print()}
-                    className="flex-1 py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-850/10 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="flex-1 py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Download size={14} />
                     Download Profile Report
@@ -576,7 +571,7 @@ export default function ResultsPage() {
             <h2 className="font-display font-bold text-2xl md:text-3xl text-slate-900 tracking-tight">
               What Parents Will Receive
             </h2>
-            <p className="text-xs md:text-sm text-slate-505 max-w-lg mx-auto">
+            <p className="text-xs md:text-sm text-slate-500 max-w-lg mx-auto">
               Every registered candidate receives a comprehensive, multi-dimensional cognitive analysis. Here is what is included in your custom diagnostic report.
             </p>
           </div>
@@ -684,7 +679,7 @@ export default function ResultsPage() {
                     <span className="text-4xl font-black text-red-500 uppercase tracking-widest border-4 border-red-500 px-4 py-1 rounded">SAMPLE</span>
                   </div>
 
-                  <p className="text-[8px] md:text-[10px] italic text-slate-505 font-medium">This is to certify that</p>
+                  <p className="text-[8px] md:text-[10px] italic text-slate-500 font-medium">This is to certify that</p>
                   <h4 className="font-display font-bold text-base md:text-lg text-slate-800 leading-none">
                     [Your Child&apos;s Name]
                   </h4>
@@ -699,7 +694,7 @@ export default function ResultsPage() {
                 </div>
 
                 {/* Footer details */}
-                <div className="flex justify-between items-end text-[7px] md:text-[9px] font-semibold text-slate-505 pt-2 border-t border-slate-100">
+                <div className="flex justify-between items-end text-[7px] md:text-[9px] font-semibold text-slate-500 pt-2 border-t border-slate-100">
                   <div className="space-y-0.5 text-left">
                     <p>AIR: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
                     <p>State Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
@@ -720,7 +715,7 @@ export default function ResultsPage() {
                   </div>
                   
                   <div className="space-y-0.5 text-right font-mono">
-                    <p className="text-[5px] md:text-[7px] text-slate-400">ID: [SAMPLE-ID]</p>
+                    <p className="text-[5px] md:text-[7px] text-slate-500">ID: [SAMPLE-ID]</p>
                     <p className="font-bold text-slate-800 font-sans">Registrar of Evaluation</p>
                   </div>
                 </div>
@@ -751,7 +746,7 @@ export default function ResultsPage() {
                 
                 <div>
                   <h4 className="font-display font-bold text-xs md:text-sm text-slate-800">Cognitive Profile Report</h4>
-                  <p className="text-[7px] md:text-[9px] text-slate-400 font-mono">Candidate ID: [Candidate ID]</p>
+                  <p className="text-[7px] md:text-[9px] text-slate-500 font-mono">Candidate ID: [Candidate ID]</p>
                 </div>
                 <span className="px-2 py-0.5 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded text-[7px] md:text-[9px] font-bold uppercase tracking-wider">
                   Top 3% Cohort
@@ -823,12 +818,12 @@ export default function ResultsPage() {
                 <h3 className="font-display font-black text-slate-900 text-base md:text-xl tracking-tight uppercase">
                   Courage National Talent Search
                 </h3>
-                <p className="text-[8px] md:text-[10px] text-slate-400 font-bold uppercase tracking-wider">FOUNDING EDITION 2026</p>
+                <p className="text-[8px] md:text-[10px] text-slate-500 font-bold uppercase tracking-wider">FOUNDING EDITION 2026</p>
                 <div className="w-24 h-[1px] bg-slate-300 mx-auto" />
               </div>
 
               <div className="space-y-3 relative z-10">
-                <p className="text-xs md:text-sm italic text-slate-505 font-medium">This is to certify that</p>
+                <p className="text-xs md:text-sm italic text-slate-500 font-medium">This is to certify that</p>
                 <h4 className="font-display font-bold text-lg md:text-2xl text-slate-800 leading-none">
                   [Your Child&apos;s Name]
                 </h4>
@@ -842,7 +837,7 @@ export default function ResultsPage() {
                 Verified Credential | Digitally Signed | Publicly Verifiable
               </div>
 
-              <div className="flex justify-between items-end text-xs font-semibold text-slate-505 pt-6 border-t border-slate-100 relative z-10">
+              <div className="flex justify-between items-end text-xs font-semibold text-slate-500 pt-6 border-t border-slate-100 relative z-10">
                 <div className="space-y-1 text-left font-sans">
                   <p>All India Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
                   <p>State Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
@@ -864,9 +859,9 @@ export default function ResultsPage() {
                 </div>
                 
                 <div className="space-y-1 text-right font-mono">
-                  <p className="text-[8px] md:text-[10px] text-slate-400">ID: [SAMPLE-ID]</p>
+                  <p className="text-[8px] md:text-[10px] text-slate-500">ID: [SAMPLE-ID]</p>
                   <p className="font-bold text-slate-800 font-sans">Registrar of Evaluation</p>
-                  <p className="text-[8px] text-slate-400 font-mono">Date: {TIMELINE_LABELS.RESULTS_DATE}</p>
+                  <p className="text-[8px] text-slate-500 font-mono">Date: {TIMELINE_LABELS.RESULTS_DATE}</p>
                 </div>
               </div>
             </div>
@@ -910,7 +905,7 @@ export default function ResultsPage() {
               <div className="flex justify-between items-start border-b border-slate-100 pb-4 relative z-10">
                 <div>
                   <h4 className="font-display font-bold text-sm md:text-base text-slate-800">Cognitive Profile Report</h4>
-                  <p className="text-xs text-slate-400 font-mono">Candidate ID: [Candidate ID]</p>
+                  <p className="text-xs text-slate-500 font-mono">Candidate ID: [Candidate ID]</p>
                 </div>
                 <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-full text-xs font-bold uppercase tracking-wider">
                   Top 3% Cohort
@@ -941,17 +936,17 @@ export default function ResultsPage() {
                     <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
                       <div className={`h-full ${d.color} rounded-full`} style={{ width: `${d.val}%` }} />
                     </div>
-                    <p className="text-[10px] text-slate-400 leading-normal mt-1">{d.desc}</p>
+                    <p className="text-[10px] text-slate-500 leading-normal mt-1">{d.desc}</p>
                   </div>
                 ))}
               </div>
 
               {/* Recommendations */}
               <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
-                <p className="text-xs font-bold text-blue-850 flex items-center gap-1.5">
+                <p className="text-xs font-bold text-blue-800 flex items-center gap-1.5">
                   <Sparkles size={14} /> Learning Style Verdict:
                 </p>
-                <p className="text-xs text-slate-505 leading-relaxed mt-1">
+                <p className="text-xs text-slate-500 leading-relaxed mt-1">
                   Outstanding abstract logical deduction. Excel in mathematical sequences and structural analysis. Learns best with visual reasoning maps, diagrams, and sequential coding exercises. Focus on reading speed and linguistic inferences to further enhance critical verbal ability.
                 </p>
               </div>

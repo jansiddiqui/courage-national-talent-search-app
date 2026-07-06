@@ -208,7 +208,7 @@ export default function PreparePageClient() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 md:pb-28 px-6 text-center">
@@ -217,13 +217,13 @@ export default function PreparePageClient() {
         <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
         
         <div className="max-w-3xl mx-auto space-y-6 relative z-10 animate-slide-up">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 text-blue-700">
             <Sparkles size={12} className="text-amber-400" />
             <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
               Preparation Portal
             </span>
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
+          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-tight">
             Prepare for <span className="text-blue-400">CNTS Assessment</span>.
           </h1>
           <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
@@ -270,7 +270,7 @@ export default function PreparePageClient() {
                     onClick={() => setSelectedClass(cls)}
                     className={`w-full py-3 px-4 rounded-2xl border text-xs font-bold text-left transition-all cursor-pointer ${
                       selectedClass === cls
-                        ? "border-blue-800 bg-blue-50/50 text-blue-850 ring-2 ring-blue-800/10"
+                        ? "border-blue-800 bg-blue-50/50 text-blue-800 ring-2 ring-blue-800/10"
                         : "border-slate-200 hover:border-slate-300 text-slate-600 hover:bg-slate-50/50"
                     }`}
                   >
@@ -288,7 +288,7 @@ export default function PreparePageClient() {
                     <h3 className="font-display font-bold text-lg text-slate-800">
                       Class {selectedClass} Detailed Syllabus
                     </h3>
-                    <p className="text-slate-400 text-[11px] mt-0.5">Syllabus is mapped to explore primary reasoning dimensions.</p>
+                    <p className="text-slate-500 text-[11px] mt-0.5">Syllabus is mapped to explore primary reasoning dimensions.</p>
                   </div>
                   <Link
                     href="/academy"
@@ -309,7 +309,7 @@ export default function PreparePageClient() {
                       <ul className="space-y-2">
                         {sub.details.map((d, dIdx) => (
                           <li key={dIdx} className="text-xs text-slate-500 flex items-center gap-1.5 font-medium">
-                            <span className="w-1.5 h-1.5 rounded-full bg-slate-350 shrink-0" />
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-400 shrink-0" />
                             {d}
                           </li>
                         ))}
@@ -418,7 +418,7 @@ export default function PreparePageClient() {
                   </div>
                   <div>
                     <h3 className="font-display font-bold text-white text-base">Cognitive Discovery</h3>
-                    <p className="text-xs text-slate-350 leading-relaxed mt-1">
+                    <p className="text-xs text-slate-500 leading-relaxed mt-1">
                       Our assessment is configured to pinpoint your child&apos;s natural affinity toward mathematical sequences, language nuances, or logic patterns. It exposes the hidden dimensions of genius.
                     </p>
                   </div>
@@ -457,7 +457,7 @@ export default function PreparePageClient() {
               <h3 className="font-display font-bold text-lg text-slate-850">
                 Recommended Daily Study Plans
               </h3>
-              <p className="text-slate-450 text-xs">Recommended micro-preparation intervals to build analytical patterns before exam day.</p>
+              <p className="text-slate-500 text-xs">Recommended micro-preparation intervals to build analytical patterns before exam day.</p>
             </div>
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -498,7 +498,7 @@ export default function PreparePageClient() {
               <h3 className="font-display font-bold text-lg md:text-xl text-slate-850">
                 Try the Interactive Sample Quiz
               </h3>
-              <p className="text-slate-400 text-xs mt-0.5">Test your logical, arithmetic, and spatial analytics in under 2 minutes.</p>
+              <p className="text-slate-500 text-xs mt-0.5">Test your logical, arithmetic, and spatial analytics in under 2 minutes.</p>
             </div>
             
             {/* Progress Tracker dots */}
@@ -545,7 +545,7 @@ export default function PreparePageClient() {
                   const isCorrect = optIdx === quizQuestions[currentQuestionIndex].correctIndex;
                   const isAnswered = selectedOption !== null;
 
-                  let btnClass = "border-slate-200 hover:border-slate-350 bg-white text-slate-700 hover:bg-slate-50";
+                  let btnClass = "border-slate-200 hover:border-slate-300 bg-white text-slate-700 hover:bg-slate-50";
                   if (isAnswered) {
                     if (isCorrect) {
                       btnClass = "border-emerald-500 bg-emerald-50 text-emerald-950 font-bold shadow-sm shadow-emerald-100 ring-2 ring-emerald-500/10";
@@ -650,10 +650,10 @@ export default function PreparePageClient() {
         </div>
 
         {/* Action Call to Login / Register */}
-        <div className="bg-slate-900 text-white rounded-3xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-lg shadow-slate-900/10 border border-slate-800">
+        <div className="bg-white border-b border-slate-100 text-slate-800 rounded-3xl p-6 md:p-8 flex flex-col md:flex-row justify-between items-center gap-6 shadow-lg shadow-slate-900/10 border border-slate-800">
           <div className="space-y-1 text-center md:text-left">
             <h3 className="font-display font-bold text-base text-white">Registered Candidate?</h3>
-            <p className="text-xs text-slate-400">Log in to access the Learning Academy and start interactive prep for your exam.</p>
+            <p className="text-xs text-slate-500">Log in to access the Learning Academy and start interactive prep for your exam.</p>
           </div>
           <div className="flex gap-4 flex-wrap justify-center shrink-0">
             <Link
@@ -664,7 +664,7 @@ export default function PreparePageClient() {
             </Link>
             <RegisterCTA
               unauthenticatedText="Register Candidate"
-              className="px-6 py-3 bg-blue-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-blue-850/15 hover:bg-blue-700 cursor-pointer"
+              className="px-6 py-3 bg-blue-800 text-white rounded-2xl text-xs font-bold transition-all shadow-md shadow-blue-800/15 hover:bg-blue-700 cursor-pointer"
             />
           </div>
         </div>

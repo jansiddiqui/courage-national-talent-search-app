@@ -49,137 +49,250 @@ const segmentPrizes = [
 export default function PrizesPage() {
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Header Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1E40AF] via-blue-900 to-indigo-950 text-white pt-36 pb-20 md:pb-28 px-6 text-center">
+      <section className="relative overflow-hidden bg-gradient-to-b from-amber-50/30 via-white to-[#F8FAFF] pt-36 pb-20 md:pb-28 px-6 text-center border-b border-slate-100/80">
         {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-amber-100/30 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
+        <div className="absolute bottom-0 left-0 w-80 h-80 bg-blue-100/30 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
         
-        <div className="max-w-3xl mx-auto space-y-6 relative z-10">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10">
-            <Trophy size={12} className="text-amber-400" />
-            <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
+        <div className="max-w-3xl mx-auto space-y-7 relative z-10">
+          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-amber-50 rounded-full border border-amber-200/70">
+            <Trophy size={12} className="text-amber-500" />
+            <span className="text-[10px] font-bold text-amber-600 uppercase tracking-widest">
               CNTS Recognition Pool
             </span>
           </span>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
-            National <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-yellow-300">Rankings & Awards</span>.
-          </h1>
-          <p className="text-blue-200 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
-            We celebrate cognitive development and logical thinking. The top performers earn prestigious trophies, medals, and rankings, while every single participant receives a diagnostic Talent Profile and digital certificate.
+
+          <div className="space-y-2">
+            <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-[3.75rem] tracking-tight text-slate-900 leading-[1.08]">
+              National Rankings
+            </h1>
+            <div className="font-display font-bold text-4xl md:text-5xl lg:text-[3.75rem] tracking-tight leading-[1.08]">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-yellow-400">&amp; Awards.</span>
+            </div>
+          </div>
+
+          <p className="text-slate-500 text-[15px] leading-relaxed max-w-lg mx-auto">
+            Every participant is recognised. Top performers earn gold medals, trophies &amp; national rankings — and every child receives a Talent Profile and verified certificate.
           </p>
+
+          {/* Trust stat strip */}
+          <div className="flex flex-wrap items-center justify-center gap-x-1 gap-y-3 pt-1">
+            {[
+              { value: "3", label: "Podium Medals" },
+              { value: "State", label: "Rank Trophies" },
+              { value: "100%", label: "Get Brain Report" },
+              { value: "₹0", label: "Hidden Fees" },
+            ].map(({ value, label }, i, arr) => (
+              <div key={label} className="flex items-center gap-1">
+                <div className="flex items-center gap-2 px-4 py-2">
+                  <span className="font-display font-black text-slate-900 text-base">{value}</span>
+                  <span className="text-[12px] text-slate-500 font-medium">{label}</span>
+                </div>
+                {i < arr.length - 1 && <div className="w-px h-4 bg-slate-200" />}
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
       {/* Category divisions */}
-      <section className="py-16 max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-8">
-        
-        {/* Junior Category card */}
-        <div className="bg-white rounded-xl border border-slate-100 p-8 shadow-sm space-y-4 relative overflow-hidden group hover:border-blue-200 transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform" />
-          <div className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-            Classes 5 & 6
-          </div>
-          <h3 className="font-display font-bold text-2xl text-slate-800">Junior Category</h3>
-          <p className="text-slate-500 text-xs leading-relaxed">
-            Evaluates core foundational cognitive strengths. Logical structures, primary mathematical relationships, and language clarity are tested. The questions are specifically structured for their cognitive stage.
-          </p>
-          <ul className="space-y-2 text-xs text-slate-600 pt-2 font-medium">
-            <li className="flex items-center gap-2">
-              <Check size={14} className="text-emerald-500 shrink-0" />
-              Syllabus focused on primary logic & reasoning
-            </li>
-            <li className="flex items-center gap-2">
-              <Check size={14} className="text-emerald-500 shrink-0" />
-              Eligible for National Rank 1, 2, and 3 awards
-            </li>
-          </ul>
-        </div>
+      <section className="py-14 max-w-7xl mx-auto px-6">
+        <div className="grid md:grid-cols-2 gap-5">
 
-        {/* Senior Category card */}
-        <div className="bg-white rounded-xl border border-slate-100 p-8 shadow-sm space-y-4 relative overflow-hidden group hover:border-purple-200 transition-all duration-300">
-          <div className="absolute top-0 right-0 w-32 h-32 bg-purple-50 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform" />
-          <div className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider">
-            Classes 7 & 8
-          </div>
-          <h3 className="font-display font-bold text-2xl text-slate-800">Senior Category</h3>
-          <p className="text-slate-500 text-xs leading-relaxed">
-            Evaluates advanced deductive logic, problem-solving speed, reading comprehension, and abstract relationships. Questions push critical thinking boundaries suitable for middle schoolers.
-          </p>
-          <ul className="space-y-2 text-xs text-slate-600 pt-2 font-medium">
-            <li className="flex items-center gap-2">
-              <Check size={14} className="text-emerald-500 shrink-0" />
-              Syllabus focused on abstract logic & advanced reasoning
-            </li>
-            <li className="flex items-center gap-2">
-              <Check size={14} className="text-emerald-500 shrink-0" />
-              Separate National Podium ranking and reward structures
-            </li>
-          </ul>
-        </div>
-
-      </section>
-
-      {/* The Podium awards */}
-      <section className="py-16 bg-slate-50 border-y border-slate-100">
-        <div className="max-w-7xl mx-auto px-6 space-y-12">
-          
-          <div className="text-center max-w-md mx-auto space-y-2">
-            <h2 className="font-display font-bold text-3xl text-slate-800 tracking-tight">
-              National Podium Awards
-            </h2>
-            <p className="text-slate-500 text-xs">
-              Separate podiums are tracked for both the Junior and Senior categories.
-            </p>
-          </div>
-
-          <div className="flex flex-col md:flex-row items-center md:items-end justify-center gap-6">
-            {[podiumAwards[1], podiumAwards[0], podiumAwards[2]].map((p) => (
-              <div 
-                key={p.rank} 
-                className={`relative w-64 p-6 rounded-xl bg-gradient-to-br ${
-                  p.gradient
-                } text-white shadow-xl ${
-                  p.glow
-                } group hover:-translate-y-1 transition-transform duration-300 flex flex-col items-center text-center ${
-                  p.isCenter ? "md:py-10 md:w-72 relative z-10 order-first md:order-none" : ""
-                }`}
-              >
-                <div className="absolute inset-0 bg-white/10 opacity-30 pointer-events-none rounded-xl" />
-                <div className="mb-3 flex justify-center">{p.badge}</div>
-                <h3 className="font-display font-bold text-3xl mb-1 select-all">{p.prize}</h3>
-                <span className="text-xs font-semibold text-white/80 block uppercase tracking-wider">{p.rank}</span>
-                
-                <div className="mt-4 pt-4 border-t border-white/20 w-full space-y-1.5 text-xs text-white/90">
-                  {p.extras.map(e => (
-                    <p key={e} className="flex items-center gap-1 justify-center">
-                      <Star size={8} className="fill-white shrink-0" /> {e}
-                    </p>
-                  ))}
+          {/* Junior Category */}
+          <div className="group relative bg-white rounded-2xl border border-slate-200/80 p-8 hover:border-blue-300/60 hover:shadow-lg hover:shadow-blue-50 transition-all duration-300 overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-blue-400 to-blue-600 rounded-l-2xl" />
+            <div className="pl-4 space-y-5">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest border border-blue-100">
+                    Classes 5 &amp; 6
+                  </span>
+                  <h3 className="font-display font-bold text-xl text-slate-900 mt-2">Junior Category</h3>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                  <Trophy size={18} className="text-blue-600" />
                 </div>
               </div>
-            ))}
+              <p className="text-slate-500 text-[13px] leading-relaxed">
+                Evaluates core foundational cognitive strengths — logical structures, primary mathematical relationships, and language clarity. Questions are specifically calibrated for their cognitive stage.
+              </p>
+              <div className="space-y-2 pt-1">
+                {["Syllabus focused on primary logic & reasoning", "Eligible for National Rank 1, 2, and 3 awards"].map(item => (
+                  <div key={item} className="flex items-center gap-2.5 text-[12.5px] text-slate-700 font-medium">
+                    <div className="w-4 h-4 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+                      <Check size={9} className="text-emerald-600" />
+                    </div>
+                    {item}
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-4 pt-2 border-t border-slate-100">
+                <div className="text-center">
+                  <div className="font-bold text-slate-900 text-sm">60</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Questions</div>
+                </div>
+                <div className="w-px h-6 bg-slate-200" />
+                <div className="text-center">
+                  <div className="font-bold text-slate-900 text-sm">75 min</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Duration</div>
+                </div>
+                <div className="w-px h-6 bg-slate-200" />
+                <div className="text-center">
+                  <div className="font-bold text-slate-900 text-sm">4</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Domains</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Senior Category */}
+          <div className="group relative bg-white rounded-2xl border border-slate-200/80 p-8 hover:border-purple-300/60 hover:shadow-lg hover:shadow-purple-50 transition-all duration-300 overflow-hidden">
+            <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-purple-400 to-purple-600 rounded-l-2xl" />
+            <div className="pl-4 space-y-5">
+              <div className="flex items-start justify-between">
+                <div className="space-y-1">
+                  <span className="inline-flex items-center gap-1.5 bg-purple-50 text-purple-700 px-2.5 py-1 rounded-md text-[10px] font-extrabold uppercase tracking-widest border border-purple-100">
+                    Classes 7 &amp; 8
+                  </span>
+                  <h3 className="font-display font-bold text-xl text-slate-900 mt-2">Senior Category</h3>
+                </div>
+                <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 flex items-center justify-center shrink-0">
+                  <Medal size={18} className="text-purple-600" />
+                </div>
+              </div>
+              <p className="text-slate-500 text-[13px] leading-relaxed">
+                Evaluates advanced deductive logic, problem-solving speed, reading comprehension, and abstract relationships. Questions push critical thinking boundaries suited for middle schoolers.
+              </p>
+              <div className="space-y-2 pt-1">
+                {["Syllabus focused on abstract logic & advanced reasoning", "Separate National Podium ranking and reward structures"].map(item => (
+                  <div key={item} className="flex items-center gap-2.5 text-[12.5px] text-slate-700 font-medium">
+                    <div className="w-4 h-4 rounded-full bg-emerald-50 border border-emerald-200 flex items-center justify-center shrink-0">
+                      <Check size={9} className="text-emerald-600" />
+                    </div>
+                    {item}
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-4 pt-2 border-t border-slate-100">
+                <div className="text-center">
+                  <div className="font-bold text-slate-900 text-sm">80</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Questions</div>
+                </div>
+                <div className="w-px h-6 bg-slate-200" />
+                <div className="text-center">
+                  <div className="font-bold text-slate-900 text-sm">90 min</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Duration</div>
+                </div>
+                <div className="w-px h-6 bg-slate-200" />
+                <div className="text-center">
+                  <div className="font-bold text-slate-900 text-sm">4</div>
+                  <div className="text-[10px] text-slate-500 font-medium">Domains</div>
+                </div>
+              </div>
+            </div>
           </div>
 
         </div>
       </section>
 
-      {/* Category breakdown table */}
-      <section className="py-20 max-w-3xl mx-auto px-6 space-y-8">
-        <h3 className="font-display font-bold text-xl text-slate-800 text-center md:text-left">
-          Additional Rankings & Rewards
-        </h3>
-        
-        <div className="bg-white border border-slate-100 rounded-xl shadow-sm overflow-hidden divide-y divide-slate-100">
-          {segmentPrizes.map((p) => (
-            <div key={p.rank} className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 hover:bg-slate-50/50 transition-colors">
-              <div className="space-y-0.5">
-                <span className="font-bold text-slate-800 text-sm block">{p.rank}</span>
-                <p className="text-xs text-slate-500">{p.desc}</p>
+      {/* Podium Awards */}
+      <section className="py-16 border-y border-slate-100 bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-5xl mx-auto px-6 space-y-12">
+          <div className="text-center space-y-2">
+            <span className="inline-block text-[10px] font-extrabold text-amber-600 uppercase tracking-widest bg-amber-50 border border-amber-200/70 px-3 py-1 rounded-full">
+              Top Performers
+            </span>
+            <h2 className="font-display font-bold text-3xl text-slate-900 tracking-tight">National Podium Awards</h2>
+            <p className="text-slate-500 text-sm">Separate podiums are tracked for both the Junior and Senior categories.</p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {/* Silver — Rank 2 */}
+            <div className="relative bg-white rounded-2xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-slate-300 via-slate-400 to-slate-300 rounded-t-2xl" />
+              <div className="w-14 h-14 rounded-2xl bg-slate-100 border border-slate-200 flex items-center justify-center mb-4 mt-2">
+                <Medal size={28} className="text-slate-500" />
               </div>
-              <span className="text-xs font-bold text-blue-900 bg-blue-50/50 px-3.5 py-1.5 rounded-xl border border-blue-100/30">
+              <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-widest mb-1">National Rank 2</span>
+              <h3 className="font-display font-bold text-xl text-slate-800 mb-4">Silver Honor</h3>
+              <div className="space-y-1.5 w-full pt-4 border-t border-slate-100">
+                {podiumAwards[1].extras.map(e => (
+                  <div key={e} className="flex items-center gap-2 text-[12px] text-slate-600 font-medium">
+                    <div className="w-1 h-1 rounded-full bg-slate-400 shrink-0" />
+                    {e}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Gold — Rank 1 (elevated) */}
+            <div className="relative bg-gradient-to-b from-amber-50 to-white rounded-2xl border-2 border-amber-300/60 p-6 flex flex-col items-center text-center shadow-xl shadow-amber-100 hover:shadow-amber-200/60 transition-all duration-300 overflow-hidden md:-translate-y-4">
+              <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 rounded-t-2xl" />
+              <div className="absolute top-3 right-3">
+                <span className="text-[9px] font-extrabold text-amber-600 uppercase tracking-widest bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">
+                  Top Award
+                </span>
+              </div>
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-400 to-yellow-500 flex items-center justify-center mb-4 mt-2 shadow-lg shadow-amber-200">
+                <Medal size={32} className="text-white drop-shadow" />
+              </div>
+              <span className="text-[10px] font-extrabold text-amber-600 uppercase tracking-widest mb-1">National Rank 1</span>
+              <h3 className="font-display font-bold text-2xl text-slate-900 mb-4">Gold Honor</h3>
+              <div className="space-y-1.5 w-full pt-4 border-t border-amber-200/60">
+                {podiumAwards[0].extras.map(e => (
+                  <div key={e} className="flex items-center gap-2 text-[12px] text-slate-700 font-semibold">
+                    <div className="w-1 h-1 rounded-full bg-amber-400 shrink-0" />
+                    {e}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bronze — Rank 3 */}
+            <div className="relative bg-white rounded-2xl border border-slate-200 p-6 flex flex-col items-center text-center shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden group">
+              <div className="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-orange-300 via-amber-600 to-orange-400 rounded-t-2xl" />
+              <div className="w-14 h-14 rounded-2xl bg-orange-50 border border-orange-100 flex items-center justify-center mb-4 mt-2">
+                <Medal size={28} className="text-orange-600" />
+              </div>
+              <span className="text-[10px] font-extrabold text-orange-600 uppercase tracking-widest mb-1">National Rank 3</span>
+              <h3 className="font-display font-bold text-xl text-slate-800 mb-4">Bronze Honor</h3>
+              <div className="space-y-1.5 w-full pt-4 border-t border-slate-100">
+                {podiumAwards[2].extras.map(e => (
+                  <div key={e} className="flex items-center gap-2 text-[12px] text-slate-600 font-medium">
+                    <div className="w-1 h-1 rounded-full bg-orange-400 shrink-0" />
+                    {e}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Additional Rankings */}
+      <section className="py-16 max-w-4xl mx-auto px-6 space-y-6">
+        <div className="space-y-1">
+          <h3 className="font-display font-bold text-xl text-slate-900">Additional Rankings &amp; Rewards</h3>
+          <p className="text-slate-500 text-sm">Every performer is recognised — not just the top three.</p>
+        </div>
+
+        <div className="rounded-2xl border border-slate-200 overflow-hidden shadow-sm">
+          {segmentPrizes.map((p, i) => (
+            <div key={p.rank} className={`flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 px-6 py-5 hover:bg-slate-50 transition-colors ${i !== 0 ? 'border-t border-slate-100' : ''}`}>
+              <div className="flex items-center gap-4">
+                <div className="w-8 h-8 rounded-lg bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+                  <Trophy size={14} className="text-blue-600" />
+                </div>
+                <div className="space-y-0.5">
+                  <span className="font-bold text-slate-900 text-sm block">{p.rank}</span>
+                  <p className="text-[12px] text-slate-500">{p.desc}</p>
+                </div>
+              </div>
+              <span className="ml-12 sm:ml-0 text-[11.5px] font-bold text-blue-700 bg-blue-50 px-4 py-1.5 rounded-lg border border-blue-100 shrink-0 whitespace-nowrap">
                 {p.reward}
               </span>
             </div>

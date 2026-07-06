@@ -235,7 +235,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
     return () => clearInterval(timer);
   }, []);
 
-  const isDarkNavbar = !scrolled && theme === "dark";
+  const isDarkNavbar = theme === "dark";
 
   return (
     <>
@@ -267,7 +267,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
         className={`fixed left-0 right-0 z-50 transition-all duration-300 ${
           scrolled
             ? theme === "dark"
-              ? "top-0 bg-slate-950/95 border-b border-slate-850/60 shadow-sm py-3 backdrop-blur-md"
+              ? "top-0 bg-slate-950/95 border-b border-slate-800/60 shadow-sm py-3 backdrop-blur-md"
               : "top-0 bg-white/95 border-b border-slate-200/80 shadow-sm py-3 backdrop-blur-md"
             : "top-[38px] bg-transparent py-5"
         }`}
@@ -300,7 +300,11 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
           </Link>
 
           {/* Desktop Navigation Links with SaaS Dropdowns */}
-          <div className="hidden md:flex items-center gap-1 bg-slate-100/50 p-1 rounded-xl border border-slate-200/40 relative">
+          <div className={`hidden md:flex items-center gap-1 p-1 rounded-xl border relative transition-all duration-200 ${
+            isDarkNavbar
+              ? "bg-slate-950/40 border-white/5"
+              : "bg-slate-100/50 border-slate-200/40"
+          }`}>
             
             {/* Direct Home Link */}
             <Link
@@ -308,7 +312,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
               className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
                 isDarkNavbar
                   ? "text-slate-300 hover:text-white hover:bg-white/5"
-                  : "text-slate-655 hover:text-blue-700 hover:bg-white hover:shadow-sm"
+                  : "text-slate-600 hover:text-blue-700 hover:bg-white hover:shadow-sm"
               }`}
             >
               Home
@@ -329,7 +333,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                         ? "bg-white text-blue-700 shadow-sm"
                         : isDarkNavbar
                         ? "text-slate-300 hover:text-white hover:bg-white/5"
-                        : "text-slate-655 hover:text-blue-700 hover:bg-white/40"
+                        : "text-slate-600 hover:text-blue-700 hover:bg-white/40"
                     }`}
                   >
                     <span>{category.label}</span>
@@ -357,7 +361,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                           <Link
                             key={subLink.href}
                             href={subLink.href}
-                            className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-55/60 transition-all group/item text-left"
+                            className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50/80 transition-all group/item text-left"
                           >
                             <div className="w-7 h-7 rounded-lg bg-blue-50/80 text-blue-650 flex items-center justify-center shrink-0 group-hover/item:bg-blue-600 group-hover/item:text-white group-hover/item:scale-105 transition-all duration-300">
                               <SubIcon size={14} className="stroke-[2.2]" />
@@ -390,8 +394,8 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                   href="/login"
                   className={`text-xs font-bold transition-colors ${
                     isDarkNavbar
-                      ? "text-slate-350 hover:text-white"
-                      : "text-slate-655 hover:text-blue-700"
+                      ? "text-slate-300 hover:text-white"
+                      : "text-slate-600 hover:text-blue-700"
                   }`}
                 >
                   Login
@@ -497,7 +501,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                     className={`block w-full text-center px-5 py-3 text-xs font-bold rounded-xl ${
                       theme === "dark"
                         ? "bg-white/10 text-white hover:bg-white/15"
-                        : "bg-slate-100 text-slate-855 hover:bg-slate-200"
+                        : "bg-slate-100 text-slate-800 hover:bg-slate-200"
                     }`}
                   >
                     Login

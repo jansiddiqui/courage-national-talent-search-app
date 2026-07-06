@@ -157,19 +157,19 @@ export default function MockExamPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
-      <section className="bg-slate-900 text-white pt-36 pb-16 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-50" />
+      <section className="bg-white border-b border-slate-100 text-slate-800 pt-36 pb-16 ">
+        
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center animate-slide-up">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400 mb-6 uppercase tracking-wider mx-auto">
             <BookOpen size={12} /> Practice Mock Test
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-white mb-4 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-slate-900 mb-4 leading-tight">
             CNTS Mock Practice Environment
           </h1>
-          <p className="text-slate-450 text-xs md:text-sm max-w-xl mx-auto">
+          <p className="text-slate-500 text-xs md:text-sm max-w-xl mx-auto">
             Simulate the final conceptual cognitive exam structure. Test your layout navigation, timers, and submission confirmation.
           </p>
         </div>
@@ -184,7 +184,7 @@ export default function MockExamPage() {
               <Clock size={32} />
             </div>
             <h2 className="font-display font-bold text-2xl text-slate-900">Practice Exam Instructions</h2>
-            <div className="text-left space-y-3 text-xs text-slate-505 leading-relaxed bg-slate-50 p-5 rounded-2xl border border-slate-100">
+            <div className="text-left space-y-3 text-xs text-slate-500 leading-relaxed bg-slate-50 p-5 rounded-2xl border border-slate-100">
               <p>• <strong>Questions:</strong> 10 conceptual cognitive reasoning multiple-choice questions.</p>
               <p>• <strong>Duration:</strong> 10 Minutes flat countdown timer.</p>
               <p>• <strong>Behavior:</strong> Simulates reporting question panels, next/previous buttons, and response logs.</p>
@@ -204,7 +204,7 @@ export default function MockExamPage() {
               <CheckCircle size={32} />
             </div>
             <h2 className="font-display font-bold text-2xl text-slate-900">Practice Attempt Submitted!</h2>
-            <p className="text-xs text-slate-505 max-w-md mx-auto leading-relaxed">
+            <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
               Congratulations! Your candidate has completed the CNTS mock practice. This confirms layout capability and internet connection stability.
             </p>
             <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex justify-between items-center text-xs">
@@ -290,7 +290,7 @@ export default function MockExamPage() {
                       onClick={() => handleSelectOption(activeQuestion.id, optIdx)}
                       className={`w-full text-left p-4 rounded-xl border text-xs font-semibold flex items-center gap-3 transition-all cursor-pointer ${
                         isSelected
-                          ? "bg-blue-50/50 border-blue-600 text-blue-850"
+                          ? "bg-blue-50/50 border-blue-600 text-blue-800"
                           : "bg-slate-50 border-slate-200 text-slate-655 hover:bg-slate-100"
                       }`}
                     >

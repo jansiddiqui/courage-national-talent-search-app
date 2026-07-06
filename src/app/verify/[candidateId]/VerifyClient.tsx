@@ -117,48 +117,45 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
 
   return (
     <div className="min-h-screen bg-[#F8FAFF] flex flex-col font-sans">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Header Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 px-6 text-center w-full shrink-0">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+      <section className="pt-36 pb-20 px-6 text-center border-b border-slate-100 bg-white w-full shrink-0">
 
         <div className="max-w-xl mx-auto space-y-6 relative z-10 animate-slide-up">
           {loading ? (
             <div className="space-y-4">
               <div className="relative w-14 h-14 mx-auto">
-                <div className="absolute inset-0 rounded-full border-4 border-white/10"></div>
-                <div className="absolute inset-0 rounded-full border-4 border-blue-400 border-t-transparent animate-spin"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-slate-100"></div>
+                <div className="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
               </div>
-              <h3 className="font-semibold text-white/90 text-sm tracking-wide uppercase">Cryptographic Verification</h3>
-              <p className="text-slate-400 text-xs">Validating credentials against CNTS Registry...</p>
+              <h3 className="font-semibold text-slate-700 text-sm tracking-wide uppercase">Cryptographic Verification</h3>
+              <p className="text-slate-500 text-xs">Validating credentials against CNTS Registry...</p>
             </div>
           ) : errorMsg ? (
             <div className="space-y-4">
-              <div className="mx-auto w-20 h-20 bg-red-500/10 text-red-400 rounded-full flex items-center justify-center border-4 border-red-500/20 shadow-inner animate-bounce">
+              <div className="mx-auto w-20 h-20 bg-red-50 text-red-600 rounded-full flex items-center justify-center border border-red-200 shadow-inner animate-bounce">
                 <XCircle size={44} className="stroke-[1.5]" />
               </div>
               <div className="space-y-2">
-                <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+                <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
                   Candidate Not Found
                 </h1>
-                <p className="text-slate-350 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+                <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
                   This registration could not be verified. Please check the QR code or contact CNTS Support.
                 </p>
               </div>
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="mx-auto w-20 h-20 bg-emerald-500/10 text-emerald-400 rounded-full flex items-center justify-center border-4 border-emerald-500/20 shadow-inner scale-up-bounce">
+              <div className="mx-auto w-20 h-20 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center border border-emerald-200 shadow-inner scale-up-bounce">
                 <CheckCircle2 size={44} className="stroke-[1.5]" />
               </div>
               <div className="space-y-2">
-                <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-white tracking-tight">
+                <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 tracking-tight">
                   Registration Successfully Verified
                 </h1>
-                <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-medium">
+                <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-xl mx-auto font-medium">
                   This candidate is officially registered for the Courage National Talent Search (CNTS) – Founding Edition 2026.
                 </p>
               </div>
@@ -172,7 +169,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
         {loading ? null : errorMsg ? (
           /* Verification Failed Page Body */
           <div className="bg-white border border-slate-200/80 rounded-3xl p-8 sm:p-12 text-center shadow-md space-y-8 animate-in fade-in zoom-in-95 duration-300">
-            <p className="text-slate-505 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
+            <p className="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-md mx-auto">
               If you scanned a printed copy, check that the CNTS ID matches the text below the code.
             </p>
             <div className="h-px bg-slate-100 w-full" />

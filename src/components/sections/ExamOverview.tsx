@@ -272,7 +272,7 @@ export default function ExamOverview() {
                 </svg>
               </div>
               
-              <p className="text-[10px] text-slate-450 font-bold text-center mt-6 tracking-widest font-mono uppercase">
+              <p className="text-[10px] text-slate-400 font-bold text-center mt-6 tracking-widest font-mono uppercase">
                 Interactive Weightage Wheel
               </p>
             </div>

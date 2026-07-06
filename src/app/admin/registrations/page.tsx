@@ -350,7 +350,7 @@ export default function AdminRegistrationsPage() {
                 placeholder="Search by student, parent, school name, or ID..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-11 pr-8 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-850/10 transition-all"
+                className="w-full pl-11 pr-8 py-3 rounded-xl border border-slate-200 bg-slate-50/50 text-sm outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all"
               />
               {search && (
                 <button
@@ -368,7 +368,7 @@ export default function AdminRegistrationsPage() {
               <select
                 value={selectedClass}
                 onChange={(e) => setSelectedClass(e.target.value)}
-                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-850 focus:bg-white focus:ring-4 focus:ring-blue-850/5 transition-all"
+                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/5 transition-all"
               >
                 <option value="">All Classes</option>
                 <option value="5">Class 5</option>
@@ -381,7 +381,7 @@ export default function AdminRegistrationsPage() {
               <select
                 value={selectedLanguage}
                 onChange={(e) => setSelectedLanguage(e.target.value)}
-                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-850 focus:bg-white focus:ring-4 focus:ring-blue-850/5 transition-all"
+                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/5 transition-all"
               >
                 <option value="">All Languages</option>
                 <option value="English">English</option>
@@ -392,7 +392,7 @@ export default function AdminRegistrationsPage() {
               <select
                 value={selectedState}
                 onChange={(e) => setSelectedState(e.target.value)}
-                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-850 focus:bg-white focus:ring-4 focus:ring-blue-850/5 transition-all max-w-[150px] truncate"
+                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/5 transition-all max-w-[150px] truncate"
               >
                 <option value="">All States</option>
                 {uniqueStates.map(st => (
@@ -404,7 +404,7 @@ export default function AdminRegistrationsPage() {
               <select
                 value={selectedSource}
                 onChange={(e) => setSelectedSource(e.target.value)}
-                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-850 focus:bg-white focus:ring-4 focus:ring-blue-850/5 transition-all max-w-[150px] truncate"
+                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/5 transition-all max-w-[150px] truncate"
               >
                 <option value="">All Channels</option>
                 {uniqueSources.map(src => (
@@ -416,7 +416,7 @@ export default function AdminRegistrationsPage() {
               <select
                 value={selectedPaymentStatus}
                 onChange={(e) => setSelectedPaymentStatus(e.target.value)}
-                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-850 focus:bg-white focus:ring-4 focus:ring-blue-850/5 transition-all"
+                className="px-4 py-3 border border-slate-200 bg-slate-50/50 text-xs font-semibold text-slate-600 rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/5 transition-all"
               >
                 <option value="">All Payment Statuses</option>
                 <option value="PAID">Paid</option>

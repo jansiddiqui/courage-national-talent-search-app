@@ -15,7 +15,7 @@ export default function BlogCTA() {
           <h4 className="font-display font-bold text-xl leading-tight">
             Register for Courage National Talent Search (CNTS)
           </h4>
-          <p className="text-slate-350 text-xs leading-relaxed">
+          <p className="text-slate-400 text-xs leading-relaxed">
             Assess cognitive aptitude, verbal reasoning, mathematical logic, and critical thinking. Complete mapping reports + digital verifiable certificates included.
           </p>
         </div>

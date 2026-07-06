@@ -325,14 +325,14 @@ export default function LanguageSkillsHub() {
                     className="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 text-xs font-bold text-slate-700 flex justify-between items-center transition-colors"
                   >
                     <span>Alphabet EJOTY Rank Tables</span>
-                    <ArrowRight size={14} className="text-slate-450" />
+                    <ArrowRight size={14} className="text-slate-400" />
                   </Link>
                   <Link 
                     href="/academy/language/number-series/tricks"
                     className="p-3 bg-white hover:bg-slate-50 rounded-xl border border-slate-100 text-xs font-bold text-slate-700 flex justify-between items-center transition-colors"
                   >
                     <span>Perfect Squares & Cubes Grid</span>
-                    <ArrowRight size={14} className="text-slate-450" />
+                    <ArrowRight size={14} className="text-slate-400" />
                   </Link>
                 </div>
               </div>

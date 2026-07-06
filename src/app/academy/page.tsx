@@ -122,7 +122,7 @@ export default function AcademyPage() {
     purple: {
       outer: "bg-purple-50/40 border-purple-100/50",
       inner: "bg-gradient-to-br from-purple-500/80 to-pink-600/80 text-white opacity-80",
-      tag: "bg-purple-50/30 border-purple-100/30 text-purple-650/85",
+      tag: "bg-purple-50/30 border-purple-100/30 text-purple-600/85",
       glow: "bg-gradient-to-r from-purple-400 to-pink-500"
     }
   };
@@ -197,7 +197,7 @@ export default function AcademyPage() {
                     <span className={`text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full border flex items-center gap-1.5 ${
                       sub.active 
                         ? "bg-emerald-50/60 border-emerald-100 text-emerald-700 font-bold animate-pulse-slow" 
-                        : "bg-slate-50 border-slate-100 text-slate-450"
+                        : "bg-slate-50 border-slate-100 text-slate-400"
                     }`}>
                       {sub.active && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping shrink-0" />}
                       {sub.badge}
@@ -237,7 +237,7 @@ export default function AcademyPage() {
                   {sub.active ? (
                     <Link 
                       href={sub.href}
-                      className="w-full py-4 px-6 bg-gradient-to-r from-blue-700 via-indigo-650 to-indigo-800 text-white rounded-2xl flex items-center justify-between font-black text-xs sm:text-sm shadow-md hover:shadow-lg hover:from-blue-800 hover:to-indigo-900 hover:scale-[1.01] hover:ring-4 hover:ring-blue-100 transition-all duration-300 group/btn"
+                      className="w-full py-4 px-6 bg-gradient-to-r from-blue-700 via-indigo-600 to-indigo-800 text-white rounded-2xl flex items-center justify-between font-black text-xs sm:text-sm shadow-md hover:shadow-lg hover:from-blue-800 hover:to-indigo-900 hover:scale-[1.01] hover:ring-4 hover:ring-blue-100 transition-all duration-300 group/btn"
                     >
                       <span className="flex items-center gap-2">
                         <Icon size={14} className="text-blue-200 animate-pulse" />
@@ -295,7 +295,7 @@ export default function AcademyPage() {
                 </div>
 
                 {/* Animated icon container */}
-                <div className="p-3 rounded-2xl bg-blue-50/70 text-blue-700 border border-blue-100/40 w-fit group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-650 group-hover:text-white group-hover:scale-105 group-hover:shadow-md group-hover:shadow-blue-500/10 transition-all duration-350">
+                <div className="p-3 rounded-2xl bg-blue-50/70 text-blue-700 border border-blue-100/40 w-fit group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-indigo-600 group-hover:text-white group-hover:scale-105 group-hover:shadow-md group-hover:shadow-blue-500/10 transition-all duration-350">
                   <PillarIcon size={20} className="transition-transform duration-350" />
                 </div>
 

@@ -148,25 +148,20 @@ export default function ContactPage() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 md:pb-28 px-6 text-center">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+      <section className="pt-36 pb-12 px-6 text-center border-b border-slate-100 bg-white">
         
-        <div className="max-w-3xl mx-auto space-y-6 relative z-10 animate-slide-up">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10">
-            <Mail size={12} className="text-amber-400" />
-            <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
-              Contact Us
-            </span>
+        <div className="max-w-3xl mx-auto space-y-4 relative z-10">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-blue-700 mx-auto uppercase tracking-wider">
+            <Mail size={12} className="text-amber-500 fill-amber-500 animate-pulse" />
+            <span>Contact Us</span>
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
-            How can we <span className="text-blue-400">help you</span>?
+          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-tight">
+            How can we <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">help you</span>?
           </h1>
-          <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-xl mx-auto font-medium">
             Have questions about CNTS registrations, diagnostic parameters, or school partnerships? Get in touch with our team. <strong>Courage National Talent Search (CNTS) is an official program operated by Courage Library.</strong>
           </p>
         </div>
@@ -196,8 +191,8 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Email Support</span>
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-850 transition-colors">support@thecouragelibrary.com</span>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Response within 24 hours</p>
+                    <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-800 transition-colors">support@thecouragelibrary.com</span>
+                    <p className="text-[10px] text-slate-500 mt-0.5">Response within 24 hours</p>
                   </div>
                 </a>
 
@@ -212,7 +207,7 @@ export default function ContactPage() {
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Call Support (Calls Only)</span>
                     <span className="text-sm font-semibold text-slate-700 group-hover:text-amber-850 transition-colors">+91 83606 03173</span>
-                    <p className="text-[10px] text-slate-400 mt-0.5">For phone calls only. Use contact form for other issues.</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5">For phone calls only. Use contact form for other issues.</p>
                   </div>
                 </a>
 
@@ -304,7 +299,7 @@ export default function ContactPage() {
                     </button>
                     <Link
                       href="/"
-                      className="px-6 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-850/10 cursor-pointer"
+                      className="px-6 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 cursor-pointer"
                     >
                       Back to Home
                     </Link>
@@ -316,12 +311,12 @@ export default function ContactPage() {
                   
                   <div className="space-y-1.5">
                     <h3 className="font-display font-bold text-lg text-slate-800">Send an Inquiry</h3>
-                    <p className="text-slate-400 text-xs">Fill out the form below. We respond to all inquiries within 24 hours.</p>
+                    <p className="text-slate-500 text-xs">Fill out the form below. We respond to all inquiries within 24 hours.</p>
                   </div>
 
                   {submitError && (
                     <div className="p-3 bg-red-50 border border-red-100 rounded-xl flex items-center gap-2.5 text-xs text-red-800 animate-slide-up">
-                      <AlertCircle className="shrink-0 text-red-650" size={14} />
+                      <AlertCircle className="shrink-0 text-red-600" size={14} />
                       <p className="font-semibold">{submitError}</p>
                     </div>
                   )}
@@ -467,7 +462,7 @@ export default function ContactPage() {
 
                   <button
                     type="submit"
-                    className="w-full py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-850/10 hover:shadow-blue-750/20 cursor-pointer text-center"
+                    className="w-full py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 hover:shadow-blue-750/20 cursor-pointer text-center"
                   >
                     Send Message
                   </button>

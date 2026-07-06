@@ -21,9 +21,9 @@ export default function BrandingSection() {
           </div>
           <div className="flex items-center gap-4 text-[10px] font-bold text-slate-600 tracking-wide">
             <span className="flex items-center gap-1">✓ CBSE</span>
-            <span className="text-slate-350">|</span>
+            <span className="text-slate-400">|</span>
             <span className="flex items-center gap-1">✓ ICSE</span>
-            <span className="text-slate-350">|</span>
+            <span className="text-slate-400">|</span>
             <span className="flex items-center gap-1">✓ State Boards</span>
           </div>
         </div>

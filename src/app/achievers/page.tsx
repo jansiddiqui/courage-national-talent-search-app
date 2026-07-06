@@ -102,26 +102,26 @@ export default function AchieversPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero */}
-      <div className="bg-slate-900 text-white pt-36 pb-20 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_25%_40%,#1e3a8a,transparent_55%)] opacity-50" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_75%_60%,#92400e,transparent_50%)] opacity-20" />
+      <div className="bg-white border-b border-slate-100 text-slate-800 pt-36 pb-20 ">
+        
+        
         {/* Floating medal orbs */}
         <div className="absolute top-16 right-12 w-24 h-24 rounded-full bg-amber-400/10 blur-2xl animate-float" />
-        <div className="absolute bottom-8 left-16 w-16 h-16 rounded-full bg-blue-500/10 blur-xl animate-float-slow" />
+        
 
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-500/15 border border-amber-500/30 text-amber-400 rounded-full text-[11px] font-bold uppercase tracking-widest mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-amber-50 border border-amber-100 text-amber-700 rounded-full text-[11px] font-bold uppercase tracking-widest mb-6">
             <Star size={13} className="fill-amber-400 animate-spin-slow" />
             CNTS Hall of Fame
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-6xl tracking-tight text-white mb-4 leading-tight">
+          <h1 className="font-display font-bold text-4xl md:text-6xl tracking-tight text-slate-900 mb-4 leading-tight">
             Achievers &amp;{" "}
             <span className="gradient-text-amber">Excellence Kits</span>
           </h1>
-          <p className="text-slate-400 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="text-slate-500 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
             Every candidate who gives their best is rewarded. Exceptional performance earns
             custom physical medals, national recognition, and exclusive digital honors.
           </p>
@@ -175,7 +175,7 @@ export default function AchieversPage() {
                 <div className={`md:col-span-2 ${kit.bgColor} p-8 md:p-10 flex flex-col justify-center`}>
                   <div className="mb-4">
                     {kit.iconType === "trophy" && <Trophy size={48} className="text-amber-500" />}
-                    {kit.iconType === "medal" && <Medal size={48} className="text-slate-450" />}
+                    {kit.iconType === "medal" && <Medal size={48} className="text-slate-400" />}
                     {kit.iconType === "award" && <Award size={48} className="text-orange-600" />}
                   </div>
                   <span className={`inline-block px-3 py-1 rounded-lg border text-[10px] font-bold uppercase tracking-wider mb-3 w-fit ${kit.badgeColor}`}>
@@ -246,14 +246,14 @@ export default function AchieversPage() {
                   <item.icon size={20} />
                 </div>
                 <div className="font-bold text-slate-800 text-xs">{item.label}</div>
-                <div className="text-[10px] text-slate-450 mt-1">{item.sub}</div>
+                <div className="text-[10px] text-slate-400 mt-1">{item.sub}</div>
               </div>
             ))}
           </div>
         </div>
 
         {/* CTA */}
-        <div className="bg-slate-900 text-white rounded-3xl p-10 md:p-14 text-center relative overflow-hidden shadow-xl shadow-slate-900/10">
+        <div className="bg-white border-b border-slate-100 text-slate-800 rounded-3xl p-10 md:p-14 text-center  shadow-xl shadow-slate-900/10">
           <div className="absolute top-0 right-0 w-48 h-48 bg-blue-800/15 rounded-full blur-3xl pointer-events-none" />
           <div className="absolute bottom-0 left-0 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
           <div className="relative space-y-3 max-w-lg mx-auto mb-8">
@@ -263,7 +263,7 @@ export default function AchieversPage() {
             <h3 className="font-display font-bold text-2xl md:text-3xl text-white">
               Unlock Your Award Slot
             </h3>
-            <p className="text-sm text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-500 leading-relaxed">
               All registered Class 5–8 candidates are automatically evaluated for all three
               recognition tiers. Register before slots fill up.
             </p>

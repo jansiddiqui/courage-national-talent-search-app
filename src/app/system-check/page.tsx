@@ -90,19 +90,19 @@ export default function SystemCheckPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
-      <section className="bg-slate-900 text-white pt-36 pb-20 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-50" />
+      <section className="bg-white border-b border-slate-100 text-slate-800 pt-36 pb-20 ">
+        
         <div className="max-w-3xl mx-auto px-6 relative z-10 text-center animate-slide-up">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400 mb-6 uppercase tracking-wider mx-auto">
             <Laptop size={12} /> Diagnostic Desk
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-white mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-slate-900 mb-6 leading-tight">
             System Compatibility Check
           </h1>
-          <p className="text-slate-400 text-sm md:text-base max-w-xl mx-auto mb-8">
+          <p className="text-slate-500 text-sm md:text-base max-w-xl mx-auto mb-8">
             Run a diagnostic compatibility verify check on your device and browser before launching the conceptual assessment.
           </p>
         </div>
@@ -114,7 +114,7 @@ export default function SystemCheckPage() {
           <div className="flex justify-between items-center pb-4 border-b border-slate-100">
             <div>
               <h3 className="font-bold text-slate-800 text-base">Device Diagnostic Summary</h3>
-              <p className="text-[10px] text-slate-450 mt-1">Verifies local script capability, resolution, and connectivity.</p>
+              <p className="text-[10px] text-slate-500 mt-1">Verifies local script capability, resolution, and connectivity.</p>
             </div>
             <button
               onClick={runDiagnostics}

@@ -87,25 +87,20 @@ export default function SampleReport() {
 
   return (
     <main className="min-h-screen bg-[#F8FAFF]">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Header Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-950 to-indigo-950 text-white pt-36 pb-20 md:pb-28 px-6 text-center">
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-blue-800/10 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-80 h-80 bg-amber-500/5 rounded-full blur-3xl pointer-events-none translate-y-1/2 -translate-x-1/2" />
+      <section className="pt-36 pb-12 px-6 text-center border-b border-slate-100 bg-white">
         
-        <div className="max-w-3xl mx-auto space-y-6 relative z-10">
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-white/10 rounded-full border border-white/10">
-            <Star size={12} className="text-amber-400" />
-            <span className="text-[10px] font-bold text-amber-300 uppercase tracking-widest">
-              Report Blueprint
-            </span>
+        <div className="max-w-3xl mx-auto space-y-4">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-blue-700 mx-auto uppercase tracking-wider">
+            <Star size={12} className="text-amber-500 fill-amber-500 animate-pulse" />
+            <span>Report Blueprint</span>
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-white leading-tight">
-            Sample <span className="text-blue-400">Talent Report</span>.
+          <h1 className="font-display font-bold text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-tight">
+            Sample <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Talent Report</span>.
           </h1>
-          <p className="text-slate-300 text-sm md:text-base leading-relaxed max-w-xl mx-auto">
+          <p className="text-slate-500 text-sm sm:text-base max-w-xl mx-auto leading-relaxed font-medium">
             This is a mock presentation of the multi-dimensional report parents receive. No single test mark can show your child&apos;s genius—we map it in detail.
           </p>
         </div>
@@ -154,7 +149,7 @@ export default function SampleReport() {
             <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm space-y-6">
               <div>
                 <h3 className="font-display font-bold text-slate-800 text-lg">Cognitive Domain Performance</h3>
-                <p className="text-xs text-slate-400 mt-0.5">
+                <p className="text-xs text-slate-500 mt-0.5">
                   Detailed analysis of cognitive aptitudes independent of school boards.
                 </p>
               </div>
@@ -167,7 +162,7 @@ export default function SampleReport() {
                         <h4 className="font-semibold text-slate-800 text-sm leading-tight group-hover:text-blue-800 transition-colors">
                           {domain.name}
                         </h4>
-                        <p className="text-[11px] text-slate-400 leading-normal max-w-lg mt-0.5">
+                        <p className="text-[11px] text-slate-500 leading-normal max-w-lg mt-0.5">
                           {domain.desc}
                         </p>
                       </div>
@@ -242,7 +237,7 @@ export default function SampleReport() {
                 ].map((s) => (
                   <div key={s.title} className="p-3 bg-slate-50 border border-slate-100/50 rounded-2xl text-left">
                     <span className="font-bold text-slate-800 text-xs block">{s.title}</span>
-                    <p className="text-[10px] text-slate-400 mt-0.5 leading-normal">{s.desc}</p>
+                    <p className="text-[10px] text-slate-500 mt-0.5 leading-normal">{s.desc}</p>
                   </div>
                 ))}
               </div>
@@ -332,7 +327,7 @@ export default function SampleReport() {
                       {job.match}
                     </span>
                   </div>
-                  <p className="text-[10px] text-slate-400 leading-normal">{job.desc}</p>
+                  <p className="text-[10px] text-slate-500 leading-normal">{job.desc}</p>
                 </div>
               ))}
             </div>

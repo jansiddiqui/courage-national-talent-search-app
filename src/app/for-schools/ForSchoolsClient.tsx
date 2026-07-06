@@ -165,21 +165,19 @@ Remarks: ${formData.message || "None provided"}
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Section */}
-      <section className="bg-slate-900 text-white pt-32 pb-20 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-50" />
-        <div className="absolute inset-0 bg-[linear-gradient(to_bottom,transparent_40%,#0f172a_100%)] opacity-80" />
+      <section className="pt-36 pb-12 px-6 text-center border-b border-slate-100 bg-white">
         
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400 mb-6 uppercase tracking-wider mx-auto">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-blue-700 mb-6 uppercase tracking-wider mx-auto">
             <Building size={12} /> Institutional Partnership Portal
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-white mb-6 max-w-4xl mx-auto leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-slate-900 mb-6 max-w-4xl mx-auto leading-tight">
             Enable Talent Discovery in Your School
           </h1>
-          <p className="text-slate-400 text-base md:text-lg max-w-2xl mx-auto mb-8">
+          <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto mb-8 font-medium">
             Empower your students in Classes 5–8 with conceptual cognitive diagnostics. Move beyond rote memorization and benchmark academic skills against state and national standards.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
@@ -191,7 +189,7 @@ Remarks: ${formData.message || "None provided"}
             </a>
             <Link
               href="/why-cnts"
-              className="bg-white/5 hover:bg-white/10 text-white border border-white/10 font-semibold py-3 px-8 rounded-xl transition-all text-sm"
+              className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-3 px-8 rounded-xl transition-all text-sm"
             >
               Why CNTS?
             </Link>

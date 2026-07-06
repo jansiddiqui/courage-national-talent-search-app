@@ -928,7 +928,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                   <div>
                     <h4
                       className={`text-sm font-semibold transition-colors ${
-                        isActive ? "text-white" : "text-slate-350"
+                        isActive ? "text-white" : "text-slate-400"
                       }`}
                     >
                       {s.label}
@@ -971,7 +971,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                     ✓ Draft Saved
                   </span>
                 ) : (
-                  <span className="text-[10px] text-slate-450">
+                  <span className="text-[10px] text-slate-400">
                     Autosave Active
                   </span>
                 )}
@@ -991,7 +991,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                         isCompleted
                           ? "bg-emerald-500 border-emerald-400 text-white"
                           : isActive
-                          ? "bg-blue-800 border-blue-850 text-white"
+                          ? "bg-blue-800 border-blue-800 text-white"
                           : "bg-white border-slate-200 text-slate-400"
                       }`}
                     >
@@ -1208,7 +1208,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                     {/* School Code (Optional) */}
                     <div className="space-y-1.5">
                       <label htmlFor="schoolCode" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                        <Building size={13} className="text-slate-450" />
+                        <Building size={13} className="text-slate-400" />
                         School Invite Code <span className="text-slate-400 font-medium">(Optional)</span>
                       </label>
                       <div className="relative">
@@ -1326,7 +1326,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                       id="whatsappSameAsMobile"
                       checked={whatsappSameAsMobile}
                       onChange={(e) => handleSameAsCheckboxChange(e.target.checked)}
-                      className="w-4 h-4 rounded text-blue-850 border-slate-300 focus:ring-blue-850 cursor-pointer"
+                      className="w-4 h-4 rounded text-blue-800 border-slate-300 focus:ring-blue-800 cursor-pointer"
                     />
                     <label htmlFor="whatsappSameAsMobile" className="text-xs font-semibold text-slate-605 cursor-pointer select-none">
                       WhatsApp number is same as mobile number
@@ -1641,7 +1641,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                       id="consent"
                       checked={parentConsent}
                       onChange={(e) => setParentConsent(e.target.checked)}
-                      className="mt-1 w-4 h-4 rounded text-blue-800 focus:ring-blue-850 cursor-pointer"
+                      className="mt-1 w-4 h-4 rounded text-blue-800 focus:ring-blue-800 cursor-pointer"
                     />
                     <label htmlFor="consent" className="text-[11px] font-semibold text-slate-600 leading-relaxed cursor-pointer select-none">
                       I hereby consent to register my child for Courage National Talent Search (CNTS) 2026. I agree to the <Link href="/terms" target="_blank" className="text-blue-800 hover:underline">Terms of Use</Link> and <Link href="/privacy" target="_blank" className="text-blue-800 hover:underline">Privacy Policy</Link>.
@@ -1650,7 +1650,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
 
                   {/* Registration Fee Block */}
                   <div className="p-4 bg-slate-900 border border-slate-800 rounded-2xl flex items-center justify-between mt-6 text-white shadow-lg shadow-slate-900/10">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-450">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
                       Total Payable Amount
                     </span>
                     <div className="flex items-center gap-2.5">
@@ -1761,7 +1761,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                         {post.description}
                       </p>
                     </div>
-                    <span className="text-blue-850 text-[10px] font-bold group-hover:underline mt-3">
+                    <span className="text-blue-800 text-[10px] font-bold group-hover:underline mt-3">
                       Read Guide &rarr;
                     </span>
                   </Link>

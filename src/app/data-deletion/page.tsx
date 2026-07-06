@@ -12,28 +12,27 @@ export const metadata: Metadata = {
 export default function DataDeletionPage() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero section */}
-      <div className="bg-slate-900 text-white pt-36 pb-16 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-40" />
+      <div className="pt-36 pb-12 border-b border-slate-100 bg-white w-full shrink-0">
         <div className="max-w-4xl mx-auto px-6 relative z-10">
           <Link 
             href="/" 
-            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors mb-6 uppercase tracking-wider"
+            className="inline-flex items-center gap-2 text-xs font-semibold text-slate-500 hover:text-blue-700 transition-colors mb-6 uppercase tracking-wider"
           >
             <ArrowLeft size={14} /> Back to Home
           </Link>
           <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-              <ShieldCheck size={20} />
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full text-xs font-bold text-emerald-700 uppercase tracking-wider">
+              <ShieldCheck size={12} className="text-emerald-500 fill-emerald-500 animate-pulse" />
+              <span>Privacy & Data Protection</span>
             </div>
-            <span className="text-xs font-bold uppercase tracking-widest text-emerald-400">Privacy & Data Protection</span>
           </div>
-          <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-white mb-3">
+          <h1 className="text-3xl md:text-4xl font-display font-bold tracking-tight text-slate-900 mb-3">
             Data Deletion Request
           </h1>
-          <p className="text-slate-400 text-sm max-w-xl">
+          <p className="text-slate-500 text-sm max-w-xl font-medium">
             Courage National Talent Search (CNTS) respects your privacy and provides a transparent process for requesting deletion of personal information stored within our systems.
           </p>
         </div>

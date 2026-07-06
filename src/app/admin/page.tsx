@@ -783,7 +783,7 @@ export default function AdminOverviewPage() {
                   <h3 className="font-display font-bold text-slate-800 text-base">
                     Registrations by State
                   </h3>
-                  <p className="text-xs text-slate-505">Top 5 active locations</p>
+                  <p className="text-xs text-slate-500">Top 5 active locations</p>
                 </div>
 
                 <div className="space-y-3">
@@ -915,7 +915,7 @@ export default function AdminOverviewPage() {
                           <span className="text-[10px] font-semibold text-slate-400 uppercase tracking-wide block">
                             Date / Time
                           </span>
-                          <span className="text-slate-505 font-medium">
+                          <span className="text-slate-500 font-medium">
                             {new Date(reg.created_at).toLocaleDateString()} · {new Date(reg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                           </span>
                         </div>
@@ -958,7 +958,7 @@ export default function AdminOverviewPage() {
                   onIcon: Unlock,
                   offIcon: Lock,
                   onColor: "text-emerald-600 bg-emerald-50 border-emerald-100",
-                  offColor: "text-red-650 bg-red-50 border-red-100"
+                  offColor: "text-red-600 bg-red-50 border-red-100"
                 },
                 {
                   key: "payment_status",
@@ -1023,7 +1023,7 @@ export default function AdminOverviewPage() {
                       <button
                         onClick={() => handleBulkNotify(setting.key)}
                         disabled={bulkNotifyProgress[setting.key] === "sending"}
-                        className="w-full py-2 bg-indigo-650 hover:bg-indigo-700 disabled:bg-indigo-300 border border-transparent rounded-lg text-[10px] font-bold text-white transition-all flex items-center justify-center gap-1 cursor-pointer mt-1"
+                        className="w-full py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-300 border border-transparent rounded-lg text-[10px] font-bold text-white transition-all flex items-center justify-center gap-1 cursor-pointer mt-1"
                       >
                         {bulkNotifyProgress[setting.key] === "sending" ? "Notifying..." : "Notify All Candidates"}
                       </button>
@@ -1154,7 +1154,7 @@ export default function AdminOverviewPage() {
                         style={{ width: `${(broadcastProgress.current / broadcastProgress.total) * 100}%` }}
                       />
                     </div>
-                    <div className="text-[11px] text-slate-505 font-medium">
+                    <div className="text-[11px] text-slate-500 font-medium">
                       Dispatching to: <span className="font-semibold text-slate-800">{broadcastProgress.processingName}</span>
                     </div>
                     <div className="flex justify-between text-[10px] text-slate-400 font-semibold pt-1">
@@ -1344,7 +1344,7 @@ export default function AdminOverviewPage() {
                   <h3 className="font-display font-bold text-slate-800 text-base">
                     Active Promotion Registry
                   </h3>
-                  <p className="text-xs text-slate-505">Manage checkout discount codes and their status</p>
+                  <p className="text-xs text-slate-500">Manage checkout discount codes and their status</p>
                 </div>
                 <button
                   onClick={fetchCoupons}

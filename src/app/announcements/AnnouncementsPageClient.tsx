@@ -162,20 +162,20 @@ export default function AnnouncementsPageClient() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero */}
-      <div className="bg-slate-900 text-white pt-36 pb-16 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-40" />
+      <div className="bg-white border-b border-slate-100 text-slate-800 pt-36 pb-16 ">
+        
         <div className="max-w-7xl mx-auto px-6 relative z-10">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-500/15 border border-blue-500/30 text-blue-400 rounded-full text-[11px] font-bold uppercase tracking-widest mb-5">
             <Volume2 size={12} className="animate-bounce" />
             Official Notice Board
           </div>
-          <h1 className="font-display font-bold text-4xl md:text-5xl tracking-tight text-white mb-4 max-w-2xl">
+          <h1 className="font-display font-bold text-4xl md:text-5xl tracking-tight text-slate-900 mb-4 max-w-2xl">
             Announcements &amp; Alerts
           </h1>
-          <p className="text-slate-400 text-sm max-w-xl leading-relaxed">
+          <p className="text-slate-500 text-sm max-w-xl leading-relaxed">
             Stay up to date with the latest verified notices about deadlines, credential issuance,
             evaluation updates, and recognition releases.
           </p>
@@ -341,9 +341,9 @@ export default function AnnouncementsPageClient() {
           </div>
         ) : (
           <div className="text-center py-12 bg-white rounded-3xl border border-slate-150 p-8 space-y-3 mb-12">
-            <Bell size={40} className="text-slate-350 mx-auto" />
+            <Bell size={40} className="text-slate-400 mx-auto" />
             <h3 className="font-display font-bold text-slate-800 text-base">No announcements found</h3>
-            <p className="text-slate-400 text-xs max-w-sm mx-auto">
+            <p className="text-slate-500 text-xs max-w-sm mx-auto">
               We couldn&apos;t find any announcements matching &quot;{searchQuery}&quot;. Try adjusting your keywords.
             </p>
           </div>
@@ -358,7 +358,7 @@ export default function AnnouncementsPageClient() {
               Quick Resolution Support
             </div>
             <h3 className="font-display font-bold text-white text-xl">Have any questions?</h3>
-            <p className="text-[13px] text-slate-400 max-w-sm leading-relaxed">
+            <p className="text-[13px] text-slate-500 max-w-sm leading-relaxed">
               Contact our official CNTS Parent Support Desk. We reply to support tickets and queries within 2 hours.
             </p>
           </div>

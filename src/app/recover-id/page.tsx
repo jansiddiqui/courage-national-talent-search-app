@@ -94,19 +94,19 @@ export default function RecoverIdPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
-      <Navbar theme="dark" />
+      <Navbar theme="light" />
 
       {/* Hero Header */}
-      <section className="bg-slate-900 text-white pt-36 pb-16 relative overflow-hidden shrink-0">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_30%,#1e3a8a,transparent_60%)] opacity-50" />
+      <section className="bg-white border-b border-slate-100 text-slate-800 pt-36 pb-16 ">
+        
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center animate-slide-up">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400 mb-6 uppercase tracking-wider mx-auto">
             <Hash size={12} /> Candidate Verification & Recovery
           </div>
-          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-white mb-4 leading-tight">
+          <h1 className="text-4xl md:text-5xl font-display font-bold tracking-tight text-slate-900 mb-4 leading-tight">
             Recover Candidate CNTS ID
           </h1>
-          <p className="text-slate-450 text-xs md:text-sm max-w-xl mx-auto">
+          <p className="text-slate-500 text-xs md:text-sm max-w-xl mx-auto">
             Retrieve your child&apos;s credentials instantly using the registered mobile number or parent email address.
           </p>
         </div>
@@ -122,7 +122,7 @@ export default function RecoverIdPage() {
             <h2 className="font-display font-bold text-lg text-slate-800">Search Recovery Desk</h2>
             <Link 
               href="/login" 
-              className="text-xs font-semibold text-blue-850 hover:underline flex items-center gap-1"
+              className="text-xs font-semibold text-blue-800 hover:underline flex items-center gap-1"
             >
               <ArrowLeft size={13} /> Back to Login
             </Link>
@@ -149,14 +149,14 @@ export default function RecoverIdPage() {
                     placeholder="Enter registered mobile (e.g. 9876543210) or email address"
                     value={contactInfo}
                     onChange={(e) => setContactInfo(e.target.value)}
-                    className="w-full pl-11 pr-4 py-3.5 border border-slate-200 bg-slate-50/50 text-sm font-semibold rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-850/10 transition-all placeholder:text-slate-400"
+                    className="w-full pl-11 pr-4 py-3.5 border border-slate-200 bg-slate-50/50 text-sm font-semibold rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all placeholder:text-slate-400"
                     disabled={loading}
                   />
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">
                     <Search size={16} />
                   </div>
                 </div>
-                <p className="text-[10px] text-slate-400 leading-normal">
+                <p className="text-[10px] text-slate-500 leading-normal">
                   Note: The contact detail must match exactly with what you entered during registration.
                 </p>
               </div>

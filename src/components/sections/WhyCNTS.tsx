@@ -53,7 +53,7 @@ export default function WhyCNTS() {
             {/* Row 1 */}
             <div className="grid grid-cols-2 hover:bg-slate-50/30 transition-colors">
               <div className="p-4 sm:p-5 md:p-6 border-r border-slate-100/80 flex items-center gap-3">
-                <XCircle className="text-slate-350 shrink-0 hidden sm:block" size={18} />
+                <XCircle className="text-slate-400 shrink-0 hidden sm:block" size={18} />
                 <span className="text-slate-500 font-medium text-xs sm:text-sm md:text-base leading-relaxed">
                   Tests what a child remembers
                 </span>
