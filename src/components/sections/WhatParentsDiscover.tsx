@@ -32,7 +32,7 @@ const discoveries = [
 
 export default function WhatParentsDiscover() {
   return (
-    <section className="py-24 lg:py-32 bg-slate-50 border-t border-b border-slate-100">
+    <section className="py-10 md:py-14 lg:py-16 bg-slate-50 border-t border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-6">
         <div className="text-center max-w-2xl mx-auto mb-16 space-y-4">
           <span className="inline-block text-xs font-bold text-blue-800 uppercase tracking-widest bg-blue-50 border border-blue-100/50 px-3.5 py-1.5 rounded-full font-sans">

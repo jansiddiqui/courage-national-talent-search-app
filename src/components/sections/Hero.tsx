@@ -183,21 +183,24 @@ export default function Hero() {
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-700 shrink-0 mt-0.5"><Banknote size={14} /></div>
+                <div className="w-6 h-6 rounded-xl bg-blue-50 border border-blue-100/50 flex items-center justify-center text-blue-700 shrink-0 mt-0.5"><Banknote size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Exam Fee</span>
-                  <span className="text-xs font-bold text-blue-800">₹99 <span className="text-[9px] text-slate-500 font-semibold">(Subsidized)</span></span>
+                  <div className="flex items-center gap-1.5 leading-none mt-0.5">
+                    <span className="text-xs font-bold text-slate-400 line-through">₹499</span>
+                    <span className="text-xs font-bold text-blue-800">₹99</span>
+                  </div>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-700 shrink-0 mt-0.5"><Calendar size={14} /></div>
+                <div className="w-6 h-6 rounded-xl bg-indigo-50 border border-indigo-100/50 flex items-center justify-center text-indigo-700 shrink-0 mt-0.5"><Calendar size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Exam Date</span>
                   <span className="text-xs font-bold text-slate-855">{TIMELINE_LABELS.EXAM_DATE.replace(' (Sunday)', '')} <span className="text-[9px] text-slate-500 font-semibold">(Online)</span></span>
                 </div>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-700 shrink-0 mt-0.5"><ScrollText size={14} /></div>
+                <div className="w-6 h-6 rounded-xl bg-sky-50 border border-sky-100/50 flex items-center justify-center text-sky-700 shrink-0 mt-0.5"><ScrollText size={14} /></div>
                 <div>
                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">What You Get</span>
                   <span className="text-xs font-bold text-slate-850">Detailed Brain Strength Report & Certificate</span>
@@ -368,15 +371,15 @@ export default function Hero() {
         </div>
 
         {/* Eligibility Checker Section */}
-        <div className="mt-16 bg-white/80 backdrop-blur-md rounded-3xl border border-slate-100 p-6 md:p-8 shadow-xl max-w-4xl mx-auto space-y-6">
+        <div className="mt-16 bg-white/90 backdrop-blur-md rounded-3xl border border-slate-200/80 p-6 md:p-8 shadow-xl max-w-4xl mx-auto space-y-6">
           <div className="text-center max-w-xl mx-auto space-y-2">
-            <span className="text-[10px] font-bold text-blue-800 bg-blue-50 px-2.5 py-1 rounded-full uppercase tracking-wider inline-block">
+            <span className="text-xs font-bold text-blue-700 bg-blue-50 px-3 py-1 rounded-full uppercase tracking-wider inline-block">
               Instant Validation
             </span>
-            <h3 className="font-display font-bold text-xl md:text-2xl text-slate-900">
+            <h3 className="font-display font-bold text-xl md:text-2xl lg:text-3xl text-slate-900">
               Check Your Child&apos;s Exam Eligibility
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm text-slate-500">
               Enter details below to instantly verify if your child is eligible for the Founding Edition of CNTS 2026.
             </p>
           </div>
@@ -384,13 +387,13 @@ export default function Hero() {
           <div className="flex flex-col sm:flex-row items-center gap-4">
             {/* Class Selection */}
             <div className="w-full sm:w-1/3 space-y-1.5">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block">
                 Current Class / Grade
               </label>
               <select
                 value={checkClass}
                 onChange={(e) => setCheckClass(e.target.value)}
-                className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-xs font-semibold outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/5 transition-all text-slate-700"
+                className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-semibold outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 transition-all text-slate-700"
               >
                 <option value="">Select Grade</option>
                 <option value="5">Class 5</option>
@@ -402,14 +405,14 @@ export default function Hero() {
 
             {/* Date of Birth Input */}
             <div className="w-full sm:w-1/3 space-y-1.5">
-              <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+              <label className="text-xs font-bold text-slate-400 uppercase tracking-widest block">
                 Date of Birth
               </label>
               <input
                 type="date"
                 value={checkDob}
                 onChange={(e) => setCheckDob(e.target.value)}
-                className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-xs font-semibold outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/5 transition-all text-slate-700"
+                className="w-full h-12 px-4 rounded-xl border border-slate-200 bg-slate-50/50 text-sm font-semibold outline-none focus:border-blue-600 focus:bg-white focus:ring-4 focus:ring-blue-100 transition-all text-slate-700"
               />
             </div>
 
@@ -417,7 +420,7 @@ export default function Hero() {
             <div className="w-full sm:w-1/3 pt-5 sm:pt-6">
               <button
                 onClick={handleVerifyEligibility}
-                className="w-full h-12 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl shadow transition-all hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
+                className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white text-sm font-bold rounded-xl shadow-sm hover:shadow-md transition-all hover:-translate-y-0.5 active:translate-y-0 cursor-pointer"
               >
                 Verify Eligibility
               </button>
@@ -426,24 +429,24 @@ export default function Hero() {
 
           {/* Checker Results Alert */}
           {eligibilityResult && (
-            <div className={`p-4 rounded-2xl border text-xs leading-normal animate-slide-up ${
+            <div className={`p-5 rounded-2xl border text-sm leading-normal animate-slide-up ${
               eligibilityResult.status === "eligible"
                 ? "bg-emerald-50 border-emerald-100 text-emerald-800"
                 : "bg-red-50 border-red-100 text-red-800"
             }`}>
-              <div className="flex items-start gap-2.5">
+              <div className="flex items-start gap-3">
                 <div className="shrink-0 mt-0.5">
                   {eligibilityResult.status === "eligible" ? (
-                    <CheckCircle2 size={16} className="text-emerald-600" />
+                    <CheckCircle2 size={18} className="text-emerald-600" />
                   ) : (
-                    <AlertCircle size={16} className="text-red-600" />
+                    <AlertCircle size={18} className="text-red-600" />
                   )}
                 </div>
                 <div className="space-y-1">
-                  <p className="font-bold">{eligibilityResult.title}</p>
-                  <p className="opacity-90 leading-relaxed">{eligibilityResult.message}</p>
+                  <p className="font-bold text-base">{eligibilityResult.title}</p>
+                  <p className="opacity-95 leading-relaxed">{eligibilityResult.message}</p>
                   {eligibilityResult.status === "eligible" && (
-                    <div className="pt-2 flex flex-wrap gap-x-6 gap-y-1 opacity-80 text-[10px] font-semibold uppercase tracking-wider">
+                    <div className="pt-3 flex flex-wrap gap-x-6 gap-y-1.5 opacity-90 text-xs font-bold uppercase tracking-wider">
                       <span>✓ Class 5-8 Bracket</span>
                       <span>✓ Age verified ({eligibilityResult.age} years)</span>
                       <span>✓ Seat availability: HIGH</span>
@@ -460,12 +463,12 @@ export default function Hero() {
           {dynamicStats.map((s) => (
             <div
               key={s.label}
-              className="text-center px-2 py-4 sm:p-6 bg-white/70 backdrop-blur-sm rounded-xl border border-white shadow-sm flex flex-col justify-center min-h-[90px] sm:min-h-0"
+              className="text-center px-4 py-6 bg-gradient-to-b from-white to-slate-50/40 border border-slate-200/50 rounded-2xl hover:border-blue-200 hover:shadow-md transition-all duration-300 flex flex-col justify-center min-h-[95px] sm:min-h-0"
             >
-              <div className="font-display text-sm sm:text-xl md:text-3xl font-bold tracking-tight text-blue-800 mb-1 break-words leading-tight">
+              <div className="font-display text-base sm:text-lg md:text-xl lg:text-2xl font-black text-blue-700 mb-1 break-words leading-tight">
                 {s.value}
               </div>
-              <div className="text-[10px] sm:text-sm text-slate-500 font-medium leading-snug">
+              <div className="text-[10px] sm:text-xs text-slate-400 font-bold uppercase tracking-widest leading-snug">
                 {s.label}
               </div>
             </div>

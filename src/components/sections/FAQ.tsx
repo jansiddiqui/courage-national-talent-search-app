@@ -1,6 +1,7 @@
 "use client";
+
 import { useState } from "react";
-import { Plus, Minus } from "lucide-react";
+import { ChevronDown, Mail } from "lucide-react";
 
 const faqs = [
   {
@@ -41,73 +42,102 @@ export default function FAQ() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-12 md:py-24 lg:py-32 mesh-bg">
-      <div className="max-w-4xl mx-auto px-6">
+    <section id="faq" className="py-10 md:py-14 lg:py-16 mesh-bg border-b border-slate-100">
+      <div className="max-w-4xl mx-auto px-4 md:px-6">
+        
         {/* Header */}
-        <div className="text-center mb-14">
-          <span className="inline-block text-xs font-bold text-blue-700 uppercase tracking-widest mb-4 bg-blue-50 px-3 py-1 rounded-full">
+        <div className="text-center mb-12 space-y-3">
+          <span className="inline-block text-xs font-bold text-blue-700 uppercase tracking-widest bg-blue-50 px-3.5 py-1.5 rounded-full border border-blue-100/50">
             FAQs
           </span>
-          <h2 className="font-display text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight mb-4">
+          <h2 className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-slate-900 leading-tight tracking-tight">
             Questions? We&apos;ve got
             <br />
             <span className="gradient-text">clear answers.</span>
           </h2>
-          <p className="text-lg text-slate-500">
+          <p className="text-sm md:text-base text-slate-500 leading-relaxed max-w-md mx-auto">
             Everything parents and students ask before registering.
           </p>
         </div>
 
-        {/* Accordion */}
-        <div className="space-y-3">
+        {/* Accordion List */}
+        <div className="space-y-4">
           {faqs.map((faq, i) => {
             const isOpen = open === i;
             return (
               <div
                 key={i}
-                className={`bg-white rounded-2xl border transition-all duration-200 overflow-hidden ${
-                  isOpen ? "border-blue-200 shadow-md shadow-blue-50" : "border-slate-100 hover:border-blue-100"
+                className={`bg-white rounded-2xl border transition-all duration-300 overflow-hidden ${
+                  isOpen 
+                    ? "border-blue-600 bg-gradient-to-b from-white to-blue-50/5 shadow-md shadow-blue-900/5" 
+                    : "border-slate-200/70 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-900/5"
                 }`}
               >
                 <button
                   onClick={() => setOpen(isOpen ? null : i)}
-                  className="w-full text-left px-7 py-5 flex items-center justify-between gap-4 group"
+                  className="w-full text-left px-6 py-5 flex items-center justify-between gap-4 group cursor-pointer"
                 >
                   <span
-                    className={`font-semibold text-base leading-snug transition-colors ${
-                      isOpen ? "text-blue-800" : "text-slate-800 group-hover:text-blue-800"
+                    className={`font-semibold text-sm sm:text-base leading-snug transition-colors duration-200 ${
+                      isOpen ? "text-blue-900" : "text-slate-800 group-hover:text-blue-700"
                     }`}
                   >
                     {faq.q}
                   </span>
+                  
+                  {/* Rotating Chevron Indicator */}
                   <div
-                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all ${
-                      isOpen ? "bg-blue-100 text-blue-700 rotate-0" : "bg-slate-100 text-slate-500"
+                    className={`w-8 h-8 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300 ${
+                      isOpen 
+                        ? "bg-blue-600 text-white rotate-180" 
+                        : "bg-slate-50 text-slate-400 group-hover:bg-blue-50 group-hover:text-blue-600"
                     }`}
                   >
-                    {isOpen ? <Minus size={15} /> : <Plus size={15} />}
+                    <ChevronDown size={16} className="stroke-[2.5]" />
                   </div>
                 </button>
-                {isOpen && (
-                  <div className="px-7 pb-6">
-                    <div className="h-px bg-blue-50 mb-4" />
-                    <p className="text-slate-500 leading-relaxed text-sm">{faq.a}</p>
+
+                {/* Collapsible Answer Pane */}
+                <div 
+                  className={`transition-all duration-300 ease-in-out ${
+                    isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0 pointer-events-none"
+                  }`}
+                >
+                  <div className="px-6 pb-6">
+                    <div className="h-px bg-slate-100 mb-4" />
+                    <p className="text-sm text-slate-600 leading-relaxed">
+                      {faq.a}
+                    </p>
                   </div>
-                )}
+                </div>
               </div>
             );
           })}
         </div>
 
-        {/* Contact */}
-        <div className="mt-10 text-center p-6 bg-white rounded-2xl border border-slate-100">
-          <p className="text-slate-600 text-sm">
-            Still have questions?{" "}
-            <a href="mailto:support@thecouragelibrary.com" className="text-blue-700 font-semibold hover:underline">
-              support@thecouragelibrary.com
-            </a>
-          </p>
+        {/* Premium Customer Success Callout Widget */}
+        <div className="mt-12 p-6 md:p-8 bg-slate-50/50 border border-slate-200/80 rounded-[24px] flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3.5 text-left">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600 shrink-0">
+              <Mail size={18} />
+            </div>
+            <div>
+              <h4 className="font-bold text-slate-800 text-sm md:text-base">
+                Still have questions?
+              </h4>
+              <p className="text-xs md:text-sm text-slate-500">
+                Email our parent support team and we will get back to you within 2 hours.
+              </p>
+            </div>
+          </div>
+          <a 
+            href="mailto:support@thecouragelibrary.com" 
+            className="w-full sm:w-auto text-center border border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white px-5 py-2.5 rounded-xl font-bold text-xs transition-all duration-200 shrink-0"
+          >
+            support@thecouragelibrary.com
+          </a>
         </div>
+
       </div>
     </section>
   );
