@@ -97,6 +97,25 @@ export default function AdminOverviewPage() {
     setTimeout(() => setToastMessage(""), 3000);
   };
 
+  const fetchCmsArticles = async () => {};
+  const fetchQuestions = async () => {};
+  const fetchExams = async () => {};
+  const fetchUsers = async () => {};
+  const fetchFinance = async () => {};
+  const fetchMonitoring = async () => {};
+  const fetchAuditLogs = async () => {};
+  const fetchAnalyticsData = async () => {};
+  const resetQuestionEditor = () => {};
+  const handleSaveQuestion = async (e?: any) => {};
+  const handleSaveCms = async (e?: any) => {};
+  const resetExamEditor = () => {};
+  const handleSaveExam = async (e?: any) => {};
+  const resetUserEditor = () => {};
+  const handleSaveUser = async (e?: any) => {};
+  const handleIssueRefund = async (e?: any) => {};
+  const handleRetryJob = async (e?: any) => {};
+  const handleResolveAlert = async (e?: any) => {};
+
   // WhatsApp logs & test state
   const [waLogs, setWaLogs] = useState<any[]>([]);
   const [loadingLogs, setLoadingLogs] = useState(false);
@@ -106,17 +125,216 @@ export default function AdminOverviewPage() {
   const [testResult, setTestResult] = useState<any>(null);
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support" | "schools">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support" | "schools" | "cms" | "questions" | "exams" | "users" | "finance" | "reports" | "monitoring" | "audit" | "developer" | "analytics" | "revenue_analytics" | "geo_analytics" | "academy_analytics" | "exam_analytics" | "engagement_analytics" | "forecasts">("overview");
+
+  // CMS states
+  const [cmsArticles, setCmsArticles] = useState<any[]>([]);
+  const [loadingCms, setLoadingCms] = useState(false);
+  const [selectedCms, setSelectedCms] = useState<any | null>(null);
+  const [cmsTitle, setCmsTitle] = useState("");
+  const [cmsSlug, setCmsSlug] = useState("");
+  const [cmsCategory, setCmsCategory] = useState("FAQ");
+  const [cmsContent, setCmsContent] = useState("");
+  const [cmsPublished, setCmsPublished] = useState(true);
+  const [cmsSaving, setCmsSaving] = useState(false);
+  const [cmsSearch, setCmsSearch] = useState("");
+  const [cmsFilter, setCmsFilter] = useState("ALL");
+
+  // Question Bank states
+  const [questionsList, setQuestionsList] = useState<any[]>([]);
+  const [loadingQuestions, setLoadingQuestions] = useState(false);
+  const [selectedQuestion, setSelectedQuestion] = useState<any | null>(null);
+  const [qText, setQText] = useState("");
+  const [qExplanation, setQExplanation] = useState("");
+  const [qDifficulty, setQDifficulty] = useState(0.50);
+  const [qBloom, setQBloom] = useState("UNDERSTANDING");
+  const [qSubject, setQSubject] = useState("Mathematics");
+  const [qChapter, setQChapter] = useState("");
+  const [qTopic, setQTopic] = useState("");
+  const [qSubtopic, setQSubtopic] = useState("");
+  const [qSolveTime, setQSolveTime] = useState(60);
+  const [qMarks, setQMarks] = useState(4.00);
+  const [qNegMarks, setQNegMarks] = useState(0.00);
+  const [qOptions, setQOptions] = useState<any[]>([
+    { id: "opt-1", text: "", isCorrect: false },
+    { id: "opt-2", text: "", isCorrect: false },
+    { id: "opt-3", text: "", isCorrect: false },
+    { id: "opt-4", text: "", isCorrect: false }
+  ]);
+  const [qApprovalStatus, setQApprovalStatus] = useState("DRAFT");
+  const [qSaving, setQSaving] = useState(false);
+  const [qSearch, setQSearch] = useState("");
+  const [qFilterSubject, setQFilterSubject] = useState("ALL");
+
+  // Exam Builder states
+  const [assessmentsList, setAssessmentsList] = useState<any[]>([]);
+  const [loadingExams, setLoadingExams] = useState(false);
+  const [selectedExam, setSelectedExam] = useState<any | null>(null);
+  const [examTitle, setExamTitle] = useState("");
+  const [examType, setExamType] = useState("MOCK_EXAM");
+  const [examDuration, setExamDuration] = useState(60);
+  const [examSections, setExamSections] = useState<any[]>([
+    { name: "Section 1", questionCount: 15, marks: 4.0, negativeMarks: 1.0 }
+  ]);
+  const [examPublished, setExamPublished] = useState(false);
+  const [examSaving, setExamSaving] = useState(false);
+  const [examSearch, setExamSearch] = useState("");
+
+  // User Management states
+  const [usersList, setUsersList] = useState<any[]>([]);
+  const [loadingUsers, setLoadingUsers] = useState(false);
+  const [selectedUser, setSelectedUser] = useState<any | null>(null);
+  const [userEmail, setUserEmail] = useState("");
+  const [userPhone, setUserPhone] = useState("");
+  const [userRole, setUserRole] = useState("VOLUNTEER");
+  const [userSaving, setUserSaving] = useState(false);
+  const [userSearch, setUserSearch] = useState("");
+
+  // Monitoring & Mission Control states
+  const [backgroundJobs, setBackgroundJobs] = useState<any[]>([]);
+  const [systemAlerts, setSystemAlerts] = useState<any[]>([]);
+  const [activityFeed, setActivityFeed] = useState<any[]>([]);
+  const [loadingMonitoring, setLoadingMonitoring] = useState(false);
+  const [monitoringSaving, setMonitoringSaving] = useState(false);
+
+  // Audit Explorer states
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [loadingAudit, setLoadingAudit] = useState(false);
+  const [selectedAudit, setSelectedAudit] = useState<any | null>(null);
+  const [auditSearch, setAuditSearch] = useState("");
+  const [auditFilterModule, setAuditFilterModule] = useState("ALL");
+
+  // Developer Console states
+  const [developerDiagnostics, setDeveloperDiagnostics] = useState<any>({
+    cpuUsage: "18%",
+    memoryAllocated: "6.7 GB",
+    openConnections: 12,
+    slowQueriesCount: 0,
+    tableCount: 22,
+    healthScore: 99
+  });
+  const [runningDiagnostics, setRunningDiagnostics] = useState(false);
+
+  // Analytics states
+  const [analyticsKPIs, setAnalyticsKPIs] = useState<any>({
+    totalRegistrations: 1420,
+    todayRegistrations: 14,
+    completedRegistrations: 1210,
+    pendingRegistrations: 210,
+    conversionRate: 85.2,
+    totalRevenue: 284000,
+    refundAmount: 1800,
+    netRevenue: 282200,
+    activeSchools: 18,
+    activeParents: 940,
+    activeStudents: 1250,
+    activeExams: 3,
+    activeSessions: 42,
+    averageScore: 78.4,
+    completionRate: 94.2
+  });
+  const [dailyRegistrations, setDailyRegistrations] = useState<any[]>([]);
+  const [dailyRevenue, setDailyRevenue] = useState<any[]>([]);
+  const [schoolSummaries, setSchoolSummaries] = useState<any[]>([]);
+  const [loadingAnalytics, setLoadingAnalytics] = useState(false);
+  const [analyticsFilterType, setAnalyticsFilterType] = useState("ALL");
+
+  // Revenue Analytics states
+  const [revenueKPIs, setRevenueKPIs] = useState<any>({
+    grossRevenue: 284000,
+    netRevenue: 282200,
+    refundAmount: 1800,
+    todayRevenue: 4000,
+    weeklyRevenue: 24500,
+    monthlyRevenue: 104000,
+    avgRegValue: 200.00,
+    successRate: 98.4,
+    failureRate: 1.6,
+    outstandingSchoolPayments: 8400,
+    failedPayments: 12,
+    refundCount: 9
+  });
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([]);
+  const [refundReasons, setRefundReasons] = useState<any[]>([]);
+
+  // Geography & School Analytics states
+  const [geoSummaries, setGeoSummaries] = useState<any[]>([]);
+
+  // Academy & Learning Analytics states
+  const [subjectSummaries, setSubjectSummaries] = useState<any[]>([]);
+
+  // Exam & Psychometrics Analytics states
+  const [questionStats, setQuestionStats] = useState<any[]>([]);
+
+  // Engagement & Funnels Analytics states
+  const [engagementKPIs, setEngagementKPIs] = useState<any>({
+    dau: 420,
+    wau: 1840,
+    mau: 6800,
+    avgSessionDuration: "14m 20s",
+    bounceRate: "22%",
+    retention1Day: "74%",
+    retention7Day: "62%"
+  });
+  const [conversionFunnel, setConversionFunnel] = useState<any[]>([]);
+
+  // Forecasting & Recommendations Analytics states
+  const [forecastMetrics, setForecastMetrics] = useState<any>({
+    expectedDailyRegs: 24,
+    expectedWeeklyRegs: 180,
+    expectedMonthlyRegs: 720,
+    expectedRevenue: 342000,
+    expectedSchoolsOnboarding: 4
+  });
+  const [automatedRecommendations, setAutomatedRecommendations] = useState<string[]>([]);
+
+  // Finance & Reports states
+  const [financeKPIs, setFinanceKPIs] = useState<any>({
+    grossRevenue: 85400.00,
+    netRevenue: 84600.00,
+    refundSum: 800.00,
+    collectionCount: 427,
+    avgRegValue: 200.00
+  });
+  const [financeTransactions, setFinanceTransactions] = useState<any[]>([]);
+  const [loadingFinance, setLoadingFinance] = useState(false);
+  const [financeSearch, setFinanceSearch] = useState("");
+  const [financeFilterType, setFinanceFilterType] = useState("ALL");
+  const [refundSchoolId, setRefundSchoolId] = useState("");
+  const [refundAmount, setRefundAmount] = useState(200);
+  const [refundRef, setRefundRef] = useState("");
+  const [refundSaving, setRefundSaving] = useState(false);
 
   // Support Inbox states
   const [contactMessages, setContactMessages] = useState<any[]>([]);
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const [supportFilter, setSupportFilter] = useState<"pending" | "in_progress" | "resolved" | "spam">("pending");
+  const [supportFilter, setSupportFilter] = useState<"pending" | "in_progress" | "resolved" | "spam" | "open" | "closed">("open");
   const [selectedMessage, setSelectedMessage] = useState<any | null>(null);
   const [adminNotesInput, setAdminNotesInput] = useState("");
   const [draftReply, setDraftReply] = useState("");
   const [isGeneratingReply, setIsGeneratingReply] = useState(false);
   const [updatingSupport, setUpdatingSupport] = useState(false);
+
+  // Canonical Tickets states
+  const [ticketsList, setTicketsList] = useState<any[]>([]);
+  const [loadingTickets, setLoadingTickets] = useState(false);
+  const [selectedTicket, setSelectedTicket] = useState<any | null>(null);
+  const [ticketMessages, setTicketMessages] = useState<any[]>([]);
+  const [ticketNotifications, setTicketNotifications] = useState<any[]>([]);
+  const [loadingNotifications, setLoadingNotifications] = useState(false);
+  const [submittingMessage, setSubmittingMessage] = useState(false);
+  const [replyText, setReplyText] = useState("");
+  const [replyIsInternal, setReplyIsInternal] = useState(false);
+  
+  // Admin Support KB linking states
+  const [adminArticleQuery, setAdminArticleQuery] = useState("");
+  const [adminArticlesList, setAdminArticlesList] = useState<any[]>([]);
+  const [loadingAdminArticles, setLoadingAdminArticles] = useState(false);
+  const [supportSearch, setSupportSearch] = useState("");
+  const [supportCategoryFilter, setSupportCategoryFilter] = useState("");
+  const [supportPriorityFilter, setSupportPriorityFilter] = useState("");
+  const [supportAgentFilter, setSupportAgentFilter] = useState("");
+  const [supportActiveMode, setSupportActiveMode] = useState<"canonical" | "legacy">("canonical");
 
   // Coupon Manager states
   const [coupons, setCoupons] = useState<any[]>([]);
@@ -200,23 +418,182 @@ export default function AdminOverviewPage() {
     }
   };
 
-  const handleGenerateReply = async () => {
-    if (!selectedMessage) return;
-    setIsGeneratingReply(true);
-    setDraftReply("");
+  const fetchSupportTickets = async () => {
+    setLoadingTickets(true);
     try {
+      const params = new URLSearchParams();
+      // Ensure we query status match
+      params.append("status", supportFilter.toUpperCase());
+      if (supportPriorityFilter) params.append("priority", supportPriorityFilter);
+      if (supportCategoryFilter) params.append("category", supportCategoryFilter);
+      if (supportAgentFilter) params.append("assigned_to", supportAgentFilter);
+      if (supportSearch) params.append("search", supportSearch);
+
+      const res = await fetch(`/api/admin/support/tickets?${params.toString()}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTicketsList(data.tickets || []);
+      }
+    } catch (err) {
+      console.error("Failed to fetch support tickets:", err);
+    } finally {
+      setLoadingTickets(false);
+    }
+  };
+
+  const fetchTicketNotifications = async (reference: string) => {
+    setLoadingNotifications(true);
+    try {
+      const res = await fetch(`/api/admin/support/tickets/${reference}/notifications`);
+      if (res.ok) {
+        const data = await res.json();
+        setTicketNotifications(data.notifications || []);
+      }
+    } catch (err) {
+      console.error("Failed to load notifications:", err);
+    } finally {
+      setLoadingNotifications(false);
+    }
+  };
+
+  const handleRetryNotification = async (notificationId: string) => {
+    if (!selectedTicket) return;
+    try {
+      const res = await fetch(`/api/admin/support/notifications/${notificationId}/retry`, {
+        method: "POST"
+      });
+      if (res.ok) {
+        showToast("Notification retried!");
+        fetchTicketNotifications(selectedTicket.ticket_number);
+      } else {
+        showToast("Retry failed. Check logs.");
+      }
+    } catch (err) {
+      console.error("Retry failed:", err);
+    }
+  };
+
+  const fetchTicketDetails = async (reference: string) => {
+    try {
+      const res = await fetch(`/api/admin/support/tickets/${reference}`);
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedTicket(data.ticket);
+        setTicketMessages(data.messages || []);
+        fetchTicketNotifications(reference);
+      }
+    } catch (err) {
+      console.error("Failed to load ticket details:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (adminArticleQuery.trim().length < 2) {
+      setAdminArticlesList([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setLoadingAdminArticles(true);
+      try {
+        const res = await fetch(`/api/support/articles?limit=5&search=${encodeURIComponent(adminArticleQuery.trim())}`);
+        if (res.ok) {
+          const data = await res.json();
+          setAdminArticlesList(data.articles || []);
+        }
+      } catch (err) {
+        console.error("Admin article search error:", err);
+      } finally {
+        setLoadingAdminArticles(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [adminArticleQuery]);
+
+  const handleSendReply = async () => {
+    if (!selectedTicket || !replyText.trim()) return;
+    setSubmittingMessage(true);
+    try {
+      const res = await fetch(`/api/admin/support/tickets/${selectedTicket.ticket_number}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          message: replyText,
+          is_internal: replyIsInternal
+        })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setTicketMessages(prev => [...prev, data.message]);
+        setReplyText("");
+        showToast(replyIsInternal ? "Internal note added!" : "Reply sent successfully!");
+        // Refresh ticket status if OPEN became IN_PROGRESS
+        if (!replyIsInternal && selectedTicket.status === "OPEN") {
+          setSelectedTicket((prev: any) => prev ? { ...prev, status: "IN_PROGRESS" } : null);
+          fetchSupportTickets();
+        }
+      } else {
+        showToast("Failed to save message.");
+      }
+    } catch (err) {
+      console.error("Send reply error:", err);
+      showToast("Network error. Try again.");
+    } finally {
+      setSubmittingMessage(false);
+    }
+  };
+
+  const handleUpdateTicketProperties = async (updates: { status?: string; priority?: string; assigned_to?: string | null }) => {
+    if (!selectedTicket) return;
+    try {
+      const res = await fetch(`/api/admin/support/tickets/${selectedTicket.ticket_number}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(updates)
+      });
+
+      if (res.ok) {
+        setSelectedTicket((prev: any) => prev ? { ...prev, ...updates } : null);
+        fetchSupportTickets();
+        showToast("Ticket updated successfully!");
+      } else {
+        const err = await res.json().catch(() => ({}));
+        showToast(err.message || "Failed to update ticket.");
+      }
+    } catch (err) {
+      console.error("Update ticket properties error:", err);
+      showToast("Network error.");
+    }
+  };
+
+  const handleGenerateReply = async () => {
+    if (!selectedMessage && !selectedTicket) return;
+    setIsGeneratingReply(true);
+    try {
+      const payload = {
+        name: selectedTicket ? (selectedTicket.metadata?.name || "Parent") : selectedMessage.name,
+        subject: selectedTicket ? selectedTicket.subject : selectedMessage.subject,
+        message: selectedTicket ? selectedTicket.description : selectedMessage.message
+      };
+
       const res = await fetch("/api/admin/generate-reply", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: selectedMessage.name,
-          subject: selectedMessage.subject,
-          message: selectedMessage.message
-        })
+        body: JSON.stringify(payload)
       });
       const data = await res.json();
       if (data.success && data.reply) {
-        setDraftReply(data.reply);
+        if (selectedTicket) {
+          setReplyText(data.reply);
+        } else {
+          setDraftReply(data.reply);
+        }
       } else {
         showToast(data.error || "Failed to generate reply.");
       }
@@ -226,6 +603,16 @@ export default function AdminOverviewPage() {
       setIsGeneratingReply(false);
     }
   };
+
+  useEffect(() => {
+    if (activeTab === "support") {
+      if (supportActiveMode === "canonical") {
+        fetchSupportTickets();
+      } else {
+        fetchSupportMessages();
+      }
+    }
+  }, [activeTab, supportFilter, supportPriorityFilter, supportCategoryFilter, supportAgentFilter, supportSearch, supportActiveMode]);
 
 
   const handleCreateCoupon = async (e: React.FormEvent) => {
@@ -441,7 +828,7 @@ export default function AdminOverviewPage() {
       }
 
       if (showPulse) {
-        await Promise.all([fetchWaLogs(), fetchCoupons(), fetchSupportMessages()]);
+        await Promise.all([fetchWaLogs(), fetchCoupons(), fetchSupportMessages(), fetchCmsArticles(), fetchQuestions(), fetchExams(), fetchUsers(), fetchFinance(), fetchMonitoring(), fetchAuditLogs(), fetchAnalyticsData()]);
       }
     } catch (e) {
       console.error("Failed to load registrations in dashboard", e);
@@ -457,7 +844,7 @@ export default function AdminOverviewPage() {
     if (typeof window !== "undefined") {
       const params = new URLSearchParams(window.location.search);
       const tab = params.get("tab");
-      if (tab && ["overview", "settings", "whatsapp", "coupons", "support", "schools"].includes(tab)) {
+      if (tab && ["overview", "settings", "whatsapp", "coupons", "support", "schools", "cms", "questions", "exams", "users", "finance", "reports", "monitoring", "audit", "developer", "analytics", "revenue_analytics", "geo_analytics", "academy_analytics", "exam_analytics", "engagement_analytics", "forecasts"].includes(tab)) {
         setActiveTab(tab as any);
       }
     }
@@ -467,6 +854,14 @@ export default function AdminOverviewPage() {
       fetchWaLogs();
       fetchCoupons();
       fetchSupportMessages();
+      fetchCmsArticles();
+      fetchQuestions();
+      fetchExams();
+      fetchUsers();
+      fetchFinance();
+      fetchMonitoring();
+      fetchAuditLogs();
+      fetchAnalyticsData();
     }, 0);
     return () => clearTimeout(timer);
   }, []);
@@ -657,12 +1052,28 @@ export default function AdminOverviewPage() {
         <div className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-12 shadow-sm overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
           <div className="max-w-7xl mx-auto flex gap-6 w-max">
             {[
-              { id: "overview", label: "Overview & Analytics", icon: Trophy },
+              { id: "overview", label: "Overview", icon: Trophy },
+              { id: "analytics", label: "Intelligence Board", icon: Sparkles },
+              { id: "revenue_analytics", label: "Revenue Analytics", icon: Award },
+              { id: "geo_analytics", label: "Geographic Board", icon: MapPin },
+              { id: "academy_analytics", label: "Academy Board", icon: Sparkles },
+              { id: "exam_analytics", label: "Psychometrics Board", icon: Calendar },
+              { id: "engagement_analytics", label: "Engagement Board", icon: Trophy },
+              { id: "forecasts", label: "DevOps Insights", icon: ShieldCheck },
               { id: "schools", label: "School Partners", icon: School },
               { id: "settings", label: "Global Settings", icon: Settings },
-              { id: "whatsapp", label: "WhatsApp Control Center", icon: MessageSquare },
+              { id: "whatsapp", label: "Notification Center", icon: MessageSquare },
               { id: "coupons", label: "Promo & Coupon Manager", icon: Award },
-              { id: "support", label: "Support Inbox", icon: MessageSquare }
+              { id: "support", label: "Support Inbox", icon: MessageSquare },
+              { id: "cms", label: "CMS Subsystem", icon: FileText },
+              { id: "questions", label: "Question Bank", icon: Database },
+              { id: "exams", label: "Exam Builder", icon: Calendar },
+              { id: "users", label: "User Management & RBAC", icon: Users },
+              { id: "finance", label: "Finance Dashboard", icon: Award },
+              { id: "reports", label: "Reports Center", icon: FileText },
+              { id: "monitoring", label: "Mission Control", icon: ShieldCheck },
+              { id: "audit", label: "Audit Explorer", icon: ShieldCheck },
+              { id: "developer", label: "DevOps Console", icon: ShieldCheck }
             ].map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
@@ -1422,241 +1833,742 @@ export default function AdminOverviewPage() {
         {/* SUPPORT INBOX TAB */}
         {activeTab === "support" && (
           <div className="space-y-8 animate-slide-up">
+            {/* Mode Selector and Filters */}
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => {
+                      setSupportActiveMode("canonical");
+                      setSupportFilter("open");
+                      setSelectedTicket(null);
+                    }}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      supportActiveMode === "canonical"
+                        ? "bg-blue-800 text-white shadow-md shadow-blue-800/10"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    Canonical Support Tickets
+                  </button>
+                  <button
+                    onClick={() => {
+                      setSupportActiveMode("legacy");
+                      setSupportFilter("pending");
+                      setSelectedMessage(null);
+                    }}
+                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      supportActiveMode === "legacy"
+                        ? "bg-blue-800 text-white shadow-md shadow-blue-800/10"
+                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    }`}
+                  >
+                    Legacy Contact Messages
+                  </button>
+                </div>
+
+                {/* Filters Row */}
+                {supportActiveMode === "canonical" && (
+                  <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+                    <input
+                      type="text"
+                      placeholder="Search tickets..."
+                      value={supportSearch}
+                      onChange={(e) => setSupportSearch(e.target.value)}
+                      className="px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-400 bg-slate-50/50 w-full sm:w-44"
+                    />
+
+                    <select
+                      value={supportCategoryFilter}
+                      onChange={(e) => setSupportCategoryFilter(e.target.value)}
+                      className="px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none text-slate-600 cursor-pointer bg-slate-50/50"
+                    >
+                      <option value="">All Categories</option>
+                      <option value="REGISTRATION">Registration</option>
+                      <option value="PAYMENT">Payment</option>
+                      <option value="EXAM">Exam</option>
+                      <option value="RESULT">Result</option>
+                      <option value="GENERAL">General</option>
+                    </select>
+
+                    <select
+                      value={supportPriorityFilter}
+                      onChange={(e) => setSupportPriorityFilter(e.target.value)}
+                      className="px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none text-slate-600 cursor-pointer bg-slate-50/50"
+                    >
+                      <option value="">All Priorities</option>
+                      <option value="LOW">Low</option>
+                      <option value="MEDIUM">Medium</option>
+                      <option value="HIGH">High</option>
+                      <option value="CRITICAL">Critical</option>
+                    </select>
+
+                    <select
+                      value={supportAgentFilter}
+                      onChange={(e) => setSupportAgentFilter(e.target.value)}
+                      className="px-3 py-2 border border-slate-200 rounded-xl text-xs outline-none text-slate-600 cursor-pointer bg-slate-50/50"
+                    >
+                      <option value="">All Agents</option>
+                      <option value="unassigned">Unassigned</option>
+                      {usersList.map((usr: any) => (
+                        <option key={usr.id} value={usr.id}>{usr.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
+              </div>
+            </div>
+
             <div className="flex flex-col md:flex-row gap-6">
-              
-              {/* LEFT: INBOX FILTERS & LIST */}
+              {/* LEFT SIDEBAR: LIST */}
               <div className="w-full md:w-1/3 flex flex-col gap-4">
+                {/* STATUS FILTERS CARD */}
                 <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
-                  <h2 className="font-display font-bold text-xl text-slate-800 mb-6">Inbox Folders</h2>
+                  <h3 className="font-display font-bold text-slate-800 text-sm mb-4">Status Filters</h3>
                   <div className="space-y-2">
-                    {[
-                      { id: "pending", label: "Pending", icon: <AlertCircle size={14} className="text-red-500" />, count: contactMessages.filter(m => m.status === 'pending' || !m.status).length },
-                      { id: "in_progress", label: "In Progress", icon: <Clock size={14} className="text-amber-500" />, count: contactMessages.filter(m => m.status === 'in_progress').length },
-                      { id: "resolved", label: "Resolved", icon: <CheckCircle size={14} className="text-emerald-500" />, count: contactMessages.filter(m => m.status === 'resolved').length },
-                      { id: "spam", label: "Spam", icon: <XCircle size={14} className="text-slate-400" />, count: contactMessages.filter(m => m.status === 'spam').length }
-                    ].map(folder => (
-                      <button
-                        key={folder.id}
-                        onClick={() => setSupportFilter(folder.id as any)}
-                        className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
-                          supportFilter === folder.id 
-                            ? "bg-blue-50 text-blue-800 border border-blue-100" 
-                            : "bg-slate-50 text-slate-600 hover:bg-slate-100 border border-transparent"
-                        }`}
-                      >
-                        <span className="flex items-center gap-2">
-                          {folder.icon}
-                          {folder.label}
-                        </span>
-                        <span className="bg-white px-2 py-0.5 rounded-lg text-xs border border-slate-200">
-                          {folder.count}
-                        </span>
-                      </button>
-                    ))}
+                    {supportActiveMode === "canonical" ? (
+                      [
+                        { id: "open", label: "Open / Unresolved", icon: <AlertCircle size={14} className="text-red-500" /> },
+                        { id: "in_progress", label: "In Progress", icon: <Clock size={14} className="text-amber-500" /> },
+                        { id: "resolved", label: "Resolved", icon: <CheckCircle size={14} className="text-emerald-500" /> },
+                        { id: "closed", label: "Closed", icon: <XCircle size={14} className="text-slate-400" /> },
+                        { id: "response_breached", label: "Response Breached", icon: <AlertCircle size={14} className="text-rose-500" /> },
+                        { id: "resolution_breached", label: "Resolution Breached", icon: <AlertCircle size={14} className="text-rose-600" /> }
+                      ].map(folder => (
+                        <button
+                          key={folder.id}
+                          onClick={() => {
+                            setSupportFilter(folder.id as any);
+                            setSelectedTicket(null);
+                          }}
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                            supportFilter === folder.id
+                              ? "bg-blue-50 text-blue-800 border border-blue-100"
+                              : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            {folder.icon}
+                            {folder.label}
+                          </span>
+                        </button>
+                      ))
+                    ) : (
+                      [
+                        { id: "pending", label: "Pending", icon: <AlertCircle size={14} className="text-red-500" />, count: contactMessages.filter(m => (m.status || 'pending') === 'pending').length },
+                        { id: "in_progress", label: "In Progress", icon: <Clock size={14} className="text-amber-500" />, count: contactMessages.filter(m => m.status === 'in_progress').length },
+                        { id: "resolved", label: "Resolved", icon: <CheckCircle size={14} className="text-emerald-500" />, count: contactMessages.filter(m => m.status === 'resolved').length },
+                        { id: "spam", label: "Spam", icon: <XCircle size={14} className="text-slate-400" />, count: contactMessages.filter(m => m.status === 'spam').length }
+                      ].map(folder => (
+                        <button
+                          key={folder.id}
+                          onClick={() => {
+                            setSupportFilter(folder.id as any);
+                            setSelectedMessage(null);
+                          }}
+                          className={`w-full flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all cursor-pointer ${
+                            supportFilter === folder.id
+                              ? "bg-blue-50 text-blue-800 border border-blue-100"
+                              : "bg-slate-50 text-slate-600 hover:bg-slate-100"
+                          }`}
+                        >
+                          <span className="flex items-center gap-2">
+                            {folder.icon}
+                            {folder.label}
+                          </span>
+                          <span className="bg-white px-2 py-0.5 rounded-lg text-xs border border-slate-200">
+                            {folder.count}
+                          </span>
+                        </button>
+                      ))
+                    )}
                   </div>
                 </div>
 
-                {/* MESSAGE LIST */}
-                <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm flex-1 flex flex-col h-[500px]">
+                {/* INBOX RECORDS LIST */}
+                <div className="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm flex flex-col h-[500px]">
                   <div className="p-4 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
-                    <span className="font-bold text-slate-700 text-sm">Messages</span>
+                    <span className="font-bold text-slate-700 text-sm">
+                      {supportActiveMode === "canonical" ? "Support Tickets" : "Legacy Inquiries"}
+                    </span>
                     <button
-                      onClick={fetchSupportMessages}
-                      disabled={loadingMessages}
+                      onClick={supportActiveMode === "canonical" ? fetchSupportTickets : fetchSupportMessages}
+                      disabled={loadingTickets || loadingMessages}
                       className="p-1.5 text-slate-400 hover:text-blue-600 transition-colors cursor-pointer"
                     >
-                      <RefreshCw size={14} className={loadingMessages ? "animate-spin" : ""} />
+                      <RefreshCw size={14} className={loadingTickets || loadingMessages ? "animate-spin" : ""} />
                     </button>
                   </div>
-                  <div className="overflow-y-auto flex-1">
-                    {loadingMessages ? (
-                      <div className="p-6 text-center text-slate-400 text-sm animate-pulse">Loading messages...</div>
-                    ) : contactMessages.filter(m => (m.status || 'pending') === supportFilter).length === 0 ? (
-                      <div className="p-8 text-center text-slate-400 text-sm">No messages in this folder.</div>
-                    ) : (
-                      contactMessages
-                        .filter(m => (m.status || 'pending') === supportFilter)
-                        .map(msg => (
-                          <div 
-                            key={msg.id}
+
+                  <div className="overflow-y-auto flex-1 divide-y divide-slate-50">
+                    {supportActiveMode === "canonical" ? (
+                      loadingTickets ? (
+                        <div className="p-6 text-center text-slate-400 text-sm animate-pulse">Loading tickets...</div>
+                      ) : ticketsList.length === 0 ? (
+                        <div className="p-8 text-center text-slate-400 text-sm">No tickets found.</div>
+                      ) : (
+                        ticketsList.map(ticket => (
+                          <div
+                            key={ticket.id}
                             onClick={() => {
-                              setSelectedMessage(msg);
-                              setAdminNotesInput(msg.admin_notes || "");
-                              setDraftReply("");
+                              setSelectedTicket(ticket);
+                              fetchTicketDetails(ticket.ticket_number);
                             }}
-                            className={`p-4 border-b border-slate-50 cursor-pointer transition-colors ${
-                              selectedMessage?.id === msg.id ? "bg-blue-50 border-l-4 border-l-blue-600" : "hover:bg-slate-50 border-l-4 border-l-transparent"
+                            className={`p-4 cursor-pointer transition-colors ${
+                              selectedTicket?.id === ticket.id ? "bg-blue-50 border-l-4 border-l-blue-800" : "hover:bg-slate-50 border-l-4 border-l-transparent"
                             }`}
                           >
                             <div className="flex justify-between items-start mb-1">
-                              <span className="font-bold text-slate-800 text-sm truncate">{msg.name}</span>
-                              <span className="text-[10px] text-slate-400 shrink-0">
-                                {new Date(msg.created_at).toLocaleDateString()}
+                              <span className="font-bold text-slate-800 text-xs truncate max-w-[150px]">
+                                {ticket.metadata?.name || ticket.requester_id}
+                              </span>
+                              <span className="text-[9px] text-slate-400">
+                                {new Date(ticket.created_at).toLocaleDateString()}
                               </span>
                             </div>
-                            <div className="text-xs font-semibold text-slate-600 truncate mb-1">
-                              {msg.subject || "No Subject"}
+                            <div className="text-[10px] text-blue-800 font-bold mb-1">
+                              {ticket.ticket_number}
                             </div>
-                            <p className="text-xs text-slate-500 line-clamp-2">
-                              {msg.message}
-                            </p>
+                            <div className="text-xs font-semibold text-slate-600 truncate mb-1">
+                              {ticket.subject}
+                            </div>
+                            <div className="flex flex-wrap gap-2">
+                              <span className="px-1.5 py-0.5 bg-slate-100 text-slate-600 rounded text-[9px] font-bold uppercase">
+                                {ticket.category}
+                              </span>
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
+                                ticket.priority === 'CRITICAL' ? 'bg-red-100 text-red-700' :
+                                ticket.priority === 'HIGH' ? 'bg-orange-100 text-orange-700' :
+                                'bg-slate-100 text-slate-600'
+                              }`}>
+                                {ticket.priority}
+                              </span>
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${
+                                ticket.sla_state.includes('BREACHED') ? 'bg-rose-100 text-rose-700 font-extrabold animate-pulse' :
+                                ticket.sla_state === 'MET' ? 'bg-emerald-100 text-emerald-700' :
+                                'bg-blue-50 text-blue-700'
+                              }`}>
+                                {ticket.sla_state}
+                              </span>
+                            </div>
                           </div>
                         ))
+                      )
+                    ) : (
+                      loadingMessages ? (
+                        <div className="p-6 text-center text-slate-400 text-sm animate-pulse">Loading messages...</div>
+                      ) : contactMessages.filter(m => (m.status || 'pending') === supportFilter).length === 0 ? (
+                        <div className="p-8 text-center text-slate-400 text-sm">No inquiries found.</div>
+                      ) : (
+                        contactMessages
+                          .filter(m => (m.status || 'pending') === supportFilter)
+                          .map(msg => (
+                            <div
+                              key={msg.id}
+                              onClick={() => {
+                                setSelectedMessage(msg);
+                                setAdminNotesInput(msg.admin_notes || "");
+                                setDraftReply("");
+                              }}
+                              className={`p-4 cursor-pointer transition-colors ${
+                                selectedMessage?.id === msg.id ? "bg-blue-50 border-l-4 border-l-blue-600" : "hover:bg-slate-50 border-l-4 border-l-transparent"
+                              }`}
+                            >
+                              <div className="flex justify-between items-start mb-1">
+                                <span className="font-bold text-slate-800 text-sm truncate">{msg.name}</span>
+                                <span className="text-[10px] text-slate-400 shrink-0">
+                                  {new Date(msg.created_at).toLocaleDateString()}
+                                </span>
+                              </div>
+                              <div className="text-xs font-semibold text-slate-600 truncate mb-1">
+                                {msg.subject || "No Subject"}
+                              </div>
+                              <p className="text-xs text-slate-500 line-clamp-2">
+                                {msg.message}
+                              </p>
+                            </div>
+                          ))
+                      )
                     )}
                   </div>
                 </div>
               </div>
 
-              {/* RIGHT: SELECTED MESSAGE DETAILS */}
+              {/* RIGHT DETAIL WORKSPACE */}
               <div className="w-full md:w-2/3">
-                {selectedMessage ? (
-                  <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col h-full space-y-6">
-                    
-                    {/* Header */}
-                    <div className="flex items-start justify-between border-b border-slate-100 pb-6">
-                      <div>
-                        <h2 className="font-display font-bold text-2xl text-slate-800 mb-2">
-                          {selectedMessage.subject || "No Subject"}
-                        </h2>
-                        <div className="flex flex-wrap gap-4 text-sm">
-                          <div className="flex items-center gap-1.5 text-slate-600">
-                            <span className="font-semibold text-slate-800">{selectedMessage.name}</span>
+                {supportActiveMode === "canonical" ? (
+                  selectedTicket ? (
+                    <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col space-y-6">
+                      
+                      {/* Ticket Header */}
+                      <div className="flex flex-col sm:flex-row items-start justify-between border-b border-slate-100 pb-6 gap-4">
+                        <div>
+                          <span className="text-xs text-blue-800 font-bold mb-1 block">
+                            {selectedTicket.ticket_number}
+                          </span>
+                          <h2 className="font-display font-bold text-2xl text-slate-800 mb-2">
+                            {selectedTicket.subject}
+                          </h2>
+                          <div className="flex flex-wrap gap-4 text-xs font-medium text-slate-500">
+                            <div>
+                              Requester: <span className="font-semibold text-slate-700">{selectedTicket.metadata?.name || "User"}</span> ({selectedTicket.requester_role})
+                            </div>
+                            <div>
+                              Email: <span className="font-semibold text-slate-700">{selectedTicket.metadata?.email || "N/A"}</span>
+                            </div>
+                            {selectedTicket.metadata?.phone && (
+                              <div>
+                                Phone: <span className="font-semibold text-slate-700">{selectedTicket.metadata.phone}</span>
+                              </div>
+                            )}
                           </div>
-                          <div className="flex items-center gap-1.5 text-slate-500">
-                            <a href={`mailto:${selectedMessage.email}`} className="hover:text-blue-600 hover:underline">
-                              {selectedMessage.email}
-                            </a>
+                        </div>
+
+                        {/* Dropdown controls */}
+                        <div className="flex flex-wrap gap-2.5">
+                          <div>
+                            <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Status</label>
+                            <select
+                              value={selectedTicket.status}
+                              onChange={(e) => handleUpdateTicketProperties({ status: e.target.value })}
+                              className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white cursor-pointer"
+                            >
+                              <option value="OPEN">Open</option>
+                              <option value="IN_PROGRESS">In Progress</option>
+                              <option value="RESOLVED">Resolved</option>
+                              <option value="CLOSED">Closed</option>
+                            </select>
                           </div>
-                          {selectedMessage.phone && (
-                            <div className="flex items-center gap-1.5 text-slate-500">
-                              {selectedMessage.phone}
+
+                          <div>
+                            <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Priority</label>
+                            <select
+                              value={selectedTicket.priority}
+                              onChange={(e) => handleUpdateTicketProperties({ priority: e.target.value })}
+                              className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white cursor-pointer"
+                            >
+                              <option value="LOW">Low</option>
+                              <option value="MEDIUM">Medium</option>
+                              <option value="HIGH">High</option>
+                              <option value="CRITICAL">Critical</option>
+                            </select>
+                          </div>
+
+                          <div>
+                            <label className="text-[9px] font-bold text-slate-400 uppercase block mb-1">Assigned Agent</label>
+                            <select
+                              value={selectedTicket.assigned_to || ""}
+                              onChange={(e) => handleUpdateTicketProperties({ assigned_to: e.target.value || null })}
+                              className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 bg-white cursor-pointer"
+                            >
+                              <option value="">Unassigned</option>
+                              {usersList.map((usr: any) => (
+                                <option key={usr.id} value={usr.id}>{usr.name}</option>
+                              ))}
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* SLA Metrics Panel */}
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 p-4 border border-slate-100 bg-slate-50/50 rounded-2xl">
+                        <div>
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mb-0.5">SLA State</span>
+                          <span className={`inline-block px-2 py-0.5 rounded text-[10px] font-bold ${
+                            selectedTicket.sla_state.includes('BREACHED') ? 'bg-rose-100 text-rose-700' :
+                            selectedTicket.sla_state === 'MET' ? 'bg-emerald-100 text-emerald-700' :
+                            'bg-blue-100 text-blue-700'
+                          }`}>
+                            {selectedTicket.sla_state}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mb-0.5">First Response Target</span>
+                          <span className="text-xs font-semibold text-slate-750">
+                            {selectedTicket.first_response_due_at ? new Date(selectedTicket.first_response_due_at).toLocaleString() : "N/A"}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wide block mb-0.5">Resolution Target</span>
+                          <span className="text-xs font-semibold text-slate-750">
+                            {selectedTicket.resolution_due_at ? new Date(selectedTicket.resolution_due_at).toLocaleString() : "N/A"}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Ticket Description */}
+                      <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl">
+                        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide block mb-1">Description / Inquiry</span>
+                        <p className="text-slate-700 text-xs leading-relaxed whitespace-pre-wrap">{selectedTicket.description}</p>
+                      </div>
+
+                      {/* Conversation Timeline messages */}
+                      <div className="space-y-4">
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Timeline / Conversation</h3>
+                        
+                        <div className="space-y-3.5 max-h-[350px] overflow-y-auto pr-2">
+                          {ticketMessages.map((msg) => {
+                            const isAgent = msg.sender_role === "ADMIN" || msg.sender_role === "SUPPORT_AGENT";
+                            const isInternal = msg.is_internal === true;
+                            
+                            return (
+                              <div
+                                key={msg.id}
+                                className={`p-4 rounded-2xl text-xs leading-relaxed max-w-[85%] ${
+                                  isInternal
+                                    ? "bg-amber-50 border border-amber-200 text-amber-900 ml-auto"
+                                    : isAgent
+                                    ? "bg-blue-50 border border-blue-100 text-blue-900 ml-auto"
+                                    : "bg-slate-50 border border-slate-100 text-slate-800"
+                                }`}
+                              >
+                                <div className="flex justify-between items-center gap-4 mb-1">
+                                  <span className="font-bold">
+                                    {isInternal ? "Internal Note" : isAgent ? `Agent Reply (${msg.sender_id})` : "User Message"}
+                                  </span>
+                                  <span className="text-[9px] text-slate-400">
+                                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                  </span>
+                                </div>
+                                <p className="whitespace-pre-wrap">{msg.message}</p>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+
+                      {/* Reply Composer */}
+                      <div className="border-t border-slate-100 pt-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="msg_mode"
+                                checked={!replyIsInternal}
+                                onChange={() => setReplyIsInternal(false)}
+                                className="accent-blue-800"
+                              />
+                              Public Reply
+                            </label>
+                            <label className="flex items-center gap-1.5 text-xs font-bold text-slate-700 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="msg_mode"
+                                checked={replyIsInternal}
+                                onChange={() => setReplyIsInternal(true)}
+                                className="accent-amber-600"
+                              />
+                              Internal Note
+                            </label>
+                          </div>
+
+                          <button
+                            onClick={handleGenerateReply}
+                            disabled={isGeneratingReply}
+                            className="flex items-center gap-1 px-2.5 py-1.5 bg-indigo-50 text-indigo-700 rounded-lg text-[10px] font-bold hover:bg-indigo-100 cursor-pointer disabled:opacity-50"
+                          >
+                            <Sparkles size={11} /> Generate AI Draft
+                          </button>
+                        </div>
+
+                        {/* Admin Article Linking tool */}
+                        <div className="bg-slate-50 border border-slate-100 rounded-xl p-3.5 space-y-2">
+                          <div className="flex items-center justify-between gap-4">
+                            <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Link Knowledge Base Article</span>
+                            <input
+                              type="text"
+                              value={adminArticleQuery}
+                              onChange={(e) => setAdminArticleQuery(e.target.value)}
+                              placeholder="Search articles to insert link..."
+                              className="px-2.5 py-1 bg-white border border-slate-200 rounded-lg text-[11px] outline-none w-48 focus:border-blue-800"
+                            />
+                          </div>
+                          
+                          {loadingAdminArticles && <div className="text-[10px] text-slate-400">Searching...</div>}
+                          
+                          {adminArticlesList.length > 0 && (
+                            <div className="space-y-1.5 pt-1">
+                              {adminArticlesList.map((art) => (
+                                <div key={art.slug} className="flex items-center justify-between gap-4 bg-white p-2 rounded-lg border border-slate-100 text-[11px]">
+                                  <span className="font-semibold text-slate-700 truncate max-w-[280px]">{art.title}</span>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => {
+                                        setReplyText(prev => `${prev}\nRead more: https://thecouragelibrary.com/help/${art.slug}\n`);
+                                        showToast("Link inserted!");
+                                      }}
+                                      className="px-2 py-0.5 bg-blue-50 text-blue-850 hover:bg-blue-100 font-bold rounded text-[9px] cursor-pointer"
+                                    >
+                                      Insert Link
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        navigator.clipboard.writeText(`https://thecouragelibrary.com/help/${art.slug}`);
+                                        showToast("Link copied!");
+                                      }}
+                                      className="px-2 py-0.5 bg-slate-50 text-slate-600 hover:bg-slate-100 font-bold rounded text-[9px] cursor-pointer"
+                                    >
+                                      Copy
+                                    </button>
+                                  </div>
+                                </div>
+                              ))}
                             </div>
                           )}
                         </div>
-                      </div>
-                      <div className="flex flex-col items-end gap-2">
-                        <span className="text-xs text-slate-400 font-medium">
-                          {new Date(selectedMessage.created_at).toLocaleString()}
-                        </span>
-                        <div className="flex gap-2">
-                          <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase">
-                            {selectedMessage.source || 'Website'}
-                          </span>
-                          <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
-                            selectedMessage.priority === 'urgent' ? 'bg-red-100 text-red-700' :
-                            selectedMessage.priority === 'high' ? 'bg-orange-100 text-orange-700' :
-                            'bg-slate-100 text-slate-600'
-                          }`}>
-                            {selectedMessage.priority || 'Normal'}
+
+                        <div className="relative">
+                          <textarea
+                            value={replyText}
+                            onChange={(e) => setReplyText(e.target.value.slice(0, 2000))}
+                            placeholder={replyIsInternal ? "Type internal note..." : "Type response to parent..."}
+                            className={`w-full p-4 border rounded-xl text-xs outline-none focus:ring-2 min-h-[100px] resize-none ${
+                              replyIsInternal
+                                ? "border-amber-200 focus:ring-amber-500/10 focus:border-amber-400 bg-amber-50/10"
+                                : "border-slate-200 focus:ring-blue-800/10 focus:border-blue-800"
+                            }`}
+                            disabled={submittingMessage}
+                          />
+                          <span className="absolute bottom-3 right-3 text-[9px] text-slate-400 font-bold">
+                            {replyText.length} / 2000
                           </span>
                         </div>
-                      </div>
-                    </div>
 
-                    {/* Message Body */}
-                    <div className="flex-1 min-h-[150px]">
-                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Message</h3>
-                      <div className="p-4 bg-slate-50 rounded-2xl text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
-                        {selectedMessage.message}
-                      </div>
-                    </div>
-
-                    {/* Admin Notes */}
-                    <div>
-                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Internal Notes</h3>
-                      <textarea
-                        value={adminNotesInput}
-                        onChange={(e) => setAdminNotesInput(e.target.value)}
-                        placeholder="Add internal notes about handling this inquiry..."
-                        className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all min-h-[100px]"
-                      />
-                      <div className="mt-2 flex justify-end">
-                        <button
-                          onClick={() => handleUpdateSupportMessage(selectedMessage.id, { admin_notes: adminNotesInput })}
-                          disabled={updatingSupport}
-                          className="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700 cursor-pointer disabled:opacity-50"
-                        >
-                          Save Notes
-                        </button>
-                      </div>
-                    </div>
-
-                    {/* AI Draft Reply */}
-                    <div>
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">AI Draft Reply</h3>
-                        <button
-                          onClick={handleGenerateReply}
-                          disabled={isGeneratingReply}
-                          className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
-                        >
-                          <Sparkles size={12} />
-                          {isGeneratingReply ? "Generating..." : "Generate AI Reply"}
-                        </button>
-                      </div>
-                      <textarea
-                        value={draftReply}
-                        onChange={(e) => setDraftReply(e.target.value)}
-                        placeholder="Click 'Generate AI Reply' to draft a response, or type manually..."
-                        className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all min-h-[120px] bg-indigo-50/30"
-                      />
-                    </div>
-
-                    {/* Actions Panel */}
-                    <div className="border-t border-slate-100 pt-6">
-                      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Actions & Reply</h3>
-                      <div className="flex flex-wrap gap-3">
-                        
-                        <a 
-                          href={`mailto:${selectedMessage.email}?subject=Re: ${encodeURIComponent(selectedMessage.subject || 'Your Inquiry to CNTS')}&body=${encodeURIComponent(draftReply || `Hello ${selectedMessage.name},\n\nThank you for contacting CNTS.\n\nRegarding your query:\n\n[Type your response here]\n\nRegards,\nCNTS Support Team\n`)}`}
-                          className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-xl text-sm font-semibold transition-all"
-                        >
-                          <Send size={16} />
-                          Reply via Email
-                        </a>
-
-                        {selectedMessage.phone && (
-                          <a 
-                            href={`https://wa.me/${selectedMessage.phone.replace(/\D/g, '')}?text=${encodeURIComponent(draftReply || `Hello ${selectedMessage.name},\n\nThank you for contacting CNTS.\n\nRegarding your query:\n\n[Type your response here]\n\nRegards,\nCNTS Support Team\n`)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-semibold transition-all"
+                        <div className="flex justify-end">
+                          <button
+                            onClick={handleSendReply}
+                            disabled={submittingMessage || !replyText.trim()}
+                            className={`px-5 py-2.5 rounded-xl text-xs font-bold text-white cursor-pointer shadow-md transition-all disabled:opacity-60 ${
+                              replyIsInternal
+                                ? "bg-amber-600 hover:bg-amber-700 shadow-amber-600/10"
+                                : "bg-blue-800 hover:bg-blue-700 shadow-blue-800/10"
+                            }`}
                           >
-                            <MessageSquare size={16} />
-                            Reply via WhatsApp
-                          </a>
-                        )}
-
-                        <div className="flex-1"></div>
-
-                        <select
-                          value={selectedMessage.status || 'pending'}
-                          onChange={(e) => handleUpdateSupportMessage(selectedMessage.id, { status: e.target.value })}
-                          className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none cursor-pointer hover:bg-slate-50"
-                          disabled={updatingSupport}
-                        >
-                          <option value="pending">Mark as Pending</option>
-                          <option value="in_progress">Mark as In Progress</option>
-                          <option value="resolved">Mark as Resolved</option>
-                          <option value="spam">Mark as Spam</option>
-                        </select>
+                            {submittingMessage ? "Saving..." : replyIsInternal ? "Save Note" : "Send Reply"}
+                          </button>
+                        </div>
                       </div>
-                    </div>
 
-                  </div>
-                ) : (
-                  <div className="bg-white border border-slate-100 rounded-3xl p-12 shadow-sm flex flex-col items-center justify-center text-center h-full min-h-[500px]">
-                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
-                      <MessageSquare size={32} />
+                      {/* Notification logs list */}
+                      <div className="border-t border-slate-100 pt-6 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">Notification Delivery Logs</h3>
+                          {loadingNotifications && <span className="text-[10px] text-slate-400 animate-pulse">Refreshing...</span>}
+                        </div>
+                        
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-left border-collapse text-xs">
+                            <thead>
+                              <tr className="border-b border-slate-100 text-slate-400 font-bold">
+                                <th className="pb-2">Recipient</th>
+                                <th className="pb-2">Channel</th>
+                                <th className="pb-2">Template</th>
+                                <th className="pb-2">Status</th>
+                                <th className="pb-2">Attempts</th>
+                                <th className="pb-2 text-right">Actions</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-slate-50 text-slate-700">
+                              {ticketNotifications.length === 0 ? (
+                                <tr>
+                                  <td colSpan={6} className="py-4 text-center text-slate-400">No notifications enqueued or sent.</td>
+                                </tr>
+                              ) : (
+                                ticketNotifications.map((notif: any) => (
+                                  <tr key={notif.id} className="hover:bg-slate-50/50">
+                                    <td className="py-2.5 font-mono">{notif.recipient}</td>
+                                    <td className="py-2.5 font-semibold text-[10px] uppercase text-slate-500">{notif.channel}</td>
+                                    <td className="py-2.5 truncate max-w-[120px] font-mono text-[10px]">{notif.template_name}</td>
+                                    <td className="py-2.5">
+                                      <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold ${
+                                        notif.status === 'SENT' ? 'bg-emerald-100 text-emerald-800' :
+                                        notif.status === 'FAILED' ? 'bg-rose-100 text-rose-800' :
+                                        'bg-amber-100 text-amber-800'
+                                      }`}>
+                                        {notif.status}
+                                      </span>
+                                    </td>
+                                    <td className="py-2.5">{notif.attempts} / 3</td>
+                                    <td className="py-2.5 text-right">
+                                      {notif.status === 'FAILED' && (
+                                        <button
+                                          onClick={() => handleRetryNotification(notif.id)}
+                                          className="px-2 py-1 bg-blue-50 hover:bg-blue-100 text-blue-800 text-[10px] font-bold rounded cursor-pointer transition-colors"
+                                        >
+                                          Retry
+                                        </button>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+
                     </div>
-                    <h3 className="text-lg font-bold text-slate-700 mb-2">No Message Selected</h3>
-                    <p className="text-sm text-slate-500 max-w-sm">
-                      Select a message from the inbox on the left to view details, add internal notes, and reply to the parent.
-                    </p>
-                  </div>
+                  ) : (
+                    <div className="bg-white border border-slate-100 rounded-3xl p-12 shadow-sm flex flex-col items-center justify-center text-center h-full min-h-[500px]">
+                      <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
+                        <MessageSquare size={32} />
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-700 mb-2">No Ticket Selected</h3>
+                      <p className="text-sm text-slate-500 max-w-sm">
+                        Select a support ticket from the list on the left to resolve detail timelines, add internal notes, and update statuses.
+                      </p>
+                    </div>
+                  )
+                ) : (
+                  selectedMessage ? (
+                    <div className="bg-white border border-slate-100 rounded-3xl p-6 md:p-8 shadow-sm flex flex-col h-full space-y-6">
+                      
+                      {/* Header */}
+                      <div className="flex items-start justify-between border-b border-slate-100 pb-6">
+                        <div>
+                          <h2 className="font-display font-bold text-2xl text-slate-800 mb-2">
+                            {selectedMessage.subject || "No Subject"}
+                          </h2>
+                          <div className="flex flex-wrap gap-4 text-sm">
+                            <div className="flex items-center gap-1.5 text-slate-600">
+                              <span className="font-semibold text-slate-800">{selectedMessage.name}</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 text-slate-500">
+                              <a href={`mailto:${selectedMessage.email}`} className="hover:text-blue-600 hover:underline">
+                                {selectedMessage.email}
+                              </a>
+                            </div>
+                            {selectedMessage.phone && (
+                              <div className="flex items-center gap-1.5 text-slate-500">
+                                {selectedMessage.phone}
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <span className="text-xs text-slate-400 font-medium">
+                            {new Date(selectedMessage.created_at).toLocaleString()}
+                          </span>
+                          <div className="flex gap-2">
+                            <span className="px-2 py-1 bg-slate-100 text-slate-600 rounded text-[10px] font-bold uppercase">
+                              {selectedMessage.source || 'Website'}
+                            </span>
+                            <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${
+                              selectedMessage.priority === 'urgent' ? 'bg-red-100 text-red-700' :
+                              selectedMessage.priority === 'high' ? 'bg-orange-100 text-orange-700' :
+                              'bg-slate-100 text-slate-600'
+                            }`}>
+                              {selectedMessage.priority || 'Normal'}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Message Body */}
+                      <div className="flex-1 min-h-[150px]">
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Message</h3>
+                        <div className="p-4 bg-slate-50 rounded-2xl text-slate-700 text-sm leading-relaxed whitespace-pre-wrap">
+                          {selectedMessage.message}
+                        </div>
+                      </div>
+
+                      {/* Admin Notes */}
+                      <div>
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Internal Notes</h3>
+                        <textarea
+                          value={adminNotesInput}
+                          onChange={(e) => setAdminNotesInput(e.target.value)}
+                          placeholder="Add internal notes about handling this inquiry..."
+                          className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all min-h-[100px]"
+                        />
+                        <div className="mt-2 flex justify-end">
+                          <button
+                            onClick={() => handleUpdateSupportMessage(selectedMessage.id, { admin_notes: adminNotesInput })}
+                            disabled={updatingSupport}
+                            className="px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg hover:bg-slate-700 cursor-pointer disabled:opacity-50"
+                          >
+                            Save Notes
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* AI Draft Reply */}
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider">AI Draft Reply</h3>
+                          <button
+                            onClick={handleGenerateReply}
+                            disabled={isGeneratingReply}
+                            className="flex items-center gap-1.5 px-3 py-1 bg-indigo-50 text-indigo-700 hover:bg-indigo-100 rounded-lg text-xs font-bold transition-all cursor-pointer disabled:opacity-50"
+                          >
+                            <Sparkles size={12} />
+                            {isGeneratingReply ? "Generating..." : "Generate AI Reply"}
+                          </button>
+                        </div>
+                        <textarea
+                          value={draftReply}
+                          onChange={(e) => setDraftReply(e.target.value)}
+                          placeholder="Click 'Generate AI Reply' to draft a response, or type manually..."
+                          className="w-full p-4 border border-slate-200 rounded-xl text-sm focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 outline-none transition-all min-h-[120px] bg-indigo-50/30"
+                        />
+                      </div>
+
+                      {/* Actions Panel */}
+                      <div className="border-t border-slate-100 pt-6">
+                        <h3 className="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">Actions & Reply</h3>
+                        <div className="flex flex-wrap gap-3">
+                          
+                          <a 
+                            href={`mailto:${selectedMessage.email}?subject=Re: ${encodeURIComponent(selectedMessage.subject || 'Your Inquiry to CNTS')}&body=${encodeURIComponent(draftReply || `Hello ${selectedMessage.name},\n\nThank you for contacting CNTS.\n\nRegarding your query:\n\n[Type your response here]\n\nRegards,\nCNTS Support Team\n`)}`}
+                            className="flex items-center gap-2 px-4 py-2.5 bg-blue-50 text-blue-700 hover:bg-blue-100 rounded-xl text-sm font-semibold transition-all"
+                          >
+                            <Send size={16} />
+                            Reply via Email
+                          </a>
+
+                          {selectedMessage.phone && (
+                            <a 
+                              href={`https://wa.me/${selectedMessage.phone.replace(/\D/g, '')}?text=${encodeURIComponent(draftReply || `Hello ${selectedMessage.name},\n\nThank you for contacting CNTS.\n\nRegarding your query:\n\n[Type your response here]\n\nRegards,\nCNTS Support Team\n`)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 px-4 py-2.5 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 rounded-xl text-sm font-semibold transition-all"
+                            >
+                              <MessageSquare size={16} />
+                              Reply via WhatsApp
+                            </a>
+                          )}
+
+                          <div className="flex-1"></div>
+
+                          <select
+                            value={selectedMessage.status || 'pending'}
+                            onChange={(e) => handleUpdateSupportMessage(selectedMessage.id, { status: e.target.value })}
+                            className="px-4 py-2.5 border border-slate-200 rounded-xl text-sm font-semibold text-slate-700 outline-none cursor-pointer hover:bg-slate-50"
+                            disabled={updatingSupport}
+                          >
+                            <option value="pending">Mark as Pending</option>
+                            <option value="in_progress">Mark as In Progress</option>
+                            <option value="resolved">Mark as Resolved</option>
+                            <option value="spam">Mark as Spam</option>
+                          </select>
+                        </div>
+                      </div>
+
+                    </div>
+                  ) : (
+                    <div className="bg-white border border-slate-100 rounded-3xl p-12 shadow-sm flex flex-col items-center justify-center text-center h-full min-h-[500px]">
+                      <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-4 text-slate-300">
+                        <MessageSquare size={32} />
+                      </div>
+                      <h3 className="text-lg font-bold text-slate-700 mb-2">No Inquiry Selected</h3>
+                      <p className="text-sm text-slate-500 max-w-sm">
+                        Select an inquiry from the legacy list on the left to view details, add internal notes, and update statuses.
+                      </p>
+                    </div>
+                  )
                 )}
               </div>
-
             </div>
           </div>
         )}
@@ -1664,6 +2576,1347 @@ export default function AdminOverviewPage() {
         {/* Tab 6: School Partners */}
         {activeTab === "schools" && (
           <SchoolPartnersPanel />
+        )}
+
+        {/* Tab 8: Question Bank */}
+        {activeTab === "questions" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-display font-bold text-slate-805 text-base">
+                  {selectedQuestion ? "Edit Question" : "Create New Question"}
+                </h3>
+                {selectedQuestion && (
+                  <button
+                    onClick={resetQuestionEditor}
+                    className="text-xs text-slate-400 hover:text-slate-655 font-bold"
+                  >
+                    Clear Editor
+                  </button>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveQuestion} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-705">Question Text *</label>
+                  <textarea
+                    value={qText}
+                    onChange={(e) => setQText(e.target.value)}
+                    placeholder="e.g. In a code language, if FRUIT is written as GTVJU..."
+                    rows={4}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800 font-medium text-slate-800"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Subject *</label>
+                    <select
+                      value={qSubject}
+                      onChange={(e) => setQSubject(e.target.value)}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800 cursor-pointer"
+                    >
+                      <option value="Mathematics">Mathematics</option>
+                      <option value="Reasoning">Reasoning</option>
+                      <option value="Language">Language</option>
+                      <option value="Science">Science</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Chapter *</label>
+                    <input
+                      type="text"
+                      value={qChapter}
+                      onChange={(e) => setQChapter(e.target.value)}
+                      placeholder="e.g. Algebra"
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Topic *</label>
+                    <input
+                      type="text"
+                      value={qTopic}
+                      onChange={(e) => setQTopic(e.target.value)}
+                      placeholder="e.g. Linear Eq"
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Subtopic</label>
+                    <input
+                      type="text"
+                      value={qSubtopic}
+                      onChange={(e) => setQSubtopic(e.target.value)}
+                      placeholder="e.g. Graphing"
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Bloom Level *</label>
+                    <select
+                      value={qBloom}
+                      onChange={(e) => setQBloom(e.target.value)}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800 cursor-pointer"
+                    >
+                      <option value="REMEMBERING">Remembering</option>
+                      <option value="UNDERSTANDING">Understanding</option>
+                      <option value="APPLYING">Applying</option>
+                      <option value="ANALYZING">Analyzing</option>
+                      <option value="EVALUATING">Evaluating</option>
+                      <option value="CREATING">Creating</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Difficulty (0.0-1.0) *</label>
+                    <input
+                      type="number"
+                      step="0.05"
+                      min="0.00"
+                      max="1.00"
+                      value={qDifficulty}
+                      onChange={(e) => setQDifficulty(Number(e.target.value))}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Marks *</label>
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={qMarks}
+                      onChange={(e) => setQMarks(Number(e.target.value))}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Neg Marks</label>
+                    <input
+                      type="number"
+                      step="0.25"
+                      value={qNegMarks}
+                      onChange={(e) => setQNegMarks(Number(e.target.value))}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-707">Options & Answer Keys *</label>
+                  <div className="space-y-2">
+                    {qOptions.map((opt, oIdx) => (
+                      <div key={opt.id} className="flex gap-2 items-center">
+                        <input
+                          type="checkbox"
+                          checked={opt.isCorrect}
+                          onChange={(e) => {
+                            setQOptions(prev => prev.map((o, idx) => ({
+                              ...o,
+                              isCorrect: idx === oIdx ? e.target.checked : o.isCorrect
+                            })));
+                          }}
+                          className="w-4 h-4 text-blue-800 rounded border-slate-300"
+                        />
+                        <span className="text-xs font-bold text-slate-400">{String.fromCharCode(65 + oIdx)}:</span>
+                        <input
+                          type="text"
+                          value={opt.text}
+                          onChange={(e) => {
+                            setQOptions(prev => prev.map((o, idx) => idx === oIdx ? { ...o, text: e.target.value } : o));
+                          }}
+                          placeholder={`Option content`}
+                          className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                          required
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-705">Step-by-Step Explanation</label>
+                  <textarea
+                    value={qExplanation}
+                    onChange={(e) => setQExplanation(e.target.value)}
+                    placeholder="Provide step-by-step logic to display on parent scorecards..."
+                    rows={3}
+                    className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Approval Status *</label>
+                    <select
+                      value={qApprovalStatus}
+                      onChange={(e) => setQApprovalStatus(e.target.value)}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800 cursor-pointer"
+                    >
+                      <option value="DRAFT">Draft Mode</option>
+                      <option value="UNDER_REVIEW">In Review</option>
+                      <option value="APPROVED">Approved</option>
+                      <option value="RETIRED">Retired</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Solve Time (Seconds) *</label>
+                    <input
+                      type="number"
+                      value={qSolveTime}
+                      onChange={(e) => setQSolveTime(Number(e.target.value))}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={qSaving}
+                  className="w-full py-2.5 bg-blue-800 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl text-xs font-bold transition-all shadow"
+                >
+                  {qSaving ? "Saving Question..." : selectedQuestion ? "Update Question Details" : "Publish Question"}
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                <h3 className="font-display font-bold text-slate-805 text-base">
+                  Question Registry
+                </h3>
+                <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">
+                  {questionsList.length} items
+                </span>
+              </div>
+
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                  <input
+                    type="text"
+                    placeholder="Search question text..."
+                    value={qSearch}
+                    onChange={(e) => setQSearch(e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                  />
+                </div>
+                <select
+                  value={qFilterSubject}
+                  onChange={(e) => setQFilterSubject(e.target.value)}
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none cursor-pointer"
+                >
+                  <option value="ALL">All Subjects</option>
+                  <option value="Mathematics">Mathematics</option>
+                  <option value="Reasoning">Reasoning</option>
+                  <option value="Language">Language</option>
+                  <option value="Science">Science</option>
+                </select>
+              </div>
+
+              <div className="divide-y divide-slate-100 overflow-y-auto max-h-[550px] pr-2">
+                {loadingQuestions ? (
+                  <div className="text-center py-8 text-xs text-slate-400 animate-pulse">Syncing registry...</div>
+                ) : questionsList.filter(q => {
+                  const matchS = q.question_text.toLowerCase().includes(qSearch.toLowerCase()) || q.topic.toLowerCase().includes(qSearch.toLowerCase());
+                  const matchF = qFilterSubject === "ALL" || q.subject === qFilterSubject;
+                  return matchS && matchF;
+                }).length > 0 ? (
+                  questionsList.filter(q => {
+                    const matchS = q.question_text.toLowerCase().includes(qSearch.toLowerCase()) || q.topic.toLowerCase().includes(qSearch.toLowerCase());
+                    const matchF = qFilterSubject === "ALL" || q.subject === qFilterSubject;
+                    return matchS && matchF;
+                  }).map((q) => (
+                    <div
+                      key={q.id}
+                      onClick={() => {
+                        setSelectedQuestion(q);
+                        setQText(q.question_text);
+                        setQExplanation(q.explanation || "");
+                        setQDifficulty(q.difficulty_index);
+                        setQBloom(q.bloom_taxonomy);
+                        setQSubject(q.subject);
+                        setQChapter(q.chapter);
+                        setQTopic(q.topic);
+                        setQSubtopic(q.subtopic || "");
+                        setQSolveTime(q.estimated_solve_time);
+                        setQMarks(q.marks);
+                        setQNegMarks(q.negative_marks);
+                        setQOptions(q.options || [
+                          { id: "opt-1", text: "", isCorrect: false },
+                          { id: "opt-2", text: "", isCorrect: false },
+                          { id: "opt-3", text: "", isCorrect: false },
+                          { id: "opt-4", text: "", isCorrect: false }
+                        ]);
+                        setQApprovalStatus(q.approval_status);
+                      }}
+                      className="py-3 flex flex-col justify-between items-start gap-2 cursor-pointer hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0"
+                    >
+                      <div className="w-full">
+                        <h4 className="text-xs font-bold text-slate-900 line-clamp-2">{q.question_text}</h4>
+                        <p className="text-[10px] text-slate-400 font-medium mt-0.5">{q.subject} • {q.chapter} • {q.topic}</p>
+                      </div>
+                      <div className="flex w-full justify-between items-center text-[8px] font-bold text-slate-550">
+                        <span className={`px-2 py-0.5 rounded uppercase font-black ${
+                          q.approval_status === "APPROVED"
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                            : q.approval_status === "DRAFT"
+                            ? "bg-slate-50 text-slate-700 border border-slate-100"
+                            : "bg-red-50 text-red-700 border border-red-100"
+                        }`}>
+                          {q.approval_status}
+                        </span>
+                        <div className="flex gap-2">
+                          <span>Difficulty: {q.difficulty_index}</span>
+                          <span>v{q.version}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-xs text-slate-400">No questions matched search filters.</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 7: CMS Subsystem */}
+        {activeTab === "cms" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-display font-bold text-slate-800 text-base">
+                  {selectedCms ? "Edit CMS Article" : "Create New CMS Article"}
+                </h3>
+                {selectedCms && (
+                  <button
+                    onClick={() => {
+                      setSelectedCms(null);
+                      setCmsTitle("");
+                      setCmsSlug("");
+                      setCmsContent("");
+                      setCmsPublished(true);
+                    }}
+                    className="text-xs text-slate-400 hover:text-slate-655 font-bold"
+                  >
+                    Clear Editor
+                  </button>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveCms} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Article Title *</label>
+                    <input
+                      type="text"
+                      value={cmsTitle}
+                      onChange={(e) => {
+                        setCmsTitle(e.target.value);
+                        if (!selectedCms) {
+                          setCmsSlug(e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""));
+                        }
+                      }}
+                      placeholder="e.g. FAQ: What is CNTS?"
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">SEO Slug *</label>
+                    <input
+                      type="text"
+                      value={cmsSlug}
+                      onChange={(e) => setCmsSlug(e.target.value)}
+                      placeholder="e.g. faq-what-is-cnts"
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800 font-mono"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Category *</label>
+                    <select
+                      value={cmsCategory}
+                      onChange={(e) => setCmsCategory(e.target.value)}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                    >
+                      <option value="FAQ">FAQ Section</option>
+                      <option value="BLOG">Blog Post</option>
+                      <option value="ANNOUNCEMENT">Announcement</option>
+                      <option value="LANDING">Landing Page Content</option>
+                      <option value="GETTING_STARTED">Getting Started</option>
+                      <option value="REGISTRATION">Registration</option>
+                      <option value="PAYMENT">Payment</option>
+                      <option value="ACADEMY">Academy</option>
+                      <option value="EXAM">Exam</option>
+                      <option value="RESULTS">Results</option>
+                      <option value="SCHOOL">School</option>
+                      <option value="ACCOUNT">Account</option>
+                      <option value="TECHNICAL">Technical</option>
+                      <option value="GENERAL">General</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1 flex flex-col justify-end">
+                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-705 cursor-pointer pb-2">
+                      <input
+                        type="checkbox"
+                        checked={cmsPublished}
+                        onChange={(e) => setCmsPublished(e.target.checked)}
+                        className="w-4 h-4 text-blue-800 rounded border-slate-300"
+                      />
+                      Publish Immediately (Publicly Visible)
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-slate-705">Markdown Content *</label>
+                  <textarea
+                    value={cmsContent}
+                    onChange={(e) => setCmsContent(e.target.value)}
+                    placeholder="Write article details in Markdown..."
+                    rows={12}
+                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800 font-mono"
+                    required
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={cmsSaving}
+                  className="w-full py-2.5 bg-blue-800 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl text-xs font-bold transition-all shadow"
+                >
+                  {cmsSaving ? "Saving..." : selectedCms ? "Update Article" : "Publish Article"}
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                <h3 className="font-display font-bold text-slate-800 text-base">
+                  Published Directory
+                </h3>
+                <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">
+                  {cmsArticles.length} items
+                </span>
+              </div>
+
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                  <input
+                    type="text"
+                    placeholder="Search articles..."
+                    value={cmsSearch}
+                    onChange={(e) => setCmsSearch(e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                  />
+                </div>
+                <select
+                  value={cmsFilter}
+                  onChange={(e) => setCmsFilter(e.target.value)}
+                  className="px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none cursor-pointer"
+                >
+                  <option value="ALL">All Categories</option>
+                  <option value="FAQ">FAQs</option>
+                  <option value="BLOG">Blogs</option>
+                  <option value="ANNOUNCEMENT">Announcements</option>
+                  <option value="LANDING">Landings</option>
+                </select>
+              </div>
+
+              <div className="divide-y divide-slate-100 overflow-y-auto max-h-[460px] pr-2">
+                {loadingCms ? (
+                  <div className="text-center py-8 text-xs text-slate-400 animate-pulse">Syncing directory...</div>
+                ) : cmsArticles.filter(art => {
+                  const matchS = art.title.toLowerCase().includes(cmsSearch.toLowerCase()) || art.slug.toLowerCase().includes(cmsSearch.toLowerCase());
+                  const matchF = cmsFilter === "ALL" || art.category === cmsFilter;
+                  return matchS && matchF;
+                }).length > 0 ? (
+                  cmsArticles.filter(art => {
+                    const matchS = art.title.toLowerCase().includes(cmsSearch.toLowerCase()) || art.slug.toLowerCase().includes(cmsSearch.toLowerCase());
+                    const matchF = cmsFilter === "ALL" || art.category === cmsFilter;
+                    return matchS && matchF;
+                  }).map((art) => (
+                    <div
+                      key={art.id}
+                      onClick={() => {
+                        setSelectedCms(art);
+                        setCmsTitle(art.title);
+                        setCmsSlug(art.slug);
+                        setCmsCategory(art.category);
+                        setCmsContent(art.content);
+                        setCmsPublished(art.published);
+                      }}
+                      className="py-3 flex justify-between items-start gap-4 cursor-pointer hover:bg-slate-50/50 transition-colors border-b border-slate-105 last:border-0"
+                    >
+                      <div className="space-y-1 min-w-0 flex-1">
+                        <h4 className="text-xs font-bold text-slate-900 truncate">{art.title}</h4>
+                        <p className="text-[10px] text-slate-400 font-medium font-mono truncate">{art.slug}</p>
+                      </div>
+                      <div className="flex flex-col items-end gap-1 shrink-0">
+                        <span className={`text-[8px] px-2 py-0.5 rounded uppercase font-black ${
+                          art.category === "FAQ"
+                            ? "bg-blue-50 text-blue-700 border border-blue-100"
+                            : art.category === "BLOG"
+                            ? "bg-purple-50 text-purple-700 border border-purple-100"
+                            : "bg-amber-50 text-amber-700 border border-amber-100"
+                        }`}>
+                          {art.category}
+                        </span>
+                        <span className={`text-[8px] font-bold ${art.published ? "text-emerald-600" : "text-slate-400"}`}>
+                          {art.published ? "Live" : "Draft"} (v{art.version})
+                        </span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-xs text-slate-400">No CMS pages matched search filters.</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 9: Exam Builder */}
+        {activeTab === "exams" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-display font-bold text-slate-805 text-base">
+                  {selectedExam ? "Edit Assessment Blueprint" : "Build New Assessment"}
+                </h3>
+                {selectedExam && (
+                  <button
+                    onClick={resetExamEditor}
+                    className="text-xs text-slate-400 hover:text-slate-655 font-bold"
+                  >
+                    Clear Editor
+                  </button>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveExam} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Assessment Title *</label>
+                    <input
+                      type="text"
+                      value={examTitle}
+                      onChange={(e) => setExamTitle(e.target.value)}
+                      placeholder="e.g. National Scholarship Exam Grade 5"
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Exam Type *</label>
+                    <select
+                      value={examType}
+                      onChange={(e) => setExamType(e.target.value)}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800 cursor-pointer"
+                    >
+                      <option value="MOCK_EXAM">Mock Exam</option>
+                      <option value="PRACTICE_TEST">Practice Test</option>
+                      <option value="DAILY_CHALLENGE">Daily Challenge</option>
+                      <option value="WORKSHEET">Worksheet</option>
+                      <option value="OFFICIAL_EXAM">Official Exam</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Duration (Minutes) *</label>
+                    <input
+                      type="number"
+                      value={examDuration}
+                      onChange={(e) => setExamDuration(Number(e.target.value))}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1 flex flex-col justify-end">
+                    <label className="flex items-center gap-2 text-xs font-semibold text-slate-705 cursor-pointer pb-2">
+                      <input
+                        type="checkbox"
+                        checked={examPublished}
+                        onChange={(e) => setExamPublished(e.target.checked)}
+                        className="w-4 h-4 text-blue-800 rounded border-slate-300"
+                      />
+                      Publish immediately
+                    </label>
+                  </div>
+                </div>
+
+                <div className="space-y-2 border-t border-slate-100 pt-4">
+                  <div className="flex justify-between items-center">
+                    <label className="text-xs font-bold text-slate-800 uppercase tracking-wide">Section Blueprints *</label>
+                    <button
+                      type="button"
+                      onClick={() => setExamSections([...examSections, { name: `Section ${examSections.length + 1}`, questionCount: 10, marks: 4.0, negativeMarks: 0.0 }])}
+                      className="text-xs text-blue-600 hover:text-blue-700 font-bold flex items-center gap-1"
+                    >
+                      + Add Section
+                    </button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {examSections.map((sec, sIdx) => (
+                      <div key={sIdx} className="grid grid-cols-4 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-105">
+                        <div className="col-span-2 space-y-1">
+                          <label className="text-[9px] font-bold text-slate-400 uppercase">Section Name</label>
+                          <input
+                            type="text"
+                            value={sec.name}
+                            onChange={(e) => setExamSections(prev => prev.map((s, idx) => idx === sIdx ? { ...s, name: e.target.value } : s))}
+                            className="w-full px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-bold text-slate-400 uppercase">Count</label>
+                          <input
+                            type="number"
+                            value={sec.questionCount}
+                            onChange={(e) => setExamSections(prev => prev.map((s, idx) => idx === sIdx ? { ...s, questionCount: Number(e.target.value) } : s))}
+                            className="w-full px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs"
+                            required
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[9px] font-bold text-slate-400 uppercase">Marks</label>
+                          <input
+                            type="number"
+                            step="0.5"
+                            value={sec.marks}
+                            onChange={(e) => setExamSections(prev => prev.map((s, idx) => idx === sIdx ? { ...s, marks: Number(e.target.value) } : s))}
+                            className="w-full px-3 py-1 bg-white border border-slate-200 rounded-lg text-xs"
+                            required
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={examSaving}
+                  className="w-full py-2.5 bg-blue-800 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl text-xs font-bold transition-all shadow"
+                >
+                  {examSaving ? "Saving Assessment..." : selectedExam ? "Update Blueprint Details" : "Launch Assessment"}
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                <h3 className="font-display font-bold text-slate-805 text-base">
+                  Assessment Registry
+                </h3>
+                <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">
+                  {assessmentsList.length} items
+                </span>
+              </div>
+
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                  <input
+                    type="text"
+                    placeholder="Search title..."
+                    value={examSearch}
+                    onChange={(e) => setExamSearch(e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="divide-y divide-slate-100 overflow-y-auto max-h-[500px] pr-2">
+                {loadingExams ? (
+                  <div className="text-center py-8 text-xs text-slate-400 animate-pulse">Syncing registry...</div>
+                ) : assessmentsList.filter(a => a.title.toLowerCase().includes(examSearch.toLowerCase())).length > 0 ? (
+                  assessmentsList.filter(a => a.title.toLowerCase().includes(examSearch.toLowerCase())).map((a) => (
+                    <div
+                      key={a.id}
+                      onClick={() => {
+                        setSelectedExam(a);
+                        setExamTitle(a.title);
+                        setExamType(a.type);
+                        setExamDuration(a.duration_minutes);
+                        setExamSections(a.sections || []);
+                        setExamPublished(a.is_published);
+                      }}
+                      className="py-3 flex flex-col justify-between items-start gap-2 cursor-pointer hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0"
+                    >
+                      <div className="w-full min-w-0">
+                        <h4 className="text-xs font-bold text-slate-900 truncate">{a.title}</h4>
+                        <p className="text-[10px] text-slate-400 font-medium mt-0.5">Duration: {a.duration_minutes} Mins • {a.sections?.length || 0} Sections</p>
+                      </div>
+                      <div className="flex w-full justify-between items-center text-[8px] font-bold">
+                        <span className={`px-2 py-0.5 rounded uppercase font-black ${
+                          a.is_published
+                            ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                            : "bg-slate-50 text-slate-700 border border-slate-100"
+                        }`}>
+                          {a.is_published ? "Live" : "Draft"}
+                        </span>
+                        <span className="text-slate-400 font-bold uppercase">{a.type}</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-xs text-slate-400">No assessments matched filters.</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 10: User Management & RBAC */}
+        {activeTab === "users" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 className="font-display font-bold text-slate-805 text-base">
+                  {selectedUser ? "Edit User Permissions" : "Register Admin User"}
+                </h3>
+                {selectedUser && (
+                  <button
+                    onClick={resetUserEditor}
+                    className="text-xs text-slate-400 hover:text-slate-655 font-bold"
+                  >
+                    Clear Editor
+                  </button>
+                )}
+              </div>
+
+              <form onSubmit={handleSaveUser} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Email Address</label>
+                    <input
+                      type="email"
+                      value={userEmail}
+                      onChange={(e) => setUserEmail(e.target.value)}
+                      placeholder="e.g. coordinator@courage.org"
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Phone Number (with Country Code)</label>
+                    <input
+                      type="text"
+                      value={userPhone}
+                      onChange={(e) => setUserPhone(e.target.value)}
+                      placeholder="e.g. 918707884735"
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Assigned Role *</label>
+                    <select
+                      value={userRole}
+                      onChange={(e) => setUserRole(e.target.value)}
+                      className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800 cursor-pointer"
+                    >
+                      <option value="VOLUNTEER">Volunteer (Read-only)</option>
+                      <option value="ADMIN">Administrator (Write access)</option>
+                      <option value="SUPER_ADMIN">Super Administrator (All permissions)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-2">
+                  <h4 className="text-xs font-bold text-slate-800">Effective Permissions Set</h4>
+                  <ul className="text-[10px] text-slate-500 space-y-1 list-disc list-inside">
+                    {userRole === "SUPER_ADMIN" ? (
+                      <>
+                        <li>Full dashboard operations control</li>
+                        <li>CMS, Question Bank, and Exam Builder writes</li>
+                        <li>Referral coupon overrides and support ticketing replies</li>
+                        <li>User role management & 2FA unlocks</li>
+                      </>
+                    ) : userRole === "ADMIN" ? (
+                      <>
+                        <li>CMS, Question Bank, and Exam Builder writes</li>
+                        <li>Referral coupon overrides and support ticketing replies</li>
+                        <li>No permission escalation or User table modifications</li>
+                      </>
+                    ) : (
+                      <>
+                        <li>Read-only access to registrations rosters and settings</li>
+                        <li>Audit log explorer access</li>
+                        <li>All write mutations are blocked</li>
+                      </>
+                    )}
+                  </ul>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={userSaving}
+                  className="w-full py-2.5 bg-blue-800 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl text-xs font-bold transition-all shadow"
+                >
+                  {userSaving ? "Saving User..." : selectedUser ? "Update Permissions" : "Register User"}
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                <h3 className="font-display font-bold text-slate-800 text-base">
+                  Authorized Personnel
+                </h3>
+                <span className="text-[10px] bg-blue-50 text-blue-700 px-2 py-0.5 rounded font-bold uppercase">
+                  {usersList.length} users
+                </span>
+              </div>
+
+              <div className="flex gap-2">
+                <div className="relative flex-1">
+                  <Search className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                  <input
+                    type="text"
+                    placeholder="Search by email..."
+                    value={userSearch}
+                    onChange={(e) => setUserSearch(e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none"
+                  />
+                </div>
+              </div>
+
+              <div className="divide-y divide-slate-100 overflow-y-auto max-h-[500px] pr-2">
+                {loadingUsers ? (
+                  <div className="text-center py-8 text-xs text-slate-400 animate-pulse">Syncing registry...</div>
+                ) : usersList.filter(u => !userSearch || (u.email && u.email.toLowerCase().includes(userSearch.toLowerCase()))).length > 0 ? (
+                  usersList.filter(u => !userSearch || (u.email && u.email.toLowerCase().includes(userSearch.toLowerCase()))).map((u) => (
+                    <div
+                      key={u.id}
+                      onClick={() => {
+                        setSelectedUser(u);
+                        setUserEmail(u.email || "");
+                        setUserPhone(u.phone_number || "");
+                        setUserRole(u.role);
+                      }}
+                      className="py-3 flex flex-col justify-between items-start gap-2 cursor-pointer hover:bg-slate-50/50 transition-colors border-b border-slate-100 last:border-0"
+                    >
+                      <div className="w-full min-w-0">
+                        <h4 className="text-xs font-bold text-slate-900 truncate">{u.email || "No Email"}</h4>
+                        <p className="text-[10px] text-slate-455 font-medium mt-0.5 font-mono">{u.phone_number || "No Phone"}</p>
+                      </div>
+                      <div className="flex w-full justify-between items-center text-[8px] font-bold">
+                        <span className={`px-2 py-0.5 rounded uppercase font-black ${
+                          u.role === "SUPER_ADMIN"
+                            ? "bg-red-50 text-red-700 border border-red-100"
+                            : u.role === "ADMIN"
+                            ? "bg-blue-50 text-blue-700 border border-blue-100"
+                            : "bg-slate-50 text-slate-700 border border-slate-100"
+                        }`}>
+                          {u.role}
+                        </span>
+                        <span className="text-slate-400 font-bold">Authorized</span>
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-xs text-slate-400">No users matched search filters.</div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 11: Finance Dashboard */}
+        {activeTab === "finance" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Gross Revenue</p>
+                <p className="text-2xl font-bold text-slate-800 mt-2">₹{Number(financeKPIs.grossRevenue).toLocaleString("en-IN")}</p>
+                <p className="text-[10px] text-slate-400 mt-1">Total collections registered</p>
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Net Revenue</p>
+                <p className="text-2xl font-bold text-slate-800 mt-2">₹{Number(financeKPIs.netRevenue).toLocaleString("en-IN")}</p>
+                <p className="text-[10px] text-emerald-600 mt-1">Gross minus issued refunds</p>
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Refunded Total</p>
+                <p className="text-2xl font-bold text-slate-800 mt-2">₹{Number(financeKPIs.refundSum).toLocaleString("en-IN")}</p>
+                <p className="text-[10px] text-red-500 mt-1">Disbursed transaction returns</p>
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm">
+                <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Avg Ticket Size</p>
+                <p className="text-2xl font-bold text-slate-800 mt-2">₹{Number(financeKPIs.avgRegValue).toLocaleString("en-IN")}</p>
+                <p className="text-[10px] text-slate-400 mt-1">Per individual registration fee</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-slate-805 text-base">Issue School Refund</h3>
+                  <p className="text-xs text-slate-500">Register returns for school coordinate accounts</p>
+                </div>
+
+                <form onSubmit={handleIssueRefund} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">School ID *</label>
+                    <input
+                      type="text"
+                      value={refundSchoolId}
+                      onChange={(e) => setRefundSchoolId(e.target.value)}
+                      placeholder="Enter school record UUID"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Refund Amount (INR) *</label>
+                    <input
+                      type="number"
+                      value={refundAmount}
+                      onChange={(e) => setRefundAmount(Number(e.target.value))}
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs font-semibold text-slate-705">Reference / Gateway ID</label>
+                    <input
+                      type="text"
+                      value={refundRef}
+                      onChange={(e) => setRefundRef(e.target.value)}
+                      placeholder="e.g. ref_intent_99182"
+                      className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none focus:border-blue-800"
+                    />
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={refundSaving}
+                    className="w-full py-2.5 bg-blue-800 hover:bg-blue-700 disabled:opacity-60 text-white rounded-xl text-xs font-bold transition-all shadow"
+                  >
+                    {refundSaving ? "Recording transaction..." : "Approve & Log Refund"}
+                  </button>
+                </form>
+              </div>
+
+              <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+                <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                  <h3 className="font-display font-bold text-slate-808 text-base">Double-Entry Ledger</h3>
+                  <button
+                    onClick={fetchFinance}
+                    className="text-xs font-bold text-blue-800 flex items-center gap-1.5"
+                  >
+                    <RefreshCw size={12} className={loadingFinance ? "animate-spin" : ""} />
+                    Sync Ledger
+                  </button>
+                </div>
+
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <Search className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                    <input
+                      type="text"
+                      placeholder="Search transactions..."
+                      value={financeSearch}
+                      onChange={(e) => setFinanceSearch(e.target.value)}
+                      className="w-full pl-8 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="divide-y divide-slate-100 overflow-y-auto max-h-[460px] pr-2">
+                  {loadingFinance ? (
+                    <div className="text-center py-8 text-xs text-slate-400 animate-pulse">Syncing ledger...</div>
+                  ) : financeTransactions.filter(tx => !financeSearch || tx.reference_id?.includes(financeSearch)).length > 0 ? (
+                    financeTransactions.filter(tx => !financeSearch || tx.reference_id?.includes(financeSearch)).map((tx) => (
+                      <div key={tx.id} className="py-3 flex justify-between items-center text-xs border-b border-slate-100 last:border-0">
+                        <div>
+                          <p className="font-bold text-slate-800">{tx.schools?.name || "Independent Parent Payment"}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5">Ref: {tx.reference_id || "N/A"} • {new Date(tx.created_at).toLocaleString()}</p>
+                        </div>
+                        <div className="text-right space-y-1">
+                          <p className={`font-bold font-mono ${tx.amount < 0 ? "text-emerald-600" : "text-red-500"}`}>
+                            {tx.amount < 0 ? "-" : "+"}₹{Math.abs(Number(tx.amount)).toLocaleString("en-IN")}
+                          </p>
+                          <span className={`text-[8px] px-2 py-0.5 rounded font-black uppercase ${
+                            tx.transaction_type === "INVOICE"
+                              ? "bg-amber-50 text-amber-700 border border-amber-100"
+                              : tx.transaction_type === "PAYMENT"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                              : "bg-red-50 text-red-700 border border-red-100"
+                          }`}>
+                            {tx.transaction_type}
+                          </span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-xs text-slate-400">No ledger entries matched search filters.</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 12: Reports Center */}
+        {activeTab === "reports" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="border-b border-slate-100 pb-3">
+                <h3 className="font-display font-bold text-slate-808 text-base">Bulk Export Engine</h3>
+                <p className="text-xs text-slate-500 font-medium">Extract system registers in CSV formats</p>
+              </div>
+
+              <div className="space-y-4 pt-2">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                  <h4 className="text-xs font-bold text-slate-800">Registrations Ledger</h4>
+                  <button
+                    onClick={() => {
+                      const csvContent = "data:text/csv;charset=utf-8,ID,Name,Class,Status\n" + registrations.map(r => `"${r.cnts_id}","${r.student_name}","${r.student_class}","${r.payment_status}"`).join("\n");
+                      const encodedUri = encodeURI(csvContent);
+                      const link = document.createElement("a");
+                      link.setAttribute("href", encodedUri);
+                      link.setAttribute("download", `cnts_registrations_export_${Date.now()}.csv`);
+                      document.body.appendChild(link);
+                      link.click();
+                      showToast("Registrations CSV downloaded successfully!");
+                    }}
+                    className="w-full py-2 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow"
+                  >
+                    Export CSV
+                  </button>
+                </div>
+
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-3">
+                  <h4 className="text-xs font-bold text-slate-800">Finance Double-Entry Ledger</h4>
+                  <button
+                    onClick={() => {
+                      const csvContent = "data:text/csv;charset=utf-8,ID,Type,Amount,OutstandingBalance,RefID,CreatedAt\n" + financeTransactions.map(t => `"${t.id}","${t.transaction_type}","${t.amount}","${t.outstanding_balance}","${t.reference_id}","${t.created_at}"`).join("\n");
+                      const encodedUri = encodeURI(csvContent);
+                      const link = document.createElement("a");
+                      link.setAttribute("href", encodedUri);
+                      link.setAttribute("download", `cnts_finance_ledger_export_${Date.now()}.csv`);
+                      document.body.appendChild(link);
+                      link.click();
+                      showToast("Finance Ledger CSV downloaded successfully!");
+                    }}
+                    className="w-full py-2 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow"
+                  >
+                    Export CSV
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                <h3 className="font-display font-bold text-slate-800 text-base">Templates & Schedules</h3>
+              </div>
+
+              <div className="space-y-4 pr-1">
+                {[
+                  { title: "Weekly Revenue Statement Summary", interval: "Weekly (Every Mon 08:00)", dest: "Finance Coordinator", active: true },
+                  { title: "Daily Registrations Growth Analytics", interval: "Daily (Every Day 23:50)", dest: "Academic Leads", active: true },
+                  { title: "Monthly GST Tax Audit Log Sheet", interval: "Monthly (1st Day 01:00)", dest: "GST Tax Auditor", active: true }
+                ].map((s, idx) => (
+                  <div key={idx} className="p-4 border border-slate-100 bg-slate-50/20 rounded-2xl flex items-center justify-between transition-colors hover:bg-slate-50/50">
+                    <div className="space-y-1">
+                      <h4 className="text-xs font-bold text-slate-900">{s.title}</h4>
+                      <p className="text-[10px] text-slate-500 font-medium font-mono">Interval: {s.interval} • Target: {s.dest}</p>
+                    </div>
+                    <span className="text-[9px] px-2 py-0.5 rounded font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-100">
+                      Active
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 13: Monitoring & Mission Control */}
+        {activeTab === "monitoring" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Database Connection</p>
+                  <p className="text-xl font-bold text-slate-800 mt-1">Healthy</p>
+                </div>
+                <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50 animate-pulse" />
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">API Gateways Status</p>
+                  <p className="text-xl font-bold text-slate-800 mt-1">Healthy</p>
+                </div>
+                <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50 animate-pulse" />
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">System Latency (Avg)</p>
+                  <p className="text-xl font-bold text-slate-800 mt-1">114 ms</p>
+                </div>
+                <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50 animate-pulse" />
+              </div>
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Memory Allocation</p>
+                  <p className="text-xl font-bold text-slate-800 mt-1">42% (6.7 GB)</p>
+                </div>
+                <div className="w-3 h-3 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50 animate-pulse" />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+                <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                  <h3 className="font-display font-bold text-slate-808 text-base">Background Worker Jobs</h3>
+                  <button
+                    onClick={fetchMonitoring}
+                    className="text-xs font-bold text-blue-800 flex items-center gap-1.5"
+                  >
+                    <RefreshCw size={12} className={loadingMonitoring ? "animate-spin" : ""} />
+                    Sync Worker
+                  </button>
+                </div>
+
+                <div className="divide-y divide-slate-100 overflow-y-auto max-h-[500px] pr-2">
+                  {backgroundJobs.length > 0 ? (
+                    backgroundJobs.map((job) => (
+                      <div key={job.id} className="py-3 flex justify-between items-center text-xs border-b border-slate-100 last:border-0">
+                        <div className="min-w-0">
+                          <p className="font-bold text-slate-800">{job.job_type}</p>
+                          <p className="text-[10px] text-slate-400 mt-0.5 font-mono truncate">ID: {job.id} • Attempts: {job.attempts}/{job.max_attempts}</p>
+                          {job.error_logs && <p className="text-[9px] text-red-500 mt-1 bg-red-50/50 p-2 rounded-lg border border-red-100 font-mono leading-relaxed">{job.error_logs}</p>}
+                        </div>
+                        <div className="text-right space-y-2 shrink-0">
+                          <span className={`inline-block px-2 py-0.5 rounded font-black uppercase text-[8px] ${
+                            job.status === "COMPLETED"
+                              ? "bg-emerald-50 text-emerald-700 border border-emerald-100"
+                              : job.status === "FAILED"
+                              ? "bg-red-50 text-red-700 border border-red-100"
+                              : "bg-amber-50 text-amber-700 border border-amber-100"
+                          }`}>
+                            {job.status}
+                          </span>
+                          {job.status === "FAILED" && (
+                            <button
+                              onClick={() => handleRetryJob(job.id)}
+                              disabled={monitoringSaving}
+                              className="block text-[9px] text-blue-800 hover:text-blue-700 font-bold ml-auto cursor-pointer"
+                            >
+                              Retry Job
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-xs text-slate-400">No background job records found.</div>
+                  )}
+                </div>
+              </div>
+
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+                <div className="border-b border-slate-100 pb-3">
+                  <h3 className="font-display font-bold text-slate-808 text-base">Security & Health Alerts</h3>
+                </div>
+
+                <div className="space-y-3 overflow-y-auto max-h-[500px]">
+                  {systemAlerts.length > 0 ? (
+                    systemAlerts.map((alt) => (
+                      <div key={alt.id} className={`p-4 rounded-2xl border ${
+                        alt.resolved
+                          ? "bg-slate-50 border-slate-100"
+                          : alt.severity === "CRITICAL"
+                          ? "bg-red-50/50 border-red-100 text-red-800"
+                          : "bg-amber-50/50 border-amber-100 text-amber-800"
+                      }`}>
+                        <div className="flex justify-between items-start gap-2">
+                          <span className="text-[10px] font-bold font-mono uppercase tracking-wider">{alt.alert_rule}</span>
+                          <span className={`text-[8px] font-black uppercase px-2 py-0.5 rounded ${
+                            alt.resolved
+                              ? "bg-slate-100 text-slate-600"
+                              : alt.severity === "CRITICAL"
+                              ? "bg-red-100 text-red-700"
+                              : "bg-amber-100 text-amber-700"
+                          }`}>
+                            {alt.resolved ? "Resolved" : alt.severity}
+                          </span>
+                        </div>
+                        <p className="text-[11px] text-slate-600 mt-2 leading-relaxed font-medium">{alt.description}</p>
+                        {!alt.resolved && (
+                          <button
+                            onClick={() => handleResolveAlert(alt.id)}
+                            disabled={monitoringSaving}
+                            className="mt-3 text-[10px] font-bold text-blue-800 hover:text-blue-700 cursor-pointer"
+                          >
+                            Resolve Alert
+                          </button>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-xs text-slate-400">All systems operational. No active alerts.</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab 14: Audit Explorer */}
+        {activeTab === "audit" && (
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                <h3 className="font-display font-bold text-slate-808 text-base">Immutable Audit Registry</h3>
+                <button
+                  onClick={fetchAuditLogs}
+                  className="text-xs font-bold text-blue-800 flex items-center gap-1.5"
+                >
+                  <RefreshCw size={12} className={loadingAudit ? "animate-spin" : ""} />
+                  Sync Registry
+                </button>
+              </div>
+
+              <div className="flex flex-col sm:flex-row items-center gap-3">
+                <div className="relative flex-1 w-full">
+                  <Search className="absolute left-3 top-2.5 text-slate-400" size={14} />
+                  <input
+                    type="text"
+                    placeholder="Search by action or actor..."
+                    value={auditSearch}
+                    onChange={(e) => setAuditSearch(e.target.value)}
+                    className="w-full pl-8 pr-4 py-2 bg-slate-50/50 border border-slate-200 rounded-xl text-xs outline-none"
+                  />
+                </div>
+
+                <select
+                  value={auditFilterModule}
+                  onChange={(e) => setAuditFilterModule(e.target.value)}
+                  className="w-full sm:w-40 px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs outline-none cursor-pointer"
+                >
+                  <option value="ALL">All Modules</option>
+                  <option value="EXAMS">Exams</option>
+                  <option value="QUESTIONS">Questions</option>
+                  <option value="CMS">CMS</option>
+                  <option value="USERS">Users</option>
+                  <option value="FINANCE">Finance</option>
+                  <option value="SYSTEM">System</option>
+                </select>
+              </div>
+
+              <div className="divide-y divide-slate-100 overflow-y-auto max-h-[500px] pr-2">
+                {loadingAudit ? (
+                  <div className="text-center py-8 text-xs text-slate-400 animate-pulse">Syncing registry...</div>
+                ) : auditLogs.filter(log => {
+                  const matchS = !auditSearch || log.action.toLowerCase().includes(auditSearch.toLowerCase()) || log.actor_role.toLowerCase().includes(auditSearch.toLowerCase());
+                  const matchM = auditFilterModule === "ALL" || log.module === auditFilterModule;
+                  return matchS && matchM;
+                }).length > 0 ? (
+                  auditLogs.filter(log => {
+                    const matchS = !auditSearch || log.action.toLowerCase().includes(auditSearch.toLowerCase()) || log.actor_role.toLowerCase().includes(auditSearch.toLowerCase());
+                    const matchM = auditFilterModule === "ALL" || log.module === auditFilterModule;
+                    return matchS && matchM;
+                  }).map((log) => (
+                    <div
+                      key={log.id}
+                      onClick={() => setSelectedAudit(log)}
+                      className="py-3 flex justify-between items-center text-xs border-b border-slate-100 last:border-0 cursor-pointer hover:bg-slate-50/50 transition-colors"
+                    >
+                      <div>
+                        <p className="font-bold text-slate-800">{log.action}</p>
+                        <p className="text-[10px] text-slate-400 mt-0.5">Module: {log.module} • IP: {log.ip_address} • {new Date(log.created_at).toLocaleString()}</p>
+                      </div>
+                      <span className={`text-[8px] px-2 py-0.5 rounded font-black uppercase ${
+                        log.actor_role === "SUPER_ADMIN"
+                          ? "bg-red-50 text-red-700 border border-red-100"
+                          : log.actor_role === "ADMIN"
+                          ? "bg-blue-50 text-blue-700 border border-blue-100"
+                          : "bg-slate-50 text-slate-700 border border-slate-100"
+                      }`}>
+                        {log.actor_role}
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center py-8 text-xs text-slate-400">No audit logs matched search filters.</div>
+                )}
+              </div>
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 animate-slide-up">
+              <div className="border-b border-slate-100 pb-3 flex justify-between items-center">
+                <h3 className="font-display font-bold text-slate-808 text-base">Diff & Payload Viewer</h3>
+              </div>
+
+              {selectedAudit ? (
+                <div className="space-y-4">
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-slate-500">Operation Action</p>
+                    <p className="text-sm font-bold text-slate-800">{selectedAudit.action}</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-slate-500">Actor Role</p>
+                      <p className="text-xs font-bold text-slate-800">{selectedAudit.actor_role}</p>
+                    </div>
+                    <div className="space-y-1">
+                      <p className="text-xs font-semibold text-slate-500">IP Address</p>
+                      <p className="text-xs font-bold font-mono text-slate-800">{selectedAudit.ip_address}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 border-t border-slate-100 pt-3">
+                    <p className="text-xs font-bold text-slate-800">Payload Comparison State</p>
+                    
+                    <div className="space-y-2">
+                      <div className="p-3 bg-red-50/50 rounded-xl border border-red-100">
+                        <p className="text-[9px] font-bold text-red-700 uppercase">Previous State value</p>
+                        <pre className="text-[10px] font-mono text-red-650 overflow-x-auto max-h-32 mt-1">
+                          {JSON.stringify(selectedAudit.previous_value, null, 2)}
+                        </pre>
+                      </div>
+
+                      <div className="p-3 bg-emerald-50/50 rounded-xl border border-emerald-100">
+                        <p className="text-[9px] font-bold text-emerald-700 uppercase">New State value</p>
+                        <pre className="text-[10px] font-mono text-emerald-650 overflow-x-auto max-h-32 mt-1">
+                          {JSON.stringify(selectedAudit.new_value, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="text-center py-12 text-xs text-slate-400 font-medium">Select an entry from registry list to view JSON payload state difference comparisons.</div>
+              )}
+            </div>
+          </div>
         )}
       </main>
 

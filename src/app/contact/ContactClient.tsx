@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   Mail, 
@@ -45,6 +45,35 @@ export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
+  const [ticketReference, setTicketReference] = useState("");
+
+  const [suggestions, setSuggestions] = useState<any[]>([]);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
+
+  useEffect(() => {
+    const query = (formData.message || formData.subject || "").trim();
+    if (query.length < 3) {
+      setSuggestions([]);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setLoadingSuggestions(true);
+      try {
+        const res = await fetch(`/api/support/articles?limit=3&search=${encodeURIComponent(query)}`);
+        if (res.ok) {
+          const data = await res.json();
+          setSuggestions(data.articles || []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoadingSuggestions(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [formData.message, formData.subject]);
 
   const validateField = (name: keyof ContactFormData, value: string): string => {
     switch (name) {
@@ -116,15 +145,24 @@ export default function ContactPage() {
       setIsSubmitting(true);
       setSubmitError("");
       try {
-        const success = await saveContactMessage({
-          name: formData.name,
-          email: formData.email,
-          phone: formData.whatsapp_number,
-          subject: formData.subject,
-          message: formData.message,
+        const res = await fetch("/api/support/tickets", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.whatsapp_number,
+            subject: formData.subject,
+            message: formData.message,
+            category: "GENERAL"
+          })
         });
 
-        if (success) {
+        if (res.ok) {
+          const data = await res.json();
+          setTicketReference(data.ticket?.reference || "CNTS-SUP-REF");
           setSubmitSuccess(true);
           setFormData({
             name: "",
@@ -135,7 +173,8 @@ export default function ContactPage() {
           });
           setTouched({});
         } else {
-          setSubmitError("Failed to deliver your message. Please try again.");
+          const errData = await res.json().catch(() => ({}));
+          setSubmitError(errData.message || "Failed to deliver your message. Please try again.");
         }
       } catch (err) {
         console.error("Contact message submission failed:", err);
@@ -285,6 +324,9 @@ export default function ContactPage() {
 
                   <div className="space-y-2">
                     <h3 className="font-display font-bold text-2xl text-slate-900">Message Sent!</h3>
+                    <p className="text-xs text-blue-800 font-bold bg-blue-50 border border-blue-100 rounded-lg px-3 py-1.5 inline-block">
+                      Ticket Ref: {ticketReference}
+                    </p>
                     <p className="text-slate-500 text-xs max-w-sm mx-auto leading-normal">
                       Thank you for contacting us. A CNTS advisor will review your message and get in touch with you shortly on WhatsApp or your registered email address.
                     </p>
@@ -459,6 +501,33 @@ export default function ContactPage() {
                       <p className="text-[10px] text-red-500 font-medium">{errors.message}</p>
                     )}
                   </div>
+
+                  {/* Dynamic suggestions block */}
+                  {suggestions.length > 0 && (
+                    <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-4 space-y-2 animate-slide-up">
+                      <p className="text-[10px] font-bold text-blue-800 uppercase tracking-wide flex items-center gap-1">
+                        <Lightbulb size={12} className="text-amber-500 fill-amber-500" />
+                        Suggested Articles (Could these help?)
+                      </p>
+                      <div className="space-y-2 text-xs">
+                        {suggestions.map((art) => (
+                          <div key={art.slug} className="flex items-start justify-between gap-4">
+                            <div>
+                              <h4 className="font-bold text-slate-800">{art.title}</h4>
+                              <p className="text-[10px] text-slate-500 line-clamp-1">{art.content.replace(/<[^>]*>/g, "").slice(0, 100)}</p>
+                            </div>
+                            <Link
+                              href={`/help/${art.slug}`}
+                              target="_blank"
+                              className="shrink-0 text-[10px] font-bold text-blue-800 hover:underline"
+                            >
+                              Open
+                            </Link>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
 
                   <button
                     type="submit"

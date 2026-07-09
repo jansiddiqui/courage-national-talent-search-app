@@ -399,3 +399,117 @@ export function getFoundingFamilyTemplate(parentName: string, familyId: string):
   `;
   return wrapFoundingFamilyLayout(content, `Welcome to CNTS Founding Families, ${parentName}. Your Family ID is ${familyId}.`);
 }
+
+export function getSupportTicketCreatedTemplate(
+  requesterName: string,
+  ticketRef: string,
+  subject: string,
+  description: string
+): string {
+  const content = `
+    <h2 style="margin: 0 0 15px; color: #0f172a; font-size: 20px;">We have received your support request.</h2>
+    <p style="margin: 0 0 25px; color: #334155; font-size: 15px; line-height: 1.6;">Dear ${requesterName}, thank you for contacting CNTS Support. Our team has queued your ticket.</p>
+    
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px; width: 35%;">Ticket Reference:</td>
+          <td style="padding: 6px 0; color: #1e40af; font-size: 14px; font-weight: bold; font-family: monospace;">${ticketRef}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Subject:</td>
+          <td style="padding: 6px 0; color: #0f172a; font-size: 14px; font-weight: 600;">${subject}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px; vertical-align: top;">Description:</td>
+          <td style="padding: 6px 0; color: #334155; font-size: 13px; white-space: pre-wrap; line-height: 1.5;">${description}</td>
+        </tr>
+      </table>
+    </div>
+    <p style="margin: 0; color: #64748b; font-size: 13px; line-height: 1.5;">An agent will review this ticket and respond shortly. Please keep this email for your records.</p>
+  `;
+  return wrapLayout(content, `Support Request Received — ${ticketRef}`);
+}
+
+export function getSupportAgentRepliedTemplate(
+  ticketRef: string,
+  subject: string,
+  replyText: string
+): string {
+  const content = `
+    <h2 style="margin: 0 0 15px; color: #0f172a; font-size: 20px;">New response from CNTS Support.</h2>
+    <p style="margin: 0 0 20px; color: #334155; font-size: 15px; line-height: 1.6;">Our support team has posted a reply on ticket <strong>${ticketRef}</strong>:</p>
+    
+    <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+      <span style="font-[10px] font-bold text-blue-800 uppercase block mb-2">Message Reply Preview</span>
+      <p style="margin: 0; color: #0369a1; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${replyText}</p>
+    </div>
+  `;
+  return wrapLayout(content, `New Reply on ${ticketRef}`);
+}
+
+export function getSupportStatusChangedTemplate(
+  ticketRef: string,
+  prevStatus: string,
+  newStatus: string
+): string {
+  const content = `
+    <h2 style="margin: 0 0 15px; color: #0f172a; font-size: 20px;">Support Ticket Updated</h2>
+    <p style="margin: 0 0 25px; color: #334155; font-size: 15px; line-height: 1.6;">The status of your support request <strong>${ticketRef}</strong> has been updated.</p>
+    
+    <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px; width: 35%;">Previous Status:</td>
+          <td style="padding: 6px 0; color: #64748b; font-size: 14px; font-weight: bold; text-transform: uppercase;">${prevStatus}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px;">New Status:</td>
+          <td style="padding: 6px 0; color: #10b981; font-size: 14px; font-weight: bold; text-transform: uppercase;">${newStatus}</td>
+        </tr>
+      </table>
+    </div>
+  `;
+  return wrapLayout(content, `Support Ticket ${ticketRef} Updated`);
+}
+
+export function getSupportSLAEscalatedTemplate(
+  ticketRef: string,
+  priority: string,
+  breachType: string,
+  escalationLevel: number,
+  assignedAgent: string,
+  deadline: string
+): string {
+  const content = `
+    <h2 style="margin: 0 0 15px; color: #b91c1c; font-size: 20px;">[SLA BREACH ALERT] ticket escalated</h2>
+    <p style="margin: 0 0 25px; color: #334155; font-size: 15px; line-height: 1.6;">This is an internal operations alert: Ticket <strong>${ticketRef}</strong> has crossed its target deadline.</p>
+    
+    <div style="background-color: #fef2f2; border: 1px solid #fee2e2; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr>
+          <td style="padding: 6px 0; color: #b91c1c; font-size: 13px; width: 35%; font-weight: bold;">Escalation Level:</td>
+          <td style="padding: 6px 0; color: #b91c1c; font-size: 14px; font-weight: bold;">Level ${escalationLevel}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Breach Type:</td>
+          <td style="padding: 6px 0; color: #0f172a; font-size: 14px; font-weight: bold;">${breachType}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Priority:</td>
+          <td style="padding: 6px 0; color: #0f172a; font-size: 14px; font-weight: bold;">${priority}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Assigned Agent:</td>
+          <td style="padding: 6px 0; color: #0f172a; font-size: 14px;">${assignedAgent}</td>
+        </tr>
+        <tr>
+          <td style="padding: 6px 0; color: #64748b; font-size: 13px;">Target Deadline:</td>
+          <td style="padding: 6px 0; color: #0f172a; font-size: 14px; font-family: monospace;">${deadline}</td>
+        </tr>
+      </table>
+    </div>
+  `;
+  return wrapLayout(content, `[SLA BREACH ALERT] Ticket ${ticketRef} Escalated`);
+}
+

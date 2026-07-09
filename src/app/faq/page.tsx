@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Search, ChevronRight, HelpCircle, Phone, Mail, MessageSquare, Sparkles } from "lucide-react";
@@ -185,9 +185,40 @@ const faqs: FAQItem[] = [
 ];
 
 export default function FAQPage() {
+  const [faqs, setFaqs] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
+
+  const fetchFaqs = async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch("/api/support/articles?category=FAQ");
+      if (res.ok) {
+        const data = await res.json();
+        const normalized = (data.articles || []).map((art: any) => ({
+          category: art.category.toLowerCase(),
+          q: art.title,
+          a: art.content
+        }));
+        setFaqs(normalized);
+      } else {
+        setError(true);
+      }
+    } catch (err) {
+      console.error(err);
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFaqs();
+  }, []);
 
   // Filter FAQs based on active category and search query
   const filteredFaqs = faqs.filter((faq) => {
@@ -286,7 +317,26 @@ export default function FAQPage() {
 
           {/* Right: Interactive Accordion List */}
           <div className="flex-1 w-full space-y-3">
-            {filteredFaqs.length > 0 ? (
+            {loading ? (
+              // Loading Skeletons
+              Array.from({ length: 4 }).map((_, idx) => (
+                <div key={idx} className="bg-white rounded-2xl border border-slate-100 p-6 space-y-4 animate-pulse">
+                  <div className="h-4 bg-slate-150 rounded w-2/3"></div>
+                  <div className="h-3 bg-slate-100 rounded w-full"></div>
+                </div>
+              ))
+            ) : error ? (
+              // Error Alert with Retry Action
+              <div className="bg-red-50 border border-red-100 rounded-2xl p-6 text-center space-y-3">
+                <p className="text-red-700 text-sm font-semibold">Failed to retrieve FAQ articles.</p>
+                <button
+                  onClick={fetchFaqs}
+                  className="px-4 py-2 bg-red-600 text-white text-xs font-bold rounded-xl hover:bg-red-700 transition-colors cursor-pointer"
+                >
+                  Retry Loading
+                </button>
+              </div>
+            ) : filteredFaqs.length > 0 ? (
               filteredFaqs.map((faq, index) => {
                 const isOpen = expandedIndex === index;
                 return (
