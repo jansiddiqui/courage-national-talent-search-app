@@ -5,6 +5,7 @@ import { Sparkles, Brain, Trophy, Star, Shield, ArrowRight, XCircle, CheckCircle
 import { RegisterCTA } from "@/components/shared/RegisterCTA";
 import FounderLetter from "@/components/sections/FounderLetter";
 import NeedHelp from "@/components/layout/NeedHelp";
+import InspiredByGreatMinds from "@/components/sections/InspiredByGreatMinds";
 
 export const metadata: Metadata = {
   title: "About CNTS – Our Talent Discovery Mission",
@@ -36,7 +37,7 @@ export default function AboutPage() {
             
             <h1 className="font-display font-black text-4xl md:text-5xl lg:text-6xl tracking-tight text-slate-900 leading-[1.05]">
               Finding the genius in{" "}
-              <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-blue-600 to-indigo-650 bg-clip-text text-transparent">
                 every child.
               </span>
             </h1>
@@ -255,6 +256,9 @@ export default function AboutPage() {
           </div>
         </div>
       </section>
+
+      {/* ── GREAT MINDS Carousel ──────────────────────────────── */}
+      <InspiredByGreatMinds />
 
       {/* ── NEED HELP WIDGET ──────────────────────────────────── */}
       <NeedHelp />

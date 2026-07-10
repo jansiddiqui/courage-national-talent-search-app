@@ -20,6 +20,8 @@ import FounderLetter from "@/components/sections/FounderLetter";
 import ExamOverview from "@/components/sections/ExamOverview";
 import TimelineReassurance from "@/components/sections/TimelineReassurance";
 import ParentBenefits from "@/components/sections/ParentBenefits";
+import TalentReportSection from "@/components/sections/TalentReportSection";
+import CNTSInNumbers from "@/components/sections/CNTSInNumbers";
 
 export const metadata: Metadata = {
   title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
@@ -110,6 +112,7 @@ export default function Home() {
       <PathwaySplit />
       <WhyCNTS />
       <WhatParentsDiscover />
+      <TalentReportSection />
       <ExamOverview />
       <WhySubsidized />
       <HowItWorks />
@@ -118,6 +121,7 @@ export default function Home() {
       <ParentBenefits />
       <BrandingSection />
       <NeedHelp />
+      <CNTSInNumbers />
       <FAQ />
       <CTA />
       <StickyMobileCTA />

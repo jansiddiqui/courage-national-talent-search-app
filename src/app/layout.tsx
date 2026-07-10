@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import JsonLd from "@/components/shared/JsonLd";
+import CookieBanner from "@/components/shared/CookieBanner";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -84,6 +85,7 @@ export default function RootLayout({
           </>
         )}
         {children}
+        <CookieBanner />
       </body>
     </html>
   );
