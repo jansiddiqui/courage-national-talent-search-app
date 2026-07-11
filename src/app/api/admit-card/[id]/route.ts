@@ -24,7 +24,7 @@ export async function GET(
     // 1. Session verification check
     const cookieStore = await cookies();
     const token = cookieStore.get("cnts_session")?.value;
-    
+
     if (!token) {
       return new NextResponse("Unauthorized: Please log in to view this document.", { status: 401 });
     }
@@ -81,10 +81,18 @@ export async function GET(
       }
 
       if (reg) {
-        const isOwner = session.cntsId && (
-          session.cntsId.toUpperCase() === reg.registration_id?.toUpperCase() || 
+        const cleanSessionPhone = session.phoneNumber ? session.phoneNumber.replace(/\D/g, "").slice(-10) : "";
+        const cleanRegMobile = reg.mobile_number ? reg.mobile_number.replace(/\D/g, "").slice(-10) : "";
+        const cleanRegWhatsapp = reg.whatsapp_number ? reg.whatsapp_number.replace(/\D/g, "").slice(-10) : "";
+
+        const isPhoneMatch = cleanSessionPhone && (cleanSessionPhone === cleanRegMobile || cleanSessionPhone === cleanRegWhatsapp);
+        const isEmailMatch = session.email && reg.parent_email && (session.email.trim().toLowerCase() === reg.parent_email.trim().toLowerCase());
+        const isIdMatch = session.cntsId && (
+          session.cntsId.toUpperCase() === reg.registration_id?.toUpperCase() ||
           session.cntsId.toUpperCase() === reg.cnts_id?.toUpperCase()
         );
+
+        const isOwner = !!(isIdMatch || isPhoneMatch || isEmailMatch);
 
         if (!isAdmin && !isOwner) {
           return new NextResponse("Forbidden: You do not have permission to view this admit card.", { status: 403 });
@@ -143,7 +151,7 @@ export async function GET(
       --text: #334155;
       --text-dark: #0f172a;
     }
-    
+
     * {
       box-sizing: border-box;
       margin: 0;
@@ -486,7 +494,7 @@ export async function GET(
       position: relative;
       overflow: hidden;
     }
-    
+
     .id-card-watermark {
       position: absolute;
       top: 50%;
@@ -675,10 +683,10 @@ export async function GET(
         </div>
         <span style="font-family: 'Outfit', sans-serif; font-size: 8px; font-weight: 700; color: #93c5fd; background: rgba(37, 99, 235, 0.2); border: 1px solid rgba(37, 99, 235, 0.3); padding: 2px 8px; border-radius: 99px; text-transform: uppercase;">Identity Card</span>
       </div>
-      
+
       <div class="id-card-body">
         <div class="id-card-photo" style="${photoSignedUrl ? 'padding: 0; border: none; background: transparent;' : ''}">
-          ${photoSignedUrl 
+          ${photoSignedUrl
             ? `<img src="${photoSignedUrl}" alt="Candidate Photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 8px;">`
             : `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
@@ -687,7 +695,7 @@ export async function GET(
                <span style="margin-top: 4px; font-size: 6px;">Affix Photo</span>`
           }
         </div>
-        
+
         <div class="id-card-info">
           <div class="id-card-field" style="grid-column: span 2;">
             <span class="id-card-label">Candidate Name</span>
