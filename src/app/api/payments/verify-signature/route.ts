@@ -55,6 +55,48 @@ export async function POST(request: Request) {
       couponCode
     } = await request.json();
 
+    // Prevent ID Overwrite Race / Check if already PAID
+    if (hasSupabaseAdminConfig && draftRegId) {
+      const { data: existingReg, error: fetchError } = await (supabaseAdmin as any)
+        .from("registrations")
+        .select("payment_status, cnts_id")
+        .eq("registration_id", draftRegId)
+        .maybeSingle();
+
+      if (fetchError) {
+        console.error("Database query failed inside verify-signature:", fetchError);
+      } else if (existingReg && (existingReg.payment_status === "PAID" || existingReg.cnts_id)) {
+        console.log(`[verify-signature] Registration ${draftRegId} already paid. Prevented overwrite. CNTS ID: ${existingReg.cnts_id}`);
+        return NextResponse.json({
+          success: true,
+          message: "Payment verified and registration finalized (idempotent bypass)",
+          cntsId: existingReg.cnts_id,
+          registrationId: draftRegId || existingReg.cnts_id
+        });
+      }
+    }
+
+    // Smart Duplicate Student Detection
+    if (hasSupabaseAdminConfig && formData) {
+      const { data: duplicate } = await (supabaseAdmin as any)
+        .from("registrations")
+        .select("registration_id, cnts_id")
+        .eq("dob", formData.dob)
+        .eq("student_class", formData.studentClass)
+        .ilike("student_name", formData.studentName.trim())
+        .in("payment_status", ["PAID", "SPONSORED"])
+        .neq("registration_id", draftRegId || "")
+        .maybeSingle();
+
+      if (duplicate) {
+        console.warn(`[verify-signature] Duplicate student detected for student: ${formData.studentName}`);
+        return NextResponse.json({
+          success: false,
+          error: "A candidate with this name, date of birth, and class is already registered. If you wish to manage this registration, please return to the dashboard. If you believe this is an error, please contact support."
+        }, { status: 400 });
+      }
+    }
+
     const keyId = process.env.RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAY_KEY_SECRET;
 
@@ -150,6 +192,7 @@ export async function POST(request: Request) {
       mobile_verified: true,
       cnts_id: cntsId,
       coupon_code: couponCode || null,
+      referral_code: formData.referral_code || null,
       photo_url: formData.photo_url || null
     };
 

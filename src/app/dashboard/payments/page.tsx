@@ -142,7 +142,7 @@ export default function PaymentsPage() {
           </div>
           <h3 className="font-bold text-slate-800">Payment Not Yet Completed</h3>
           <p className="text-xs text-slate-500">Complete your registration payment to receive a Candidate ID and access all features.</p>
-          <a href="/register" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors">
+          <a href={`/register?resume=${c.registration_id}`} className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors">
             Complete Registration
           </a>
         </div>

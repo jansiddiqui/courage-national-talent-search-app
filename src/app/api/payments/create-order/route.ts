@@ -25,6 +25,38 @@ export async function POST(request: Request) {
       }
     }
 
+    // Smart Duplicate Student Detection
+    if (hasSupabaseAdminConfig && draftRegId) {
+      const { data: draftReg, error: draftError } = await (supabaseAdmin as any)
+        .from("registrations")
+        .select("student_name, dob, student_class")
+        .eq("registration_id", draftRegId)
+        .maybeSingle();
+
+      if (draftError) {
+        console.error("Database query for draft registration failed in create-order:", draftError);
+      } else if (draftReg) {
+        const { data: duplicate, error: dupError } = await (supabaseAdmin as any)
+          .from("registrations")
+          .select("registration_id")
+          .eq("dob", draftReg.dob)
+          .eq("student_class", draftReg.student_class)
+          .ilike("student_name", draftReg.student_name.trim())
+          .in("payment_status", ["PAID", "SPONSORED"])
+          .neq("registration_id", draftRegId)
+          .maybeSingle();
+
+        if (dupError) {
+          console.error("Database query for duplicate verification failed in create-order:", dupError);
+        } else if (duplicate) {
+          return NextResponse.json(
+            { success: false, error: "A candidate with this name, date of birth, and class is already registered. If you wish to manage this registration, please return to the dashboard. If you believe this is an error, please contact support." },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     if (couponCode) {
       const cleanCode = couponCode.trim().toUpperCase();
       let discountPercent = 0;

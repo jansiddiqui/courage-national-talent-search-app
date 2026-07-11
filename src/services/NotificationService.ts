@@ -29,6 +29,24 @@ export class NotificationService {
     if (!hasSupabaseAdminConfig) return null;
 
     try {
+      // Deduplication check: check if a job was created in the last 5 minutes for same recipient/channel/template
+      const fiveMinutesAgo = new Date(Date.now() - 5 * 60 * 1000).toISOString();
+      const { data: existingJob, error: checkError } = await db
+        .from("notification_jobs")
+        .select("id")
+        .eq("recipient", recipient)
+        .eq("channel", channel)
+        .eq("template_name", templateName)
+        .gt("created_at", fiveMinutesAgo)
+        .limit(1)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error("[NotificationService] Deduplication check failed:", checkError.message);
+      } else if (existingJob) {
+        console.log(`[NotificationService] Deduplicated job for recipient: ${recipient}, channel: ${channel}, template: ${templateName}`);
+        return null;
+      }
       const { data, error } = await db
         .from("notification_jobs")
         .insert({

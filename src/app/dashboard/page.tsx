@@ -321,7 +321,16 @@ export default function DashboardPage() {
                     photo_url: `/api/photo/${c.registration_id || c.id}`
                   }} />
                 </div>
-                <div className="flex justify-end mt-4">
+                <div className="flex justify-end gap-3 mt-4">
+                  {!(c.payment_status === "PAID" || c.payment_status === "SPONSORED") && (
+                    <Link
+                      href={`/register?resume=${c.registration_id}`}
+                      className="flex items-center gap-2 px-4 py-2 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-sm font-bold transition-colors shadow-sm"
+                    >
+                      <ExternalLink size={16} />
+                      Resume & Complete Payment
+                    </Link>
+                  )}
                   <button 
                     onClick={() => handleDownloadCard(c.id, c.student_name)} 
                     className="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-blue-50 text-slate-700 hover:text-blue-700 rounded-xl text-sm font-bold transition-colors border border-slate-200 shadow-sm"
@@ -583,7 +592,7 @@ export default function DashboardPage() {
           </div>
           <div className="relative shrink-0">
             <Link
-              href="/register"
+              href="/register?action=new"
               className="inline-flex items-center gap-2 px-8 py-4 bg-white text-blue-900 hover:bg-blue-50 text-sm font-bold rounded-2xl shadow-lg shadow-black/20 transition-all hover:-translate-y-0.5"
             >
               Register Another Child

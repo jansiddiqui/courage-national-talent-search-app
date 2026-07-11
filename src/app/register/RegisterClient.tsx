@@ -24,7 +24,8 @@ import {
   Building,
   ShieldCheck,
   CreditCard,
-  X
+  X,
+  Clock
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -71,6 +72,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   const [draftRegId, setDraftRegId] = useState("");
   const [showDraftSaved, setShowDraftSaved] = useState(false);
   const [whatsappSameAsMobile, setWhatsappSameAsMobile] = useState(false);
+  const [pendingDrafts, setPendingDrafts] = useState<any[]>([]);
 
   const [formData, setFormData] = useState<RegistrationData>({
     studentName: "",
@@ -102,6 +104,13 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
 
   // Restore state from sessionStorage on mount and load query params
   useEffect(() => {
+    const isNewRegistration = searchParams.get("new") === "true" || searchParams.get("action") === "new";
+    if (isNewRegistration) {
+      sessionStorage.removeItem("cnts_registration_form");
+      sessionStorage.removeItem("cnts_registration_step");
+      sessionStorage.removeItem("cnts_draft_registration_id");
+    }
+
     const savedForm = sessionStorage.getItem("cnts_registration_form");
     const initialData = savedForm ? JSON.parse(savedForm) : {};
 
@@ -114,7 +123,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
 
     const savedStep = sessionStorage.getItem("cnts_registration_step");
     let stepToSet: RegistrationStep | null = null;
-    if (savedStep) {
+    if (savedStep && !isNewRegistration) {
       const step = parseInt(savedStep, 10);
       if (step === 1 || step === 2 || step === 3) {
         stepToSet = step as RegistrationStep;
@@ -152,7 +161,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
         setCurrentStep(stepToSet);
       }
       
-      const savedDraftId = sessionStorage.getItem("cnts_draft_registration_id") || "";
+      const savedDraftId = isNewRegistration ? "" : (sessionStorage.getItem("cnts_draft_registration_id") || "");
       if (savedDraftId) {
         setDraftRegId(savedDraftId);
       }
@@ -179,6 +188,135 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
       sessionStorage.setItem("cnts_registration_step", currentStep.toString());
     }
   }, [currentStep, isHydrated]);
+
+  // Parent session prefilling and draft lookup recovery
+  useEffect(() => {
+    const fetchParentProfileAndPendingDrafts = async () => {
+      try {
+        const { authService } = await import("@/services/authService");
+        const session = await authService.checkSession();
+        if (session && session.isAuthenticated) {
+          // Prefill parent details
+          setFormData(prev => {
+            const cleanPhone = session.phoneNumber?.startsWith("+91")
+              ? session.phoneNumber.slice(3)
+              : (session.phoneNumber || "");
+            
+            return {
+              ...prev,
+              parentEmail: prev.parentEmail || session.email || "",
+              mobile_number: prev.mobile_number || cleanPhone,
+              whatsapp_number: prev.whatsapp_number || cleanPhone,
+            };
+          });
+
+          // Fetch registrations to get parent name and check pending drafts
+          const regRes = await fetch("/api/registrations");
+          if (regRes.ok) {
+            const regData = await regRes.json();
+            if (regData.success && regData.registrations && regData.registrations.length > 0) {
+              const firstWithParentName = regData.registrations.find((r: any) => !!r.parent_name);
+              if (firstWithParentName) {
+                setFormData(prev => ({
+                  ...prev,
+                  parentName: prev.parentName || firstWithParentName.parent_name || ""
+                }));
+              }
+
+              // Filter pending drafts excluding the currently active resumed one
+              const resumeId = searchParams.get("resume") || "";
+              const drafts = regData.registrations.filter((r: any) => 
+                (r.registration_status === "DRAFT" || r.payment_status === "PENDING") && 
+                (r.payment_status !== "PAID" && r.payment_status !== "SPONSORED" && r.registration_status !== "REGISTERED")
+              ).filter((r: any) => 
+                r.registration_id?.toUpperCase() !== resumeId.toUpperCase() &&
+                r.cnts_id?.toUpperCase() !== resumeId.toUpperCase()
+              );
+              setPendingDrafts(drafts);
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Failed to prefill parent profile or load drafts:", err);
+      }
+    };
+
+    if (isHydrated) {
+      fetchParentProfileAndPendingDrafts();
+    }
+  }, [isHydrated, searchParams]);
+
+  // Load draft to resume if 'resume' parameter is present
+  useEffect(() => {
+    const resumeId = searchParams.get("resume");
+    if (!isHydrated || !resumeId) return;
+
+    const loadDraftToResume = async () => {
+      try {
+        const regRes = await fetch("/api/registrations");
+        if (!regRes.ok) return;
+
+        const regData = await regRes.json();
+        if (regData.success && regData.registrations) {
+          const draft = regData.registrations.find(
+            (r: any) => r.registration_id?.toUpperCase() === resumeId.toUpperCase() || r.cnts_id?.toUpperCase() === resumeId.toUpperCase()
+          );
+
+          if (draft) {
+            if (draft.payment_status === "PAID" || draft.payment_status === "SPONSORED" || draft.registration_status === "REGISTERED") {
+              router.push(`/register/success?id=${draft.registration_id}`);
+              return;
+            }
+
+            // Map DB columns to form state
+            const mappedData: RegistrationData = {
+              studentName: draft.student_name || "",
+              dob: draft.dob || "",
+              studentClass: draft.student_class || "",
+              schoolName: draft.school_name || "",
+              schoolCity: draft.school_city || "",
+              schoolCode: draft.school_code || "",
+              school_id: draft.school_id || undefined,
+              parentName: draft.parent_name || "",
+              mobile_number: draft.mobile_number ? draft.mobile_number.replace("+91", "") : "",
+              whatsapp_number: draft.whatsapp_number ? draft.whatsapp_number.replace("+91", "") : "",
+              parentEmail: draft.parent_email || "",
+              country: draft.country || "IN",
+              state: draft.state || "",
+              district: draft.district || "",
+              language: draft.language || "",
+              whyParticipating: draft.why_participating || "",
+              howHeard: draft.how_heard || "",
+              utm_source: draft.utm_source || "",
+              utm_medium: draft.utm_medium || "",
+              utm_campaign: draft.utm_campaign || "",
+              referral_code: draft.referral_code || "",
+              photo_url: draft.photo_url || undefined,
+              photo_base64: draft.photo_url ? "https://courage-photos-placeholder" : undefined
+            };
+
+            setFormData(mappedData);
+            setDraftRegId(draft.registration_id);
+            sessionStorage.setItem("cnts_draft_registration_id", draft.registration_id);
+
+            // Determine step from completed fields
+            let stepToSet: RegistrationStep = 1;
+            if (draft.student_name && draft.dob && draft.student_class && draft.school_name && draft.photo_url) {
+              stepToSet = 2;
+            }
+            if (draft.parent_name && draft.mobile_number) {
+              stepToSet = 3;
+            }
+            setCurrentStep(stepToSet);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load draft to resume:", err);
+      }
+    };
+
+    loadDraftToResume();
+  }, [isHydrated, searchParams, router]);
 
   // Real-time school code validation
   useEffect(() => {
@@ -235,7 +373,7 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   const validateField = (name: keyof RegistrationData, value: string): string => {
     switch (name) {
       case "photo_base64":
-        if (!value) return "Candidate passport photo is required";
+        if (!value && !formData.photo_url) return "Candidate passport photo is required";
         return "";
 
       case "studentName":
@@ -953,7 +1091,37 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
       {/* Right panel: The Form (3 Steps) */}
       <section className="flex-1 px-6 py-12 md:p-12 lg:p-16 flex flex-col justify-center max-w-4xl mx-auto w-full">
         <div className="w-full max-w-2xl mx-auto">
-          
+          {/* Resume draft notice banner */}
+          {pendingDrafts.length > 0 && (
+            <div className="bg-blue-50 border border-blue-200 rounded-3xl p-5 mb-8 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm animate-fade-in">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-800 flex items-center justify-center shrink-0">
+                  <Clock size={20} />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-blue-900">Continue Your Saved Registration</h4>
+                  <p className="text-xs text-blue-700/80 mt-0.5">We found an incomplete registration for <strong>{pendingDrafts[0].student_name}</strong>.</p>
+                </div>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => router.push(`/register?resume=${pendingDrafts[0].registration_id}`)}
+                  className="px-4 py-2 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all"
+                >
+                  Resume Draft
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPendingDrafts([])}
+                  className="px-3 py-2 border border-slate-200 text-slate-500 hover:text-slate-800 rounded-xl text-xs font-semibold hover:bg-slate-50 transition-all"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Form Steps Tracker Banner */}
           <div className="mb-8 p-4 bg-white border border-slate-150 rounded-2xl shadow-sm flex flex-col gap-3">
             <div className="flex justify-between items-center">

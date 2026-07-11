@@ -75,9 +75,13 @@ export default function ChildrenPage() {
                 <Link href="/dashboard/registration" onClick={() => setActiveChild(c)} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold transition-colors border border-slate-200">
                   <CheckCircle size={12} /> Registration
                 </Link>
-                {(c.payment_status === "PAID" || c.payment_status === "SPONSORED") && (
+                {(c.payment_status === "PAID" || c.payment_status === "SPONSORED") ? (
                   <Link href="/dashboard/payments" onClick={() => setActiveChild(c)} className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold transition-colors border border-slate-200">
                     <CreditCard size={12} /> Payments
+                  </Link>
+                ) : (
+                  <Link href={`/register?resume=${c.registration_id}`} className="flex items-center gap-1.5 px-3 py-1.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-semibold transition-colors border border-blue-800">
+                    <CreditCard size={12} /> Resume & Pay
                   </Link>
                 )}
                 {systemSettings.admit_card_status === "AVAILABLE" && (
@@ -97,7 +101,7 @@ export default function ChildrenPage() {
           <h3 className="font-bold text-slate-800 text-sm">Register Another Child</h3>
           <p className="text-xs text-slate-500 mt-0.5">Add another candidate to your Parent Workspace</p>
         </div>
-        <Link href="/register" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm">
+        <Link href="/register?action=new" className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-colors shadow-sm">
           <Users size={14} /> Register Now <ArrowRight size={13} />
         </Link>
       </div>
