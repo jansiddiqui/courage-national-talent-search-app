@@ -39,37 +39,70 @@ export class LocalRepository implements ProgressRepository {
     }
 
     try {
-      let localProg = this.createDefaultProgress();
-      const localData = localStorage.getItem(LocalRepository.PROGRESS_KEY);
-      if (localData) {
-        try {
-          localProg = JSON.parse(localData);
-        } catch (e) {
-          // ignore
-        }
-      }
-
+      // 1. Fetch from server first to identify the active authenticated student (authoritative source)
       const res = await fetch("/api/student/progress");
       if (res.ok) {
         const data = await res.json();
         if (data.success && data.progress) {
           const serverProg = data.progress;
-          // Merge logic: take the one with higher totalXP or later timestamp
-          const merged = (serverProg.profile?.totalXP || 0) >= (localProg.profile?.totalXP || 0)
-            ? serverProg
-            : localProg;
+          const studentId = serverProg.profile.id;
+          const partitionedKey = `${LocalRepository.PROGRESS_KEY}_${studentId}`;
 
-          localStorage.setItem(LocalRepository.PROGRESS_KEY, JSON.stringify(merged));
-          return merged;
+          // Load from partitioned local cache
+          let localProg = serverProg;
+          const localData = localStorage.getItem(partitionedKey);
+          if (localData) {
+            try {
+              const parsedLocal = JSON.parse(localData);
+              // Merge logic: take the one with higher totalXP or later timestamp to prevent stale overwrite
+              if ((parsedLocal.profile?.totalXP || 0) > (serverProg.profile?.totalXP || 0)) {
+                localProg = parsedLocal;
+                // Sync back to server since local was newer
+                await this.saveProgress(localProg);
+              }
+            } catch (e) {
+              // ignore
+            }
+          } else {
+            // Check if legacy unpartitioned data can be migrated (only once)
+            const legacyData = localStorage.getItem(LocalRepository.PROGRESS_KEY);
+            if (legacyData) {
+              try {
+                const parsedLegacy = JSON.parse(legacyData);
+                // Verify that the legacy data has some XP or is initialized, and merge it safely
+                if (parsedLegacy.profile && parsedLegacy.profile.totalXP > 0) {
+                  localProg = {
+                    ...parsedLegacy,
+                    profile: {
+                      ...parsedLegacy.profile,
+                      id: studentId // Re-map ID to active student
+                    }
+                  };
+                  // Sync migrated data to server
+                  await this.saveProgress(localProg);
+                }
+              } catch (e) {
+                // ignore
+              }
+              // Remove legacy key so other siblings cannot inherit it
+              localStorage.removeItem(LocalRepository.PROGRESS_KEY);
+            }
+          }
+
+          // Cache the merged/synced progress locally under the partitioned key
+          localStorage.setItem(partitionedKey, JSON.stringify(localProg));
+          return localProg;
         }
       }
 
+      // 2. Offline / Guest Fallback
+      const localData = localStorage.getItem(LocalRepository.PROGRESS_KEY);
       if (!localData) {
         const defaultProg = this.createDefaultProgress();
-        await this.saveProgress(defaultProg);
+        localStorage.setItem(LocalRepository.PROGRESS_KEY, JSON.stringify(defaultProg));
         return defaultProg;
       }
-      return localProg;
+      return JSON.parse(localData);
     } catch (e) {
       console.error("[LocalRepository] Error loading progress:", e);
       const data = localStorage.getItem(LocalRepository.PROGRESS_KEY);
@@ -81,13 +114,22 @@ export class LocalRepository implements ProgressRepository {
     if (typeof window === "undefined") return;
     try {
       progress.profile.lastActive = Date.now();
-      localStorage.setItem(LocalRepository.PROGRESS_KEY, JSON.stringify(progress));
+      const studentId = progress.profile.id;
 
-      await fetch("/api/student/progress", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ progress })
-      });
+      // Cache locally under partitioned key if it's an authenticated student (not student_ guest prefix)
+      const isGuest = studentId.startsWith("student_");
+      const cacheKey = isGuest ? LocalRepository.PROGRESS_KEY : `${LocalRepository.PROGRESS_KEY}_${studentId}`;
+
+      localStorage.setItem(cacheKey, JSON.stringify(progress));
+
+      // Sync to database if authenticated student (non-guest)
+      if (!isGuest) {
+        await fetch("/api/student/progress", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ progress })
+        });
+      }
     } catch (e) {
       console.error("[LocalRepository] Error saving progress:", e);
     }

@@ -733,7 +733,6 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
             (schoolSuccess && formData.schoolCode) ? `Sponsored by School: ${formData.schoolCode}` : null
           ].filter(Boolean).join(" | ") || undefined
         };
-        await saveRegistration(savedData);
         sessionStorage.setItem("cnts_last_registration", JSON.stringify(savedData));
         sessionStorage.removeItem("cnts_registration_form");
         sessionStorage.removeItem("cnts_registration_step");

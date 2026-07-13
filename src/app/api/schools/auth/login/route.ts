@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { SignJWT } from "jose";
 import { isRateLimited } from "@/lib/rateLimiter";
+import bcrypt from "bcryptjs";
 
 const JWT_SECRET = new TextEncoder().encode(process.env.SUPABASE_SERVICE_ROLE_KEY || "fallback_secret_key");
 
@@ -57,17 +58,50 @@ export async function POST(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: school, error } = await (supabaseAdmin as any)
       .from("schools")
-      .select("id, status")
+      .select("id, status, pin")
       .eq("school_code", cleanCode)
-      .eq("pin", cleanPin)
       .maybeSingle();
 
     if (error || !school) {
       return NextResponse.json({ success: false, message: "Invalid School Code or PIN" }, { status: 401 });
     }
 
+    const storedPin = school.pin || "";
+    const isBcryptHash = storedPin.startsWith("$2a$") || storedPin.startsWith("$2b$") || storedPin.startsWith("$2y$");
+
+    let isPinValid = false;
+    let needsUpgrade = false;
+
+    if (isBcryptHash) {
+      isPinValid = await bcrypt.compare(cleanPin, storedPin);
+    } else {
+      // Legacy plaintext comparison
+      isPinValid = (cleanPin === storedPin);
+      if (isPinValid) {
+        needsUpgrade = true;
+      }
+    }
+
+    if (!isPinValid) {
+      return NextResponse.json({ success: false, message: "Invalid School Code or PIN" }, { status: 401 });
+    }
+
     if (school.status !== "ACTIVE") {
       return NextResponse.json({ success: false, message: "School account is inactive. Please contact support." }, { status: 403 });
+    }
+
+    // Lazy upgrade plaintext PIN to bcrypt hash (cost factor 12)
+    if (needsUpgrade) {
+      try {
+        const hashedPin = await bcrypt.hash(cleanPin, 12);
+        await (supabaseAdmin as any)
+          .from("schools")
+          .update({ pin: hashedPin })
+          .eq("id", school.id);
+        console.log(`[School Login] Successfully migrated school ${cleanCode} PIN to bcrypt hash.`);
+      } catch (err) {
+        console.error(`[School Login] Failed to migrate school PIN for ${cleanCode}:`, err);
+      }
     }
 
     // Create session token

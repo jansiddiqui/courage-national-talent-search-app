@@ -52,7 +52,8 @@ export async function POST(request: Request) {
       razorpaySignature, 
       draftRegId, 
       formData,
-      couponCode
+      couponCode,
+      schoolCode
     } = await request.json();
 
     // Prevent ID Overwrite Race / Check if already PAID
@@ -112,33 +113,57 @@ export async function POST(request: Request) {
 
     // 1. Signature / Coupon Verification Check
     if (isFree) {
-      if (!couponCode) {
-        return NextResponse.json({ success: false, error: "Coupon code is required for free registration" }, { status: 400 });
+      const cleanSchoolCode = schoolCode ? schoolCode.trim().toUpperCase() : null;
+      const cleanCouponCode = couponCode ? couponCode.trim().toUpperCase() : null;
+
+      if (!cleanCouponCode && !cleanSchoolCode) {
+        return NextResponse.json({ success: false, error: "Coupon code or School code is required for free registration" }, { status: 400 });
       }
 
-      const cleanCode = couponCode.trim().toUpperCase();
-      let discountPercent = 0;
+      if (cleanCouponCode) {
+        let discountPercent = 0;
 
-      if (!hasSupabaseAdminConfig) {
-        if (cleanCode === "FREE100") {
-          discountPercent = 100;
+        if (!hasSupabaseAdminConfig) {
+          if (cleanCouponCode === "FREE100") {
+            discountPercent = 100;
+          }
+        } else {
+          const { data: coupon, error } = await (supabaseAdmin as any)
+            .from("coupons")
+            .select("discount_percent, is_active")
+            .eq("code", cleanCouponCode)
+            .maybeSingle();
+
+          if (error) {
+            console.error("Database query for coupon failed inside verify-signature API:", error);
+          } else if (coupon && coupon.is_active) {
+            discountPercent = coupon.discount_percent;
+          }
         }
-      } else {
-        const { data: coupon, error } = await (supabaseAdmin as any)
-          .from("coupons")
-          .select("discount_percent, is_active")
-          .eq("code", cleanCode)
-          .maybeSingle();
 
-        if (error) {
-          console.error("Database query for coupon failed inside verify-signature API:", error);
-        } else if (coupon && coupon.is_active) {
-          discountPercent = coupon.discount_percent;
+        if (discountPercent !== 100) {
+          return NextResponse.json({ success: false, error: "Invalid free registration transaction" }, { status: 400 });
         }
-      }
+      } else if (cleanSchoolCode) {
+        if (hasSupabaseAdminConfig) {
+          const { data: school, error } = await (supabaseAdmin as any)
+            .from("schools")
+            .select("id, status, quota, used_quota")
+            .eq("school_code", cleanSchoolCode)
+            .maybeSingle();
 
-      if (discountPercent !== 100) {
-        return NextResponse.json({ success: false, error: "Invalid free registration transaction" }, { status: 400 });
+          if (error || !school) {
+            return NextResponse.json({ success: false, error: "Invalid school code. Please contact your coordinator." }, { status: 400 });
+          }
+
+          if (school.status !== "ACTIVE") {
+            return NextResponse.json({ success: false, error: "School account is inactive. Please contact support." }, { status: 400 });
+          }
+
+          if (school.used_quota >= school.quota) {
+            return NextResponse.json({ success: false, error: "School sponsorship quota limit exceeded." }, { status: 400 });
+          }
+        }
       }
     } else if (isSandboxMode) {
       const isMock = razorpayOrderId?.startsWith("mock_order_") || razorpaySignature === "mock_signature_verified";
@@ -169,13 +194,28 @@ export async function POST(request: Request) {
     const formattedMobile = `+91${cleanMobile}`;
     const formattedWhatsapp = `+91${cleanWhatsapp}`;
 
+    const cleanSchoolCode = schoolCode ? schoolCode.trim().toUpperCase() : null;
+    let schoolId: string | null = null;
+
+    if (hasSupabaseAdminConfig && cleanSchoolCode) {
+      const { data: school } = await (supabaseAdmin as any)
+        .from("schools")
+        .select("id")
+        .eq("school_code", cleanSchoolCode)
+        .maybeSingle();
+      if (school) {
+        schoolId = school.id;
+      }
+    }
+
     const recordPayload = {
       student_name: formData.studentName,
       dob: formData.dob,
       student_class: formData.studentClass,
       school_name: formData.schoolName,
       school_city: formData.schoolCity,
-      school_code: formData.schoolCode || null,
+      school_code: cleanSchoolCode || formData.schoolCode || null,
+      school_id: schoolId || null,
       parent_name: formData.parentName,
       mobile_number: formattedMobile,
       whatsapp_number: formattedWhatsapp,
@@ -187,7 +227,7 @@ export async function POST(request: Request) {
       why_participating: formData.whyParticipating,
       how_heard: formData.howHeard,
       payment_id: razorpayPaymentId,
-      payment_status: "PAID",
+      payment_status: cleanSchoolCode ? "SPONSORED" : "PAID",
       registration_status: "REGISTERED",
       mobile_verified: true,
       cnts_id: cntsId,
@@ -198,28 +238,65 @@ export async function POST(request: Request) {
 
     // 3. Database Write (Updates draft if available, otherwise inserts new)
     if (hasSupabaseAdminConfig) {
-      if (draftRegId) {
-        const { error: updateError } = await (supabaseAdmin as any)
-          .from("registrations")
-          .update(recordPayload)
-          .eq("registration_id", draftRegId);
+      if (cleanSchoolCode && schoolId) {
+        // Atomic quota consumption and registration
+        const { error: rpcError } = await (supabaseAdmin as any).rpc("consume_school_quota_and_register", {
+          p_registration_id: draftRegId || `CNTS26-${Math.random().toString(36).substring(7).toUpperCase()}`,
+          p_student_name: recordPayload.student_name,
+          p_dob: recordPayload.dob,
+          p_student_class: recordPayload.student_class,
+          p_school_name: recordPayload.school_name,
+          p_school_city: recordPayload.school_city,
+          p_school_code: recordPayload.school_code,
+          p_school_id: schoolId,
+          p_parent_name: recordPayload.parent_name,
+          p_mobile_number: recordPayload.mobile_number,
+          p_whatsapp_number: recordPayload.whatsapp_number,
+          p_parent_email: recordPayload.parent_email,
+          p_state: recordPayload.state,
+          p_district: recordPayload.district,
+          p_language: recordPayload.language,
+          p_why_participating: recordPayload.why_participating,
+          p_how_heard: recordPayload.how_heard,
+          p_payment_status: "SPONSORED",
+          p_registration_source: "SCHOOL"
+        });
 
-        if (updateError) {
-          console.error("Database update failed inside verify-signature:", updateError);
-          return NextResponse.json({ success: false, error: `Database update failed: ${updateError.message}` }, { status: 500 });
+        if (rpcError) {
+          console.error("Database RPC failed inside verify-signature:", rpcError);
+          return NextResponse.json({ success: false, error: `Sponsorship registration failed: ${rpcError.message}` }, { status: 500 });
         }
-      } else {
-        const randomRegId = `CNTS26-${Math.random().toString(36).substring(7).toUpperCase()}`;
-        const { error: insertError } = await (supabaseAdmin as any)
-          .from("registrations")
-          .insert({
-            registration_id: randomRegId,
-            ...recordPayload
-          });
 
-        if (insertError) {
-          console.error("Database insert failed inside verify-signature:", insertError);
-          return NextResponse.json({ success: false, error: `Database insert failed: ${insertError.message}` }, { status: 500 });
+        // Apply generated sequential CNTS ID to the newly registered student
+        await (supabaseAdmin as any)
+          .from("registrations")
+          .update({ cnts_id: cntsId })
+          .eq("registration_id", draftRegId || recordPayload.payment_id);
+      } else {
+        // Standard non-sponsored database write
+        if (draftRegId) {
+          const { error: updateError } = await (supabaseAdmin as any)
+            .from("registrations")
+            .update(recordPayload)
+            .eq("registration_id", draftRegId);
+
+          if (updateError) {
+            console.error("Database update failed inside verify-signature:", updateError);
+            return NextResponse.json({ success: false, error: `Database update failed: ${updateError.message}` }, { status: 500 });
+          }
+        } else {
+          const randomRegId = `CNTS26-${Math.random().toString(36).substring(7).toUpperCase()}`;
+          const { error: insertError } = await (supabaseAdmin as any)
+            .from("registrations")
+            .insert({
+              registration_id: randomRegId,
+              ...recordPayload
+            });
+
+          if (insertError) {
+            console.error("Database insert failed inside verify-signature:", insertError);
+            return NextResponse.json({ success: false, error: `Database insert failed: ${insertError.message}` }, { status: 500 });
+          }
         }
       }
 

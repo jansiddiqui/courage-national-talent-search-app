@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
+import bcrypt from "bcryptjs";
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
@@ -67,6 +68,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: "Sandbox success" });
     }
 
+    const cleanPin = body.pin.trim();
+    const hashedPin = await bcrypt.hash(cleanPin, 12);
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabaseAdmin as any)
       .from("schools")
@@ -82,7 +86,7 @@ export async function POST(request: Request) {
         quota: parseInt(body.quota) || 0,
         used_quota: 0,
         sponsorship_mode: body.sponsorship_mode || 'FULL',
-        pin: body.pin,
+        pin: hashedPin,
         status: body.status || 'ACTIVE',
         notes: body.notes || null,
         is_featured: body.is_featured || false,
@@ -114,6 +118,10 @@ export async function PUT(request: Request) {
 
     if (!id) {
       return NextResponse.json({ success: false, message: "Missing school ID" }, { status: 400 });
+    }
+
+    if (updates.pin) {
+      updates.pin = await bcrypt.hash(updates.pin.trim(), 12);
     }
 
     if (!hasSupabaseAdminConfig) {
