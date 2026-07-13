@@ -3,15 +3,34 @@ import { DomainEvent } from "../types";
 
 export class AnalyticsTracker {
   private static LOGS_KEY = "cnts_academy_telemetry_logs";
+  private sessionId: string;
 
   constructor(private eventBus: EventBus) {
+    this.sessionId = this.getOrCreateSessionId();
     this.initListeners();
+  }
+
+  private getOrCreateSessionId(): string {
+    if (typeof window === "undefined") return "";
+    try {
+      let sid = sessionStorage.getItem("cnts_telemetry_sid");
+      if (!sid) {
+        sid = (typeof crypto !== "undefined" && crypto.randomUUID) 
+          ? crypto.randomUUID() 
+          : Math.random().toString(36).substring(2) + Date.now().toString(36);
+        sessionStorage.setItem("cnts_telemetry_sid", sid);
+      }
+      return sid;
+    } catch {
+      return "fallback-session-id";
+    }
   }
 
   private initListeners(): void {
     // Wildcard subscriber to record every event on the event bus
     this.eventBus.subscribe("*", (event: DomainEvent) => {
       this.logEvent(event);
+      this.sendTelemetryToServer(event);
     });
   }
 
@@ -33,6 +52,36 @@ export class AnalyticsTracker {
     }
   }
 
+  private sendTelemetryToServer(event: DomainEvent): void {
+    if (typeof window === "undefined") return;
+
+    const eventId = event.id || (
+      (typeof crypto !== "undefined" && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : Math.random().toString(36).substring(2) + Date.now().toString(36)
+    );
+
+    // Fire-and-forget POST request to telemetry ingest endpoint
+    fetch("/api/telemetry", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        eventType: event.type,
+        eventId: eventId,
+        correlationId: (event as any).correlationId || null,
+        sessionIdentity: this.sessionId,
+        metadata: {
+          payload: event.payload || {},
+          timestamp: event.timestamp || Date.now()
+        }
+      })
+    }).catch(err => {
+      console.error("[AnalyticsTracker] Server telemetry post failed:", err);
+    });
+  }
+
   public getLogs(): DomainEvent[] {
     if (typeof window === "undefined") return [];
     try {
@@ -44,3 +93,4 @@ export class AnalyticsTracker {
     }
   }
 }
+
