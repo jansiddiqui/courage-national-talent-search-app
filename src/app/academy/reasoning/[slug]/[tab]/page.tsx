@@ -159,6 +159,9 @@ export default function WorkspacePage() {
 
     if (currentQIndex === questions.length - 1) {
       setQuizFinished(true);
+      if (session) {
+        await learningService.completeQuiz(session, slug);
+      }
       // Mark topic fully completed on path
       await learningService.completeTopic(slug);
     } else {

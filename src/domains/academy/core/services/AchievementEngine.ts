@@ -25,7 +25,6 @@ export class AchievementEngine {
   };
 
   constructor(
-    private progressRepo: ProgressRepository,
     private eventBus: EventBus
   ) {
     this.initListeners();
@@ -33,26 +32,26 @@ export class AchievementEngine {
 
   private initListeners(): void {
     // Listen to topic completions
-    this.eventBus.subscribe("TOPIC_COMPLETED", async (event) => {
-      const progress = await this.progressRepo.getProgress();
-      if (!this.hasBadge(progress, "first_step") && progress.completedTopics.length >= 1) {
-        await this.unlockBadge(progress, "first_step");
+    this.eventBus.subscribe("TOPIC_COMPLETED", (event) => {
+      const { progress } = event.payload;
+      if (progress && !this.hasBadge(progress, "first_step") && progress.completedTopics.length >= 1) {
+        this.unlockBadge(progress, "first_step");
       }
     });
 
-    // Listen to quiz completions
-    this.eventBus.subscribe("QUIZ_COMPLETED", async (event) => {
-      const { correct, xpEarned } = event.payload;
-      const progress = await this.progressRepo.getProgress();
+    // Listen to answer submissions
+    this.eventBus.subscribe("ANSWER_SUBMITTED", (event) => {
+      const { progress, correct } = event.payload;
+      if (!progress) return;
 
       // Check "quest_begun"
       if (correct && !this.hasBadge(progress, "quest_begun")) {
-        await this.unlockBadge(progress, "quest_begun");
+        this.unlockBadge(progress, "quest_begun");
       }
 
       // Check "logic_novice"
       if (progress.profile.totalXP >= 100 && !this.hasBadge(progress, "logic_novice")) {
-        await this.unlockBadge(progress, "logic_novice");
+        this.unlockBadge(progress, "logic_novice");
       }
     });
   }
@@ -61,7 +60,7 @@ export class AchievementEngine {
     return progress.achievements.some(a => a.id === badgeId);
   }
 
-  private async unlockBadge(progress: StudentProgress, badgeId: string): Promise<void> {
+  private unlockBadge(progress: StudentProgress, badgeId: string): void {
     const template = AchievementEngine.BADGES[badgeId as keyof typeof AchievementEngine.BADGES];
     if (!template) return;
 
@@ -74,7 +73,6 @@ export class AchievementEngine {
     };
 
     progress.achievements.push(newBadge);
-    await this.progressRepo.saveProgress(progress);
 
     // Emit event that a badge has been unlocked (can trigger a popup on screen)
     this.eventBus.publish({

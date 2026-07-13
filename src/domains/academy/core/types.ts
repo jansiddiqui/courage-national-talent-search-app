@@ -149,6 +149,19 @@ export interface Achievement {
   unlockedAt: number;
 }
 
+export interface TopicMastery {
+  topicSlug: string;
+  masteryPercent: number; // 0 to 100
+  status: 'Needs Revision' | 'Practicing' | 'Mastered';
+  accuracy: number; // 0 to 100
+  attemptsCount: number; // Distinct question attempts count
+  correctAnswersCount: number;
+  hintsUsedCount: number;
+  lastAttemptedAt: number;
+  formulaVersion: string; // "v1"
+  attemptedQuestions?: string[]; // Raw evidence list of attempted question IDs
+}
+
 export interface StudentProgress {
   profile: StudentProfile;
   completedTopics: string[]; // list of completed topic slugs
@@ -157,12 +170,13 @@ export interface StudentProgress {
   achievements: Achievement[];
   skillsXP: Record<string, number>; // e.g. { 'Verbal Logic': 150 }
   sessions: LearningSession[];
+  topicMastery?: Record<string, TopicMastery>;
 }
 
 export interface DomainEvent {
   id: string;
   version: number;
   timestamp: number;
-  type: 'QUIZ_COMPLETED' | 'TOPIC_COMPLETED' | 'SESSION_ENDED' | 'ACHIEVEMENT_UNLOCKED';
+  type: 'ANSWER_SUBMITTED' | 'QUIZ_COMPLETED' | 'TOPIC_COMPLETED' | 'SESSION_ENDED' | 'ACHIEVEMENT_UNLOCKED';
   payload: any;
 }

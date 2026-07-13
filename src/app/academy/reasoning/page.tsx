@@ -458,6 +458,17 @@ export default function ReasoningHub() {
                             }`}>
                               {topic.difficulty}
                             </span>
+                            {progress?.topicMastery?.[slug] && (
+                              <span className={`inline-block text-[8px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full mt-2.5 ml-1.5 ${
+                                progress.topicMastery[slug].status === "Mastered"
+                                  ? "bg-emerald-100 text-emerald-800"
+                                  : progress.topicMastery[slug].status === "Practicing"
+                                  ? "bg-amber-100 text-amber-850"
+                                  : "bg-red-50 text-red-800"
+                              }`}>
+                                Mastery: {progress.topicMastery[slug].masteryPercent}%
+                              </span>
+                            )}
                           </div>
 
                           <div className="flex items-center gap-2">

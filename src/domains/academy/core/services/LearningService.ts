@@ -2,6 +2,7 @@ import { ProgressRepository } from "../repositories/ProgressRepository";
 import { EventBus } from "../EventBus";
 import { StudentProgress, LearningSession } from "../types";
 import { RecommendationService } from "./RecommendationService";
+import { SkillGraph } from "../SkillGraph";
 
 export class LearningService {
   constructor(
@@ -42,7 +43,8 @@ export class LearningService {
     questionId: string,
     skill: string,
     correct: boolean,
-    xpEarned: number
+    xpEarned: number,
+    hintsUsed?: number
   ): Promise<{ session: LearningSession; nextStepRecommendation: string }> {
     const progress = await this.progressRepo.getProgress();
 
@@ -63,28 +65,49 @@ export class LearningService {
     }
     session.xpEarned += actualXp;
 
-    // 2. Award skills-specific XP
+    // 2. Award skills-specific XP using SkillGraph weights
     if (!progress.skillsXP) {
       progress.skillsXP = {};
     }
-    progress.skillsXP[skill] = (progress.skillsXP[skill] || 0) + actualXp;
+    const skillWeights = SkillGraph.getTopicSkills(topicSlug, skill);
+    skillWeights.forEach(sw => {
+      const distributedXp = Math.round(actualXp * sw.weight);
+      progress.skillsXP[sw.skill] = (progress.skillsXP[sw.skill] || 0) + distributedXp;
+    });
 
     // 3. Award general total XP
     progress.profile.totalXP += actualXp;
 
-    // 4. Save progress changes
-    await this.progressRepo.saveProgress(progress);
-
-    // 5. Emit event to EventBus for async updates (achievements, parent dashboard, analytics logs)
+    // 4. Emit event to EventBus for async updates (achievements, mastery recalculations)
     this.eventBus.publish({
-      type: "QUIZ_COMPLETED",
-      payload: { topicSlug, questionId, correct, skill, xpEarned }
+      type: "ANSWER_SUBMITTED",
+      payload: { progress, topicSlug, questionId, correct, skill, xpEarned: actualXp, hintsUsed: hintsUsed || 0 }
     });
+
+    // 5. Coordinated save/sync
+    await this.progressRepo.saveProgress(progress);
 
     // 6. Get personalized recommendation from the engine
     const nextStepRecommendation = await RecommendationService.getAdvice(progress, topicSlug, correct);
 
     return { session, nextStepRecommendation };
+  }
+
+  /**
+   * Concludes a quiz and publishes QUIZ_COMPLETED event
+   */
+  public async completeQuiz(
+    session: LearningSession,
+    topicSlug: string
+  ): Promise<void> {
+    const progress = await this.progressRepo.getProgress();
+
+    this.eventBus.publish({
+      type: "QUIZ_COMPLETED",
+      payload: { progress, topicSlug, session }
+    });
+
+    await this.progressRepo.saveProgress(progress);
   }
 
   /**
@@ -99,13 +122,14 @@ export class LearningService {
       // Award 100 XP for topic completion
       progress.profile.totalXP += 100;
       
-      await this.progressRepo.saveProgress(progress);
-      
-      // Dispatch completion event
+      // Dispatch completion event FIRST so listeners can update in-memory achievements
       this.eventBus.publish({
         type: "TOPIC_COMPLETED",
-        payload: { topicSlug }
+        payload: { progress, topicSlug }
       });
+
+      // Coordinated save
+      await this.progressRepo.saveProgress(progress);
     }
 
     return progress;
