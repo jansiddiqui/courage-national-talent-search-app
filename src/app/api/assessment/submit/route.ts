@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
 import { SubmitRequest, SubmissionReceipt, SessionStatus } from "@/domains/assessment/core/types";
+import crypto from "crypto";
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
@@ -173,6 +174,7 @@ export async function POST(request: Request) {
     // 7. Write Immutable Result Record
     const receiptId = "REC_" + Math.random().toString(36).substring(2, 10).toUpperCase();
     const submittedAt = new Date().toISOString();
+    const verificationToken = "VAL_" + crypto.randomBytes(12).toString("hex");
 
     const { error: resultErr } = await (supabaseAdmin as any)
       .from("assessment_results")
@@ -182,12 +184,26 @@ export async function POST(request: Request) {
         assessment_id: session.assessment_id,
         score,
         receipt_id: receiptId,
-        submitted_at: submittedAt
+        submitted_at: submittedAt,
+        verification_token: verificationToken
       });
 
     if (resultErr) {
       console.error("[Submit API] result write error:", resultErr);
       return NextResponse.json({ success: false, message: "Failed to save evaluation result" }, { status: 500 });
+    }
+
+    // Enqueue job into result_processing_jobs (decoupled - failure doesn't block submission)
+    if (hasSupabaseAdminConfig) {
+      const { error: jobErr } = await (supabaseAdmin as any)
+        .from("result_processing_jobs")
+        .insert({
+          session_id: sessionId,
+          status: "PENDING"
+        });
+      if (jobErr) {
+        console.warn("[Submit API] failed to enqueue processing job:", jobErr);
+      }
     }
 
     // 8. Final transition to SCORED

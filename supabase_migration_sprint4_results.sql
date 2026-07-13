@@ -1,4 +1,8 @@
--- 1. Create candidate_growth_timeline table
+-- 1. Add verification token to assessment_results if not present
+alter table public.assessment_results 
+add column if not exists verification_token text unique;
+
+-- 2. Create candidate_growth_timeline table
 create table if not exists public.candidate_growth_timeline (
   id uuid default gen_random_uuid() primary key,
   candidate_id text not null references public.registrations(cnts_id) on delete cascade,
@@ -11,92 +15,133 @@ create table if not exists public.candidate_growth_timeline (
   constraint unique_candidate_year unique(candidate_id, year)
 );
 
--- 2. Create result_report_versions table
+-- 3. Create result_report_versions table
 create table if not exists public.result_report_versions (
   id uuid default gen_random_uuid() primary key,
   session_id uuid not null references public.candidate_sessions(id) on delete cascade,
-  version_number integer not null, -- 1, 2, 3
+  version_number integer not null,
   pdf_url text not null,
   secure_hash text not null unique,
   created_at timestamptz default now() not null,
   constraint unique_session_version unique(session_id, version_number)
 );
 
--- 3. Create scholarship_awards table
+-- 4. Create scholarship_awards table with CHECK constraints
 create table if not exists public.scholarship_awards (
   id uuid default gen_random_uuid() primary key,
   candidate_id text not null references public.registrations(cnts_id) on delete cascade,
-  award_type text not null, -- 'GOLD_MEDALIST', 'NATIONAL_TOP_100'
-  status text default 'ELIGIBLE' not null, -- 'ELIGIBLE', 'APPLIED', 'AWARDED'
+  award_type text not null,
+  status text default 'ELIGIBLE' not null,
   applied_at timestamptz,
-  created_at timestamptz default now() not null
+  created_at timestamptz default now() not null,
+  constraint check_scholarship_status check (status in ('ELIGIBLE', 'INVITED', 'APPLIED', 'DOCUMENTS_PENDING', 'VERIFIED', 'REVIEW', 'AWARDED', 'DECLINED', 'EXPIRED'))
 );
 
--- 4. Create result_audit_trail table
-create table if not exists public.result_audit_trail (
+-- 5. Create result processing jobs table
+create table if not exists public.result_processing_jobs (
   id uuid default gen_random_uuid() primary key,
-  session_id uuid not null references public.candidate_sessions(id) on delete cascade,
-  actor_id text not null, -- candidate ID or admin email
-  action text not null, -- 'GENERATED', 'VERIFIED', 'PUBLISHED', 'VIEWED', 'DOWNLOADED'
-  details jsonb default '{}'::jsonb not null,
-  created_at timestamptz default now() not null
+  session_id uuid not null unique references public.candidate_sessions(id) on delete cascade,
+  status text not null default 'PENDING',
+  retry_count integer default 0 not null,
+  last_error text,
+  locked_at timestamptz,
+  locked_by uuid,
+  next_retry_at timestamptz,
+  created_at timestamptz default now() not null,
+  updated_at timestamptz default now() not null,
+  constraint check_job_status check (status in ('PENDING', 'PROCESSING', 'COMPLETED', 'FAILED', 'RETRY_PENDING'))
 );
 
--- 5. Create ranking_snapshots table
+-- 6. Create or align ranking snapshots table
 create table if not exists public.ranking_snapshots (
   id uuid default gen_random_uuid() primary key,
   assessment_id uuid not null references public.assessments(id) on delete cascade,
-  candidate_count integer not null,
-  average_score numeric(5,2) not null,
-  std_dev numeric(5,2) not null,
-  created_at timestamptz default now() not null
+  cohort_definition text not null default '',
+  candidate_count integer not null default 0,
+  generated_at timestamptz default now() not null,
+  algorithm_version text not null default 'v1',
+  status text not null default 'PENDING'
 );
 
--- Enable RLS and add policies
+-- Ensure all new sprint4 columns exist on ranking_snapshots in case it was created by an older script
+alter table public.ranking_snapshots add column if not exists cohort_definition text not null default '';
+alter table public.ranking_snapshots add column if not exists algorithm_version text not null default 'v1';
+alter table public.ranking_snapshots add column if not exists status text not null default 'PENDING';
+alter table public.ranking_snapshots add column if not exists generated_at timestamptz default now() not null;
+
+-- Drop and recreate the check_snapshot_status constraint to support the new lifecycle states
+alter table public.ranking_snapshots drop constraint if exists check_snapshot_status;
+alter table public.ranking_snapshots add constraint check_snapshot_status check (status in ('PENDING', 'PROCESSING', 'READY', 'FAILED'));
+
+-- 7. Create ranking entries table with exact decimal percentile
+create table if not exists public.ranking_entries (
+  id uuid default gen_random_uuid() primary key,
+  snapshot_id uuid not null references public.ranking_snapshots(id) on delete cascade,
+  result_id uuid not null references public.assessment_results(id) on delete cascade,
+  candidate_id text not null,
+  national_rank integer,
+  state_rank integer,
+  district_rank integer,
+  percentile numeric(6,3),
+  generated_at timestamptz default now() not null,
+  constraint unique_snapshot_candidate unique (snapshot_id, candidate_id)
+);
+
+-- 8. Enable Row Level Security (No public/client policies -> accessible via service-role only)
 alter table public.candidate_growth_timeline enable row level security;
 alter table public.result_report_versions enable row level security;
 alter table public.scholarship_awards enable row level security;
-alter table public.result_audit_trail enable row level security;
+alter table public.result_processing_jobs enable row level security;
 alter table public.ranking_snapshots enable row level security;
+alter table public.ranking_entries enable row level security;
 
--- Drop existing policies if any
-drop policy if exists "Candidates growth ownership" on public.candidate_growth_timeline;
-drop policy if exists "Candidates report versions ownership" on public.result_report_versions;
-drop policy if exists "Candidates scholarship ownership" on public.scholarship_awards;
-drop policy if exists "Candidates audit ownership" on public.result_audit_trail;
-drop policy if exists "Read ranking snapshots" on public.ranking_snapshots;
+-- 9. Add indexes to accelerate worker job claims and cohort ranking checks
+create index if not exists idx_processing_jobs_claim 
+on public.result_processing_jobs (status, next_retry_at, locked_at) 
+where status in ('PENDING', 'PROCESSING', 'RETRY_PENDING');
 
--- Create policies
-create policy "Candidates growth ownership" on public.candidate_growth_timeline for select
-  using (public.is_candidate_owner(candidate_id));
+create index if not exists idx_ranking_snapshots_lookup
+on public.ranking_snapshots (assessment_id, status, generated_at desc);
 
-create policy "Candidates report versions ownership" on public.result_report_versions for select
-  using (exists (select 1 from public.candidate_sessions where id = session_id and public.is_candidate_owner(candidate_id)));
+create index if not exists idx_ranking_entries_candidate_lookup 
+on public.ranking_entries (candidate_id);
 
-create policy "Candidates scholarship ownership" on public.scholarship_awards for all
-  using (public.is_candidate_owner(candidate_id));
+create index if not exists idx_growth_candidate
+on public.candidate_growth_timeline (candidate_id);
 
-create policy "Candidates audit ownership" on public.result_audit_trail for select
-  using (exists (select 1 from public.candidate_sessions where id = session_id and public.is_candidate_owner(candidate_id)));
+-- 10. Atomic PL/pgSQL claim RPC Function
+create or replace function public.claim_next_processing_job(
+  p_worker_id uuid,
+  p_lease_seconds integer
+)
+returns setof public.result_processing_jobs as $$
+begin
+  -- Validate lease seconds limits (10 seconds to 1 hour)
+  if p_lease_seconds < 10 or p_lease_seconds > 3600 then
+    raise exception 'Lease seconds must be between 10 and 3600';
+  end if;
 
-create policy "Read ranking snapshots" on public.ranking_snapshots for select using (true);
+  return query
+  update public.result_processing_jobs
+  set status = 'PROCESSING',
+      locked_at = now(),
+      locked_by = p_worker_id,
+      updated_at = now()
+  where id = (
+    select id
+    from public.result_processing_jobs
+    where 
+      status = 'PENDING'
+      or (status = 'RETRY_PENDING' and (next_retry_at is null or next_retry_at <= now()))
+      or (status = 'PROCESSING' and locked_at <= now() - (p_lease_seconds || ' seconds')::interval)
+    order by created_at asc
+    for update skip locked
+    limit 1
+  )
+  returning *;
+end;
+$$ language plpgsql security definer set search_path = public, pg_temp;
 
--- Admin policies
-drop policy if exists "Admins have full access to growth timeline" on public.candidate_growth_timeline;
-drop policy if exists "Admins have full access to report versions" on public.result_report_versions;
-drop policy if exists "Admins have full access to scholarship awards" on public.scholarship_awards;
-drop policy if exists "Admins have full access to result audits" on public.result_audit_trail;
-drop policy if exists "Admins have full access to ranking snapshots" on public.ranking_snapshots;
-
-create policy "Admins have full access to growth timeline" on public.candidate_growth_timeline for all using (public.is_admin_user());
-create policy "Admins have full access to report versions" on public.result_report_versions for all using (public.is_admin_user());
-create policy "Admins have full access to scholarship awards" on public.scholarship_awards for all using (public.is_admin_user());
-create policy "Admins have full access to result audits" on public.result_audit_trail for all using (public.is_admin_user());
-create policy "Admins have full access to ranking snapshots" on public.ranking_snapshots for all using (public.is_admin_user());
-
--- Create composite indexes for query optimization
-create index if not exists idx_growth_candidate on public.candidate_growth_timeline(candidate_id);
-create index if not exists idx_report_versions_session on public.result_report_versions(session_id);
-create index if not exists idx_scholarship_candidate on public.scholarship_awards(candidate_id);
-create index if not exists idx_result_audit_session on public.result_audit_trail(session_id);
-create index if not exists idx_ranking_snapshots_assessment on public.ranking_snapshots(assessment_id);
+-- Revoke execute permissions from public/anon/authenticated roles
+revoke execute on function public.claim_next_processing_job(uuid, integer) from public, anon, authenticated;
+grant execute on function public.claim_next_processing_job(uuid, integer) to service_role;

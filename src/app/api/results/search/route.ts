@@ -55,7 +55,21 @@ export async function GET(request: Request) {
       }
     }
 
-    // 2. Query Database: Join registrations & results tables
+    // 2. Query Database for release gates (only check if outside sandbox)
+    const { data: setting } = await (supabaseAdmin as any)
+      .from("system_settings")
+      .select("setting_value")
+      .eq("setting_key", "result_status")
+      .maybeSingle();
+
+    const isReleased = setting?.setting_value === "RELEASED";
+    if (!isReleased) {
+      return NextResponse.json(
+        { success: false, message: "Results release window is pending timeline finalization." },
+        { status: 403 }
+      );
+    }
+
     const { data: registration, error } = await (supabaseAdmin as any)
       .from("registrations")
       .select(`
@@ -112,7 +126,35 @@ export async function GET(request: Request) {
       );
     }
 
-    // Format output
+    // Fetch assessment result attempt record & processing job state
+    const { data: assessmentResult } = await (supabaseAdmin as any)
+      .from("assessment_results")
+      .select("id, session_id, analytics, receipt_id, verification_token, submitted_at")
+      .eq("candidate_id", registration.cnts_id)
+      .maybeSingle();
+
+    if (assessmentResult) {
+      const { data: job } = await (supabaseAdmin as any)
+        .from("result_processing_jobs")
+        .select("status, retry_count, last_error")
+        .eq("session_id", assessmentResult.session_id)
+        .maybeSingle();
+
+      if (job && job.status !== "COMPLETED") {
+        return NextResponse.json({
+          success: true,
+          processingStatus: job.status,
+          candidate: {
+            registration_id: registration.registration_id,
+            cnts_id: registration.cnts_id,
+            student_name: registration.student_name,
+            student_class: registration.student_class
+          }
+        });
+      }
+    }
+
+    // Format output with joined cognitive analytics
     return NextResponse.json({
       success: true,
       candidate: {
@@ -137,7 +179,9 @@ export async function GET(request: Request) {
         mathematics_score: result.mathematics_score,
         language_score: result.language_score,
         general_awareness_score: result.general_awareness_score
-      }
+      },
+      analytics: assessmentResult?.analytics || null,
+      verificationToken: assessmentResult?.verification_token || null
     });
 
   } catch (error: any) {

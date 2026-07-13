@@ -30,6 +30,13 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { TIMELINE_LABELS } from "@/config/timeline";
 import NeedHelp from "@/components/layout/NeedHelp";
+import ResultHero from "@/components/results/ResultHero";
+import ScoreOverview from "@/components/results/ScoreOverview";
+import TalentDNAProfile from "@/components/results/TalentDNAProfile";
+import MistakeIntelligence from "@/components/results/MistakeIntelligence";
+import RecommendationCard from "@/components/results/RecommendationCard";
+import CertificatePreview from "@/components/results/CertificatePreview";
+import ResultPendingState from "@/components/results/ResultPendingState";
 
 export default function ResultsPage() {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -72,6 +79,33 @@ export default function ResultsPage() {
       setTilt2({ x: 0, y: 0 });
     }
   };
+
+  // Polling hook for processing jobs
+  useEffect(() => {
+    if (!candidateResult || !candidateResult.processingStatus) return;
+    if (candidateResult.processingStatus === "COMPLETED") return;
+
+    const interval = setInterval(async () => {
+      try {
+        const queryParams = new URLSearchParams({
+          regId: registrationId.trim(),
+          dob: dob.trim()
+        });
+        const res = await fetch(`/api/results/search?${queryParams.toString()}`);
+        const data = await res.json();
+        if (res.ok && data.success) {
+          if (!data.processingStatus) {
+            setCandidateResult(data);
+            clearInterval(interval);
+          }
+        }
+      } catch (err) {
+        console.error("Polling error:", err);
+      }
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, [candidateResult, registrationId, dob]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -272,122 +306,31 @@ export default function ResultsPage() {
                   </button>
                 </form>
               </div>
+            ) : candidateResult.processingStatus ? (
+              <ResultPendingState status={candidateResult.processingStatus} />
             ) : (
               /* Gorgeous Result Mapping Board */
-              <div className="bg-white rounded-3xl shadow-xl shadow-blue-900/5 border border-slate-100 p-6 md:p-8 space-y-6 animate-scale-in">
-                
-                {/* Standardized Candidate Identity Card */}
-                <CandidateIdentityCard candidate={{
-                  student_name: candidateResult.candidate.student_name,
-                  student_class: candidateResult.candidate.student_class,
-                  state: candidateResult.candidate.state,
-                  registration_id: candidateResult.candidate.cnts_id || candidateResult.candidate.registration_id,
-                  payment_status: candidateResult.candidate.payment_status,
-                  photo_url: `/api/photo/${candidateResult.candidate.cnts_id || candidateResult.candidate.registration_id}`
-                }} />
+              <div className="bg-white rounded-3xl shadow-xl shadow-blue-900/5 border border-slate-100 p-6 md:p-8 space-y-8 animate-scale-in">
+                <ResultHero 
+                  candidate={candidateResult.candidate} 
+                  result={candidateResult.result} 
+                  verificationToken={candidateResult.verificationToken} 
+                  onViewCertificate={() => setActiveModal("certificate")} 
+                />
 
-                {/* Result header */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4 border-b border-slate-100">
-                  <div className="flex items-center gap-3">
-                    <div className="p-3 bg-emerald-50 text-emerald-600 rounded-2xl shrink-0">
-                      <Trophy size={20} className="stroke-[2.5]" />
-                    </div>
-                    <div>
-                      <h3 className="font-display font-bold text-lg text-slate-900 leading-tight">
-                        {candidateResult.candidate.student_name}
-                      </h3>
-                      <p className="text-xs text-slate-500 font-medium">
-                        ID: <strong className="font-mono text-slate-800 font-bold">{candidateResult.candidate.cnts_id || candidateResult.candidate.registration_id}</strong>
-                      </p>
-                    </div>
-                  </div>
+                <ScoreOverview result={candidateResult.result} />
 
-                  <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 font-sans">
-                    National Percentile: {Number(candidateResult.result.percentile || 0).toFixed(2)}%
-                  </span>
-                </div>
+                <TalentDNAProfile analytics={candidateResult.analytics} result={candidateResult.result} />
 
-                {/* Candidate stats */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-medium text-slate-655">
-                  <div>School: <strong className="text-slate-800">{candidateResult.candidate.school_name} ({candidateResult.candidate.school_city})</strong></div>
-                  <div>Class: <strong className="text-slate-800">Class {candidateResult.candidate.student_class}</strong></div>
-                  <div>District: <strong className="text-slate-800">{candidateResult.candidate.district}</strong></div>
-                  <div>State: <strong className="text-slate-800">{candidateResult.candidate.state}</strong></div>
-                </div>
+                <MistakeIntelligence analytics={candidateResult.analytics} result={candidateResult.result} />
 
-                {/* National Rank cards */}
-                <div className="grid grid-cols-2 gap-4 pt-2">
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center space-y-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">National Rank</span>
-                    <strong className="text-2xl font-bold text-blue-900">#{candidateResult.result.national_rank}</strong>
-                  </div>
-                  <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl text-center space-y-1">
-                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">State Rank</span>
-                    <strong className="text-2xl font-bold text-indigo-900">#{candidateResult.result.state_rank}</strong>
-                  </div>
-                </div>
-
-                {/* Cognitive Index Matrices */}
-                <div className="space-y-4 pt-2">
-                  <h4 className="font-display font-bold text-slate-800 text-xs uppercase tracking-wider">Cognitive Index Matrices:</h4>
-                  
-                  <div className="grid sm:grid-cols-2 gap-4">
-                    {[
-                      { label: "Quant & Analytical Ability", score: candidateResult.result.mathematics_score, color: "bg-blue-600" },
-                      { label: "Verbal & Language Logic", score: candidateResult.result.language_score, color: "bg-indigo-600" },
-                      { label: "Logical & Pattern deduction", score: candidateResult.result.logical_reasoning_score, color: "bg-emerald-600" },
-                      { label: "Critical Cognitive Reasoning", score: candidateResult.result.general_awareness_score, color: "bg-purple-600" }
-                    ].map((idxData, index) => (
-                      <div key={index} className="p-4 bg-slate-50 border border-slate-100 rounded-2xl space-y-2">
-                        <div className="flex justify-between text-xs font-bold text-slate-700">
-                          <span>{idxData.label}</span>
-                          <span>{idxData.score}%</span>
-                        </div>
-                        <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-                          <div 
-                            className={`${idxData.color} h-full rounded-full transition-all duration-700`}
-                            style={{ width: `${idxData.score}%` }}
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Learning Style Verdict */}
-                <div className="p-4 bg-blue-50/50 border border-blue-100/50 rounded-2xl space-y-2">
-                  <h4 className="font-display font-bold text-blue-900 text-xs uppercase tracking-wider flex items-center gap-1.5">
-                    <Sparkles size={12} className="text-amber-500" />
-                    Cognitive Assessment Verdict
-                  </h4>
-                  <p className="text-xs text-slate-650 leading-relaxed font-sans">
-                    {candidateResult.result.mathematics_score >= Math.max(candidateResult.result.language_score, candidateResult.result.logical_reasoning_score, candidateResult.result.general_awareness_score)
-                      ? "Quantitative Analysis Strengths: The candidate demonstrates highly structured thinking, numerical logic capacity, and spatial calculation ability. Recommended for advanced science, computational thinking, and analytical problem-solving pathways."
-                      : candidateResult.result.logical_reasoning_score >= Math.max(candidateResult.result.mathematics_score, candidateResult.result.language_score, candidateResult.result.general_awareness_score)
-                      ? "Logical Pattern Strengths: The candidate excels in pattern recognition, diagrammatic synthesis, and multi-variable logic deduction. Recommended for design, strategy, complex system analysis, and programming logic."
-                      : candidateResult.result.language_score >= Math.max(candidateResult.result.mathematics_score, candidateResult.result.logical_reasoning_score, candidateResult.result.general_awareness_score)
-                      ? "Linguistic Logic Strengths: The candidate exhibits high semantic comprehension, context interpretation, and vocabulary reasoning capabilities. Recommended for humanities, verbal analytics, structural debate, and language logic."
-                      : "General Cognitive Strengths: The candidate exhibits balanced multi-domain logic, high conceptual agility, and stable informational retrieval speed. Recommended for cross-disciplinary research and generalized strategic reasoning."}
-                  </p>
-                </div>
-
-                {/* Development & Growth Recommendations */}
-                <div className="p-4 bg-slate-50 border border-slate-150 rounded-2xl space-y-2 text-xs">
-                  <h4 className="font-display font-bold text-slate-800 text-xs uppercase tracking-wider">
-                    Educational Growth Recommendations
-                  </h4>
-                  <ul className="list-disc pl-4 space-y-1.5 text-slate-500">
-                    <li>Nurture critical reasoning by introducing abstract math puzzles and logical card games outside class curriculums.</li>
-                    <li>Promote conceptual reading habits (biographies, logic digests) rather than syllabus textbooks to expand semantic logic.</li>
-                    <li>Encourage explaining the 'why' behind problems to shift study habits from simple memorization to structural comprehension.</li>
-                  </ul>
-                </div>
+                <RecommendationCard analytics={candidateResult.analytics} result={candidateResult.result} />
 
                 {/* Next actions: Certificate & Profile Downloads */}
-                <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-slate-100">
+                <div className="flex flex-col sm:flex-row gap-3 pt-6 border-t border-slate-100 no-print">
                   <button
                     onClick={() => window.print()}
-                    className="flex-1 py-3 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 flex items-center justify-center gap-1.5 cursor-pointer"
+                    className="flex-1 py-3 bg-blue-800 hover:bg-blue-750 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 flex items-center justify-center gap-1.5 cursor-pointer"
                   >
                     <Download size={14} />
                     Download Profile Report
@@ -405,7 +348,7 @@ export default function ResultsPage() {
                       setRegistrationId("");
                       setDob("");
                     }}
-                    className="py-3 px-6 border border-slate-200 hover:bg-slate-50 text-slate-655 rounded-xl text-xs font-bold transition-all cursor-pointer"
+                    className="py-3 px-6 border border-slate-200 hover:bg-slate-50 text-slate-500 rounded-xl text-xs font-bold transition-all cursor-pointer"
                   >
                     Clear Search
                   </button>
@@ -792,182 +735,12 @@ export default function ResultsPage() {
 
       {/* Fullscreen Modals for Tap-to-Expand */}
       {activeModal === "certificate" && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in no-print">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 md:p-8 max-w-2xl w-full relative animate-scale-in">
-            {/* Close button */}
-            <button
-              onClick={() => setActiveModal(null)}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-
-            {/* High fidelity full-size mockup */}
-            <div className="border-8 border-double border-slate-800 rounded-2xl p-6 md:p-8 space-y-6 bg-[#FCFBF8] text-center my-4 relative overflow-hidden">
-              {/* Sample Watermark */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-20 transform -rotate-12 z-0">
-                <span className="text-6xl md:text-8xl font-black text-red-500 uppercase tracking-widest border-8 border-red-500 px-6 py-2 rounded-xl">SAMPLE</span>
-              </div>
-
-              <div className="absolute top-0 right-0 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
-              
-              <div className="space-y-2 relative z-10">
-                <span className="text-[9px] md:text-[11px] font-bold text-amber-700 tracking-widest block uppercase font-mono">
-                  Founding Edition Participant Certificate
-                </span>
-                <h3 className="font-display font-black text-slate-900 text-base md:text-xl tracking-tight uppercase">
-                  Courage National Talent Search
-                </h3>
-                <p className="text-[8px] md:text-[10px] text-slate-500 font-bold uppercase tracking-wider">FOUNDING EDITION 2026</p>
-                <div className="w-24 h-[1px] bg-slate-300 mx-auto" />
-              </div>
-
-              <div className="space-y-3 relative z-10">
-                <p className="text-xs md:text-sm italic text-slate-500 font-medium">This is to certify that</p>
-                <h4 className="font-display font-bold text-lg md:text-2xl text-slate-800 leading-none">
-                  [Your Child&apos;s Name]
-                </h4>
-                <p className="text-xs text-slate-650 max-w-md mx-auto leading-relaxed">
-                  of Class [Class] has successfully qualified as a Founding Cohort Member in the Founding Edition of CNTS 2026.
-                </p>
-              </div>
-
-              {/* Verification Stamp */}
-              <div className="text-center text-[8px] md:text-[10px] text-slate-400 font-mono tracking-widest pt-2 border-t border-slate-100 mt-2 select-none pointer-events-none">
-                Verified Credential | Digitally Signed | Publicly Verifiable
-              </div>
-
-              <div className="flex justify-between items-end text-xs font-semibold text-slate-500 pt-6 border-t border-slate-100 relative z-10">
-                <div className="space-y-1 text-left font-sans">
-                  <p>All India Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
-                  <p>State Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></p>
-                  <p>National Percentile: <strong className="text-emerald-700 font-bold">[Percentile]%</strong></p>
-                </div>
-                
-                {/* Stylized QR Code for verification */}
-                <div className="flex items-center gap-2 border border-slate-200 p-1.5 rounded-lg bg-white shadow-sm opacity-50">
-                  <div className="w-8 h-8 bg-slate-900 flex flex-wrap p-0.5 gap-0.5 rounded shrink-0">
-                    <div className="w-3.5 h-3.5 bg-white border border-slate-900 rounded-sm" />
-                    <div className="w-3.5 h-3.5 bg-slate-900" />
-                    <div className="w-3.5 h-3.5 bg-slate-900" />
-                    <div className="w-3.5 h-3.5 bg-white border border-slate-900 rounded-sm" />
-                  </div>
-                  <div className="text-[7px] text-slate-400 font-mono leading-none text-left">
-                    VERIFIED CERTIFICATE<br/>
-                    No: [SAMPLE-CERT-ID]
-                  </div>
-                </div>
-                
-                <div className="space-y-1 text-right font-mono">
-                  <p className="text-[8px] md:text-[10px] text-slate-500">ID: [SAMPLE-ID]</p>
-                  <p className="font-bold text-slate-800 font-sans">Registrar of Evaluation</p>
-                  <p className="text-[8px] text-slate-500 font-mono">Date: {TIMELINE_LABELS.RESULTS_DATE}</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-              <button
-                onClick={() => window.print()}
-                className="px-5 py-2.5 bg-blue-800 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow transition-all cursor-pointer flex items-center gap-1.5"
-              >
-                <Download size={14} /> Print / Save PDF
-              </button>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="px-5 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold rounded-xl transition-all cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {activeModal === "report" && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in no-print">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl p-6 md:p-8 max-w-2xl w-full relative animate-scale-in">
-            {/* Close button */}
-            <button
-              onClick={() => setActiveModal(null)}
-              className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
-            >
-              <X size={18} />
-            </button>
-
-            {/* High fidelity full-size mockup */}
-            <div className="border border-slate-200 rounded-2xl p-6 space-y-6 bg-white my-4 relative overflow-hidden">
-              {/* Sample Watermark */}
-              <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-10 transform -rotate-12 z-0">
-                <span className="text-6xl md:text-8xl font-black text-red-500 uppercase tracking-widest border-8 border-red-500 px-6 py-2 rounded-xl">SAMPLE</span>
-              </div>
-
-              <div className="flex justify-between items-start border-b border-slate-100 pb-4 relative z-10">
-                <div>
-                  <h4 className="font-display font-bold text-sm md:text-base text-slate-800">Cognitive Profile Report</h4>
-                  <p className="text-xs text-slate-500 font-mono">Candidate ID: [Candidate ID]</p>
-                </div>
-                <span className="px-3 py-1 bg-emerald-50 text-emerald-800 border border-emerald-100 rounded-full text-xs font-bold uppercase tracking-wider">
-                  Top 3% Cohort
-                </span>
-              </div>
-
-              {/* Grid profile detail */}
-              <div className="grid grid-cols-2 gap-4 text-xs relative z-10">
-                <div>Candidate: <strong className="text-slate-800 font-bold">[Your Child&apos;s Name]</strong></div>
-                <div>Class: <strong className="text-slate-800 font-bold">[Class]</strong></div>
-                <div>National Percentile: <strong className="text-slate-800 font-bold">[Percentile]%</strong></div>
-                <div>All India Rank: <strong className="text-slate-800 font-bold">#[Rank]</strong></div>
-              </div>
-
-              <div className="space-y-3 py-2">
-                <h5 className="font-display font-bold text-slate-800 text-xs uppercase tracking-wider">Cognitive Performance Metrics:</h5>
-                {[
-                  { domain: "Quantitative & Analytical Ability", val: 92, color: "bg-blue-600", desc: "Measures numerical sequence logic, fraction operations, and graphical data mapping." },
-                  { domain: "Verbal & Language Logic", val: 85, color: "bg-indigo-600", desc: "Evaluates reading comprehension keys, contextual spelling, and grammatical structuring." },
-                  { domain: "Logical & Pattern Deduction", val: 79, color: "bg-emerald-600", desc: "Measures abstract pattern matching, blood relation maps, and shape rotation." },
-                  { domain: "Critical Reasoning & Cognitive Aptitude", val: 88, color: "bg-purple-600", desc: "Evaluates statements strength, argument logic, and multivariable grid solving." }
-                ].map((d, index) => (
-                  <div key={index} className="space-y-1 p-3 bg-slate-50 border border-slate-100 rounded-xl">
-                    <div className="flex justify-between text-xs font-bold text-slate-700">
-                      <span>{d.domain}</span>
-                      <span>{d.val}%</span>
-                    </div>
-                    <div className="h-1.5 bg-slate-200 rounded-full overflow-hidden">
-                      <div className={`h-full ${d.color} rounded-full`} style={{ width: `${d.val}%` }} />
-                    </div>
-                    <p className="text-[10px] text-slate-500 leading-normal mt-1">{d.desc}</p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Recommendations */}
-              <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
-                <p className="text-xs font-bold text-blue-800 flex items-center gap-1.5">
-                  <Sparkles size={14} /> Learning Style Verdict:
-                </p>
-                <p className="text-xs text-slate-500 leading-relaxed mt-1">
-                  Outstanding abstract logical deduction. Excel in mathematical sequences and structural analysis. Learns best with visual reasoning maps, diagrams, and sequential coding exercises. Focus on reading speed and linguistic inferences to further enhance critical verbal ability.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-              <button
-                onClick={() => window.print()}
-                className="px-5 py-2.5 bg-blue-800 hover:bg-blue-700 text-white text-xs font-bold rounded-xl shadow transition-all cursor-pointer flex items-center gap-1.5"
-              >
-                <Download size={14} /> Print / Save PDF
-              </button>
-              <button
-                onClick={() => setActiveModal(null)}
-                className="px-5 py-2.5 border border-slate-200 hover:bg-slate-50 text-slate-655 text-xs font-bold rounded-xl transition-all cursor-pointer"
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
+        <CertificatePreview
+          candidate={candidateResult.candidate}
+          result={candidateResult.result}
+          verificationToken={candidateResult.verificationToken}
+          onClose={() => setActiveModal(null)}
+        />
       )}
 
       <NeedHelp />
