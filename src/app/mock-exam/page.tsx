@@ -9,142 +9,162 @@ import {
   ChevronLeft, 
   ChevronRight, 
   CheckCircle, 
-  AlertCircle,
   HelpCircle,
   Play,
   ArrowRight,
   BookOpen,
-  Circle
+  Loader2
 } from "lucide-react";
-
-interface Question {
-  id: number;
-  domain: string;
-  question: React.ReactNode;
-  options: React.ReactNode[];
-  answer: number; // Index of correct option
-}
-
-const mockQuestions: Question[] = [
-  {
-    id: 1,
-    domain: "Logical & Pattern Deduction",
-    question: <span className="flex items-center gap-1 flex-wrap">Complete the sequence: <Circle size={10} className="fill-red-500 text-red-500" />, <Circle size={10} className="fill-blue-500 text-blue-500" />, <Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" />, <Circle size={10} className="fill-blue-500 text-blue-500" /><Circle size={10} className="fill-blue-500 text-blue-500" />, <Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" />, ...</span>,
-    options: [
-      <span key="1" className="flex items-center gap-0.5"><Circle size={10} className="fill-blue-500 text-blue-500" /><Circle size={10} className="fill-blue-500 text-blue-500" /><Circle size={10} className="fill-blue-500 text-blue-500" /></span>, 
-      <span key="2" className="flex items-center gap-0.5"><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /></span>, 
-      <span key="3" className="flex items-center gap-0.5"><Circle size={10} className="fill-blue-500 text-blue-500" /><Circle size={10} className="fill-blue-500 text-blue-500" /></span>, 
-      <span key="4" className="flex items-center gap-0.5"><Circle size={10} className="fill-red-500 text-red-500" /><Circle size={10} className="fill-red-500 text-red-500" /></span>
-    ],
-    answer: 0
-  },
-  {
-    id: 2,
-    domain: "Quantitative Logic & Mathematics",
-    question: "If 3 pencils cost ₹15, how much will 7 pencils cost?",
-    options: ["₹30", "₹35", "₹40", "₹25"],
-    answer: 1
-  },
-  {
-    id: 3,
-    domain: "Verbal & Language Ability",
-    question: "Find the odd word out: Book, Pen, Eraser, Plate",
-    options: ["Book", "Pen", "Eraser", "Plate"],
-    answer: 3
-  },
-  {
-    id: 4,
-    domain: "Logical & Pattern Deduction",
-    question: "Light is to Candle as Heat is to ...",
-    options: ["Ice", "Fire", "Dark", "Cold"],
-    answer: 1
-  },
-  {
-    id: 5,
-    domain: "Quantitative Logic & Mathematics",
-    question: "Find the next number in the pattern: 2, 5, 9, 14, 20, ...",
-    options: ["25", "26", "27", "28"],
-    answer: 2
-  },
-  {
-    id: 6,
-    domain: "Logical & Pattern Deduction",
-    question: "If RED is coded as 18-5-4 (based on alphabet positions), how is BLUE coded?",
-    options: ["2-12-21-5", "2-21-12-5", "1-12-21-5", "2-12-21-6"],
-    answer: 0
-  },
-  {
-    id: 7,
-    domain: "General Awareness & Critical Logic",
-    question: "Why do we see lightning before we hear thunder?",
-    options: [
-      "Light travels faster than sound", 
-      "Sound travels faster than light", 
-      "Thunder occurs later", 
-      "Clouds block sound"
-    ],
-    answer: 0
-  },
-  {
-    id: 8,
-    domain: "Verbal & Language Ability",
-    question: "Choose the word that best completes the sentence: The researcher was ______ by the results because they contradicted his hypothesis.",
-    options: ["delighted", "surprised", "indifferent", "bored"],
-    answer: 1
-  },
-  {
-    id: 9,
-    domain: "Logical & Pattern Deduction",
-    question: "A doctor gives you 3 pills and tells you to take one every half hour. How long will the pills last?",
-    options: ["1.5 Hours", "1 Hour", "2 Hours", "30 Minutes"],
-    answer: 1
-  },
-  {
-    id: 10,
-    domain: "General Awareness & Critical Logic",
-    question: "Plants absorb water from the soil primarily through their:",
-    options: ["Leaves", "Stems", "Roots", "Flowers"],
-    answer: 2
-  }
-];
+import { LocalDb } from "@/domains/assessment/LocalDb";
+import { AssessmentSyncManager } from "@/domains/assessment/AssessmentSyncManager";
+import { AssessmentRecovery } from "@/domains/assessment/AssessmentRecovery";
+import { CandidateQuestionDTO, SessionStatus } from "@/domains/assessment/core/types";
 
 export default function MockExamPage() {
   const [examStarted, setExamStarted] = useState(false);
   const [currentIdx, setCurrentIdx] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, number>>({});
-  const [timeLeft, setTimeLeft] = useState(600); // 10 minutes in seconds
+  const [answers, setAnswers] = useState<Record<string, string[]>>({});
+  const [timeLeft, setTimeLeft] = useState(600); // authoritative timer in seconds
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
+  const [sessionId, setSessionId] = useState("");
+  const [questions, setQuestions] = useState<CandidateQuestionDTO[]>([]);
+  const [status, setStatus] = useState<SessionStatus>("CREATED");
+  const [receiptId, setReceiptId] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  // Timer loop
+  // Timer loop (visual countdown only, synchronized by sync endpoints)
   useEffect(() => {
-    if (!examStarted || submitted || timeLeft <= 0) return;
+    if (!examStarted || submitted || timeLeft <= 0 || status === "SUBMITTED" || status === "SCORED") return;
     const timer = setInterval(() => {
-      setTimeLeft(prev => prev - 1);
+      setTimeLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          // Trigger server auto-submit
+          submitExam(true);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
     return () => clearInterval(timer);
-  }, [examStarted, submitted, timeLeft]);
+  }, [examStarted, submitted, timeLeft, status]);
 
-  // Auto-submit on timer end
+  // Clean up sync interval on component unmount
   useEffect(() => {
-    if (timeLeft === 0 && examStarted && !submitted) {
-      submitExam();
-    }
-  }, [timeLeft, examStarted, submitted]);
+    return () => {
+      AssessmentSyncManager.stop();
+    };
+  }, []);
 
-  const handleSelectOption = (qId: number, optIdx: number) => {
-    setAnswers(prev => ({ ...prev, [qId]: optIdx }));
+  const startExam = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/assessment/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ assessmentId: "asm-1" })
+      });
+
+      if (!res.ok) throw new Error("Failed to start session");
+      const data = await res.json();
+
+      if (data.success) {
+        setSessionId(data.sessionId);
+        setQuestions(data.questions);
+        setStatus("IN_PROGRESS");
+
+        // 1. Authoritative Timer Setup
+        const expiresAt = new Date(data.expiresAt).getTime();
+        const timeRemaining = Math.max(0, Math.floor((expiresAt - Date.now()) / 1000));
+        setTimeLeft(timeRemaining);
+
+        // 2. Map existing server attempts
+        const serverAnswers: Record<string, string[]> = {};
+        let highestSeq = 0;
+        if (data.attempts) {
+          data.attempts.forEach((att: any) => {
+            serverAnswers[att.question_id] = att.selected_answers;
+            highestSeq = Math.max(highestSeq, att.last_sequence_number);
+          });
+        }
+
+        // 3. Recovery Merge: Reconstruct state from IndexedDB + Server attempts
+        const mergedAnswers = await AssessmentRecovery.reconstructState(data.sessionId, serverAnswers, highestSeq);
+        setAnswers(mergedAnswers);
+
+        // 4. Initialize Sync Manager
+        AssessmentSyncManager.initialize(data.sessionId, highestSeq, (syncResult) => {
+          // Re-synchronize remaining time authoritatively on every sync response
+          setTimeLeft(syncResult.timeRemainingSeconds);
+          setStatus(syncResult.status);
+          if (syncResult.status === "AUTO_SUBMITTING" || syncResult.status === "SUBMITTED") {
+            submitExam(true);
+          }
+        });
+
+        setExamStarted(true);
+      }
+    } catch (err) {
+      console.error("[Start] error:", err);
+      alert("Failed to initialize mock exam session");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const submitExam = () => {
-    setSubmitted(true);
-    let calculatedScore = 0;
-    mockQuestions.forEach(q => {
-      if (answers[q.id] === q.answer) {
-        calculatedScore++;
+  const handleSelectOption = async (qId: string, optId: string) => {
+    if (submitted || status === "SUBMITTED" || status === "SCORED") return;
+
+    // Update local state optimistically
+    setAnswers(prev => ({ ...prev, [qId]: [optId] }));
+
+    // Push mutation to LocalDb queue & Sync Manager
+    await AssessmentSyncManager.recordMutation(qId, [optId]);
+  };
+
+  const submitExam = async (isAutoSubmit = false) => {
+    if (submitted || status === "SUBMITTED" || status === "SCORED") return;
+    setLoading(true);
+
+    try {
+      // Force trigger final flush of any remaining mutations in the queue
+      await AssessmentSyncManager.triggerSync();
+
+      // Transition local state machine status
+      setStatus(isAutoSubmit ? "AUTO_SUBMITTING" : "SUBMITTING");
+
+      const idempotencyKey = "idem_" + sessionId + "_" + Date.now();
+      const res = await fetch("/api/assessment/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          idempotencyKey,
+          isAutoSubmit
+        })
+      });
+
+      if (!res.ok) throw new Error("Submission evaluation failed");
+      const result = await res.json();
+
+      if (result.success) {
+        setScore(result.score);
+        setReceiptId(result.receiptId);
+        setSubmitted(true);
+        setStatus("SCORED");
+
+        // Clear local queue upon success
+        await LocalDb.clearAll();
+      } else {
+        alert(result.message || "Failed to submit exam");
       }
-    });
-    setScore(calculatedScore);
+    } catch (err) {
+      console.error("[Submit] error:", err);
+      alert("Network connection error. Retrying submission...");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatTime = (secs: number) => {
@@ -153,7 +173,7 @@ export default function MockExamPage() {
     return `${String(mins).padStart(2, "0")}:${String(remainingSecs).padStart(2, "0")}`;
   };
 
-  const activeQuestion = mockQuestions[currentIdx];
+  const activeQuestion = questions[currentIdx];
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col">
@@ -161,7 +181,6 @@ export default function MockExamPage() {
 
       {/* Hero Section */}
       <section className="bg-white border-b border-slate-100 text-slate-800 pt-36 pb-16 ">
-        
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center animate-slide-up">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-xs font-bold text-blue-400 mb-6 uppercase tracking-wider mx-auto">
             <BookOpen size={12} /> Practice Mock Test
@@ -177,6 +196,15 @@ export default function MockExamPage() {
 
       {/* Main Panel */}
       <main className="max-w-4xl w-full mx-auto px-6 py-12 flex-1 flex flex-col justify-center items-center">
+        {loading && (
+          <div className="fixed inset-0 bg-slate-900/10 backdrop-blur-xs flex items-center justify-center z-50">
+            <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center gap-3">
+              <Loader2 className="animate-spin text-blue-800" size={32} />
+              <span className="text-xs font-bold text-slate-700">Syncing with Exam Engine...</span>
+            </div>
+          </div>
+        )}
+
         {!examStarted ? (
           /* Start Screen */
           <div className="bg-white border border-slate-200 rounded-3xl p-8 md:p-12 shadow-sm text-center max-w-xl w-full space-y-6 animate-scale-in">
@@ -191,8 +219,8 @@ export default function MockExamPage() {
               <p>• <strong>Integrity:</strong> Webcam is disabled. Designed for candidate diagnostics validation.</p>
             </div>
             <button
-              onClick={() => setExamStarted(true)}
-              className="w-full bg-blue-600 hover:bg-blue-750 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-md text-xs flex items-center justify-center gap-2 cursor-pointer"
+              onClick={startExam}
+              className="w-full bg-blue-600 hover:bg-blue-750 text-white font-bold py-3.5 px-6 rounded-xl transition-all shadow-md text-xs flex items-center justify-center gap-2 cursor-pointer border-none"
             >
               Start Practice Exam <Play size={12} />
             </button>
@@ -207,9 +235,17 @@ export default function MockExamPage() {
             <p className="text-xs text-slate-500 max-w-md mx-auto leading-relaxed">
               Congratulations! Your candidate has completed the CNTS mock practice. This confirms layout capability and internet connection stability.
             </p>
-            <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex justify-between items-center text-xs">
-              <span className="font-semibold text-slate-600">Practice Score:</span>
-              <strong className="text-slate-900 font-bold">{score} / 10 Correct</strong>
+            <div className="p-4 bg-slate-50 border border-slate-100 rounded-2xl flex flex-col gap-2 text-xs">
+              <div className="flex justify-between items-center">
+                <span className="font-semibold text-slate-600">Practice Score:</span>
+                <strong className="text-slate-900 font-bold">{score} / 10 Correct</strong>
+              </div>
+              {receiptId && (
+                <div className="flex justify-between items-center border-t border-slate-150 pt-2 text-[10px] text-slate-400">
+                  <span>Submission Receipt ID:</span>
+                  <span className="font-mono font-bold text-slate-600">{receiptId}</span>
+                </div>
+              )}
             </div>
             <div className="flex gap-4 pt-4">
               <button
@@ -217,7 +253,8 @@ export default function MockExamPage() {
                   setAnswers({});
                   setTimeLeft(600);
                   setSubmitted(false);
-                  setExamStarted(true);
+                  setExamStarted(false);
+                  setSessionId("");
                 }}
                 className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all cursor-pointer border-none"
               >
@@ -245,22 +282,22 @@ export default function MockExamPage() {
                 </span>
               </div>
               <div className="grid grid-cols-5 gap-2">
-                {mockQuestions.map((q, idx) => {
-                  const isAnswered = answers[q.id] !== undefined;
+                {questions.map((q, idx) => {
+                  const isAnswered = answers[q.id] !== undefined && answers[q.id].length > 0;
                   const isActive = idx === currentIdx;
                   return (
                     <button
                       key={q.id}
                       onClick={() => setCurrentIdx(idx)}
-                      className={`w-8 h-8 rounded-lg font-bold text-xs flex items-center justify-center transition-all cursor-pointer ${
+                      className={`w-8 h-8 rounded-lg font-bold text-xs flex items-center justify-center transition-all cursor-pointer border-none ${
                         isActive
                           ? "bg-blue-800 text-white ring-2 ring-blue-400"
                           : isAnswered
                           ? "bg-emerald-500 text-white"
-                          : "bg-slate-100 text-slate-600 hover:bg-slate-250"
+                          : "bg-slate-100 text-slate-600 hover:bg-slate-200"
                       }`}
                     >
-                      {q.id}
+                      {idx + 1}
                     </button>
                   );
                 })}
@@ -268,73 +305,74 @@ export default function MockExamPage() {
             </div>
 
             {/* Right Column: Active Question Details */}
-            <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm md:col-span-3 space-y-6 relative overflow-hidden">
-              <div className="absolute top-0 inset-x-0 h-1 bg-blue-800" />
-              
-              <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-                <span>{activeQuestion.domain}</span>
-                <span>Question {currentIdx + 1} of 10</span>
-              </div>
+            {activeQuestion && (
+              <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-8 shadow-sm md:col-span-3 space-y-6 relative overflow-hidden">
+                <div className="absolute top-0 inset-x-0 h-1 bg-blue-800" />
+                
+                <div className="flex justify-between items-center text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                  <span>{activeQuestion.domain}</span>
+                  <span>Question {currentIdx + 1} of {questions.length}</span>
+                </div>
 
-              <h3 className="text-sm font-bold text-slate-800 leading-relaxed min-h-[50px]">
-                {activeQuestion.question}
-              </h3>
+                <h3 className="text-sm font-bold text-slate-800 leading-relaxed min-h-[50px]">
+                  {activeQuestion.text}
+                </h3>
 
-              {/* Options */}
-              <div className="space-y-3">
-                {activeQuestion.options.map((opt, optIdx) => {
-                  const isSelected = answers[activeQuestion.id] === optIdx;
-                  return (
+                {/* Options */}
+                <div className="space-y-3">
+                  {activeQuestion.options.map((opt) => {
+                    const isSelected = answers[activeQuestion.id]?.includes(opt.id);
+                    return (
+                      <button
+                        key={opt.id}
+                        onClick={() => handleSelectOption(activeQuestion.id, opt.id)}
+                        className={`w-full text-left p-4 rounded-xl border text-xs font-semibold flex items-center gap-3 transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-blue-50/50 border-blue-600 text-blue-800"
+                            : "bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100"
+                        }`}
+                      >
+                        <span className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-black shrink-0 ${
+                          isSelected
+                            ? "bg-blue-800 border-blue-800 text-white"
+                            : "bg-white border-slate-300 text-slate-400"
+                        }`}>
+                          ✓
+                        </span>
+                        {opt.text}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Navigation controls */}
+                <div className="flex justify-between items-center pt-6 border-t border-slate-100 mt-6">
+                  <button
+                    onClick={() => setCurrentIdx(prev => Math.max(prev - 1, 0))}
+                    disabled={currentIdx === 0}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1 disabled:opacity-50 cursor-pointer border-none"
+                  >
+                    <ChevronLeft size={14} /> Previous
+                  </button>
+
+                  {currentIdx < questions.length - 1 ? (
                     <button
-                      key={optIdx}
-                      onClick={() => handleSelectOption(activeQuestion.id, optIdx)}
-                      className={`w-full text-left p-4 rounded-xl border text-xs font-semibold flex items-center gap-3 transition-all cursor-pointer ${
-                        isSelected
-                          ? "bg-blue-50/50 border-blue-600 text-blue-800"
-                          : "bg-slate-50 border-slate-200 text-slate-655 hover:bg-slate-100"
-                      }`}
+                      onClick={() => setCurrentIdx(prev => Math.min(prev + 1, questions.length - 1))}
+                      className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer border-none"
                     >
-                      <span className={`w-5 h-5 rounded-full border flex items-center justify-center text-[10px] font-black shrink-0 ${
-                        isSelected
-                          ? "bg-blue-800 border-blue-800 text-white"
-                          : "bg-white border-slate-300 text-slate-400"
-                      }`}>
-                        {String.fromCharCode(65 + optIdx)}
-                      </span>
-                      {opt}
+                      Next <ChevronRight size={14} />
                     </button>
-                  );
-                })}
+                  ) : (
+                    <button
+                      onClick={() => submitExam(false)}
+                      className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer border-none shadow-md shadow-emerald-600/10"
+                    >
+                      <CheckCircle size={14} /> Submit Practice
+                    </button>
+                  )}
+                </div>
               </div>
-
-              {/* Navigation controls */}
-              <div className="flex justify-between items-center pt-6 border-t border-slate-100 mt-6">
-                <button
-                  onClick={() => setCurrentIdx(prev => Math.max(prev - 1, 0))}
-                  disabled={currentIdx === 0}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1 disabled:opacity-50 cursor-pointer border-none"
-                >
-                  <ChevronLeft size={14} /> Previous
-                </button>
-
-                {currentIdx < mockQuestions.length - 1 ? (
-                  <button
-                    onClick={() => setCurrentIdx(prev => Math.min(prev + 1, mockQuestions.length - 1))}
-                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer border-none"
-                  >
-                    Next <ChevronRight size={14} />
-                  </button>
-                ) : (
-                  <button
-                    onClick={submitExam}
-                    className="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-555 text-white text-xs font-bold rounded-lg flex items-center gap-1 cursor-pointer border-none shadow-md shadow-emerald-600/10"
-                  >
-                    <CheckCircle size={14} /> Submit Practice
-                  </button>
-                )}
-              </div>
-            </div>
-
+            )}
           </div>
         )}
       </main>
