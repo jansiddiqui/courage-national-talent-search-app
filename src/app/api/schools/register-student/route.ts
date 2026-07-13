@@ -1,36 +1,21 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { jwtVerify } from "jose";
+import { SchoolAuthService } from "@/domains/school/SchoolAuthService";
+import { SchoolImportValidation } from "@/domains/school/SchoolImportValidation";
 import { NotificationService } from "@/services/NotificationService";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.SUPABASE_SERVICE_ROLE_KEY || "fallback_secret_key"
-);
+const db = supabaseAdmin as any;
 
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("cnts_school_session")?.value;
 
-    if (!token) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-
-    let sessionSchoolCode = "";
-    let sessionSchoolId = "";
-    try {
-      const { payload } = await jwtVerify(token, JWT_SECRET);
-      sessionSchoolCode = payload.schoolCode as string;
-      sessionSchoolId = payload.schoolId as string;
-    } catch {
-      return NextResponse.json(
-        { success: false, message: "Invalid session" },
-        { status: 401 }
-      );
+    // 1. Verify coordinator session context
+    const session = await SchoolAuthService.verifySession(token);
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
     const {
@@ -46,28 +31,36 @@ export async function POST(request: Request) {
     } = await request.json();
 
     if (!name || !studentClass || !dob || !mobileNumber) {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "Name, Class, Date of Birth, and Parent Mobile Number are required.",
-        },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        success: false,
+        message: "Name, Class, Date of Birth, and Parent Mobile Number are required.",
+      }, { status: 400 });
     }
 
+    // Basic date parsing validation
     if (!/^\d{4}-\d{2}-\d{2}$/.test(dob)) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid Date of Birth format. Expected YYYY-MM-DD.",
-        },
-        { status: 400 }
-      );
+      return NextResponse.json({
+        success: false,
+        message: "Invalid Date of Birth format. Expected YYYY-MM-DD.",
+      }, { status: 400 });
     }
+
+    const cleanMobile = String(mobileNumber).replace(/\D/g, "").slice(-10);
+    if (cleanMobile.length < 10) {
+      return NextResponse.json({
+        success: false,
+        message: "Valid 10-digit Parent Mobile Number is required.",
+      }, { status: 400 });
+    }
+
+    // Sanitize parameters
+    const cleanName = SchoolImportValidation.sanitizeFormula(name);
+    const cleanParentName = SchoolImportValidation.sanitizeFormula(parentName);
+    const cleanParentEmail = SchoolImportValidation.sanitizeFormula(parentEmail);
+    const cleanGender = SchoolImportValidation.sanitizeFormula(gender);
+    const cleanLanguage = SchoolImportValidation.sanitizeFormula(language) || "English";
 
     if (!hasSupabaseAdminConfig) {
-      // Mock success for development
       const mockRegId = `CNTS26${Math.floor(100000 + Math.random() * 900000)}`;
       return NextResponse.json({
         success: true,
@@ -76,90 +69,108 @@ export async function POST(request: Request) {
       });
     }
 
-    // Fetch school details (name, city, state)
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: school, error: schoolErr } = await (supabaseAdmin as any)
-      .from("schools")
-      .select("name, city, state, quota, used_quota")
-      .eq("school_code", sessionSchoolCode)
-      .single();
+    // 2. Fetch school session configuration
+    const { data: config, error: configErr } = await db
+      .from("school_session_configs")
+      .select("id, quota, sponsorship_mode")
+      .eq("school_id", session.schoolId)
+      .eq("academic_session_id", session.activeSessionId)
+      .eq("status", "ACTIVE")
+      .maybeSingle();
 
-    if (schoolErr || !school) {
-      return NextResponse.json(
-        { success: false, message: "School not found" },
-        { status: 404 }
-      );
+    if (configErr || !config) {
+      return NextResponse.json({ success: false, message: "Active school session configuration not found" }, { status: 404 });
     }
 
-    if (school.used_quota >= school.quota) {
-      return NextResponse.json(
-        {
-          success: false,
-          message:
-            "Quota exceeded. Please contact administrator to increase quota.",
-        },
-        { status: 400 }
-      );
+    // 3. Verify candidate duplicate entries in current session roster
+    const duplicates = await SchoolImportValidation.checkDatabaseDuplicates(session.schoolId, [{
+      studentName: cleanName,
+      studentClass: String(studentClass),
+      dob,
+      parentMobile: cleanMobile,
+    }]);
+
+    if (duplicates.length > 0) {
+      return NextResponse.json({ success: false, message: "Duplicate registration detected" }, { status: 400 });
+    }
+
+    // Fetch school name and city
+    const { data: school } = await db
+      .from("schools")
+      .select("name, city, state")
+      .eq("id", session.schoolId)
+      .single();
+
+    if (!school) {
+      return NextResponse.json({ success: false, message: "School details missing" }, { status: 404 });
     }
 
     // Generate standard CNTS26 registration ID
-    const randomSuffix = Math.floor(100000 + Math.random() * 900000);
-    const regId = `CNTS26${randomSuffix}`;
+    const regId = `CNTS26${Math.floor(100000 + Math.random() * 900000)}`;
+    const idempotencyKey = `ALLOC-SINGLE-${regId}`;
 
-    // Build why_participating from gender info
-    const genderNote = gender ? ` | Gender: ${gender}` : "";
-    const langValue = language || "English";
-    const whyParticipating = `School Registration${genderNote}`;
-
-    // Resolve state/district — use school.state if available, otherwise school.city
     const stateValue = school.state || school.city || "";
     const districtValue = school.city || "";
 
-    // Use RPC to consume quota and create registration
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: rpcError } = await (supabaseAdmin as any).rpc(
-      "consume_school_quota_and_register",
-      {
-        p_registration_id: regId,
-        p_student_name: name,
-        p_dob: dob,
-        p_student_class: String(studentClass),
-        p_school_name: school.name,
-        p_school_city: school.city,
-        p_school_code: sessionSchoolCode,
-        p_school_id: sessionSchoolId,
-        p_parent_name: parentName?.trim() || "Provided by School",
-        p_mobile_number: String(mobileNumber),
-        p_whatsapp_number: String(mobileNumber),
-        p_parent_email: parentEmail?.trim() || "school_registration@cnts.in",
-        p_state: stateValue,
-        p_district: districtValue,
-        p_language: langValue,
-        p_why_participating: whyParticipating,
-        p_how_heard: "School",
-        p_payment_status: "SPONSORED",
-        p_registration_source: "SCHOOL",
-      }
-    );
+    // 4. Create candidate registration record linked to academic session
+    const { error: regErr } = await db
+      .from("registrations")
+      .insert({
+        registration_id: regId,
+        student_name: cleanName,
+        dob,
+        student_class: String(studentClass),
+        school_name: school.name,
+        school_city: school.city,
+        school_code: session.schoolCode,
+        school_id: session.schoolId,
+        parent_name: cleanParentName || "Provided by School",
+        mobile_number: cleanMobile,
+        whatsapp_number: cleanMobile,
+        parent_email: cleanParentEmail || "school_registration@cnts.in",
+        state: stateValue,
+        district: districtValue,
+        language: cleanLanguage,
+        why_participating: `School Registration | Gender: ${cleanGender}`,
+        how_heard: "School",
+        payment_status: "SPONSORED",
+        registration_source: "SCHOOL",
+        registration_status: "REGISTERED",
+        academic_session_id: session.activeSessionId,
+      });
 
-    if (rpcError) {
-      return NextResponse.json(
-        { success: false, message: rpcError.message },
-        { status: 400 }
-      );
+    if (regErr) {
+      return NextResponse.json({ success: false, message: regErr.message }, { status: 400 });
     }
 
-    // Upload photo if provided
+    // 5. Call quota allocation transaction RPC
+    const { data: allocated, error: allocErr } = await db.rpc("allocate_school_quota", {
+      p_config_id: config.id,
+      p_registration_id: regId,
+      p_idempotency_key: idempotencyKey,
+    });
+
+    if (allocErr || !allocated) {
+      // Rollback candidate registration draft if quota allocation fails
+      await db
+        .from("registrations")
+        .delete()
+        .eq("registration_id", regId);
+
+      return NextResponse.json({
+        success: false,
+        message: `Quota allocation failed: ${allocErr?.message || 'Quota limit exceeded'}`,
+      }, { status: 400 });
+    }
+
+    // 6. Upload photo if provided
     if (photoBase64) {
       try {
-        const base64String = photoBase64.replace(
-          /^data:image\/\w+;base64,/,
-          ""
-        );
+        const base64String = photoBase64.replace(/^data:image\/\w+;base64,/, "");
         const buffer = Buffer.from(base64String, "base64");
         const filePath = `${regId}/photo.jpg`;
 
-        const { error: uploadError } = await (supabaseAdmin as any).storage
+        const { error: uploadError } = await db.storage
           .from("candidate_photos")
           .upload(filePath, buffer, {
             contentType: "image/jpeg",
@@ -167,29 +178,21 @@ export async function POST(request: Request) {
           });
 
         if (!uploadError) {
-          // Update the registration with the photo URL
-          await (supabaseAdmin as any)
+          await db
             .from("registrations")
             .update({ photo_url: `candidate_photos/${filePath}` })
             .eq("registration_id", regId);
-        } else {
-          console.error(
-            "[School Register] Photo upload failed:",
-            uploadError.message
-          );
-          // Non-fatal — registration still succeeds, photo just won't be stored
         }
       } catch (photoErr) {
-        console.error("[School Register] Photo processing error:", photoErr);
-        // Non-fatal
+        console.error("[School Register] Photo upload error (non-fatal):", photoErr);
       }
     }
 
-    // Send WhatsApp + Email confirmation to parent (non-blocking)
+    // 7. Send WhatsApp + Email confirmation (non-blocking)
     NotificationService.sendRegistrationSuccess(
-      String(mobileNumber),
-      parentEmail?.trim() || null,
-      name,
+      cleanMobile,
+      cleanParentEmail || null,
+      cleanName,
       String(studentClass),
       regId
     ).catch((err) =>
@@ -201,8 +204,7 @@ export async function POST(request: Request) {
       registrationId: regId,
       message: "Student registered successfully.",
     });
-  } catch (error: unknown) {
-    const msg = error instanceof Error ? error.message : "Internal Server Error";
-    return NextResponse.json({ success: false, message: msg }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
 }
