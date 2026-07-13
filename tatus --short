@@ -1,0 +1,81 @@
+[1mdiff --git a/src/domains/academy/core/services/AnalyticsTracker.ts b/src/domains/academy/core/services/AnalyticsTracker.ts[m
+[1mindex 778ba91..a97a821 100644[m
+[1m--- a/src/domains/academy/core/services/AnalyticsTracker.ts[m
+[1m+++ b/src/domains/academy/core/services/AnalyticsTracker.ts[m
+[36m@@ -3,15 +3,34 @@[m [mimport { DomainEvent } from "../types";[m
+ [m
+ export class AnalyticsTracker {[m
+   private static LOGS_KEY = "cnts_academy_telemetry_logs";[m
+[32m+[m[32m  private sessionId: string;[m
+ [m
+   constructor(private eventBus: EventBus) {[m
+[32m+[m[32m    this.sessionId = this.getOrCreateSessionId();[m
+     this.initListeners();[m
+   }[m
+ [m
+[32m+[m[32m  private getOrCreateSessionId(): string {[m
+[32m+[m[32m    if (typeof window === "undefined") return "";[m
+[32m+[m[32m    try {[m
+[32m+[m[32m      let sid = sessionStorage.getItem("cnts_telemetry_sid");[m
+[32m+[m[32m      if (!sid) {[m
+[32m+[m[32m        sid = (typeof crypto !== "undefined" && crypto.randomUUID)[m[41m [m
+[32m+[m[32m          ? crypto.randomUUID()[m[41m [m
+[32m+[m[32m          : Math.random().toString(36).substring(2) + Date.now().toString(36);[m
+[32m+[m[32m        sessionStorage.setItem("cnts_telemetry_sid", sid);[m
+[32m+[m[32m      }[m
+[32m+[m[32m      return sid;[m
+[32m+[m[32m    } catch {[m
+[32m+[m[32m      return "fallback-session-id";[m
+[32m+[m[32m    }[m
+[32m+[m[32m  }[m
+[32m+[m
+   private initListeners(): void {[m
+     // Wildcard subscriber to record every event on the event bus[m
+     this.eventBus.subscribe("*", (event: DomainEvent) => {[m
+       this.logEvent(event);[m
+[32m+[m[32m      this.sendTelemetryToServer(event);[m
+     });[m
+   }[m
+ [m
+[36m@@ -33,6 +52,36 @@[m [mexport class AnalyticsTracker {[m
+     }[m
+   }[m
+ [m
+[32m+[m[32m  private sendTelemetryToServer(event: DomainEvent): void {[m
+[32m+[m[32m    if (typeof window === "undefined") return;[m
+[32m+[m
+[32m+[m[32m    const eventId = event.id || ([m
+[32m+[m[32m      (typeof crypto !== "undefined" && crypto.randomUUID)[m
+[32m+[m[32m        ? crypto.randomUUID()[m
+[32m+[m[32m        : Math.random().toString(36).substring(2) + Date.now().toString(36)[m
+[32m+[m[32m    );[m
+[32m+[m
+[32m+[m[32m    // Fire-and-forget POST request to telemetry ingest endpoint[m
+[32m+[m[32m    fetch("/api/telemetry", {[m
+[32m+[m[32m      method: "POST",[m
+[32m+[m[32m      headers: {[m
+[32m+[m[32m        "Content-Type": "application/json"[m
+[32m+[m[32m      },[m
+[32m+[m[32m      body: JSON.stringify({[m
+[32m+[m[32m        eventType: event.type,[m
+[32m+[m[32m        eventId: eventId,[m
+[32m+[m[32m        correlationId: (event as any).correlationId || null,[m
+[32m+[m[32m        sessionIdentity: this.sessionId,[m
+[32m+[m[32m        metadata: {[m
+[32m+[m[32m          payload: event.payload || {},[m
+[32m+[m[32m          timestamp: event.timestamp || Date.now()[m
+[32m+[m[32m        }[m
+[32m+[m[32m      })[m
+[32m+[m[32m    }).catch(err => {[m
+[32m+[m[32m      console.error("[AnalyticsTracker] Server telemetry post failed:", err);[m
+[32m+[m[32m    });[m
+[32m+[m[32m  }[m
+[32m+[m
+   public getLogs(): DomainEvent[] {[m
+     if (typeof window === "undefined") return [];[m
+     try {[m
+[36m@@ -44,3 +93,4 @@[m [mexport class AnalyticsTracker {[m
+     }[m
+   }[m
+ }[m
+[41m+[m
