@@ -9,6 +9,7 @@ import { localProgressRepository } from "@/domains/academy/core/repositories/Loc
 import { ProgressService } from "@/domains/academy/core/services/ProgressService";
 import { PrerequisiteGraph } from "@/domains/academy/core/PrerequisiteGraph";
 import { ContentCMS } from "@/domains/academy/content/ContentCMS";
+import { bootstrapAcademy } from "@/domains/academy/core/bootstrap";
 import { StudentProgress, TopicContent } from "@/domains/academy/core/types";
 import { 
   Calculator,
@@ -41,6 +42,7 @@ export default function MathematicsHub() {
 
   useEffect(() => {
     const fetchProgress = async () => {
+      bootstrapAcademy();
       const prog = await localProgressRepository.getProgress();
       setProgress(prog);
       setSelectedLanguage((prog.profile.preferredLanguage as "en" | "hi") || "en");

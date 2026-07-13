@@ -10,6 +10,7 @@ import { localProgressRepository } from "@/domains/academy/core/repositories/Loc
 import { LearningService } from "@/domains/academy/core/services/LearningService";
 import { ProgressService } from "@/domains/academy/core/services/ProgressService";
 import { eventBus } from "@/domains/academy/core/EventBus";
+import { bootstrapAcademy } from "@/domains/academy/core/bootstrap";
 import { StudentProgress, TopicContent, Question, LearningSession } from "@/domains/academy/core/types";
 import FlashcardEngine, { Flashcard } from "@/components/academy/FlashcardEngine";
 import MemoryLab from "@/components/academy/MemoryLab";
@@ -97,6 +98,7 @@ export default function WorkspacePage() {
       const qList = ContentCMS.getTopicQuestions(slug);
       setQuestions(qList);
 
+      bootstrapAcademy();
       // 2. Fetch progress & session
       const prog = await localProgressRepository.getProgress();
       setProgress(prog);

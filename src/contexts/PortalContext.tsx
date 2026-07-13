@@ -86,6 +86,7 @@ export interface PortalContextType {
   systemSettings: Record<string, string>;
   loading: boolean;
   isDemoMode: boolean;
+  activeProgress: any;
   setActiveChild: (candidate: Candidate) => void;
   activityFeed: ActivityItem[];
   addActivity: (item: Omit<ActivityItem, "id">) => void;
@@ -234,12 +235,38 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   const [parentSession, setParentSession] = useState<any>(null);
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [activeCandidate, setActiveCandidateState] = useState<Candidate | null>(null);
+  const [activeProgress, setActiveProgress] = useState<any>(null);
   const [systemSettings, setSystemSettings] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [isDemoMode, setIsDemoMode] = useState(false);
   const [preferences, setPreferences] = useState<PortalPreferences>(DEFAULT_PREFERENCES);
   const [activityFeed, setActivityFeed] = useState<ActivityItem[]>([]);
   const [notifications, setNotifications] = useState<PortalNotification[]>([]);
+
+  // Load progress when active candidate changes
+  useEffect(() => {
+    if (!activeCandidate) {
+      setActiveProgress(null);
+      return;
+    }
+    const fetchProgress = async () => {
+      try {
+        const targetId = activeCandidate.registration_id;
+        const res = await fetch(`/api/student/progress?cntsId=${targetId}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.progress) {
+            setActiveProgress(data.progress);
+            return;
+          }
+        }
+      } catch (err) {
+        console.error("[PortalContext] Failed to load student progress:", err);
+      }
+      setActiveProgress(null);
+    };
+    fetchProgress();
+  }, [activeCandidate]);
 
   // Load preferences from localStorage
   useEffect(() => {
@@ -439,7 +466,7 @@ export function PortalProvider({ children }: { children: ReactNode }) {
   return (
     <PortalContext.Provider value={{
       parentSession, isHydrated,
-      candidates, activeCandidate, systemSettings, loading, isDemoMode,
+      candidates, activeCandidate, activeProgress, systemSettings, loading, isDemoMode,
       setActiveChild,
       activityFeed, addActivity,
       notifications, unreadCount, markNotificationRead, markAllRead,

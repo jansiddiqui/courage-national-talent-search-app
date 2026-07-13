@@ -2,10 +2,10 @@
 
 import { usePortal } from "@/contexts/PortalContext";
 import Link from "next/link";
-import { Users, ArrowRight, CheckCircle, Clock, MapPin, BookOpen, CreditCard, Download } from "lucide-react";
+import { Users, ArrowRight, CheckCircle, Clock, MapPin, BookOpen, CreditCard, Download, Flame } from "lucide-react";
 
 export default function ChildrenPage() {
-  const { candidates, activeCandidate, setActiveChild, systemSettings, getPortalHealth } = usePortal();
+  const { candidates, activeCandidate, setActiveChild, systemSettings, getPortalHealth, activeProgress } = usePortal();
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-6">
@@ -56,6 +56,24 @@ export default function ChildrenPage() {
                       <p className="text-xs font-semibold text-slate-700 truncate">{c.school_name}, {c.school_city}</p>
                     </div>
                   </div>
+
+                  {/* Real-time Academy Progress (Outcome metrics, no XP or gaming mechanics) */}
+                  {isActive && activeProgress && (
+                    <div className="mt-3 bg-slate-50 border border-slate-100 rounded-2xl p-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <BookOpen size={14} className="text-blue-800" />
+                        <span className="text-xs text-slate-600 font-semibold">
+                          Academy Progress: <strong className="text-slate-800">{(activeProgress.completedTopics || []).length} Topics Completed</strong>
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Flame size={14} className="text-orange-500" />
+                        <span className="text-xs text-slate-600 font-semibold">
+                          Consistency: <strong className="text-slate-800">{activeProgress.profile?.streak || 0} Day Streak</strong>
+                        </span>
+                      </div>
+                    </div>
+                  )}
 
                   {/* Health bar */}
                   <div className="mt-3 flex items-center gap-2">

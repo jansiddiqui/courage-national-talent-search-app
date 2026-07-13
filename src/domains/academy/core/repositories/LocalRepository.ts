@@ -39,16 +39,41 @@ export class LocalRepository implements ProgressRepository {
     }
 
     try {
-      const data = localStorage.getItem(LocalRepository.PROGRESS_KEY);
-      if (!data) {
+      let localProg = this.createDefaultProgress();
+      const localData = localStorage.getItem(LocalRepository.PROGRESS_KEY);
+      if (localData) {
+        try {
+          localProg = JSON.parse(localData);
+        } catch (e) {
+          // ignore
+        }
+      }
+
+      const res = await fetch("/api/student/progress");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success && data.progress) {
+          const serverProg = data.progress;
+          // Merge logic: take the one with higher totalXP or later timestamp
+          const merged = (serverProg.profile?.totalXP || 0) >= (localProg.profile?.totalXP || 0)
+            ? serverProg
+            : localProg;
+
+          localStorage.setItem(LocalRepository.PROGRESS_KEY, JSON.stringify(merged));
+          return merged;
+        }
+      }
+
+      if (!localData) {
         const defaultProg = this.createDefaultProgress();
         await this.saveProgress(defaultProg);
         return defaultProg;
       }
-      return JSON.parse(data);
+      return localProg;
     } catch (e) {
       console.error("[LocalRepository] Error loading progress:", e);
-      return this.createDefaultProgress();
+      const data = localStorage.getItem(LocalRepository.PROGRESS_KEY);
+      return data ? JSON.parse(data) : this.createDefaultProgress();
     }
   }
 
@@ -57,6 +82,12 @@ export class LocalRepository implements ProgressRepository {
     try {
       progress.profile.lastActive = Date.now();
       localStorage.setItem(LocalRepository.PROGRESS_KEY, JSON.stringify(progress));
+
+      await fetch("/api/student/progress", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ progress })
+      });
     } catch (e) {
       console.error("[LocalRepository] Error saving progress:", e);
     }
@@ -65,16 +96,14 @@ export class LocalRepository implements ProgressRepository {
   public async saveSession(session: LearningSession): Promise<void> {
     const progress = await this.getProgress();
     
-    // Add to sessions array
     if (!progress.sessions) {
       progress.sessions = [];
     }
     progress.sessions.push(session);
 
-    // Update profile total XP
-    progress.profile.totalXP += session.xpEarned;
+    // XP double-award fix: Do not add session.xpEarned to profile.totalXP here,
+    // as it is already added incrementally in LearningService.submitAnswer.
 
-    // Check streak progression
     this.updateStreak(progress);
 
     await this.saveProgress(progress);

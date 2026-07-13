@@ -46,25 +46,31 @@ export class LearningService {
   ): Promise<{ session: LearningSession; nextStepRecommendation: string }> {
     const progress = await this.progressRepo.getProgress();
 
+    // Authoritative XP Calculation:
+    // Only award 50 XP if correct AND the question has not been completed before.
+    // Incorrect attempts and repeated correct attempts award 0 XP.
+    const isAlreadyCompleted = progress.completedQuestions.includes(questionId);
+    const actualXp = (correct && !isAlreadyCompleted) ? 50 : 0;
+
     // 1. Update session telemetry
     session.questionsAttempted += 1;
     if (correct) {
       session.correctAnswers += 1;
       // Mark question completed
-      if (!progress.completedQuestions.includes(questionId)) {
+      if (!isAlreadyCompleted) {
         progress.completedQuestions.push(questionId);
       }
     }
-    session.xpEarned += xpEarned;
+    session.xpEarned += actualXp;
 
     // 2. Award skills-specific XP
     if (!progress.skillsXP) {
       progress.skillsXP = {};
     }
-    progress.skillsXP[skill] = (progress.skillsXP[skill] || 0) + xpEarned;
+    progress.skillsXP[skill] = (progress.skillsXP[skill] || 0) + actualXp;
 
     // 3. Award general total XP
-    progress.profile.totalXP += xpEarned;
+    progress.profile.totalXP += actualXp;
 
     // 4. Save progress changes
     await this.progressRepo.saveProgress(progress);

@@ -1,7 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { verifySession } from "@/lib/sessionHelper";
+import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { 
   Brain, 
   Calculator, 
@@ -13,7 +16,8 @@ import {
   Layers,
   Award,
   BookMarked,
-  Printer
+  Printer,
+  Flame
 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -24,7 +28,50 @@ export const metadata: Metadata = {
   }
 };
 
-export default function AcademyPage() {
+const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+
+export default async function AcademyPage() {
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("cnts_session");
+  let studentName = "";
+  let cntsId = "";
+  let progress: any = null;
+
+  if (sessionCookie?.value && JWT_SECRET) {
+    const session = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (session && session.cntsId) {
+      cntsId = session.cntsId;
+      if (hasSupabaseAdminConfig) {
+        const { data: reg } = await (supabaseAdmin as any)
+          .from("registrations")
+          .select("student_name")
+          .eq("cnts_id", cntsId)
+          .maybeSingle();
+        if (reg) {
+          studentName = reg.student_name;
+        }
+
+        const { data: prog } = await (supabaseAdmin as any)
+          .from("student_progress")
+          .select("progress_data")
+          .eq("cnts_id", cntsId)
+          .maybeSingle();
+        if (prog) {
+          progress = prog.progress_data;
+        }
+      } else {
+        // Sandbox mock
+        studentName = "Aditya Verma";
+        progress = {
+          completedTopics: ["number-series", "alphabet-series"],
+          completedQuestions: ["q1", "q2", "q3"],
+          profile: { streak: 3 },
+          sessions: [{ lastActiveTopic: "number-series" }]
+        };
+      }
+    }
+  }
+
   const subjects = [
     {
       id: "reasoning",
@@ -150,6 +197,89 @@ export default function AcademyPage() {
           Step-by-step interactive paths designed to build logical thinking, conceptual mastery, and diagnostic clarity for national competitive talent assessments.
         </p>
       </section>
+
+      {/* Dynamic Student Dashboard Deck */}
+      {progress ? (
+        <div className="max-w-4xl mx-auto w-full px-4 mb-12 relative z-10">
+          <div className="bg-white border border-slate-100 rounded-3xl p-6 sm:p-8 shadow-sm relative overflow-hidden">
+            <div className="absolute top-0 left-0 right-0 h-[4px] bg-gradient-to-r from-blue-700 via-indigo-600 to-teal-500" />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div>
+                <span className="text-[10px] font-black uppercase tracking-widest bg-blue-50 text-blue-800 px-3 py-1 rounded-full border border-blue-100">
+                  CNTS Academy Workspace
+                </span>
+                <h2 className="text-2xl font-black font-display text-slate-800 mt-3">
+                  Welcome back, {studentName || "Explorer"}!
+                </h2>
+                <p className="text-slate-500 text-xs sm:text-sm mt-1.5 font-medium leading-relaxed">
+                  Here is your active preparation progress for the Courage National Talent Search.
+                </p>
+              </div>
+              {progress.profile?.streak > 0 && (
+                <div className="flex items-center gap-2 bg-orange-50 border border-orange-100 px-4 py-2 rounded-2xl w-fit">
+                  <Flame size={16} className="text-orange-500 fill-orange-500 animate-pulse" />
+                  <span className="text-xs font-bold text-orange-700">{progress.profile.streak} Day active streak!</span>
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8 pt-6 border-t border-slate-100">
+              {/* Continue Learning card */}
+              <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-5 flex flex-col justify-between">
+                <div>
+                  <p className="text-[9px] text-slate-400 uppercase tracking-widest font-black">Continue Learning</p>
+                  <h4 className="font-bold text-slate-800 text-base mt-2">
+                    {progress.sessions?.[0]?.lastActiveTopic
+                      ? `Last Active: ${progress.sessions[0].lastActiveTopic.replace("-", " ").toUpperCase()}`
+                      : "Ready to Start Your Journey"}
+                  </h4>
+                  <p className="text-slate-500 text-xs mt-1.5 leading-relaxed font-semibold">
+                    Pick up exactly where you left off. Continue your reasoning or math skill path.
+                  </p>
+                </div>
+                <Link
+                  href={
+                    progress.sessions?.[0]?.lastActiveTopic
+                      ? `/academy/reasoning/${progress.sessions[0].lastActiveTopic}/intro`
+                      : "/academy/reasoning"
+                  }
+                  className="mt-5 w-fit px-5 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 transition-colors shadow-xs"
+                >
+                  Continue <ArrowRight size={13} />
+                </Link>
+              </div>
+
+              {/* Preparation progress */}
+              <div className="bg-slate-50/50 border border-slate-100 rounded-2xl p-5 flex flex-col justify-between">
+                <div>
+                  <p className="text-[9px] text-slate-400 uppercase tracking-widest font-black">Learning Readiness</p>
+
+                  {/* Metrics list */}
+                  <div className="mt-3 space-y-2">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-500 font-semibold">Completed Topics</span>
+                      <span className="text-slate-800 font-bold">{(progress.completedTopics || []).length} / 48</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-500 font-semibold">Practice Questions Solved</span>
+                      <span className="text-slate-800 font-bold">{(progress.completedQuestions || []).length}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="text-slate-500 font-semibold">Academy Prep Score</span>
+                      <span className="text-blue-800 font-bold">
+                        {Math.min(100, Math.round(((progress.completedTopics || []).length * 10) + ((progress.completedQuestions || []).length * 2)))}%
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="mt-4 pt-3 border-t border-slate-150/50 text-[10px] text-slate-400 font-bold leading-relaxed">
+                  Note: Complete timed mock exams to generate a true assessment of exam-level readiness.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {/* Subjects Cards Grid Section */}
       <section className="px-4 max-w-7xl mx-auto w-full pb-20">

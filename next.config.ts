@@ -19,6 +19,16 @@ const nextConfig: NextConfig = {
         destination: '/',
         permanent: true,
       },
+      {
+        source: '/student',
+        destination: '/academy',
+        permanent: true,
+      },
+      {
+        source: '/student/:path*',
+        destination: '/academy',
+        permanent: true,
+      },
     ];
   },
 };
