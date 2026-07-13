@@ -212,6 +212,38 @@ export async function GET(request: Request) {
       const computedGrossRevenue = dailyRev?.reduce((acc: number, curr: any) => acc + Number(curr.gross_amount || 0), 0) || 0;
       const computedRefundAmount = dailyRev?.reduce((acc: number, curr: any) => acc + Number(curr.refund_amount || 0), 0) || 0;
 
+      // Fetch active exams count from DB
+      const { count: activeExamsCount } = await (supabaseAdmin as any)
+        .from("assessments")
+        .select("*", { count: "exact", head: true })
+        .eq("is_published", true);
+
+      // Fetch active sessions count from DB
+      const { count: activeSessionsCount } = await (supabaseAdmin as any)
+        .from("candidate_sessions")
+        .select("*", { count: "exact", head: true })
+        .neq("status", "CREATED");
+
+      // Fetch average score from DB
+      const { data: scoreData } = await (supabaseAdmin as any)
+        .from("assessment_results")
+        .select("score");
+      const totalScoreSum = scoreData?.reduce((acc: number, curr: any) => acc + Number(curr.score), 0) || 0;
+      const averageScore = scoreData && scoreData.length > 0 ? Number((totalScoreSum / scoreData.length).toFixed(2)) : null;
+
+      // Fetch completion rate from DB
+      const { count: completedSessionsCount } = await (supabaseAdmin as any)
+        .from("candidate_sessions")
+        .select("*", { count: "exact", head: true })
+        .in("status", ["SUBMITTED", "RESULT_GENERATED"]);
+      const completionRate = activeSessionsCount && activeSessionsCount > 0 
+        ? Number(((completedSessionsCount || 0) / activeSessionsCount * 100).toFixed(2)) 
+        : null;
+
+      // Fetch active parents from DB (sum total_active_parents)
+      const computedActiveParents = dailyRegs?.reduce((acc: number, curr: any) => acc + (curr.total_active_parents || 0), 0) || 0;
+      const computedActiveStudents = dailyRegs?.reduce((acc: number, curr: any) => acc + (curr.total_started || 0), 0) || 0;
+
       return NextResponse.json({
         success: true,
         dailyRegs: dailyRegs || [],
@@ -238,12 +270,12 @@ export async function GET(request: Request) {
           refundAmount: computedRefundAmount,
           netRevenue: computedGrossRevenue - computedRefundAmount,
           activeSchools: schoolSummary?.length || 0,
-          activeParents: null,
-          activeStudents: computedTotalRegs,
-          activeExams: 3,
-          activeSessions: 42,
-          averageScore: 78.4,
-          completionRate: 94.2
+          activeParents: computedActiveParents || null,
+          activeStudents: computedActiveStudents,
+          activeExams: activeExamsCount || 0,
+          activeSessions: activeSessionsCount || 0,
+          averageScore: averageScore,
+          completionRate: completionRate
         },
         revenueKPIs: {
           grossRevenue: computedGrossRevenue,
