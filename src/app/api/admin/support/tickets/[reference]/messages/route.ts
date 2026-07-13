@@ -4,9 +4,11 @@ import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
 import { isRateLimited } from "@/lib/rateLimiter";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 import { NotificationService } from "@/services/NotificationService";
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 function sanitizeInput(text: string): string {
   if (!text) return "";
@@ -38,8 +40,13 @@ export async function POST(request: Request, props: { params: Promise<{ referenc
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || payload.role !== "admin") {
-      return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.reply");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: support.reply permission required." }, { status: 403 });
     }
 
     const body = await request.json();
@@ -63,14 +70,14 @@ export async function POST(request: Request, props: { params: Promise<{ referenc
       return NextResponse.json({ success: false, message: "Ticket not found." }, { status: 404 });
     }
 
-    const requesterId = payload.userId || payload.email || "ADMIN-AGENT";
+    const senderId = payload.id;
 
     // Insert Message
     const { data: createdMsg, error: msgErr } = await (supabaseAdmin as any)
       .from("support_ticket_messages")
       .insert({
         ticket_id: ticket.id,
-        sender_id: requesterId,
+        sender_id: senderId,
         sender_role: "ADMIN",
         message: cleanMessage,
         is_internal: isInternalNote
@@ -118,18 +125,19 @@ export async function POST(request: Request, props: { params: Promise<{ referenc
         .eq("id", ticket.id);
     }
 
-    // Append to audit trail
-    await (supabaseAdmin as any)
-      .from("admin_operations_audit_trail")
-      .insert({
-        actor_id: requesterId,
-        action: isInternalNote ? "CREATE_INTERNAL_NOTE" : "CREATE_TICKET_REPLY",
-        target_id: ticket.id,
-        details: {
-          message_id: createdMsg.id,
-          is_internal: isInternalNote
-        }
-      });
+    // Append to audit trail securely using writeAuditEntry
+    await writeAuditEntry(supabaseAdmin, {
+      actorId: payload.id,
+      actorRole: payload.role || "admin",
+      action: isInternalNote ? "CREATE_INTERNAL_NOTE" : "CREATE_TICKET_REPLY",
+      module: "SUPPORT",
+      previousValue: {},
+      newValue: {
+        message_id: createdMsg.id,
+        is_internal: isInternalNote
+      },
+      ipAddress: ip
+    });
 
     return NextResponse.json({
       success: true,

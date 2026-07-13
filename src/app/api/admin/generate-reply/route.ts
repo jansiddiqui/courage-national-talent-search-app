@@ -1,9 +1,38 @@
 import { NextResponse } from "next/server";
-import { hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
+import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
+import { verifySession } from "@/lib/sessionHelper";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { isRateLimited } from "@/lib/rateLimiter";
+import { cookies } from "next/headers";
+
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 export async function POST(request: Request) {
   if (!hasSupabaseAdminConfig) {
     return NextResponse.json({ success: false, error: "Missing admin config" }, { status: 403 });
+  }
+
+  const ip = request.headers.get("x-forwarded-for") || "127.0.0.1";
+  const { limited } = await isRateLimited(ip, "admin-generate-reply", 50, 60);
+  if (limited) {
+    return NextResponse.json({ success: false, error: "Too many requests. Please try again later." }, { status: 429 });
+  }
+
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("cnts_session");
+
+  if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+    return NextResponse.json({ success: false, error: "Authentication session required." }, { status: 401 });
+  }
+
+  const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+  if (!payload || !payload.id) {
+    return NextResponse.json({ success: false, error: "Forbidden: Admin session required." }, { status: 403 });
+  }
+
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.reply");
+  if (!hasPerm) {
+    return NextResponse.json({ success: false, error: "Forbidden: support.reply permission required." }, { status: 403 });
   }
 
   const apiKey = process.env.OPENROUTER_API_KEY;
@@ -16,6 +45,10 @@ export async function POST(request: Request) {
 
     if (!message) {
       return NextResponse.json({ success: false, error: "Message is required" }, { status: 400 });
+    }
+
+    if (message.length > 1000) {
+      return NextResponse.json({ success: false, error: "Message length exceeds maximum limit of 1000 characters" }, { status: 400 });
     }
 
     const systemPrompt = `You are a Customer Support Specialist for Courage National Talent Search (CNTS).

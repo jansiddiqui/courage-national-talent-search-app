@@ -3,8 +3,10 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 export async function GET(request: Request) {
   try {
@@ -68,6 +70,23 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, questions: mockQuestions });
     }
 
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("cnts_session");
+
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "question.approve");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: question.approve permission required." }, { status: 403 });
+    }
+
     // 2. Fetch from DB
     let query = (supabaseAdmin as any)
       .from("admin_question_bank")
@@ -92,19 +111,49 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // Sandbox Check — bypass auth if DB is not configured
+    if (!hasSupabaseAdminConfig) {
+      return NextResponse.json({
+        success: true,
+        question: {
+          id: "mock-question-id",
+          question_text: "Sample Question",
+          explanation: "Sample explanation",
+          difficulty_index: 0.50,
+          bloom_taxonomy: "UNDERSTANDING",
+          subject: "Mathematics",
+          chapter: "Chapter 1",
+          topic: "Topic 1",
+          subtopic: "Subtopic 1",
+          estimated_solve_time: 60,
+          marks: 4.00,
+          negative_marks: 0.00,
+          options: [],
+          approval_status: "DRAFT",
+          version: 1,
+          created_at: new Date().toISOString()
+        }
+      });
+    }
+
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("cnts_session");
 
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "question.approve");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: question.approve permission required." }, { status: 403 });
+    }
+
     if (hasSupabaseAdminConfig) {
-      if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
-        return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
-      }
-
-      const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (!payload || payload.role !== "admin") {
-        return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
-      }
-
       const body = await request.json();
       const {
         id,
@@ -130,15 +179,15 @@ export async function POST(request: Request) {
       let resultQuestion: any = null;
 
       if (id) {
-        // Fetch current version for increment
+        // Fetch current version for comparison in audit logging
         const { data: current } = await (supabaseAdmin as any)
           .from("admin_question_bank")
           .select("*")
           .eq("id", id)
           .maybeSingle();
 
-        const currentVersion = current?.version || 1;
-
+        // Let the DB trigger trigger_check_question_content increment version automatically.
+        // We do NOT manually set/increment version here.
         const { data: updated, error: updateErr } = await (supabaseAdmin as any)
           .from("admin_question_bank")
           .update({
@@ -154,8 +203,7 @@ export async function POST(request: Request) {
             marks: Number(marks || 4.00),
             negative_marks: Number(negative_marks || 0.00),
             options,
-            approval_status,
-            version: currentVersion + 1
+            approval_status
           })
           .eq("id", id)
           .select()
@@ -167,15 +215,15 @@ export async function POST(request: Request) {
         }
         resultQuestion = updated;
 
-        // Log operation in audit trail
-        await (supabaseAdmin as any).from("admin_operations_audit_trail").insert({
-          actor_id: payload.cntsId || null,
-          actor_role: "ADMIN",
+        // Log operation in audit trail using writeAuditEntry
+        await writeAuditEntry(supabaseAdmin, {
+          actorId: payload.id,
+          actorRole: payload.role || "admin",
           action: "MODIFIED_QUESTION",
           module: "QUESTIONS",
-          previous_value: current || {},
-          new_value: updated || {},
-          ip_address: request.headers.get("x-forwarded-for") || "unknown"
+          previousValue: current || {},
+          newValue: updated || {},
+          ipAddress: request.headers.get("x-forwarded-for") || "unknown"
         });
       } else {
         const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
@@ -205,15 +253,15 @@ export async function POST(request: Request) {
         }
         resultQuestion = inserted;
 
-        // Log operation in audit trail
-        await (supabaseAdmin as any).from("admin_operations_audit_trail").insert({
-          actor_id: payload.cntsId || null,
-          actor_role: "ADMIN",
+        // Log operation in audit trail using writeAuditEntry
+        await writeAuditEntry(supabaseAdmin, {
+          actorId: payload.id,
+          actorRole: payload.role || "admin",
           action: "CREATED_QUESTION",
           module: "QUESTIONS",
-          previous_value: {},
-          new_value: inserted || {},
-          ip_address: request.headers.get("x-forwarded-for") || "unknown"
+          previousValue: {},
+          newValue: inserted || {},
+          ipAddress: request.headers.get("x-forwarded-for") || "unknown"
         });
       }
 
@@ -225,17 +273,17 @@ export async function POST(request: Request) {
       success: true,
       question: {
         id: "mock-question-id",
-        question_text: "Mock Question Text Details",
-        explanation: "Mock Explanation details",
+        question_text: "Sample Question",
+        explanation: "Sample explanation",
         difficulty_index: 0.50,
         bloom_taxonomy: "UNDERSTANDING",
         subject: "Mathematics",
-        chapter: "Algebra",
-        topic: "Equations",
-        subtopic: "Linear equations",
+        chapter: "Chapter 1",
+        topic: "Topic 1",
+        subtopic: "Subtopic 1",
         estimated_solve_time: 60,
         marks: 4.00,
-        negative_marks: 1.00,
+        negative_marks: 0.00,
         options: [],
         approval_status: "DRAFT",
         version: 1,

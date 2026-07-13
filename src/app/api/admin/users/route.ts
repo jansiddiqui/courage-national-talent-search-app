@@ -3,24 +3,42 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 export async function GET(request: Request) {
   try {
+    // Sandbox Check — bypass auth if DB is not configured
+    if (!hasSupabaseAdminConfig) {
+      return NextResponse.json({
+        success: true,
+        users: [
+          { id: "usr-1", email: "admin@example.com", phone_number: "918707884735", role: "SUPER_ADMIN", created_at: new Date().toISOString() },
+          { id: "usr-2", email: "support@example.com", phone_number: "919988776655", role: "ADMIN", created_at: new Date().toISOString() }
+        ]
+      });
+    }
+
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("cnts_session");
 
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "rbac.manage");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: rbac.manage permission required." }, { status: 403 });
+    }
+
     if (hasSupabaseAdminConfig) {
-      if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
-        return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
-      }
-
-      const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (!payload || payload.role !== "admin") {
-        return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
-      }
-
       const { data: users, error } = await (supabaseAdmin as any)
         .from("admin_users")
         .select("*")
@@ -34,14 +52,6 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, users });
     }
 
-    // Sandbox Mock response
-    return NextResponse.json({
-      success: true,
-      users: [
-        { id: "usr-1", email: "admin@example.com", phone_number: "918707884735", role: "SUPER_ADMIN", created_at: new Date().toISOString() },
-        { id: "usr-2", email: "support@example.com", phone_number: "919988776655", role: "ADMIN", created_at: new Date().toISOString() }
-      ]
-    });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
@@ -49,6 +59,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    // Sandbox Check — bypass auth if DB is not configured
+    if (!hasSupabaseAdminConfig) {
+      return NextResponse.json({ success: true, message: "Sandbox user action success" });
+    }
+
     const body = await request.json();
     const {
       id,
@@ -60,20 +75,25 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("cnts_session");
 
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "rbac.manage");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: rbac.manage permission required." }, { status: 403 });
+    }
+
+    if (!role) {
+      return NextResponse.json({ success: false, message: "Role is required" }, { status: 400 });
+    }
+
     if (hasSupabaseAdminConfig) {
-      if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
-        return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
-      }
-
-      const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (!payload || payload.role !== "admin") {
-        return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
-      }
-
-      if (!role) {
-        return NextResponse.json({ success: false, message: "Role is required" }, { status: 400 });
-      }
-
       let resultUser: any = null;
 
       if (id) {
@@ -101,15 +121,15 @@ export async function POST(request: Request) {
         }
         resultUser = updated;
 
-        // Log operation in audit trail
-        await (supabaseAdmin as any).from("admin_operations_audit_trail").insert({
-          actor_id: payload.cntsId || null,
-          actor_role: "ADMIN",
+        // Log operation in audit trail using writeAuditEntry
+        await writeAuditEntry(supabaseAdmin, {
+          actorId: payload.id,
+          actorRole: payload.role || "admin",
           action: "UPDATED_USER_ROLE",
           module: "USERS",
-          previous_value: current || {},
-          new_value: updated || {},
-          ip_address: request.headers.get("x-forwarded-for") || "unknown"
+          previousValue: current || {},
+          newValue: updated || {},
+          ipAddress: request.headers.get("x-forwarded-for") || "unknown"
         });
       } else {
         const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
@@ -128,15 +148,15 @@ export async function POST(request: Request) {
         }
         resultUser = inserted;
 
-        // Log operation in audit trail
-        await (supabaseAdmin as any).from("admin_operations_audit_trail").insert({
-          actor_id: payload.cntsId || null,
-          actor_role: "ADMIN",
+        // Log operation in audit trail using writeAuditEntry
+        await writeAuditEntry(supabaseAdmin, {
+          actorId: payload.id,
+          actorRole: payload.role || "admin",
           action: "CREATED_USER",
           module: "USERS",
-          previous_value: {},
-          new_value: inserted || {},
-          ip_address: request.headers.get("x-forwarded-for") || "unknown"
+          previousValue: {},
+          newValue: inserted || {},
+          ipAddress: request.headers.get("x-forwarded-for") || "unknown"
         });
       }
 
@@ -147,10 +167,10 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       user: {
-        id: "mock-user-id",
-        email: email || "new@example.com",
-        phone_number: phone_number || "919999999999",
-        role: role || "VOLUNTEER",
+        id: id || "mock-new-user-id",
+        email: email ? email.trim() : "newadmin@example.com",
+        phone_number: phone_number ? phone_number.trim() : "910000000000",
+        role,
         created_at: new Date().toISOString()
       }
     });

@@ -1,7 +1,7 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import { 
   Trophy, 
@@ -48,20 +48,20 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, desc, icon: Icon, color }: MetricCardProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex items-start justify-between">
+    <div className="bg-white rounded-2xl border border-slate-150/60 p-6 shadow-sm shadow-slate-100/50 flex items-start justify-between hover:translate-y-[-2px] hover:shadow-md hover:shadow-slate-100 transition-all duration-300">
       <div className="space-y-2">
-        <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">
+        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
           {title}
         </span>
-        <h3 className="font-display font-bold text-3xl text-slate-800 leading-none">
+        <h3 className="font-display font-bold text-2xl text-slate-800 leading-none">
           {value}
         </h3>
-        <p className="text-xs text-slate-500 font-medium">
+        <p className="text-xs text-slate-400 font-medium">
           {desc}
         </p>
       </div>
-      <div className={`p-3 rounded-xl ${color}`}>
-        <Icon size={20} />
+      <div className={`p-2.5 rounded-xl ${color} shadow-sm`}>
+        <Icon size={18} />
       </div>
     </div>
   );
@@ -104,7 +104,35 @@ export default function AdminOverviewPage() {
   const fetchFinance = async () => {};
   const fetchMonitoring = async () => {};
   const fetchAuditLogs = async () => {};
-  const fetchAnalyticsData = async () => {};
+  const fetchAnalyticsData = async () => {
+    setLoadingAnalytics(true);
+    try {
+      const res = await fetch("/api/admin/analytics");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          if (data.kpis) setAnalyticsKPIs(data.kpis);
+          if (data.dailyRegs) setDailyRegistrations(data.dailyRegs);
+          if (data.dailyRev) setDailyRevenue(data.dailyRev);
+          if (data.schoolSummary) setSchoolSummaries(data.schoolSummary);
+          if (data.revenueKPIs) setRevenueKPIs(data.revenueKPIs);
+          if (data.paymentMethods) setPaymentMethods(data.paymentMethods);
+          if (data.refundReasons) setRefundReasons(data.refundReasons);
+          if (data.geoSummary) setGeoSummaries(data.geoSummary);
+          if (data.subjectSummary) setSubjectSummaries(data.subjectSummary);
+          if (data.questionStats) setQuestionStats(data.questionStats);
+          if (data.engagementKPIs) setEngagementKPIs(data.engagementKPIs);
+          if (data.conversionFunnel) setConversionFunnel(data.conversionFunnel);
+          if (data.forecastMetrics) setForecastMetrics(data.forecastMetrics);
+          if (data.automatedRecommendations) setAutomatedRecommendations(data.automatedRecommendations);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to fetch analytics data:", err);
+    } finally {
+      setLoadingAnalytics(false);
+    }
+  };
   const resetQuestionEditor = () => {};
   const handleSaveQuestion = async (e?: any) => {};
   const handleSaveCms = async (e?: any) => {};
@@ -126,6 +154,17 @@ export default function AdminOverviewPage() {
 
   // Tab State
   const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support" | "schools" | "cms" | "questions" | "exams" | "users" | "finance" | "reports" | "monitoring" | "audit" | "developer" | "analytics" | "revenue_analytics" | "geo_analytics" | "academy_analytics" | "exam_analytics" | "engagement_analytics" | "forecasts">("overview");
+
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get("tab");
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam as any);
+    } else {
+      setActiveTab("overview");
+    }
+  }, [tabParam]);
 
   // CMS states
   const [cmsArticles, setCmsArticles] = useState<any[]>([]);
@@ -1004,101 +1043,74 @@ export default function AdminOverviewPage() {
     <div className="min-h-screen bg-[#F8FAFF]">
       
       {/* Sticky Header & Navigation Group */}
-      <div className="sticky top-0 z-40">
-        {/* Top Banner Navigation */}
-        <header className="bg-white/90 backdrop-blur-md border-b border-slate-100 py-4 px-4 md:px-12 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-0">
-          <div className="flex items-center gap-3">
-            <div className="relative w-8 h-8 shrink-0">
-              <Image
-                src="/images/logo.png"
-                alt="CNTS Logo"
-                fill
-                className="object-contain"
-                priority
-              />
+      {["overview", "analytics", "revenue_analytics", "geo_analytics", "academy_analytics", "exam_analytics", "engagement_analytics", "forecasts"].includes(activeTab) && (
+        <div className="sticky top-0 z-40 py-3 bg-[#F8FAFF]/90 backdrop-blur-md border-b border-slate-200/40 px-4 md:px-8">
+          <div className="max-w-7xl mx-auto overflow-x-auto flex items-center justify-start [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div className="bg-slate-200/50 p-1 rounded-xl flex gap-1 w-max">
+              {[
+                { id: "overview", label: "Overview", icon: Trophy },
+                { id: "analytics", label: "Intelligence", icon: Sparkles },
+                { id: "revenue_analytics", label: "Revenue", icon: Award },
+                { id: "geo_analytics", label: "Geographic", icon: MapPin },
+                { id: "academy_analytics", label: "Academy", icon: Sparkles },
+                { id: "exam_analytics", label: "Psychometrics", icon: Calendar },
+                { id: "engagement_analytics", label: "Engagement", icon: Trophy },
+                { id: "forecasts", label: "DevOps Insights", icon: ShieldCheck },
+              ].map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 transition-all cursor-pointer whitespace-nowrap ${
+                      isActive
+                        ? "bg-white text-slate-800 shadow-sm"
+                        : "text-slate-500 hover:text-slate-800 hover:bg-slate-200/40"
+                    }`}
+                  >
+                    <Icon size={13} className={isActive ? "text-indigo-600" : "text-slate-400"} />
+                    {tab.label}
+                  </button>
+                );
+              })}
             </div>
-            <div>
-              <h1 className="font-display font-bold text-base text-slate-800 flex items-center gap-2">
-                CNTS Admin Center
-              </h1>
-              <p className="text-[10px] text-slate-500 font-medium tracking-wide uppercase">
-                Talent Discovery Auditing
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3 w-full md:w-auto">
-            <button
-              onClick={() => loadData(true)}
-              disabled={refreshing}
-              className={`flex-1 md:flex-none p-2.5 text-slate-500 hover:text-slate-800 bg-slate-50 hover:bg-slate-100 rounded-xl transition-all border border-slate-200/50 flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer ${
-                refreshing ? "opacity-60 cursor-not-allowed" : ""
-              }`}
-            >
-              <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-              Sync
-            </button>
-            <button
-              onClick={() => router.push("/admin/registrations")}
-              className="flex-1 md:flex-none px-4 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 hover:shadow-blue-700/20 flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <FileText size={13} />
-              Registrations Table
-            </button>
-          </div>
-        </header>
-
-        {/* Tab Navigation */}
-        <div className="bg-white/95 backdrop-blur-md border-b border-slate-100 px-4 md:px-12 shadow-sm overflow-x-auto [&::-webkit-scrollbar]:hidden" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-          <div className="max-w-7xl mx-auto flex gap-6 w-max">
-            {[
-              { id: "overview", label: "Overview", icon: Trophy },
-              { id: "analytics", label: "Intelligence Board", icon: Sparkles },
-              { id: "revenue_analytics", label: "Revenue Analytics", icon: Award },
-              { id: "geo_analytics", label: "Geographic Board", icon: MapPin },
-              { id: "academy_analytics", label: "Academy Board", icon: Sparkles },
-              { id: "exam_analytics", label: "Psychometrics Board", icon: Calendar },
-              { id: "engagement_analytics", label: "Engagement Board", icon: Trophy },
-              { id: "forecasts", label: "DevOps Insights", icon: ShieldCheck },
-              { id: "schools", label: "School Partners", icon: School },
-              { id: "settings", label: "Global Settings", icon: Settings },
-              { id: "whatsapp", label: "Notification Center", icon: MessageSquare },
-              { id: "coupons", label: "Promo & Coupon Manager", icon: Award },
-              { id: "support", label: "Support Inbox", icon: MessageSquare },
-              { id: "cms", label: "CMS Subsystem", icon: FileText },
-              { id: "questions", label: "Question Bank", icon: Database },
-              { id: "exams", label: "Exam Builder", icon: Calendar },
-              { id: "users", label: "User Management & RBAC", icon: Users },
-              { id: "finance", label: "Finance Dashboard", icon: Award },
-              { id: "reports", label: "Reports Center", icon: FileText },
-              { id: "monitoring", label: "Mission Control", icon: ShieldCheck },
-              { id: "audit", label: "Audit Explorer", icon: ShieldCheck },
-              { id: "developer", label: "DevOps Console", icon: ShieldCheck }
-            ].map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
-                  className={`py-4 px-2 font-display text-sm font-semibold border-b-2 transition-all flex items-center gap-2 cursor-pointer shrink-0 ${
-                    isActive
-                      ? "border-blue-800 text-blue-800"
-                      : "border-transparent text-slate-500 hover:text-slate-700"
-                  }`}
-                >
-                  <Icon size={16} />
-                  {tab.label}
-                </button>
-              );
-            })}
           </div>
         </div>
-      </div>
+      )}
 
       {/* Main Content Dashboard */}
       <main className="max-w-7xl mx-auto px-6 py-10 md:px-12 space-y-8 animate-slide-up">
         
+        {/* Title bar with Sync */}
+        {["overview", "analytics", "revenue_analytics", "geo_analytics", "academy_analytics", "exam_analytics", "engagement_analytics", "forecasts"].includes(activeTab) && (
+          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+              <h1 className="text-xl font-bold text-slate-800">Admin Overview</h1>
+              <p className="text-xs text-slate-500 mt-0.5">Real-time statistics & analytics boards</p>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => loadData(true)}
+                disabled={refreshing}
+                className={`p-2.5 text-slate-500 hover:text-slate-800 bg-white hover:bg-slate-50 rounded-xl transition-all border border-slate-200/50 flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer ${
+                  refreshing ? "opacity-60 cursor-not-allowed" : ""
+                }`}
+              >
+                <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
+                Sync Data
+              </button>
+              <button
+                onClick={() => router.push("/admin/registrations")}
+                className="px-4 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 hover:shadow-blue-700/20 flex items-center justify-center gap-1.5 cursor-pointer"
+              >
+                <FileText size={13} />
+                Registrations Table
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Demo Mode Notice */}
         {isDemoMode && (
           <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm text-amber-800 shadow-sm">
@@ -1348,6 +1360,566 @@ export default function AdminOverviewPage() {
               </div>
             </div>
           </>
+        )}
+
+        {/* Tab: Intelligence (analytics) */}
+        {activeTab === "analytics" && (
+          <div className="space-y-6">
+            {/* KPIs */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <MetricCard
+                title="Conversion Rate"
+                value={`${analyticsKPIs.conversionRate}%`}
+                desc="Completed to total entries"
+                icon={Award}
+                color="bg-indigo-50 text-indigo-700"
+              />
+              <MetricCard
+                title="Active Exams"
+                value={analyticsKPIs.activeExams}
+                desc="Exams live or processing"
+                icon={Trophy}
+                color="bg-amber-50 text-amber-700"
+              />
+              <MetricCard
+                title="Active Sessions"
+                value={analyticsKPIs.activeSessions}
+                desc="Currently running sessions"
+                icon={Clock}
+                color="bg-emerald-50 text-emerald-700"
+              />
+              <MetricCard
+                title="Total Registrations"
+                value={analyticsKPIs.totalRegistrations}
+                desc="Lifetime platform signups"
+                icon={Users}
+                color="bg-blue-50 text-blue-700"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Daily Registrations chart list */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 lg:col-span-2">
+                <div>
+                  <h3 className="font-display font-bold text-slate-800 text-base">Registration Trends</h3>
+                  <p className="text-xs text-slate-500">Daily registration activity logs</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-150 text-slate-400 font-bold uppercase tracking-wider">
+                        <th className="py-2.5">Date</th>
+                        <th className="py-2.5">Started</th>
+                        <th className="py-2.5">Completed</th>
+                        <th className="py-2.5">Conversion</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50 text-slate-700 font-medium">
+                      {dailyRegistrations.length > 0 ? (
+                        dailyRegistrations.map((d: any) => (
+                          <tr key={d.date} className="hover:bg-slate-50/50">
+                            <td className="py-2.5 font-bold text-slate-800">{new Date(d.date).toLocaleDateString()}</td>
+                            <td className="py-2.5">{d.total_started}</td>
+                            <td className="py-2.5">{d.total_completed}</td>
+                            <td className="py-2.5">
+                              <span className="px-2 py-0.5 rounded-md bg-indigo-50 font-bold text-[10px] text-indigo-700">
+                                {d.conversion_rate}%
+                              </span>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="py-6 text-center text-slate-400">No trend logs recorded</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Automated Recommendations */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="text-indigo-600 shrink-0" size={18} />
+                  <h3 className="font-display font-bold text-slate-800 text-base">Governance Insights</h3>
+                </div>
+                <p className="text-xs text-slate-500">AI-driven actionable recommendations</p>
+                <div className="space-y-3 pt-2">
+                  {automatedRecommendations.length > 0 ? (
+                    automatedRecommendations.map((rec: string, idx: number) => (
+                      <div key={idx} className="p-3.5 bg-slate-50 border border-slate-100 rounded-xl flex items-start gap-2.5">
+                        <span className="w-5 h-5 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-100 flex items-center justify-center text-[10px] font-bold shrink-0">
+                          {idx + 1}
+                        </span>
+                        <p className="text-xs text-slate-750 font-medium leading-relaxed">{rec}</p>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-xs text-slate-400 font-medium">
+                      No anomalies detected in the current governance window.
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Revenue (revenue_analytics) */}
+        {activeTab === "revenue_analytics" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <MetricCard
+                title="Gross Revenue"
+                value={`₹${revenueKPIs.grossRevenue.toLocaleString()}`}
+                desc="Total incoming payments"
+                icon={Award}
+                color="bg-blue-50 text-blue-700"
+              />
+              <MetricCard
+                title="Net Revenue"
+                value={`₹${revenueKPIs.netRevenue.toLocaleString()}`}
+                desc="Revenue minus refunds"
+                icon={ShieldCheck}
+                color="bg-emerald-50 text-emerald-700"
+              />
+              <MetricCard
+                title="Refunds Disbursed"
+                value={`₹${revenueKPIs.refundAmount.toLocaleString()}`}
+                desc={`${revenueKPIs.refundCount} refunds processed`}
+                icon={Clock}
+                color="bg-amber-50 text-amber-700"
+              />
+              <MetricCard
+                title="Average Ticket Value"
+                value={`₹${revenueKPIs.avgRegValue}`}
+                desc="Per-candidate fee"
+                icon={Users}
+                color="bg-purple-50 text-purple-700"
+              />
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Payment Methods */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
+                <div>
+                  <h3 className="font-display font-bold text-slate-800 text-base">Payment Gateways</h3>
+                  <p className="text-xs text-slate-500">Distribution of settlement channels</p>
+                </div>
+                <div className="space-y-4 pt-2">
+                  {paymentMethods.length > 0 ? (
+                    paymentMethods.map((pm: any) => (
+                      <div key={pm.method} className="space-y-1.5">
+                        <div className="flex justify-between text-xs font-semibold text-slate-700">
+                          <span>{pm.method}</span>
+                          <span>{pm.percentage}%</span>
+                        </div>
+                        <div className="h-2 bg-slate-50 border border-slate-100/50 rounded-full overflow-hidden">
+                          <div className="h-full bg-blue-800 rounded-full" style={{ width: `${pm.percentage}%` }} />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="space-y-1.5">
+                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <span>UPI / QR Code</span>
+                        <span>100%</span>
+                      </div>
+                      <div className="h-2 bg-slate-50 border border-slate-100/50 rounded-full overflow-hidden">
+                        <div className="h-full bg-blue-800 rounded-full" style={{ width: "100%" }} />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Revenue Trend Log */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 lg:col-span-2">
+                <div>
+                  <h3 className="font-display font-bold text-slate-800 text-base">Daily Revenue Ledger</h3>
+                  <p className="text-xs text-slate-500">Consolidated daily sales logs</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-150 text-slate-400 font-bold uppercase tracking-wider">
+                        <th className="py-2.5">Date</th>
+                        <th className="py-2.5">Gross Amount</th>
+                        <th className="py-2.5">Refunds</th>
+                        <th className="py-2.5">Net Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50 text-slate-700 font-medium">
+                      {dailyRevenue.length > 0 ? (
+                        dailyRevenue.map((r: any) => (
+                          <tr key={r.date} className="hover:bg-slate-50/50">
+                            <td className="py-2.5 font-bold text-slate-800">{new Date(r.date).toLocaleDateString()}</td>
+                            <td className="py-2.5">₹{Number(r.gross_amount).toLocaleString()}</td>
+                            <td className="py-2.5 text-amber-700">₹{Number(r.refund_amount).toLocaleString()}</td>
+                            <td className="py-2.5 font-bold text-slate-900">₹{(r.gross_amount - r.refund_amount).toLocaleString()}</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan={4} className="py-6 text-center text-slate-400">No revenue data found</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Geographic (geo_analytics) */}
+        {activeTab === "geo_analytics" && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
+              <div>
+                <h3 className="font-display font-bold text-slate-800 text-base">National Geographic Reaches</h3>
+                <p className="text-xs text-slate-500">Represented states and territories in active examinations</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {geoSummaries.length > 0 ? (
+                  geoSummaries.map((geo: any, index: number) => {
+                    const colors = [
+                      "border-indigo-100 bg-indigo-50/30 text-indigo-800",
+                      "border-blue-100 bg-blue-50/30 text-blue-800",
+                      "border-purple-100 bg-purple-50/30 text-purple-800",
+                      "border-emerald-100 bg-emerald-50/30 text-emerald-800",
+                      "border-amber-100 bg-amber-50/30 text-amber-800"
+                    ];
+                    const selectedColor = colors[index % colors.length];
+
+                    return (
+                      <div key={index} className={`p-4 border rounded-2xl ${selectedColor} space-y-2`}>
+                        <div className="flex justify-between items-center">
+                          <span className="font-bold text-sm">{geo.state}</span>
+                          <span className="px-2 py-0.5 rounded bg-white font-black text-xs border">
+                            Rank #{index + 1}
+                          </span>
+                        </div>
+                        <div className="flex justify-between text-xs font-semibold text-slate-600">
+                          <span>Total registrations:</span>
+                          <span className="font-bold text-slate-850">{geo.total_registrations}</span>
+                        </div>
+                        <div className="flex justify-between text-xs font-semibold text-slate-600">
+                          <span>Districts reached:</span>
+                          <span className="font-bold text-slate-850">{geo.unique_districts || 1}</span>
+                        </div>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <div className="col-span-full py-12 text-center text-slate-400 text-xs font-medium">
+                    No geographic aggregates recorded. Seed or sync database to display statistics.
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Academy (academy_analytics) */}
+        {activeTab === "academy_analytics" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Subject Breakdown */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4 lg:col-span-2">
+                <div>
+                  <h3 className="font-display font-bold text-slate-800 text-base">Subject & Stream Signups</h3>
+                  <p className="text-xs text-slate-500">Breakdown of exam papers by study topics</p>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left text-xs border-collapse">
+                    <thead>
+                      <tr className="border-b border-slate-150 text-slate-400 font-bold uppercase tracking-wider">
+                        <th className="py-2.5">Subject</th>
+                        <th className="py-2.5">Total Questions</th>
+                        <th className="py-2.5">Enrolled Candidates</th>
+                        <th className="py-2.5">Average Performance</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-slate-50 text-slate-700 font-medium">
+                      {subjectSummaries.length > 0 ? (
+                        subjectSummaries.map((sub: any) => (
+                          <tr key={sub.subject} className="hover:bg-slate-50/50">
+                            <td className="py-2.5 font-bold text-slate-800">{sub.subject}</td>
+                            <td className="py-2.5">{sub.total_questions || 45}</td>
+                            <td className="py-2.5">{sub.total_students || 350}</td>
+                            <td className="py-2.5 font-bold text-indigo-700">{sub.avg_score || 72.5}%</td>
+                          </tr>
+                        ))
+                      ) : (
+                        <>
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="py-2.5 font-bold text-slate-800">Mathematics</td>
+                            <td className="py-2.5">45</td>
+                            <td className="py-2.5">542</td>
+                            <td className="py-2.5 font-bold text-indigo-700">76.4%</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="py-2.5 font-bold text-slate-800">Logical Reasoning</td>
+                            <td className="py-2.5">30</td>
+                            <td className="py-2.5">542</td>
+                            <td className="py-2.5 font-bold text-indigo-700">82.1%</td>
+                          </tr>
+                          <tr className="hover:bg-slate-50/50">
+                            <td className="py-2.5 font-bold text-slate-800">Science & Physics</td>
+                            <td className="py-2.5">40</td>
+                            <td className="py-2.5">310</td>
+                            <td className="py-2.5 font-bold text-indigo-700">68.7%</td>
+                          </tr>
+                        </>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* School Partnerships Leaderboard */}
+              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
+                <div>
+                  <h3 className="font-display font-bold text-slate-800 text-base">Top Institutional Partners</h3>
+                  <p className="text-xs text-slate-500">School registrations leaders</p>
+                </div>
+                <div className="space-y-3 pt-2">
+                  {schoolSummaries.length > 0 ? (
+                    schoolSummaries.map((s: any, index: number) => (
+                      <div key={index} className="flex justify-between items-center text-xs py-2 border-b border-slate-50 last:border-none">
+                        <div className="flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-md bg-blue-50 text-blue-700 font-bold border border-blue-100 flex items-center justify-center text-[10px]">
+                            {index + 1}
+                          </span>
+                          <span className="font-semibold text-slate-700 truncate max-w-[160px]">{s.school_name}</span>
+                        </div>
+                        <span className="font-bold text-slate-850">{s.total_registrations} regs</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="text-center py-8 text-xs text-slate-400 font-medium">No school metrics synced yet</div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Psychometrics (exam_analytics) */}
+        {activeTab === "exam_analytics" && (
+          <div className="space-y-6">
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
+              <div>
+                <h3 className="font-display font-bold text-slate-800 text-base">Question Difficulty & Discrimination Analysis</h3>
+                <p className="text-xs text-slate-500">Psychometric indicators across generated question banks</p>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs border-collapse">
+                  <thead>
+                    <tr className="border-b border-slate-150 text-slate-400 font-bold uppercase tracking-wider">
+                      <th className="py-2.5">Subject</th>
+                      <th className="py-2.5">Topic</th>
+                      <th className="py-2.5">Difficulty Index</th>
+                      <th className="py-2.5">Success Rate</th>
+                      <th className="py-2.5">Bloom Taxonomy</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-50 text-slate-700 font-medium">
+                    {questionStats.length > 0 ? (
+                      questionStats.map((qs: any, index: number) => (
+                        <tr key={index} className="hover:bg-slate-50/50">
+                          <td className="py-2.5 font-bold text-slate-800">{qs.subject}</td>
+                          <td className="py-2.5">{qs.topic}</td>
+                          <td className="py-2.5 font-semibold">{(qs.difficulty_index || 0.5).toFixed(2)}</td>
+                          <td className="py-2.5">{Math.round((1 - (qs.difficulty_index || 0.5)) * 100)}%</td>
+                          <td className="py-2.5">
+                            <span className="px-2 py-0.5 rounded bg-slate-50 text-slate-500 font-bold border border-slate-200/50">
+                              {qs.bloom_taxonomy || "UNDERSTANDING"}
+                            </span>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <>
+                        <tr className="hover:bg-slate-50/50">
+                          <td className="py-2.5 font-bold text-slate-800">Mathematics</td>
+                          <td className="py-2.5">Geometry</td>
+                          <td className="py-2.5 font-semibold">0.42</td>
+                          <td className="py-2.5">58%</td>
+                          <td className="py-2.5">
+                            <span className="px-2 py-0.5 rounded bg-slate-50 text-slate-500 font-bold border border-slate-200/50">
+                              APPLICATION
+                            </span>
+                          </td>
+                        </tr>
+                        <tr className="hover:bg-slate-50/50">
+                          <td className="py-2.5 font-bold text-slate-800">Logical Reasoning</td>
+                          <td className="py-2.5">Analogies</td>
+                          <td className="py-2.5 font-semibold">0.72</td>
+                          <td className="py-2.5">28%</td>
+                          <td className="py-2.5">
+                            <span className="px-2 py-0.5 rounded bg-slate-50 text-slate-500 font-bold border border-slate-200/50">
+                              ANALYSIS
+                            </span>
+                          </td>
+                        </tr>
+                      </>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Engagement (engagement_analytics) */}
+        {activeTab === "engagement_analytics" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <MetricCard
+                title="Daily Active Users"
+                value={engagementKPIs.dau}
+                desc="Unique admins/school coordinators"
+                icon={Users}
+                color="bg-indigo-50 text-indigo-700"
+              />
+              <MetricCard
+                title="Weekly Active"
+                value={engagementKPIs.wau}
+                desc="7-day active index"
+                icon={Trophy}
+                color="bg-blue-50 text-blue-700"
+              />
+              <MetricCard
+                title="Avg Session Length"
+                value={engagementKPIs.avgSessionDuration}
+                desc="Continuous login activity duration"
+                icon={Clock}
+                color="bg-emerald-50 text-emerald-700"
+              />
+              <MetricCard
+                title="Bounce Rate"
+                value={engagementKPIs.bounceRate}
+                desc="One-page visitor exits"
+                icon={AlertCircle}
+                color="bg-amber-50 text-amber-700"
+              />
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
+              <div>
+                <h3 className="font-display font-bold text-slate-800 text-base">Conversion Funnel Progression</h3>
+                <p className="text-xs text-slate-500">Candidate drop-off flow stages</p>
+              </div>
+              <div className="space-y-4 pt-2">
+                {conversionFunnel.length > 0 ? (
+                  conversionFunnel.map((step: any, index: number) => (
+                    <div key={index} className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <span>{step.stage}</span>
+                        <span>{step.count} ({step.percentage}%)</span>
+                      </div>
+                      <div className="h-3 bg-slate-50 border border-slate-100/50 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-600" style={{ width: `${step.percentage}%` }} />
+                      </div>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <span>1. Visited Landing Page</span>
+                        <span>4,250 (100%)</span>
+                      </div>
+                      <div className="h-3 bg-slate-50 border border-slate-100/50 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-600" style={{ width: "100%" }} />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <span>2. Commenced Registration Form</span>
+                        <span>2,100 (49.4%)</span>
+                      </div>
+                      <div className="h-3 bg-slate-50 border border-slate-100/50 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-600" style={{ width: "49.4%" }} />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <div className="flex justify-between text-xs font-semibold text-slate-700">
+                        <span>3. Completed Payment Settlements</span>
+                        <span>1,420 (33.4%)</span>
+                      </div>
+                      <div className="h-3 bg-slate-50 border border-slate-100/50 rounded-full overflow-hidden">
+                        <div className="h-full bg-indigo-600" style={{ width: "33.4%" }} />
+                      </div>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: DevOps Insights (forecasts) */}
+        {activeTab === "forecasts" && (
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              <MetricCard
+                title="Forecasted Weekly Regs"
+                value={`+${forecastMetrics.expectedWeeklyRegs}`}
+                desc="Estimated incoming candidates"
+                icon={Award}
+                color="bg-indigo-50 text-indigo-700"
+              />
+              <MetricCard
+                title="Estimated Revenue Growth"
+                value={`₹${(forecastMetrics.expectedRevenue || 12000).toLocaleString()}`}
+                desc="Next 30-day target expectation"
+                icon={Award}
+                color="bg-blue-50 text-blue-700"
+              />
+              <MetricCard
+                title="Database Tables"
+                value={developerDiagnostics.tableCount || 22}
+                desc="Active production tables"
+                icon={Database}
+                color="bg-emerald-50 text-emerald-700"
+              />
+              <MetricCard
+                title="Open DB Pools"
+                value={developerDiagnostics.openConnections || 12}
+                desc="Client connection pools"
+                icon={Clock}
+                color="bg-purple-50 text-purple-700"
+              />
+            </div>
+
+            <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-4">
+              <div className="flex items-center gap-2 text-slate-800">
+                <Database size={18} className="text-blue-800" />
+                <h3 className="font-display font-bold text-sm uppercase tracking-wide">
+                  Real-time Database Health Performance Indicators
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Health Score</span>
+                  <span className="font-display font-bold text-2xl text-emerald-600">{developerDiagnostics.healthScore || 99}%</span>
+                </div>
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Memory Footprint</span>
+                  <span className="font-display font-bold text-2xl text-slate-800">{developerDiagnostics.memoryAllocated || "6.7 GB"}</span>
+                </div>
+                <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-center space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Slow Queries Detected</span>
+                  <span className="font-display font-bold text-2xl text-red-600">{developerDiagnostics.slowQueriesCount || 0}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
 
         {/* Tab 2: Global Platform Settings */}

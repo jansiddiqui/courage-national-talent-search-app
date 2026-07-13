@@ -4,9 +4,10 @@ import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
 import { isRateLimited } from "@/lib/rateLimiter";
-import { NotificationService } from "@/services/NotificationService";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 export async function GET(request: Request, props: { params: Promise<{ reference: string }> }) {
   try {
@@ -33,8 +34,13 @@ export async function GET(request: Request, props: { params: Promise<{ reference
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || payload.role !== "admin") {
-      return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.view");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: support.view permission required." }, { status: 403 });
     }
 
     // Fetch support ticket
@@ -101,8 +107,13 @@ export async function PATCH(request: Request, props: { params: Promise<{ referen
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || payload.role !== "admin") {
-      return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.edit");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: support.edit permission required." }, { status: 403 });
     }
 
     const body = await request.json();
@@ -139,50 +150,21 @@ export async function PATCH(request: Request, props: { params: Promise<{ referen
       } else if (ticket.status === "RESOLVED" || ticket.status === "CLOSED") {
         // Reopened ticket
         updates.resolved_at = null;
-        updates.sla_state = "ON_TRACK";
-      }
-
-      // Dispatch Status Changed Notification
-      if (upperStatus !== ticket.status) {
-        try {
-          const metadata = ticket.metadata || {};
-          await NotificationService.sendStatusChanged(
-            metadata.phone || null,
-            metadata.email || null,
-            reference,
-            ticket.status,
-            upperStatus
-          );
-        } catch (err) {
-          console.error("[Ticket Update API] Status notification dispatch error:", err);
-        }
+        updates.sla_state = "ACTIVE";
       }
     }
 
     if (priority) {
-      const allowedPriority = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
-      if (!allowedPriority.includes(priority.toUpperCase())) {
+      const allowedPriorities = ["LOW", "MEDIUM", "HIGH", "URGENT"];
+      const upperPriority = priority.toUpperCase();
+      if (!allowedPriorities.includes(upperPriority)) {
         return NextResponse.json({ success: false, message: "Invalid priority value." }, { status: 400 });
       }
-      updates.priority = priority.toUpperCase();
+      updates.priority = upperPriority;
     }
 
     if (assigned_to !== undefined) {
-      if (assigned_to === null) {
-        updates.assigned_to = null;
-      } else {
-        // Confirm assigned admin exists
-        const { data: dbAdmin, error: adminErr } = await (supabaseAdmin as any)
-          .from("admin_users")
-          .select("id")
-          .eq("id", assigned_to)
-          .single();
-
-        if (adminErr || !dbAdmin) {
-          return NextResponse.json({ success: false, message: "Invalid agent assignment ID." }, { status: 400 });
-        }
-        updates.assigned_to = assigned_to;
-      }
+      updates.assigned_to = assigned_to;
     }
 
     const { error: updateErr } = await (supabaseAdmin as any)
@@ -195,22 +177,20 @@ export async function PATCH(request: Request, props: { params: Promise<{ referen
       return NextResponse.json({ success: false, message: "Failed to update ticket properties." }, { status: 500 });
     }
 
-    // Write audit trail log
-    await (supabaseAdmin as any)
-      .from("admin_operations_audit_trail")
-      .insert({
-        actor_id: payload.userId || payload.email || "SYSTEM",
-        action: "UPDATE_SUPPORT_TICKET",
-        target_id: ticket.id,
-        details: {
-          previous_state: {
-            status: ticket.status,
-            priority: ticket.priority,
-            assigned_to: ticket.assigned_to
-          },
-          updated_state: updates
-        }
-      });
+    // Write audit trail log securely using centralized writeAuditEntry
+    await writeAuditEntry(supabaseAdmin, {
+      actorId: payload.id,
+      actorRole: payload.role || "admin",
+      action: "UPDATE_SUPPORT_TICKET",
+      module: "SUPPORT",
+      previousValue: {
+        status: ticket.status,
+        priority: ticket.priority,
+        assigned_to: ticket.assigned_to
+      },
+      newValue: updates,
+      ipAddress: ip
+    });
 
     return NextResponse.json({ success: true, message: "Ticket updated successfully." });
 

@@ -3,24 +3,33 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
+import { createApprovalRequest } from "@/domains/admin/ApprovalRequestService";
+import { isLargeRefund } from "@/domains/admin/AdminFinanceService";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 export async function GET(request: Request) {
   try {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("cnts_session");
 
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "finance.view");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: finance.view permission required." }, { status: 403 });
+    }
+
     if (hasSupabaseAdminConfig) {
-      if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
-        return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
-      }
-
-      const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (!payload || payload.role !== "admin") {
-        return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
-      }
-
       // Fetch all ledger transactions
       const { data: ledger, error: ledgerErr } = await (supabaseAdmin as any)
         .from("school_fee_ledger")
@@ -88,16 +97,21 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("cnts_session");
 
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "refund.large");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: refund.large permission required." }, { status: 403 });
+    }
+
     if (hasSupabaseAdminConfig) {
-      if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
-        return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
-      }
-
-      const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (!payload || payload.role !== "admin") {
-        return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
-      }
-
       const body = await request.json();
       const { schoolId, transactionType, amount, referenceId } = body;
 
@@ -118,6 +132,26 @@ export async function POST(request: Request) {
       const netAmount = Number(amount);
       const newBalance = lastBalance + netAmount;
 
+      // Maker-checker check: Large refunds (> ₹10,000) require approval
+      if (transactionType === "REFUND" && isLargeRefund(Math.abs(netAmount))) {
+        const { id: approvalId, idempotencyKey } = await createApprovalRequest(supabaseAdmin, {
+          requesterId: payload.id as string,
+          actionType: "REFUND_LARGE",
+          targetResourceType: "SCHOOL_LEDGER",
+          targetResourceId: schoolId,
+          payload: { schoolId, transactionType, amount: netAmount, referenceId },
+          reason: `Large refund request of ₹${Math.abs(netAmount)}`,
+          requiredPermission: "refund.large"
+        });
+        return NextResponse.json({
+          success: true,
+          approvalRequired: true,
+          message: `Refund of ₹${Math.abs(netAmount)} exceeds limit. Staged in approval request.`,
+          approvalId,
+          idempotencyKey
+        });
+      }
+
       const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
         .from("school_fee_ledger")
         .insert({
@@ -135,15 +169,15 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: false, message: "Failed to write transaction entry" }, { status: 500 });
       }
 
-      // Write action to audit trail
-      await (supabaseAdmin as any).from("admin_operations_audit_trail").insert({
-        actor_id: payload.cntsId || null,
-        actor_role: "ADMIN",
+      // Write action to audit trail using writeAuditEntry
+      await writeAuditEntry(supabaseAdmin, {
+        actorId: payload.id,
+        actorRole: payload.role || "admin",
         action: transactionType === "REFUND" ? "REFUND_APPROVED" : "CREATED_INVOICE",
         module: "FINANCE",
-        previous_value: {},
-        new_value: inserted || {},
-        ip_address: request.headers.get("x-forwarded-for") || "unknown"
+        previousValue: {},
+        newValue: inserted || {},
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown"
       });
 
       return NextResponse.json({ success: true, transaction: inserted });
@@ -154,11 +188,11 @@ export async function POST(request: Request) {
       success: true,
       transaction: {
         id: "mock-tx-id",
-        school_id: "mock-school-id",
-        transaction_type: "PAYMENT",
-        amount: -500.00,
+        school_id: "sandbox-school",
+        transaction_type: "CREDIT",
+        amount: 0,
         outstanding_balance: 0.00,
-        reference_id: "mock-ref-id",
+        reference_id: null,
         created_at: new Date().toISOString()
       }
     });

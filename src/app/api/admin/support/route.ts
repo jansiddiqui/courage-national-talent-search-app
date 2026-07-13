@@ -1,9 +1,35 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
+import { verifySession } from "@/lib/sessionHelper";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { cookies } from "next/headers";
+
+const JWT_SECRET = process.env.JWT_SECRET || "";
 
 export async function GET() {
   if (!hasSupabaseAdminConfig) {
-    return NextResponse.json({ success: false, messages: [] });
+    const mockMessages = [
+      { id: "msg-1", name: "Ramesh Sharma", email: "ramesh@example.com", message: "When will the Class 7 admit cards be released?", status: "PENDING", created_at: new Date().toISOString() },
+      { id: "msg-2", name: "Anjali Singh", email: "anjali@example.com", message: "Payment was deducted but status says unpaid.", status: "RESOLVED", created_at: new Date(Date.now() - 3600000).toISOString() }
+    ];
+    return NextResponse.json({ success: true, messages: mockMessages });
+  }
+
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("cnts_session");
+
+  if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+    return NextResponse.json({ success: false, error: "Authentication session required." }, { status: 401 });
+  }
+
+  const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+  if (!payload || !payload.id) {
+    return NextResponse.json({ success: false, error: "Forbidden: Admin session required." }, { status: 403 });
+  }
+
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.view");
+  if (!hasPerm) {
+    return NextResponse.json({ success: false, error: "Forbidden: support.view permission required." }, { status: 403 });
   }
 
   try {
@@ -26,7 +52,24 @@ export async function GET() {
 
 export async function PATCH(request: Request) {
   if (!hasSupabaseAdminConfig) {
-    return NextResponse.json({ success: false, error: "Missing admin config" }, { status: 500 });
+    return NextResponse.json({ success: true, message: "Sandbox message updated successfully" });
+  }
+
+  const cookieStore = await cookies();
+  const sessionCookie = cookieStore.get("cnts_session");
+
+  if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+    return NextResponse.json({ success: false, error: "Authentication session required." }, { status: 401 });
+  }
+
+  const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+  if (!payload || !payload.id) {
+    return NextResponse.json({ success: false, error: "Forbidden: Admin session required." }, { status: 403 });
+  }
+
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.edit");
+  if (!hasPerm) {
+    return NextResponse.json({ success: false, error: "Forbidden: support.edit permission required." }, { status: 403 });
   }
 
   try {

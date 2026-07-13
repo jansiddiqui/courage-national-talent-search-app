@@ -3,8 +3,11 @@ import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
+import { sanitizeHtml } from "@/domains/admin/CmsGovernanceService";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 export async function GET(request: Request) {
   try {
@@ -25,7 +28,24 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, articles: mockArticles });
     }
 
-    // 2. Fetch articles from DB
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("cnts_session");
+
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "cms.view");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: cms.view permission required." }, { status: 403 });
+    }
+
+    // 2. Fetch from DB
     let query = (supabaseAdmin as any)
       .from("support_articles")
       .select("*")
@@ -37,7 +57,7 @@ export async function GET(request: Request) {
 
     const { data: articles, error } = await query;
     if (error) {
-      console.error("[CMS API] GET DB error:", error);
+      console.error("[CMS API] GET error:", error);
       return NextResponse.json({ success: false, message: "Database query error" }, { status: 500 });
     }
 
@@ -47,21 +67,33 @@ export async function GET(request: Request) {
   }
 }
 
+
+
 export async function POST(request: Request) {
   try {
+    // Sandbox Check — bypass auth if DB is not configured
+    if (!hasSupabaseAdminConfig) {
+      return NextResponse.json({ success: true, message: "Article created/updated successfully (Sandbox)" });
+    }
+
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("cnts_session");
 
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || !payload.id) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "cms.edit");
+    if (!hasPerm) {
+      return NextResponse.json({ success: false, message: "Forbidden: cms.edit permission required." }, { status: 403 });
+    }
+
     if (hasSupabaseAdminConfig) {
-      if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
-        return NextResponse.json({ success: false, message: "Authentication session required." }, { status: 401 });
-      }
-
-      const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (!payload || payload.role !== "admin") {
-        return NextResponse.json({ success: false, message: "Forbidden: Admin access required." }, { status: 403 });
-      }
-
       const body = await request.json();
       const { id, title, slug, category, content, published } = body;
 
@@ -69,11 +101,10 @@ export async function POST(request: Request) {
         return NextResponse.json({ success: false, message: "Missing required parameters: title, slug, category, content" }, { status: 400 });
       }
 
+      const sanitizedContent = sanitizeHtml(content);
       let resultArticle: any = null;
-      let actionType = "CREATED_CMS";
 
       if (id) {
-        actionType = "MODIFIED_CMS";
         // Fetch current version for history increment
         const { data: current } = await (supabaseAdmin as any)
           .from("support_articles")
@@ -89,7 +120,7 @@ export async function POST(request: Request) {
             title: title.trim(),
             slug: slug.trim().toLowerCase(),
             category,
-            content,
+            content: sanitizedContent,
             published: !!published,
             version: currentVersion + 1
           })
@@ -103,15 +134,15 @@ export async function POST(request: Request) {
         }
         resultArticle = updated;
 
-        // Log operation in audit trail
-        await (supabaseAdmin as any).from("admin_operations_audit_trail").insert({
-          actor_id: payload.cntsId || null,
-          actor_role: "ADMIN",
+        // Log operation in audit trail using writeAuditEntry
+        await writeAuditEntry(supabaseAdmin, {
+          actorId: payload.id,
+          actorRole: payload.role || "admin",
           action: "MODIFIED_CMS",
           module: "CMS",
-          previous_value: current || {},
-          new_value: updated || {},
-          ip_address: request.headers.get("x-forwarded-for") || "unknown"
+          previousValue: current || {},
+          newValue: updated || {},
+          ipAddress: request.headers.get("x-forwarded-for") || "unknown"
         });
       } else {
         const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
@@ -120,7 +151,7 @@ export async function POST(request: Request) {
             title: title.trim(),
             slug: slug.trim().toLowerCase(),
             category,
-            content,
+            content: sanitizedContent,
             published: !!published,
             version: 1
           })
@@ -133,15 +164,15 @@ export async function POST(request: Request) {
         }
         resultArticle = inserted;
 
-        // Log operation in audit trail
-        await (supabaseAdmin as any).from("admin_operations_audit_trail").insert({
-          actor_id: payload.cntsId || null,
-          actor_role: "ADMIN",
+        // Log operation in audit trail using writeAuditEntry
+        await writeAuditEntry(supabaseAdmin, {
+          actorId: payload.id,
+          actorRole: payload.role || "admin",
           action: "PUBLISHED_CMS",
           module: "CMS",
-          previous_value: {},
-          new_value: inserted || {},
-          ip_address: request.headers.get("x-forwarded-for") || "unknown"
+          previousValue: {},
+          newValue: inserted || {},
+          ipAddress: request.headers.get("x-forwarded-for") || "unknown"
         });
       }
 

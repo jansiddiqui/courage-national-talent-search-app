@@ -1,51 +1,63 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
+import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 import bcrypt from "bcryptjs";
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
-// Helper to authenticate admin
-async function authenticateAdmin() {
+async function authenticateAndAuthorize(permissionKey: string) {
   const cookieStore = await cookies();
   const sessionCookie = cookieStore.get("cnts_session");
 
-  if (!sessionCookie || !sessionCookie.value) {
-    return null;
-  }
+  if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) return null;
 
   const session = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!session) return null;
+  if (!session || !session.id) return null;
 
-  const isAdmin = session.role === "ADMIN" || session.role === "SUPER_ADMIN" || session.role === "VOLUNTEER";
-  return isAdmin ? session : null;
+  const hasPerm = await checkAdminPermission(supabaseAdmin, session.id, permissionKey);
+  if (!hasPerm) return null;
+
+  return session;
 }
 
-export async function GET() {
+const MOCK_SCHOOLS = [
+  { id: "sch-1", school_code: "SCH001", name: "Greenfield Academy", city: "Delhi", board: "CBSE", school_type: "PRIVATE", coordinator_name: "Ramesh Kumar", quota: 100, used_quota: 42, status: "ACTIVE", joined_at: new Date().toISOString() },
+  { id: "sch-2", school_code: "SCH002", name: "Delhi Public School", city: "Kanpur", board: "CBSE", school_type: "PRIVATE", coordinator_name: "Sanjay Gupta", quota: 200, used_quota: 95, status: "ACTIVE", joined_at: new Date().toISOString() }
+];
+
+export async function GET(request: Request) {
   try {
-    const adminSession = await authenticateAdmin();
-    if (!adminSession) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-    }
-
+    // Sandbox Check — bypass auth and return mock schools if DB is not configured
     if (!hasSupabaseAdminConfig) {
-      return NextResponse.json({ success: true, schools: [] });
+      return NextResponse.json({ success: true, schools: MOCK_SCHOOLS, total: MOCK_SCHOOLS.length });
     }
 
-    // Cast to any to bypass postgrest typescript mapping conflicts
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: schools, error } = await (supabaseAdmin as any)
+    const session = await authenticateAndAuthorize("schools.view");
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Forbidden: schools.view permission required." }, { status: 403 });
+    }
+
+    const url = new URL(request.url);
+    const limit = parseInt(url.searchParams.get("limit") || "50");
+    const page = parseInt(url.searchParams.get("page") || "1");
+    const offset = (page - 1) * limit;
+
+    const { data: schools, count, error } = await (supabaseAdmin as any)
       .from("schools")
-      .select("*")
-      .order("joined_at", { ascending: false });
+      .select("*", { count: "exact" })
+      .order("joined_at", { ascending: false })
+      .range(offset, offset + limit - 1);
 
     if (error) {
       console.error("[Schools API] Fetch error:", error);
       return NextResponse.json({ success: false, message: "Failed to fetch schools" }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, schools: schools || [] });
+    return NextResponse.json({ success: true, schools: schools || [], total: count || 0 });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
@@ -53,9 +65,14 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const adminSession = await authenticateAdmin();
-    if (!adminSession) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    // Sandbox Check — bypass auth if DB is not configured
+    if (!hasSupabaseAdminConfig) {
+      return NextResponse.json({ success: true, message: "Sandbox success" });
+    }
+
+    const session = await authenticateAndAuthorize("schools.edit");
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Forbidden: schools.edit permission required." }, { status: 403 });
     }
 
     const body = await request.json();
@@ -64,14 +81,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Missing required fields" }, { status: 400 });
     }
 
-    if (!hasSupabaseAdminConfig) {
-      return NextResponse.json({ success: true, message: "Sandbox success" });
-    }
-
     const cleanPin = body.pin.trim();
     const hashedPin = await bcrypt.hash(cleanPin, 12);
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await (supabaseAdmin as any)
       .from("schools")
       .insert({
@@ -79,18 +91,18 @@ export async function POST(request: Request) {
         name: body.name,
         city: body.city,
         board: body.board,
-        school_type: body.school_type || 'OTHER',
-        coordinator_name: body.coordinator_name || '',
-        coordinator_mobile: body.coordinator_mobile || '',
-        coordinator_email: body.coordinator_email || '',
+        school_type: body.school_type || "OTHER",
+        coordinator_name: body.coordinator_name || "",
+        coordinator_mobile: body.coordinator_mobile || "",
+        coordinator_email: body.coordinator_email || "",
         quota: parseInt(body.quota) || 0,
         used_quota: 0,
-        sponsorship_mode: body.sponsorship_mode || 'FULL',
+        sponsorship_mode: body.sponsorship_mode || "FULL",
         pin: hashedPin,
-        status: body.status || 'ACTIVE',
+        status: body.status || "ACTIVE",
         notes: body.notes || null,
         is_featured: body.is_featured || false,
-        created_by: adminSession.userId,
+        created_by: session.id,
       })
       .select()
       .single();
@@ -100,6 +112,16 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
 
+    await writeAuditEntry(supabaseAdmin, {
+      actorId: session.id,
+      actorRole: session.role || "admin",
+      action: "CREATED_SCHOOL",
+      module: "SCHOOLS",
+      previousValue: {},
+      newValue: { school_code: data?.school_code, name: data?.name },
+      ipAddress: request.headers.get("x-forwarded-for") || "unknown"
+    });
+
     return NextResponse.json({ success: true, school: data });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
@@ -108,9 +130,14 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const adminSession = await authenticateAdmin();
-    if (!adminSession) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    // Sandbox Check — bypass auth if DB is not configured
+    if (!hasSupabaseAdminConfig) {
+      return NextResponse.json({ success: true, message: "Sandbox update success" });
+    }
+
+    const session = await authenticateAndAuthorize("schools.edit");
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Forbidden: schools.edit permission required." }, { status: 403 });
     }
 
     const body = await request.json();
@@ -124,11 +151,6 @@ export async function PUT(request: Request) {
       updates.pin = await bcrypt.hash(updates.pin.trim(), 12);
     }
 
-    if (!hasSupabaseAdminConfig) {
-      return NextResponse.json({ success: true, message: "Sandbox update success" });
-    }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { error } = await (supabaseAdmin as any)
       .from("schools")
       .update(updates)
@@ -137,6 +159,16 @@ export async function PUT(request: Request) {
     if (error) {
       return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     }
+
+    await writeAuditEntry(supabaseAdmin, {
+      actorId: session.id,
+      actorRole: session.role || "admin",
+      action: "UPDATED_SCHOOL",
+      module: "SCHOOLS",
+      previousValue: { id },
+      newValue: updates,
+      ipAddress: request.headers.get("x-forwarded-for") || "unknown"
+    });
 
     return NextResponse.json({ success: true, message: "School updated" });
   } catch (error: any) {

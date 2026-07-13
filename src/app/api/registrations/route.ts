@@ -8,22 +8,7 @@ const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
 export async function GET() {
   try {
-    if (!JWT_SECRET) {
-      throw new Error("CRITICAL CONFIGURATION ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required.");
-    }
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get("cnts_session");
-
-    if (!sessionCookie || !sessionCookie.value) {
-      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
-    }
-
-    const session = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!session) {
-      return NextResponse.json({ success: false, message: "Session expired or invalid" }, { status: 401 });
-    }
-
-    // Sandbox Check
+    // Sandbox Check — bypass auth and return mock data if DB is not configured
     if (!hasSupabaseAdminConfig) {
       const mockRegistrations = [
         {
@@ -50,6 +35,22 @@ export async function GET() {
       ];
       return NextResponse.json({ success: true, registrations: mockRegistrations });
     }
+
+    if (!JWT_SECRET) {
+      throw new Error("CRITICAL CONFIGURATION ERROR: SUPABASE_SERVICE_ROLE_KEY environment variable is required.");
+    }
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("cnts_session");
+
+    if (!sessionCookie || !sessionCookie.value) {
+      return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
+    }
+
+    const session = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!session) {
+      return NextResponse.json({ success: false, message: "Session expired or invalid" }, { status: 401 });
+    }
+
 
     const isAdmin = session.role === "ADMIN" || session.role === "SUPER_ADMIN" || session.role === "VOLUNTEER";
     
@@ -105,6 +106,11 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, message: "Missing required parameters: registrationId and updates" }, { status: 400 });
     }
 
+    // Sandbox Check — bypass auth if DB is not configured
+    if (!hasSupabaseAdminConfig) {
+      return NextResponse.json({ success: true, message: "Draft updated successfully (Sandbox)" });
+    }
+
     // Check if session is an admin
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get("cnts_session");
@@ -115,10 +121,6 @@ export async function PUT(request: Request) {
       if (session) {
         isAdmin = session.role === "ADMIN" || session.role === "SUPER_ADMIN" || session.role === "VOLUNTEER";
       }
-    }
-
-    if (!hasSupabaseAdminConfig) {
-      return NextResponse.json({ success: true, message: "Draft updated successfully (Sandbox)" });
     }
 
     // Security check: If not admin, verify that this is a draft and unpaid registration
