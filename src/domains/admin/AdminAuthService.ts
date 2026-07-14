@@ -6,15 +6,31 @@
  * goes through the service-role client (supabaseAdmin) — never browser clients.
  */
 
+async function resolveAdminId(supabaseAdmin: any, adminId: string): Promise<string | null> {
+  if (!adminId) return null;
+  if (adminId.includes('@')) {
+    const { data: adminUser } = await supabaseAdmin
+      .from('admin_users')
+      .select('id')
+      .eq('email', adminId)
+      .maybeSingle();
+    return adminUser?.id || null;
+  }
+  return adminId;
+}
+
 export async function checkAdminPermission(
   supabaseAdmin: any,
   adminId: string,
   permission: string
 ): Promise<boolean> {
+  const resolvedId = await resolveAdminId(supabaseAdmin, adminId);
+  if (!resolvedId) return false;
+
   const { data, error } = await supabaseAdmin
     .from('admin_user_roles')
     .select('role_id, admin_roles!inner(admin_role_permissions!inner(permission_key))')
-    .eq('admin_id', adminId);
+    .eq('admin_id', resolvedId);
 
   if (error || !data) return false;
 
@@ -31,10 +47,13 @@ export async function getAdminRoles(
   supabaseAdmin: any,
   adminId: string
 ): Promise<string[]> {
+  const resolvedId = await resolveAdminId(supabaseAdmin, adminId);
+  if (!resolvedId) return [];
+
   const { data, error } = await supabaseAdmin
     .from('admin_user_roles')
     .select('role_id, admin_roles!inner(name)')
-    .eq('admin_id', adminId);
+    .eq('admin_id', resolvedId);
 
   if (error || !data) return [];
   return data.map((ur: any) => ur.admin_roles?.name).filter(Boolean);
@@ -44,10 +63,13 @@ export async function getAdminPermissions(
   supabaseAdmin: any,
   adminId: string
 ): Promise<string[]> {
+  const resolvedId = await resolveAdminId(supabaseAdmin, adminId);
+  if (!resolvedId) return [];
+
   const { data, error } = await supabaseAdmin
     .from('admin_user_roles')
     .select('role_id, admin_roles!inner(admin_role_permissions!inner(permission_key))')
-    .eq('admin_id', adminId);
+    .eq('admin_id', resolvedId);
 
   if (error || !data) return [];
   const perms = new Set<string>();
@@ -60,3 +82,4 @@ export async function getAdminPermissions(
   }
   return Array.from(perms);
 }
+

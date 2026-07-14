@@ -19,11 +19,11 @@ export async function POST(request: Request) {
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || !payload.id) {
+    if (!payload || (!payload.id && !payload.email)) {
       return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "notification.broadcast");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "notification.broadcast");
     if (!hasPerm) {
       return NextResponse.json({ success: false, message: "Forbidden: notification.broadcast permission required." }, { status: 403 });
     }

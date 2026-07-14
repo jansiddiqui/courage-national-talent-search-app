@@ -52,7 +52,7 @@ export async function POST(request: Request) {
 
       const { data: admData, error: admError } = await (supabaseAdmin as any)
         .from("admin_users")
-        .select("role")
+        .select("id, role")
         .eq("email", cleanEmail)
         .maybeSingle();
 
@@ -72,6 +72,7 @@ export async function POST(request: Request) {
 
     // 3. Generate token (expires in 15 mins)
     const payload = {
+      id: adminUser?.id || undefined,   // Admin UUID — required for RBAC permission checks
       email: cleanEmail,
       cntsId: registration?.cnts_id || registration?.registration_id || "ADMIN",
       phone: registration?.mobile_number || "",

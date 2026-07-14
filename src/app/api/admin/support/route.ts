@@ -4,7 +4,7 @@ import { verifySession } from "@/lib/sessionHelper";
 import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
 import { cookies } from "next/headers";
 
-const JWT_SECRET = process.env.JWT_SECRET || "";
+const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 export async function GET() {
   if (!hasSupabaseAdminConfig) {
@@ -23,11 +23,11 @@ export async function GET() {
   }
 
   const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!payload || !payload.id) {
+  if (!payload || (!payload.id && !payload.email)) {
     return NextResponse.json({ success: false, error: "Forbidden: Admin session required." }, { status: 403 });
   }
 
-  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.view");
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "support.view");
   if (!hasPerm) {
     return NextResponse.json({ success: false, error: "Forbidden: support.view permission required." }, { status: 403 });
   }
@@ -63,11 +63,11 @@ export async function PATCH(request: Request) {
   }
 
   const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!payload || !payload.id) {
+  if (!payload || (!payload.id && !payload.email)) {
     return NextResponse.json({ success: false, error: "Forbidden: Admin session required." }, { status: 403 });
   }
 
-  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.edit");
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "support.edit");
   if (!hasPerm) {
     return NextResponse.json({ success: false, error: "Forbidden: support.edit permission required." }, { status: 403 });
   }

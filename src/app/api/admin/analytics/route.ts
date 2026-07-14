@@ -144,14 +144,14 @@ export async function GET(request: Request) {
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || !payload.id) {
+    if (!payload || (!payload.id && !payload.email)) {
       return NextResponse.json(
         { success: false, message: "Forbidden: Admin session required." },
         { status: 403, headers: { "Cache-Control": "private, no-store, no-cache, must-revalidate" } }
       );
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "analytics.view");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "analytics.view");
     if (!hasPerm) {
       return NextResponse.json(
         { success: false, message: "Forbidden: analytics.view permission required." },

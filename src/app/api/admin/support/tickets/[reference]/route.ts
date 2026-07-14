@@ -34,11 +34,11 @@ export async function GET(request: Request, props: { params: Promise<{ reference
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || !payload.id) {
+    if (!payload || (!payload.id && !payload.email)) {
       return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.view");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "support.view");
     if (!hasPerm) {
       return NextResponse.json({ success: false, message: "Forbidden: support.view permission required." }, { status: 403 });
     }
@@ -107,11 +107,11 @@ export async function PATCH(request: Request, props: { params: Promise<{ referen
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || !payload.id) {
+    if (!payload || (!payload.id && !payload.email)) {
       return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.edit");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "support.edit");
     if (!hasPerm) {
       return NextResponse.json({ success: false, message: "Forbidden: support.edit permission required." }, { status: 403 });
     }

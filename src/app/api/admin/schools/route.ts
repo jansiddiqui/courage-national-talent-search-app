@@ -16,9 +16,9 @@ async function authenticateAndAuthorize(permissionKey: string) {
   if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) return null;
 
   const session = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!session || !session.id) return null;
+  if (!session || (!session.id && !session.email)) return null;
 
-  const hasPerm = await checkAdminPermission(supabaseAdmin, session.id, permissionKey);
+  const hasPerm = await checkAdminPermission(supabaseAdmin, session.id || session.email, permissionKey);
   if (!hasPerm) return null;
 
   return session;

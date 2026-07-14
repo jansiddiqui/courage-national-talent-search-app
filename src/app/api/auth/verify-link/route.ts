@@ -75,6 +75,7 @@ export async function GET(request: Request) {
 
     // Generate a long-lived session cookie (30 days)
     const sessionPayload = {
+      id: verified.id || undefined,   // Admin UUID — required for RBAC permission checks
       cntsId: verified.cntsId,
       email: verified.email,
       phone: verified.phone,

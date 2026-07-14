@@ -24,9 +24,9 @@ export async function GET(request: Request) {
   if (!sessionCookie?.value || !JWT_SECRET) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!payload || !payload.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!payload || (!payload.id && !payload.email)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
-  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "assessment.update");
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "assessment.update");
   if (!hasPerm) return NextResponse.json({ error: "Forbidden: assessment.update permission required." }, { status: 403 });
 
   const { searchParams } = new URL(request.url);
@@ -71,7 +71,7 @@ export async function POST(request: Request) {
   if (!sessionCookie?.value || !JWT_SECRET) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!payload || !payload.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  if (!payload || (!payload.id && !payload.email)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
   const body = await request.json();
   const { assessmentId, fromStatus, toStatus } = body;
@@ -88,7 +88,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: e.message }, { status: 400 });
   }
 
-  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, requiredPermission);
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, requiredPermission);
   if (!hasPerm) {
     return NextResponse.json({ error: `Forbidden: ${requiredPermission} permission required.` }, { status: 403 });
   }

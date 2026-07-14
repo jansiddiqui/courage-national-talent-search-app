@@ -40,11 +40,11 @@ export async function POST(request: Request, props: { params: Promise<{ referenc
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || !payload.id) {
+    if (!payload || (!payload.id && !payload.email)) {
       return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id, "support.reply");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "support.reply");
     if (!hasPerm) {
       return NextResponse.json({ success: false, message: "Forbidden: support.reply permission required." }, { status: 403 });
     }

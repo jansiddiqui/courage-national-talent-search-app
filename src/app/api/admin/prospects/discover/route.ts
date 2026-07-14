@@ -13,8 +13,8 @@ async function authenticate(permissionKey: string) {
   const sessionCookie = cookieStore.get("cnts_session");
   if (!sessionCookie?.value || !JWT_SECRET) return null;
   const session = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!session?.id) return null;
-  const hasPerm = await checkAdminPermission(supabaseAdmin, session.id, permissionKey);
+  if (!session?.id && !session?.email) return null;
+  const hasPerm = await checkAdminPermission(supabaseAdmin, session.id || session.email, permissionKey);
   if (!hasPerm) return null;
   return session;
 }
