@@ -29,7 +29,7 @@ export async function checkAdminPermission(
 
   const { data, error } = await supabaseAdmin
     .from('admin_user_roles')
-    .select('role_id, admin_roles!inner(admin_role_permissions!inner(permission_key))')
+    .select('role_id, admin_roles!inner(name, admin_role_permissions(permission_key))')
     .eq('admin_id', resolvedId);
 
   if (error || !data) return false;
@@ -37,6 +37,10 @@ export async function checkAdminPermission(
   for (const ur of data) {
     const role = ur.admin_roles;
     if (!role) continue;
+    
+    // SUPER_ADMIN has full platform bypass
+    if (role.name === 'SUPER_ADMIN') return true;
+
     const perms = role.admin_role_permissions || [];
     if (perms.some((p: any) => p.permission_key === permission)) return true;
   }
@@ -68,7 +72,7 @@ export async function getAdminPermissions(
 
   const { data, error } = await supabaseAdmin
     .from('admin_user_roles')
-    .select('role_id, admin_roles!inner(admin_role_permissions!inner(permission_key))')
+    .select('role_id, admin_roles!inner(name, admin_role_permissions(permission_key))')
     .eq('admin_id', resolvedId);
 
   if (error || !data) return [];
@@ -76,6 +80,8 @@ export async function getAdminPermissions(
   for (const ur of data) {
     const role = ur.admin_roles;
     if (!role) continue;
+    
+    // If SUPER_ADMIN, they have all permissions, but for this function we return whatever is registered
     for (const p of role.admin_role_permissions || []) {
       if (p.permission_key) perms.add(p.permission_key);
     }
