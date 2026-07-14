@@ -20,11 +20,11 @@ export async function GET(request: Request) {
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || (!payload.id && !payload.email)) {
+    if (!payload || (!payload.id && !payload.email && !payload.phone)) {
       return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "finance.view");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email || payload.phone, "finance.view");
     if (!hasPerm) {
       return NextResponse.json({ success: false, message: "Forbidden: finance.view permission required." }, { status: 403 });
     }
@@ -102,11 +102,11 @@ export async function POST(request: Request) {
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || (!payload.id && !payload.email)) {
+    if (!payload || (!payload.id && !payload.email && !payload.phone)) {
       return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "refund.large");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email || payload.phone, "refund.large");
     if (!hasPerm) {
       return NextResponse.json({ success: false, message: "Forbidden: refund.large permission required." }, { status: 403 });
     }

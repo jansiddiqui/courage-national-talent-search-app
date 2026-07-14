@@ -25,7 +25,7 @@ export async function GET(request: Request) {
   }
 
   const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!payload || (!payload.id && !payload.email)) {
+  if (!payload || (!payload.id && !payload.email && !payload.phone)) {
     return NextResponse.json({ error: "Forbidden: Admin session required." }, { status: 403 });
   }
 
@@ -56,11 +56,11 @@ export async function POST(request: Request) {
   }
 
   const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!payload || (!payload.id && !payload.email)) {
+  if (!payload || (!payload.id && !payload.email && !payload.phone)) {
     return NextResponse.json({ error: "Forbidden: Admin session required." }, { status: 403 });
   }
 
-  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "jobs.cancel");
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email || payload.phone, "jobs.cancel");
   if (!hasPerm) {
     return NextResponse.json({ error: "Forbidden: jobs.cancel permission required." }, { status: 403 });
   }

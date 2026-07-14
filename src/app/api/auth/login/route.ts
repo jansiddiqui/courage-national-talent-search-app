@@ -151,7 +151,7 @@ export async function POST(request: Request) {
     const phone = registration.mobile_number || "";
     const email = registration.parent_email || "";
 
-    const query = (supabaseAdmin as any).from("admin_users").select("role");
+    const query = (supabaseAdmin as any).from("admin_users").select("id, role");
     const filters = [];
     if (phone) {
       filters.push(`phone_number.eq.${phone}`);
@@ -159,14 +159,17 @@ export async function POST(request: Request) {
     if (email) {
       filters.push(`email.eq.${email.toLowerCase()}`);
     }
+    let adminUserId = undefined;
     if (filters.length > 0) {
       const { data: adminUser } = await query.or(filters.join(",")).maybeSingle();
       if (adminUser) {
         role = adminUser.role;
+        adminUserId = adminUser.id;
       }
     }
 
     const payload = {
+      id: adminUserId, // Admin UUID for RBAC check
       cntsId: registration.cnts_id || registration.registration_id,
       email,
       phone,

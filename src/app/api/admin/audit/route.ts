@@ -24,11 +24,11 @@ export async function GET(request: Request) {
   }
 
   const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!payload || (!payload.id && !payload.email)) {
+  if (!payload || (!payload.id && !payload.email && !payload.phone)) {
     return NextResponse.json({ error: "Forbidden: Admin session required." }, { status: 403 });
   }
 
-  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "audit.view");
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email || payload.phone, "audit.view");
   if (!hasPerm) {
     return NextResponse.json({ error: "Forbidden: audit.view permission required." }, { status: 403 });
   }

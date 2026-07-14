@@ -8,15 +8,36 @@
 
 async function resolveAdminId(supabaseAdmin: any, adminId: string): Promise<string | null> {
   if (!adminId) return null;
-  if (adminId.includes('@')) {
-    const { data: adminUser } = await supabaseAdmin
-      .from('admin_users')
-      .select('id')
-      .eq('email', adminId)
-      .maybeSingle();
-    return adminUser?.id || null;
+
+  // Check if already a valid UUID
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (uuidRegex.test(adminId)) {
+    return adminId;
   }
-  return adminId;
+
+  // If it is not an email and not a phone number, treat it as already resolved (e.g. mock test ids)
+  const isPhoneNumber = /^\+?\d+$/.test(adminId);
+  if (!adminId.includes('@') && !isPhoneNumber) {
+    return adminId;
+  }
+
+  // Look up admin by email or phone number fallback
+  let query = supabaseAdmin.from('admin_users').select('id');
+  if (adminId.includes('@')) {
+    query = query.eq('email', adminId);
+  } else {
+    query = query.eq('phone_number', adminId);
+  }
+
+  let adminUser = null;
+  if (typeof query.maybeSingle === 'function') {
+    const { data } = await query.maybeSingle();
+    adminUser = data;
+  } else {
+    const res = await query;
+    adminUser = Array.isArray(res?.data) ? res.data[0] : res?.data;
+  }
+  return adminUser?.id || null;
 }
 
 export async function checkAdminPermission(

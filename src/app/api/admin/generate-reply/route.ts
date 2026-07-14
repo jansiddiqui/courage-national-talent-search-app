@@ -26,11 +26,11 @@ export async function POST(request: Request) {
   }
 
   const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-  if (!payload || (!payload.id && !payload.email)) {
+  if (!payload || (!payload.id && !payload.email && !payload.phone)) {
     return NextResponse.json({ success: false, error: "Forbidden: Admin session required." }, { status: 403 });
   }
 
-  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "support.reply");
+  const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email || payload.phone, "support.reply");
   if (!hasPerm) {
     return NextResponse.json({ success: false, error: "Forbidden: support.reply permission required." }, { status: 403 });
   }

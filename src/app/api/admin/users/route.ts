@@ -29,11 +29,11 @@ export async function GET(request: Request) {
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || (!payload.id && !payload.email)) {
+    if (!payload || (!payload.id && !payload.email && !payload.phone)) {
       return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "rbac.manage");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email || payload.phone, "rbac.manage");
     if (!hasPerm) {
       return NextResponse.json({ success: false, message: "Forbidden: rbac.manage permission required." }, { status: 403 });
     }
@@ -80,11 +80,11 @@ export async function POST(request: Request) {
     }
 
     const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-    if (!payload || (!payload.id && !payload.email)) {
+    if (!payload || (!payload.id && !payload.email && !payload.phone)) {
       return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
     }
 
-    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email, "rbac.manage");
+    const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email || payload.phone, "rbac.manage");
     if (!hasPerm) {
       return NextResponse.json({ success: false, message: "Forbidden: rbac.manage permission required." }, { status: 403 });
     }
