@@ -402,7 +402,16 @@ export default function SchoolProspectsPanel() {
         </div>
 
         {/* Provider Status */}
-        {providerStatus && (
+        {providerStatus === null ? (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {["Tavily Search", "Google Search", "OpenRouter AI", "CRON Secret"].map(label => (
+              <div key={label} className="p-3 rounded-xl border border-slate-100 bg-slate-50 text-xs font-semibold flex items-center gap-2 text-slate-400 animate-pulse">
+                <div className="w-3 h-3 rounded-full bg-slate-200" />
+                {label}
+              </div>
+            ))}
+          </div>
+        ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
               { label: "Tavily Search", ok: providerStatus.tavily },
@@ -480,14 +489,14 @@ export default function SchoolProspectsPanel() {
 
           <button
             onClick={handleStartDiscovery}
-            disabled={discovering || (discoveryScope === "SELECTED_STATES" && selectedDiscoveryStates.length === 0) || !providerStatus?.tavily && !providerStatus?.google}
+            disabled={discovering || (discoveryScope === "SELECTED_STATES" && selectedDiscoveryStates.length === 0) || (providerStatus !== null && !providerStatus.tavily && !providerStatus.google)}
             className="w-full py-3 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl font-bold text-sm flex items-center justify-center gap-2 cursor-pointer hover:from-indigo-700 hover:to-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all shadow-md shadow-indigo-200"
           >
             {discovering ? <Loader2 size={16} className="animate-spin" /> : <Zap size={16} />}
             {discovering ? "Starting Discovery..." : "Start Discovery"}
           </button>
 
-          {(!providerStatus?.tavily && !providerStatus?.google) && (
+          {providerStatus !== null && !providerStatus.tavily && !providerStatus.google && (
             <p className="text-xs text-rose-600 font-semibold text-center">
               ⚠ No search provider configured. Set TAVILY_API_KEY or GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_CX.
             </p>

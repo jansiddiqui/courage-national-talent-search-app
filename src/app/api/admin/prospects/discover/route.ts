@@ -115,8 +115,15 @@ export async function POST(request: Request) {
  */
 export async function GET(request: Request) {
   try {
+    const providerStatus = {
+      tavily: !!process.env.TAVILY_API_KEY,
+      google: !!(process.env.GOOGLE_SEARCH_API_KEY && process.env.GOOGLE_SEARCH_CX),
+      openrouter: !!process.env.OPENROUTER_API_KEY,
+      cronSecret: !!process.env.CRON_SECRET,
+    };
+
     if (!hasSupabaseAdminConfig) {
-      return NextResponse.json({ success: true, runs: [], availableStates: Object.keys(INDIA_GEOGRAPHY) });
+      return NextResponse.json({ success: true, runs: [], availableStates: Object.keys(INDIA_GEOGRAPHY), providerStatus });
     }
 
     const session = await authenticate("schools.view");
@@ -134,12 +141,7 @@ export async function GET(request: Request) {
       success: true,
       runs: runs || [],
       availableStates: Object.keys(INDIA_GEOGRAPHY),
-      providerStatus: {
-        tavily: !!process.env.TAVILY_API_KEY,
-        google: !!(process.env.GOOGLE_SEARCH_API_KEY && process.env.GOOGLE_SEARCH_CX),
-        openrouter: !!process.env.OPENROUTER_API_KEY,
-        cronSecret: !!process.env.CRON_SECRET,
-      },
+      providerStatus,
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
