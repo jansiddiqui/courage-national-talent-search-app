@@ -37,6 +37,7 @@ import {
 import { fetchRegistrations, fetchSystemSettings, updateSystemSetting, fetchContactMessages, updateContactMessage } from "@/services/supabaseService";
 import { hasSupabaseConfig } from "@/lib/supabaseClient";
 import SchoolPartnersPanel from "@/components/admin/SchoolPartnersPanel";
+import SchoolProspectsPanel from "@/components/admin/SchoolProspectsPanel";
 
 interface MetricCardProps {
   title: string;
@@ -107,7 +108,17 @@ export default function AdminOverviewPage() {
   const fetchAnalyticsData = async () => {
     setLoadingAnalytics(true);
     try {
-      const res = await fetch("/api/admin/analytics");
+      const params = new URLSearchParams();
+      if (analyticsClass !== "ALL") params.append("class", analyticsClass);
+      if (analyticsMedium !== "ALL") params.append("medium", analyticsMedium);
+      if (analyticsState !== "ALL") params.append("state", analyticsState);
+      if (analyticsDistrict !== "ALL") params.append("district", analyticsDistrict);
+      if (analyticsSchoolId !== "ALL") params.append("schoolId", analyticsSchoolId);
+      if (analyticsFromDate) params.append("from", analyticsFromDate);
+      if (analyticsToDate) params.append("to", analyticsToDate);
+      if (analyticsTimezone) params.append("timezone", analyticsTimezone);
+
+      const res = await fetch(`/api/admin/analytics?${params.toString()}`);
       if (res.ok) {
         const data = await res.json();
         if (data.success) {
@@ -152,8 +163,17 @@ export default function AdminOverviewPage() {
   const [sendingTest, setSendingTest] = useState(false);
   const [testResult, setTestResult] = useState<any>(null);
 
+  const [analyticsClass, setAnalyticsClass] = useState<string>("ALL");
+  const [analyticsMedium, setAnalyticsMedium] = useState<string>("ALL");
+  const [analyticsState, setAnalyticsState] = useState<string>("ALL");
+  const [analyticsDistrict, setAnalyticsDistrict] = useState<string>("ALL");
+  const [analyticsSchoolId, setAnalyticsSchoolId] = useState<string>("ALL");
+  const [analyticsFromDate, setAnalyticsFromDate] = useState<string>("");
+  const [analyticsToDate, setAnalyticsToDate] = useState<string>("");
+  const [analyticsTimezone, setAnalyticsTimezone] = useState<string>("Asia/Kolkata");
+
   // Tab State
-  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support" | "schools" | "cms" | "questions" | "exams" | "users" | "finance" | "reports" | "monitoring" | "audit" | "developer" | "analytics" | "revenue_analytics" | "geo_analytics" | "academy_analytics" | "exam_analytics" | "engagement_analytics" | "forecasts">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support" | "schools" | "prospects" | "cms" | "questions" | "exams" | "users" | "finance" | "reports" | "monitoring" | "audit" | "developer" | "analytics" | "revenue_analytics" | "geo_analytics" | "academy_analytics" | "exam_analytics" | "engagement_analytics" | "forecasts">("overview");
 
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
@@ -165,6 +185,12 @@ export default function AdminOverviewPage() {
       setActiveTab("overview");
     }
   }, [tabParam]);
+
+  useEffect(() => {
+    if (activeTab === "analytics" || activeTab === "revenue_analytics") {
+      fetchAnalyticsData();
+    }
+  }, [activeTab, analyticsClass, analyticsMedium, analyticsState, analyticsDistrict, analyticsSchoolId, analyticsFromDate, analyticsToDate, analyticsTimezone]);
 
   // CMS states
   const [cmsArticles, setCmsArticles] = useState<any[]>([]);
@@ -277,7 +303,6 @@ export default function AdminOverviewPage() {
   const [schoolSummaries, setSchoolSummaries] = useState<any[]>([]);
   const [loadingAnalytics, setLoadingAnalytics] = useState(false);
   const [analyticsFilterType, setAnalyticsFilterType] = useState("ALL");
-
   // Revenue Analytics states
   const [revenueKPIs, setRevenueKPIs] = useState<any>({
     grossRevenue: 284000,
@@ -1364,7 +1389,108 @@ export default function AdminOverviewPage() {
 
         {/* Tab: Intelligence (analytics) */}
         {activeTab === "analytics" && (
-          <div className="space-y-6">
+          <div className="space-y-6 animate-fade-in">
+            {/* Filter Bar */}
+            <div className="bg-white rounded-2xl border border-slate-100 p-4 shadow-sm flex flex-wrap gap-4 items-center justify-between">
+              <div className="flex flex-wrap gap-3 items-center">
+                {/* Date Filters */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date From</label>
+                  <input
+                    type="date"
+                    value={analyticsFromDate}
+                    onChange={(e) => setAnalyticsFromDate(e.target.value)}
+                    className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Date To</label>
+                  <input
+                    type="date"
+                    value={analyticsToDate}
+                    onChange={(e) => setAnalyticsToDate(e.target.value)}
+                    className="px-2.5 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+
+                {/* Class filter */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Class</label>
+                  <select
+                    value={analyticsClass}
+                    onChange={(e) => setAnalyticsClass(e.target.value)}
+                    className="px-2.5 py-1.5 border border-slate-200 bg-white rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="ALL">All Classes</option>
+                    {[1,2,3,4,5,6,7,8,9,10,11,12].map(c => (
+                      <option key={c} value={String(c)}>Class {c}</option>
+                    ))}
+                  </select>
+                </div>
+
+                {/* Medium filter */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Medium</label>
+                  <select
+                    value={analyticsMedium}
+                    onChange={(e) => setAnalyticsMedium(e.target.value)}
+                    className="px-2.5 py-1.5 border border-slate-200 bg-white rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="ALL">All Mediums</option>
+                    <option value="en">English (en)</option>
+                    <option value="hi">Hindi (hi)</option>
+                  </select>
+                </div>
+
+                {/* State filter */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">State</label>
+                  <select
+                    value={analyticsState}
+                    onChange={(e) => setAnalyticsState(e.target.value)}
+                    className="px-2.5 py-1.5 border border-slate-200 bg-white rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="ALL">All States</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Haryana">Haryana</option>
+                  </select>
+                </div>
+
+                {/* School filter */}
+                <div className="flex flex-col gap-1">
+                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">School</label>
+                  <select
+                    value={analyticsSchoolId}
+                    onChange={(e) => setAnalyticsSchoolId(e.target.value)}
+                    className="px-2.5 py-1.5 border border-slate-200 bg-white rounded-xl text-xs font-semibold text-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  >
+                    <option value="ALL">All Schools</option>
+                    {schoolSummaries?.map((s: any) => (
+                      <option key={s.school_id} value={s.school_id}>{s.school_name || s.name || s.school_id}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Reset filter button */}
+              <button
+                onClick={() => {
+                  setAnalyticsClass("ALL");
+                  setAnalyticsMedium("ALL");
+                  setAnalyticsState("ALL");
+                  setAnalyticsDistrict("ALL");
+                  setAnalyticsSchoolId("ALL");
+                  setAnalyticsFromDate("");
+                  setAnalyticsToDate("");
+                  setAnalyticsTimezone("Asia/Kolkata");
+                }}
+                className="px-3.5 py-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-500 font-semibold text-xs rounded-xl cursor-pointer transition-all"
+              >
+                Reset Filters
+              </button>
+            </div>
+
             {/* KPIs */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               <MetricCard
@@ -1595,7 +1721,16 @@ export default function AdminOverviewPage() {
                     const selectedColor = colors[index % colors.length];
 
                     return (
-                      <div key={index} className={`p-4 border rounded-2xl ${selectedColor} space-y-2`}>
+                      <div 
+                        key={index} 
+                        onClick={() => {
+                          if (geo.state) {
+                            setAnalyticsState(geo.state);
+                            showToast(`Filtered dashboard by State: ${geo.state}`);
+                          }
+                        }}
+                        className={`p-4 border rounded-2xl ${selectedColor} space-y-2 cursor-pointer hover:scale-[1.01] hover:shadow-sm transition-all`}
+                      >
                         <div className="flex justify-between items-center">
                           <span className="font-bold text-sm">{geo.state}</span>
                           <span className="px-2 py-0.5 rounded bg-white font-black text-xs border">
@@ -1689,14 +1824,23 @@ export default function AdminOverviewPage() {
                 <div className="space-y-3 pt-2">
                   {schoolSummaries.length > 0 ? (
                     schoolSummaries.map((s: any, index: number) => (
-                      <div key={index} className="flex justify-between items-center text-xs py-2 border-b border-slate-50 last:border-none">
+                      <div 
+                        key={index} 
+                        onClick={() => {
+                          if (s.school_id) {
+                            setAnalyticsSchoolId(s.school_id);
+                            showToast(`Filtered dashboard by Institutional Partner: ${s.school_name || s.name}`);
+                          }
+                        }}
+                        className="flex justify-between items-center text-xs py-2 border-b border-slate-50 last:border-none cursor-pointer hover:bg-slate-50/70 p-1.5 rounded-xl transition-all"
+                      >
                         <div className="flex items-center gap-2">
                           <span className="w-5 h-5 rounded-md bg-blue-50 text-blue-700 font-bold border border-blue-100 flex items-center justify-center text-[10px]">
                             {index + 1}
                           </span>
                           <span className="font-semibold text-slate-700 truncate max-w-[160px]">{s.school_name}</span>
                         </div>
-                        <span className="font-bold text-slate-850">{s.total_registrations} regs</span>
+                        <span className="font-bold text-slate-850">{s.total_registrations || s.total_students} regs</span>
                       </div>
                     ))
                   ) : (
@@ -3148,6 +3292,11 @@ export default function AdminOverviewPage() {
         {/* Tab 6: School Partners */}
         {activeTab === "schools" && (
           <SchoolPartnersPanel />
+        )}
+
+        {/* Tab 6b: School Prospects */}
+        {activeTab === "prospects" && (
+          <SchoolProspectsPanel />
         )}
 
         {/* Tab 8: Question Bank */}

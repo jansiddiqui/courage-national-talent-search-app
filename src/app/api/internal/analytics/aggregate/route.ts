@@ -446,6 +446,82 @@ export async function POST(request: Request) {
       }
     }
 
+    // Alerts Evaluator Engine (Phase 5)
+    try {
+      const yesterday = new Date();
+      yesterday.setDate(yesterday.getDate() - 1);
+      
+      const { data: telemetryEvents } = await db
+        .from("analytics_telemetry_events")
+        .select("event_type")
+        .gte("created_at", yesterday.toISOString());
+
+      // 1. Payment Failures Spike check
+      const paySuccess = telemetryEvents?.filter((e: any) => e.event_type === "PAYMENT_SUCCESS").length || 0;
+      const payFailed = telemetryEvents?.filter((e: any) => e.event_type === "PAYMENT_FAILED").length || 0;
+      const totalPay = paySuccess + payFailed;
+      const payFailureRate = totalPay > 0 ? (payFailed / totalPay) * 100 : 0;
+
+      const { data: existingSpike } = await db.from("analytics_alerts").select("id").eq("alert_rule", "PAYMENT_FAILURES_SPIKE").maybeSingle();
+      if (totalPay >= 10 && payFailureRate > 15) {
+        const alertObj = {
+          alert_rule: "PAYMENT_FAILURES_SPIKE",
+          severity: "CRITICAL",
+          description: `Payment failure rate is at ${payFailureRate.toFixed(2)}% (${payFailed}/${totalPay}) in the last 24 hours.`,
+          resolved: false
+        };
+        if (existingSpike?.id) {
+          await db.from("analytics_alerts").update(alertObj).eq("id", existingSpike.id);
+        } else {
+          await db.from("analytics_alerts").insert(alertObj);
+        }
+      } else {
+        await db.from("analytics_alerts").delete().eq("alert_rule", "PAYMENT_FAILURES_SPIKE");
+      }
+
+      // 2. Autosave Failure check
+      const autosaveFailedCount = telemetryEvents?.filter((e: any) => e.event_type === "EXAM_AUTOSAVE_FAILED").length || 0;
+      const { data: existingAutosave } = await db.from("analytics_alerts").select("id").eq("alert_rule", "AUTOSAVE_FAILURE").maybeSingle();
+      if (autosaveFailedCount > 10) {
+        const alertObj = {
+          alert_rule: "AUTOSAVE_FAILURE",
+          severity: "WARNING",
+          description: `High number of exam autosave failures (${autosaveFailedCount}) detected in the last 24 hours.`,
+          resolved: false
+        };
+        if (existingAutosave?.id) {
+          await db.from("analytics_alerts").update(alertObj).eq("id", existingAutosave.id);
+        } else {
+          await db.from("analytics_alerts").insert(alertObj);
+        }
+      } else {
+        await db.from("analytics_alerts").delete().eq("alert_rule", "AUTOSAVE_FAILURE");
+      }
+
+      // 3. Quota Exhaust check
+      const { data: existingQuota } = await db.from("analytics_alerts").select("id").eq("alert_rule", "SCHOOL_QUOTA_EXHAUSTED").maybeSingle();
+      const { data: schools } = await db.from("schools").select("id, name, quota, used_quota");
+      const thresholdSchools = schools?.filter((s: any) => s.quota > 0 && (s.used_quota / s.quota) >= 0.9) || [];
+      if (thresholdSchools.length > 0) {
+        const desc = `Sponsorship quota approaching limit for: ${thresholdSchools.map((s: any) => `${s.name} (${s.used_quota}/${s.quota})`).join(", ")}`;
+        const alertObj = {
+          alert_rule: "SCHOOL_QUOTA_EXHAUSTED",
+          severity: "WARNING",
+          description: desc,
+          resolved: false
+        };
+        if (existingQuota?.id) {
+          await db.from("analytics_alerts").update(alertObj).eq("id", existingQuota.id);
+        } else {
+          await db.from("analytics_alerts").insert(alertObj);
+        }
+      } else {
+        await db.from("analytics_alerts").delete().eq("alert_rule", "SCHOOL_QUOTA_EXHAUSTED");
+      }
+    } catch (alertEvalErr) {
+      console.error("[Aggregator] Alerts evaluation error:", alertEvalErr);
+    }
+
     return NextResponse.json({ success: true, message: "Aggregation pipeline executed successfully." });
 
   } catch (error: any) {

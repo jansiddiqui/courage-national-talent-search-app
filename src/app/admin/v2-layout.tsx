@@ -45,6 +45,7 @@ const linkGroups: NavGroup[] = [
     title: "Operations",
     links: [
       { href: "/admin?tab=schools", label: "School Partners", icon: School },
+      { href: "/admin?tab=prospects", label: "School Prospects", icon: School },
       { href: "/admin?tab=reports", label: "Reports Center", icon: FileText },
       { href: "/admin?tab=settings", label: "Global Settings", icon: Settings },
     ]
