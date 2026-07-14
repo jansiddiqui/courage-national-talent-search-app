@@ -50,6 +50,16 @@ const STATUS_COLORS: Record<string, string> = {
   PARTNERED: "bg-green-100 text-green-800",
 };
 
+// ─── Static state list (same as INDIA_GEOGRAPHY keys in SchoolDiscoveryService) ─
+// Hardcoded here so the state selector is never empty while the API is loading.
+const INDIA_STATES = [
+  "Andhra Pradesh", "Assam", "Bihar", "Chandigarh", "Chhattisgarh",
+  "Delhi", "Goa", "Gujarat", "Haryana", "Himachal Pradesh",
+  "Jharkhand", "Karnataka", "Kerala", "Madhya Pradesh", "Maharashtra",
+  "Odisha", "Puducherry", "Punjab", "Rajasthan", "Tamil Nadu",
+  "Telangana", "Uttar Pradesh", "Uttarakhand", "West Bengal",
+];
+
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export default function SchoolProspectsPanel() {
@@ -91,7 +101,7 @@ export default function SchoolProspectsPanel() {
   const [activeRun, setActiveRun] = useState<DiscoveryRun | null>(null);
   const [recentRuns, setRecentRuns] = useState<DiscoveryRun[]>([]);
   const [providerStatus, setProviderStatus] = useState<ProviderStatus | null>(null);
-  const [allStates, setAllStates] = useState<string[]>([]);
+  const [allStates, setAllStates] = useState<string[]>(INDIA_STATES);
 
   // ── State: Outreach tracking (detail) ──
   const [editingOutreach, setEditingOutreach] = useState(false);
