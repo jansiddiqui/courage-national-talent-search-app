@@ -59,6 +59,12 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   const [appliedDiscount, setAppliedDiscount] = useState(0); // 0%, 25%, 50%
   const [finalPrice, setFinalPrice] = useState(99);
 
+  // School validation state
+  const [schoolData, setSchoolData] = useState<any>(null);
+  const [schoolLoading, setSchoolLoading] = useState(false);
+  const [schoolError, setSchoolError] = useState("");
+  const [schoolSuccess, setSchoolSuccess] = useState(false);
+
   // Dynamically calculate final price based on school sponsorship and coupon discounts
   useEffect(() => {
     let basePrice = 99;
@@ -82,12 +88,6 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   // Sandbox modal state
   const [showSandboxModal, setShowSandboxModal] = useState(false);
   const [sandboxOrderDetails, setSandboxOrderDetails] = useState<any>(null);
-
-  // School validation state
-  const [schoolData, setSchoolData] = useState<any>(null);
-  const [schoolLoading, setSchoolLoading] = useState(false);
-  const [schoolError, setSchoolError] = useState("");
-  const [schoolSuccess, setSchoolSuccess] = useState(false);
 
   // Mobile verification and registration draft states
   const [draftRegId, setDraftRegId] = useState("");
