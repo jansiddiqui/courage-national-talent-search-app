@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { User } from "lucide-react";
 import { TIMELINE_LABELS } from "@/config/timeline";
 
@@ -14,6 +14,8 @@ interface CandidateIdentityCardProps {
 }
 
 export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps) {
+  const [imageLoading, setImageLoading] = useState(true);
+
   return (
     <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-950 text-white rounded-3xl border border-indigo-900/40 p-6 sm:p-8 shadow-xl relative overflow-hidden group">
       <div className="absolute top-0 right-0 w-48 h-48 bg-blue-800/20 rounded-full blur-3xl pointer-events-none -translate-y-1/2 translate-x-1/2" />
@@ -43,11 +45,20 @@ export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps)
         {/* Body Info */}
         <div className="grid grid-cols-4 sm:grid-cols-5 gap-4 sm:gap-6 items-center">
           <div className="col-span-1 border border-white/10 rounded-xl bg-white/5 aspect-[3/4] flex flex-col items-center justify-center text-center relative overflow-hidden group-hover:border-white/20 transition-colors">
+            {imageLoading && (
+              <div className="absolute inset-0 flex items-center justify-center z-20 bg-slate-950/20">
+                <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+              </div>
+            )}
             <img 
               src={candidate.photo_url || `/api/photo/${candidate.registration_id}`} 
               alt="Candidate Photo" 
-              className="w-full h-full object-cover rounded-xl z-10 relative" 
+              className={`w-full h-full object-cover rounded-xl z-10 relative transition-opacity duration-300 ${
+                imageLoading ? "opacity-0" : "opacity-100"
+              }`}
+              onLoad={() => setImageLoading(false)}
               onError={(e) => {
+                setImageLoading(false);
                 e.currentTarget.style.display = 'none';
                 e.currentTarget.nextElementSibling?.classList.remove('hidden');
               }} 
