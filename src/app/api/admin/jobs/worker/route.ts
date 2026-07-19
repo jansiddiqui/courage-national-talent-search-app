@@ -24,7 +24,11 @@ import { SchoolEnrichmentService } from "@/domains/school-intelligence/SchoolEnr
 import { SchoolDiscoveryService } from "@/domains/school-intelligence/SchoolDiscoveryService";
 
 const CRON_SECRET = process.env.CRON_SECRET;
-const JOB_LEASE_SECONDS = 300; // 5 minutes
+const JOB_LEASE_SECONDS = 120; // 2 minutes
+
+if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
+  process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+}
 
 export async function POST(request: Request) {
   // Fail closed: if CRON_SECRET is not configured, refuse all requests
@@ -46,60 +50,132 @@ export async function POST(request: Request) {
   const failedJobs: string[] = [];
 
   // Phase 1: Recover stale PROCESSING jobs that have exceeded their lease
-  const leaseThreshold = new Date(Date.now() - JOB_LEASE_SECONDS * 1000).toISOString();
-  await (supabaseAdmin as any)
-    .from("admin_background_jobs")
-    .update({ status: "PENDING", worker_id: null })
-    .eq("status", "PROCESSING")
-    .lt("processing_started_at", leaseThreshold);
-
-  // Phase 2: Atomically claim up to 5 PENDING jobs
-  for (let i = 0; i < 5; i++) {
-    const { data: claimed, error: claimErr } = await (supabaseAdmin as any)
+  try {
+    const staleTime = new Date(Date.now() - JOB_LEASE_SECONDS * 1000).toISOString();
+    
+    // Fetch all stale processing jobs
+    const { data: staleJobs, error: staleFetchErr } = await (supabaseAdmin as any)
       .from("admin_background_jobs")
-      .update({
-        status: "PROCESSING",
-        worker_id: workerId,
-        processing_started_at: new Date().toISOString()
+      .select("id, job_type, payload, attempts, max_attempts")
+      .eq("status", "PROCESSING")
+      .lte("locked_at", staleTime);
+
+    if (!staleFetchErr && staleJobs && staleJobs.length > 0) {
+      console.log(`[Worker] Found ${staleJobs.length} stale processing jobs. Recovering...`);
+      for (const job of staleJobs) {
+        const nextAttempts = (job.attempts || 0) + 1;
+        const maxAttempts = job.max_attempts || 3;
+        const isFailed = nextAttempts >= maxAttempts;
+        const prospectId = job.job_type === "SCHOOL_PROSPECT_ENRICH" ? job.payload?.prospectId : null;
+        
+        await (supabaseAdmin as any)
+          .from("admin_background_jobs")
+          .update({
+            status: isFailed ? "FAILED" : "RETRY_PENDING",
+            attempts: nextAttempts,
+            locked_by: null,
+            locked_at: null,
+            error_logs: "Job lease expired (worker crashed or did not complete in time)",
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", job.id);
+
+        if (prospectId) {
+          await (supabaseAdmin as any)
+            .from("school_prospects")
+            .update({
+              enrichment_status: isFailed ? "FAILED" : "PENDING",
+              error_logs: "Job lease expired (worker crashed or did not complete in time)",
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", prospectId);
+        }
+      }
+    }
+  } catch (recoverErr) {
+    console.error("[Worker] Error recovering stale jobs in JS:", recoverErr);
+  }
+
+  // Fallback database RPC recovery call
+  await (supabaseAdmin as any).rpc("recover_stale_admin_jobs", {
+    p_lease_seconds: JOB_LEASE_SECONDS
+  });
+
+  // Phase 2: Atomically claim and process jobs until max time is reached
+  const startTime = Date.now();
+  const maxExecutionTimeMs = 45000; // 45 seconds limit (safe for local dev/paid servers)
+
+  while (Date.now() - startTime < maxExecutionTimeMs) {
+    const { data: claimed, error: claimErr } = await (supabaseAdmin as any)
+      .rpc("claim_next_admin_job", {
+        p_worker_id: workerId,
+        p_lease_seconds: JOB_LEASE_SECONDS
       })
-      .eq("status", "PENDING")
-      .lte("run_at", new Date().toISOString())
-      .is("cancellation_requested_at", null)
-      .order("run_at", { ascending: true })
-      .limit(1)
-      .select()
       .maybeSingle();
 
     if (claimErr || !claimed) break;
 
     try {
-      await executeJob(claimed);
+      const result = await executeJob(claimed);
 
-      await (supabaseAdmin as any)
-        .from("admin_background_jobs")
-        .update({
-          status: "COMPLETED",
-          completed_at: new Date().toISOString()
-        })
-        .eq("id", claimed.id);
+      if (result && result.completed === false) {
+        await (supabaseAdmin as any)
+          .from("admin_background_jobs")
+          .update({
+            status: "PENDING",
+            payload: result.payload,
+            locked_by: null,
+            locked_at: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", claimed.id);
+      } else {
+        await (supabaseAdmin as any)
+          .from("admin_background_jobs")
+          .update({
+            status: "COMPLETED",
+            locked_by: null,
+            locked_at: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", claimed.id);
+      }
 
       processedJobs.push(claimed.id);
+      // Respect LLM rate limits by delaying 2.5 seconds between jobs
+      await new Promise(r => setTimeout(r, 2500));
     } catch (err: any) {
       const errorMessage = err instanceof Error ? err.message : String(err);
-      const retryCount = (claimed.retry_count || 0) + 1;
-      const maxRetries = claimed.max_retries || 3;
+      const retryCount = (claimed.attempts || 0) + 1;
+      const maxRetries = claimed.max_attempts || 3;
       const isDeprecated = errorMessage.includes("Job type deprecated");
+
+      const prospectId = claimed.job_type === "SCHOOL_PROSPECT_ENRICH" ? claimed.payload?.prospectId : null;
 
       if (retryCount >= maxRetries || isDeprecated) {
         await (supabaseAdmin as any)
           .from("admin_background_jobs")
           .update({
             status: "FAILED",
-            error_message: errorMessage,
-            failed_at: new Date().toISOString(),
-            retry_count: retryCount
+            error_logs: errorMessage,
+            attempts: retryCount,
+            locked_by: null,
+            locked_at: null,
+            updated_at: new Date().toISOString()
           })
           .eq("id", claimed.id);
+
+        if (prospectId) {
+          const isGenericEnrichError = errorMessage.includes("School enrichment failed for prospect");
+          await (supabaseAdmin as any)
+            .from("school_prospects")
+            .update({
+              enrichment_status: "FAILED",
+              ...(isGenericEnrichError ? {} : { error_logs: errorMessage }),
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", prospectId);
+        }
       } else {
         // Exponential backoff: 2^retryCount minutes
         const nextRunAt = new Date(Date.now() + Math.pow(2, retryCount) * 60 * 1000).toISOString();
@@ -107,17 +183,33 @@ export async function POST(request: Request) {
           .from("admin_background_jobs")
           .update({
             status: "RETRY_PENDING",
-            error_message: errorMessage,
-            retry_count: retryCount,
-            run_at: nextRunAt
+            error_logs: errorMessage,
+            attempts: retryCount,
+            next_retry_at: nextRunAt,
+            locked_by: null,
+            locked_at: null,
+            updated_at: new Date().toISOString()
           })
           .eq("id", claimed.id);
+
+        if (prospectId) {
+          const isGenericEnrichError = errorMessage.includes("School enrichment failed for prospect");
+          await (supabaseAdmin as any)
+            .from("school_prospects")
+            .update({
+              enrichment_status: "PENDING",
+              ...(isGenericEnrichError ? {} : { error_logs: errorMessage }),
+              updated_at: new Date().toISOString()
+            })
+            .eq("id", prospectId);
+        }
       }
 
       failedJobs.push(claimed.id);
     }
   }
 
+  // Phase 3: Write audit trail of what was processed
   if (processedJobs.length > 0 || failedJobs.length > 0) {
     await writeAuditEntry(supabaseAdmin, {
       actorId: workerId,
@@ -128,6 +220,33 @@ export async function POST(request: Request) {
       newValue: { processedJobs, failedJobs, workerId },
       ipAddress: request.headers.get("x-forwarded-for") || "worker"
     });
+  }
+
+  // Phase 4: Self-trigger recursively if there are still pending/retry-ready jobs
+  try {
+    const { count, error: countErr } = await (supabaseAdmin as any)
+      .from("admin_background_jobs")
+      .select("id", { count: "exact", head: true })
+      .in("status", ["PENDING", "RETRY_PENDING"])
+      .lte("next_retry_at", new Date().toISOString());
+
+    if (!countErr && count && count > 0) {
+      const requestUrl = new URL(request.url);
+      const workerUrl = `${requestUrl.origin}/api/admin/jobs/worker`;
+      
+      console.log(`[Worker] There are still ${count} pending/retry jobs. Triggering self asynchronously...`);
+      fetch(workerUrl, {
+        method: "POST",
+        headers: {
+          "x-cron-secret": CRON_SECRET || "",
+          "Content-Type": "application/json",
+        },
+      }).catch(err => {
+        console.error("[Worker self-trigger error]", err);
+      });
+    }
+  } catch (selfTriggerErr) {
+    console.error("[Worker self-trigger check failed]", selfTriggerErr);
   }
 
   return NextResponse.json({
@@ -143,7 +262,7 @@ export async function POST(request: Request) {
  * Dispatches execution of a claimed job based on its job_type.
  * Add new job types here as they are introduced.
  */
-async function executeJob(job: any): Promise<void> {
+async function executeJob(job: any): Promise<{ completed: boolean; payload: any } | void> {
   const { job_type, payload } = job;
 
   switch (job_type) {
@@ -182,6 +301,25 @@ async function executeJob(job: any): Promise<void> {
     case "SCHOOL_PROSPECT_ENRICH": {
       const prospectId = payload.prospectId;
       if (!prospectId) throw new Error("Missing prospectId in SCHOOL_PROSPECT_ENRICH payload");
+      
+      const { data: exists } = await (supabaseAdmin as any)
+        .from("school_prospects")
+        .select("id")
+        .eq("id", prospectId)
+        .maybeSingle();
+
+      if (!exists) {
+        await (supabaseAdmin as any)
+          .from("admin_background_jobs")
+          .update({
+            status: "FAILED",
+            error_logs: `Prospect ${prospectId} was deleted.`,
+            updated_at: new Date().toISOString()
+          })
+          .eq("id", job.id);
+        return { completed: true, payload: job.payload };
+      }
+
       const success = await SchoolEnrichmentService.enrichProspect(prospectId);
       if (!success) throw new Error(`School enrichment failed for prospect: ${prospectId}`);
       break;
@@ -189,9 +327,9 @@ async function executeJob(job: any): Promise<void> {
     case "SCHOOL_DISCOVERY_RUN": {
       const { runId } = payload;
       if (!runId) throw new Error("Missing runId in SCHOOL_DISCOVERY_RUN payload");
-      const progress = await SchoolDiscoveryService.executeDiscoveryRun(runId);
-      console.log(`[Worker] Discovery run ${runId} completed. Persisted: ${progress.candidatesPersisted}`);
-      break;
+      const result = await SchoolDiscoveryService.executeDiscoveryRun(runId, job);
+      console.log(`[Worker] Discovery run ${runId} batch completed. Persisted: ${result.progress.candidatesPersisted}`);
+      return { completed: result.completed, payload: result.updatedJobPayload };
     }
     default:
       throw new Error(`Unknown job_type: ${job_type}`);

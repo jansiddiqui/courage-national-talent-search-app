@@ -81,7 +81,15 @@ export default function AdminRegistrationsPage() {
         setRegistrations(dbData);
         setIsDemoMode(false);
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e.message === "Require Re-Auth") {
+        router.push("/admin/verify-2fa");
+        return;
+      }
+      if (e.message === "Unauthorized") {
+        router.push("/login");
+        return;
+      }
       console.error("Failed to fetch registrations", e);
       setRegistrations(MOCK_REGISTRATIONS);
       setIsDemoMode(true);

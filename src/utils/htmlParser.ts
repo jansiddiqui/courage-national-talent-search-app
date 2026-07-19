@@ -1,14 +1,42 @@
 export function stripHtml(html: string): string {
   if (!html) return "";
 
-  // Strip script and style blocks completely
-  let clean = html.replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, "");
+  let result = "";
+  let currentIndex = 0;
 
-  // Strip other tags
-  clean = clean.replace(/<[^>]+>/g, " ");
+  while (currentIndex < html.length) {
+    const nextTagStart = html.indexOf("<", currentIndex);
+    if (nextTagStart === -1) {
+      result += html.substring(currentIndex);
+      break;
+    }
+
+    result += html.substring(currentIndex, nextTagStart);
+
+    const tagContent = html.substring(nextTagStart, nextTagStart + 15).toLowerCase();
+    
+    if (tagContent.startsWith("<script") || tagContent.startsWith("<style")) {
+      const isScript = tagContent.startsWith("<script");
+      const closeTag = isScript ? "</script>" : "</style>";
+      
+      const nextTagEnd = html.toLowerCase().indexOf(closeTag, nextTagStart);
+      if (nextTagEnd === -1) {
+        break;
+      }
+      currentIndex = nextTagEnd + closeTag.length;
+    } else {
+      const nextTagEnd = html.indexOf(">", nextTagStart);
+      if (nextTagEnd === -1) {
+        result += html.substring(nextTagStart);
+        break;
+      }
+      result += " ";
+      currentIndex = nextTagEnd + 1;
+    }
+  }
 
   // Decode basic HTML entities
-  clean = clean
+  let clean = result
     .replace(/&nbsp;/gi, " ")
     .replace(/&amp;/gi, "&")
     .replace(/&lt;/gi, "<")

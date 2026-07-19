@@ -41,31 +41,49 @@ export async function GET() {
       return NextResponse.json({ success: false, message: "Forbidden." }, { status: 403 });
     }
 
-    // Single query for all enrichment status counts
-    const { data: enrichCounts } = await (supabaseAdmin as any)
-      .from("school_prospects")
-      .select("enrichment_status, outreach_status, outreach_score, state");
-
-    const rows: any[] = enrichCounts || [];
-
-    const stats = {
-      total: rows.length,
-      pending: rows.filter(r => r.enrichment_status === "PENDING").length,
-      processing: rows.filter(r => r.enrichment_status === "PROCESSING").length,
-      completed: rows.filter(r => r.enrichment_status === "COMPLETED").length,
-      partial: rows.filter(r => r.enrichment_status === "PARTIAL").length,
-      failed: rows.filter(r => r.enrichment_status === "FAILED").length,
-      retryPending: rows.filter(r => r.enrichment_status === "RETRY_PENDING").length,
-      highFit: rows.filter(r => r.outreach_score >= 70).length,
-      readyForOutreach: rows.filter(r => r.outreach_status === "READY_FOR_OUTREACH").length,
-      contacted: rows.filter(r => ["CONTACTED", "FOLLOW_UP_DUE", "REPLIED", "INTERESTED", "MEETING_SCHEDULED", "PARTNERED"].includes(r.outreach_status)).length,
-      interested: rows.filter(r => ["INTERESTED", "MEETING_SCHEDULED"].includes(r.outreach_status)).length,
-      partnered: rows.filter(r => r.outreach_status === "PARTNERED").length,
+    // Run database-level count queries in parallel (bypasses 1000 row select cap)
+    const countQueries = {
+      total: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }),
+      pending: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "PENDING"),
+      processing: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "PROCESSING"),
+      completed: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "COMPLETED"),
+      partial: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "PARTIAL"),
+      failed: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "FAILED"),
+      retryPending: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "RETRY_PENDING"),
+      highFit: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).gte("outreach_score", 70),
+      readyForOutreach: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("outreach_status", "READY_FOR_OUTREACH"),
+      contacted: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).in("outreach_status", ["CONTACTED", "FOLLOW_UP_DUE", "REPLIED", "INTERESTED", "MEETING_SCHEDULED", "PARTNERED"]),
+      interested: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).in("outreach_status", ["INTERESTED", "MEETING_SCHEDULED"]),
+      partnered: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("outreach_status", "PARTNERED"),
     };
 
-    // Get distinct states from actual data
+    const countKeys = Object.keys(countQueries);
+    const countPromises = Object.values(countQueries);
+
+    const [countsResult, pagesResults, { count: activeJobsCount }] = await Promise.all([
+      Promise.all(countPromises),
+      Promise.all([
+        (supabaseAdmin as any).from("school_prospects").select("state").not("state", "is", null).range(0, 999),
+        (supabaseAdmin as any).from("school_prospects").select("state").not("state", "is", null).range(1000, 1999),
+        (supabaseAdmin as any).from("school_prospects").select("state").not("state", "is", null).range(2000, 2999),
+      ]),
+      (supabaseAdmin as any)
+        .from("admin_background_jobs")
+        .select("id", { count: "exact", head: true })
+        .eq("job_type", "SCHOOL_PROSPECT_ENRICH")
+        .in("status", ["PENDING", "PROCESSING", "RETRY_PENDING"])
+    ]);
+
+    const stats: any = {};
+    countKeys.forEach((key, idx) => {
+      stats[key] = (countsResult[idx] as any).count || 0;
+    });
+    stats.activeJobs = activeJobsCount || 0;
+
+    // Get distinct states from fetched data
+    const stateRows = pagesResults.flatMap((r: any) => r.data || []);
     const stateSet = new Set<string>();
-    for (const row of rows) {
+    for (const row of stateRows) {
       if (row.state) stateSet.add(row.state);
     }
     const states = Array.from(stateSet).sort();

@@ -72,9 +72,9 @@ export async function createBroadcastCampaign(
         recipientCount: candidates.length,
         actorId: params.actorId,
       },
-      run_at: new Date().toISOString(),
-      max_retries: 3,
-      retry_count: 0,
+      next_retry_at: new Date().toISOString(),
+      max_attempts: 3,
+      attempts: 0,
     })
     .select("id")
     .single();

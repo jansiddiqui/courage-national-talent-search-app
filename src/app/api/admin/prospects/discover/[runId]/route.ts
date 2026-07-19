@@ -47,7 +47,15 @@ export async function GET(
       return NextResponse.json({ success: false, message: "Discovery run not found." }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, run });
+    // Fetch up to 5 recently discovered schools for this run for live logging
+    const { data: recentSchools } = await (supabaseAdmin as any)
+      .from("school_prospects")
+      .select("id, name, city, state, created_at")
+      .eq("source_identifier", runId)
+      .order("created_at", { ascending: false })
+      .limit(5);
+
+    return NextResponse.json({ success: true, run, recentSchools: recentSchools || [] });
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }

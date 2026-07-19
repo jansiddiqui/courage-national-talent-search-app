@@ -51,3 +51,46 @@ export interface SchoolProspect {
   created_at?: string;
   updated_at?: string;
 }
+
+export interface CanonicalCandidate {
+  source: string;
+  source_record_id?: string | null;
+  school_name: string;
+  normalized_name: string;
+  affiliation_number?: string | null;
+  board?: string | null;
+  state: string;
+  district?: string | null;
+  city: string;
+  website?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  source_url?: string | null;
+  source_confidence?: number | null;
+  raw_source_payload?: any;
+}
+
+export interface SchoolCandidateCollector {
+  sourceId: string;
+  collect(query: string, page: number): Promise<CanonicalCandidate[]>;
+}
+
+export interface DiscoveryScope {
+  type: "ALL_INDIA" | "SELECTED_STATES" | "SELECTED_DISTRICTS";
+  selectedStates?: string[];
+  selectedDistricts?: string[];
+  targetCount: number;
+}
+
+export interface DiscoveryProgress {
+  geographiesPlanned: number;
+  geographiesCompleted: number;
+  queriesPlanned: number;
+  queriesCompleted: number;
+  queriesFailed: number;
+  rawCandidatesFound: number;
+  uniqueCandidatesFound: number;
+  duplicatesRemoved: number;
+  candidatesPersisted: number;
+}
+

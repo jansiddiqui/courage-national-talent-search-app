@@ -298,18 +298,18 @@ export async function saveContactMessage(data: ContactMessageInput): Promise<boo
  */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export async function fetchRegistrations(): Promise<any[]> {
-  try {
-    const res = await fetch("/api/registrations");
-    if (!res.ok) {
-      console.warn("API registrations fetch returned status:", res.status);
-      return [];
-    }
-    const data = await res.json();
-    return data.registrations || [];
-  } catch (err) {
-    console.error("fetchRegistrations error:", err);
-    return [];
+  const res = await fetch("/api/registrations");
+  if (!res.ok) {
+    const text = await res.text();
+    let msg = `API registrations fetch failed (HTTP ${res.status})`;
+    try {
+      const parsed = JSON.parse(text);
+      if (parsed.message) msg = parsed.message;
+    } catch (_) {}
+    throw new Error(msg);
   }
+  const data = await res.json();
+  return data.registrations || [];
 }
 
 /**

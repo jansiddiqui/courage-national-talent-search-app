@@ -4,7 +4,8 @@ import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
 import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
 import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
-import { SchoolDiscoveryService, DiscoveryScope, INDIA_GEOGRAPHY } from "@/domains/school-intelligence/SchoolDiscoveryService";
+import { SchoolDiscoveryService, INDIA_GEOGRAPHY } from "@/domains/school-intelligence/SchoolDiscoveryService";
+import { DiscoveryScope } from "@/domains/school-intelligence/types";
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
@@ -82,7 +83,7 @@ export async function POST(request: Request) {
         status: "PENDING",
         payload: { runId, scope },
         idempotency_key: idempotencyKey,
-        run_at: new Date().toISOString(),
+        next_retry_at: new Date().toISOString(),
       });
 
     const ip = request.headers.get("x-forwarded-for") || "unknown";
@@ -96,18 +97,22 @@ export async function POST(request: Request) {
       ipAddress: ip,
     });
 
+    // Worker will pick up the PENDING job on the next cron execution or worker trigger.
+    // To trigger it immediately in development, the UI or background polling will ping the worker.
+    
     return NextResponse.json({
       success: true,
       runId,
       geographiesPlanned: geographies.length,
       queriesPlanned: geographies.length * 7, // 7 query templates
       targetCount: scope.targetCount,
-      message: "Discovery run queued. Poll /api/admin/prospects/discover/{runId} for progress.",
+      message: "Discovery run queued successfully in background jobs.",
     });
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }
 }
+
 
 /**
  * GET /api/admin/prospects/discover
@@ -119,6 +124,7 @@ export async function GET(request: Request) {
       tavily: !!process.env.TAVILY_API_KEY,
       google: !!(process.env.GOOGLE_SEARCH_API_KEY && process.env.GOOGLE_SEARCH_CX),
       openrouter: !!process.env.OPENROUTER_API_KEY,
+      groq: !!process.env.GROQ_API_KEY,
       cronSecret: !!process.env.CRON_SECRET,
     };
 

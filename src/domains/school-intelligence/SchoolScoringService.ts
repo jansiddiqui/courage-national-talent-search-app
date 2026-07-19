@@ -1,4 +1,4 @@
-import { AIExtractedIntelligence, SchoolProspect } from "./types";
+import { AIExtractedIntelligence } from "./types";
 
 export interface ScoreDetails {
   totalScore: number;
@@ -46,10 +46,14 @@ export class SchoolScoringService {
     let confidenceCount = 0;
 
     const trackConfidence = (claim: any) => {
-      if (claim && typeof claim.confidence === "number" && claim.status !== "UNKNOWN") {
-        totalConfidence += claim.confidence;
-        confidenceCount++;
+      if (claim) {
+        if (claim.status === "UNKNOWN") {
+          totalConfidence += 0;
+        } else if (typeof claim.confidence === "number") {
+          totalConfidence += claim.confidence;
+        }
       }
+      confidenceCount++;
     };
 
     // 1. Target Classes Offered (Weight: 20)
@@ -57,7 +61,6 @@ export class SchoolScoringService {
     trackConfidence(classes);
     if (classes && classes.value) {
       const text = classes.value.toLowerCase();
-      // Check if it includes target classes 5, 6, 7, or 8
       const hasTargetClass = text.includes("5") || text.includes("6") || text.includes("7") || text.includes("8") || 
                              text.includes("five") || text.includes("six") || text.includes("seven") || text.includes("eight") ||
                              text.includes("middle") || text.includes("primary") || text.includes("secondary") || text.includes("12");

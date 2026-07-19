@@ -34,6 +34,7 @@ import { Country, State, City } from "country-state-city";
 import SearchableSelect from "@/components/registration/SearchableSelect";
 import { saveRegistration, updateRegistrationStatus, updateRegistrationData, uploadCandidatePhoto } from "@/services/supabaseService";
 import PhotoUploader from "@/components/registration/PhotoUploader";
+import CustomDatePicker from "@/components/shared/CustomDatePicker";
 import { BlogPost } from "@/lib/blog";
 import { TIMELINE, getTimelineDates } from "@/config/timeline";
 
@@ -99,7 +100,6 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
 
   const [errors, setErrors] = useState<Partial<Record<keyof RegistrationData, string>>>({});
   const [touched, setTouched] = useState<Partial<Record<keyof RegistrationData, boolean>>>({});
-
 
 
   // Restore state from sessionStorage on mount and load query params
@@ -477,11 +477,12 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
     }
   };
 
-  const handleBlur = (name: keyof RegistrationData) => {
-    setTouched(prev => ({ ...prev, [name]: true }));
-    const errorMsg = validateField(name, (formData[name] as any) || "");
-    setErrors(prev => ({ ...prev, [name]: errorMsg }));
-  };
+   const handleBlur = (name: keyof RegistrationData, customValue?: string) => {
+     setTouched(prev => ({ ...prev, [name]: true }));
+     const val = customValue !== undefined ? customValue : ((formData[name] as any) || "");
+     const errorMsg = validateField(name, val);
+     setErrors(prev => ({ ...prev, [name]: errorMsg }));
+   };
 
   const handleSameAsCheckboxChange = (checked: boolean) => {
     setWhatsappSameAsMobile(checked);
@@ -1245,32 +1246,29 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                     )}
                   </div>
 
-                  {/* Date of Birth */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="dob" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                      <Calendar size={13} className="text-slate-400" />
-                      Date of Birth <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
-                      id="dob"
-                      value={formData.dob}
-                      onChange={(e) => handleInputChange("dob", e.target.value)}
-                      onBlur={() => handleBlur("dob")}
-                      className={`w-full px-4 py-3 rounded-xl border bg-slate-50/50 text-sm outline-none transition-all duration-200 ${
-                        touched.dob && errors.dob
-                          ? "border-red-300 bg-red-50/10 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
-                          : "border-slate-200 focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10"
-                      }`}
-                      aria-invalid={touched.dob && !!errors.dob}
-                      aria-describedby={errors.dob ? "dob-error" : undefined}
-                    />
-                    {touched.dob && errors.dob && (
-                      <p id="dob-error" className="text-xs text-red-500 font-medium">
-                        {errors.dob}
-                      </p>
-                    )}
-                  </div>
+                   {/* Date of Birth */}
+                   <div className="space-y-1.5">
+                     <label htmlFor="dob" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                       <Calendar size={13} className="text-slate-400" />
+                       Date of Birth <span className="text-red-500">*</span>
+                     </label>
+                     <CustomDatePicker
+                       id="dob"
+                       value={formData.dob}
+                       onChange={(val) => handleInputChange("dob", val)}
+                       onBlur={(val) => handleBlur("dob", val)}
+                       className={`w-full px-4 py-3 rounded-xl border bg-slate-50/50 text-sm outline-none transition-all duration-200 ${
+                         touched.dob && errors.dob
+                           ? "border-red-300 bg-red-50/10 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+                           : "border-slate-200 focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10"
+                       }`}
+                     />
+                     {touched.dob && errors.dob && (
+                       <p id="dob-error" className="text-xs text-red-500 font-medium">
+                         {errors.dob}
+                       </p>
+                     )}
+                   </div>
 
                   {/* Class Selection */}
                   <div className="space-y-1.5">

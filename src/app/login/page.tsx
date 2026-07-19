@@ -20,6 +20,7 @@ import {
   School
 } from "lucide-react";
 import { authService } from "@/services/authService";
+import CustomDatePicker from "@/components/shared/CustomDatePicker";
 
 type LoginTab = "credentials" | "magic-link" | "school";
 
@@ -34,6 +35,7 @@ export default function LoginPage() {
   const [cntsId, setCntsId] = useState("");
   const [dob, setDob] = useState("");
   
+
   // Magic link form state
   const [email, setEmail] = useState("");
   
@@ -401,21 +403,20 @@ export default function LoginPage() {
                     />
                   </div>
 
-                  {/* Date of Birth */}
-                  <div className="space-y-1.5">
-                    <label htmlFor="dob" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
-                      <Calendar size={12} className="text-slate-400" />
-                      Student Date of Birth
-                    </label>
-                    <input
-                      type="date"
-                      id="dob"
-                      value={dob}
-                      onChange={(e) => setDob(e.target.value)}
-                      className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-sm rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all font-semibold"
-                      disabled={loading}
-                    />
-                  </div>
+                   {/* Date of Birth */}
+                   <div className="space-y-1.5">
+                     <label htmlFor="dob" className="text-xs font-semibold text-slate-700 flex items-center gap-1">
+                       <Calendar size={12} className="text-slate-400" />
+                       Student Date of Birth
+                     </label>
+                     <CustomDatePicker
+                       id="dob"
+                       value={dob}
+                       onChange={setDob}
+                       className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-sm rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all font-semibold"
+                       disabled={loading}
+                     />
+                   </div>
                 </div>
 
                 <div className="flex justify-between items-center pt-1">

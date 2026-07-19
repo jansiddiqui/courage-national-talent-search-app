@@ -19,7 +19,8 @@ import {
   Settings, 
   Percent, 
   Menu, 
-  X 
+  X,
+  Compass
 } from "lucide-react";
 
 interface NavLink {
@@ -45,7 +46,7 @@ const linkGroups: NavGroup[] = [
     title: "Operations",
     links: [
       { href: "/admin?tab=schools", label: "School Partners", icon: School },
-      { href: "/admin?tab=prospects", label: "School Prospects", icon: School },
+      { href: "/admin?tab=prospects", label: "Discovery Engine", icon: Compass },
       { href: "/admin?tab=reports", label: "Reports Center", icon: FileText },
       { href: "/admin?tab=settings", label: "Global Settings", icon: Settings },
     ]

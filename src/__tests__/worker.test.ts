@@ -18,6 +18,7 @@ import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 jest.mock("@/lib/supabaseAdmin", () => ({
   supabaseAdmin: {
     from: jest.fn(),
+    rpc: jest.fn(),
     storage: {
       createBucket: jest.fn().mockResolvedValue({ error: null }),
       from: jest.fn()
@@ -38,6 +39,7 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
       in: jest.fn().mockImplementation(() => chain),
       lte: jest.fn().mockImplementation(() => chain),
       is: jest.fn().mockImplementation(() => chain),
+      or: jest.fn().mockImplementation(() => chain),
       maybeSingle: jest.fn().mockImplementation(() => Promise.resolve({ data: data[0] || null, error: null })),
       single: jest.fn().mockImplementation(() => Promise.resolve({ data: data[0] || null, error: null })),
       order: jest.fn().mockImplementation(() => chain),
@@ -51,8 +53,31 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
     return chain;
   };
 
+  let activeMockJobs: any[] = [];
+  let claimCount = 0;
+
   beforeEach(() => {
     jest.clearAllMocks();
+    activeMockJobs = [];
+    claimCount = 0;
+
+    (supabaseAdmin.rpc as jest.Mock).mockImplementation((fn: string, params: any) => {
+      if (fn === "recover_stale_admin_jobs") {
+        return Promise.resolve({ data: 0, error: null });
+      }
+      if (fn === "claim_next_admin_job") {
+        return {
+          maybeSingle: () => {
+            claimCount++;
+            if (claimCount === 1) {
+              return Promise.resolve({ data: activeMockJobs[0] || null, error: null });
+            }
+            return Promise.resolve({ data: null, error: null });
+          }
+        };
+      }
+      return Promise.resolve({ data: null, error: null });
+    });
   });
 
   it("should fail FULL_EXPORT for backward compatibility and set deprecation error", async () => {
@@ -62,10 +87,12 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
         job_type: "FULL_EXPORT",
         status: "PENDING",
         payload: { requested_by: "admin-user" },
-        retry_count: 0,
-        max_retries: 3
+        attempts: 0,
+        max_attempts: 3
       }
     ];
+
+    activeMockJobs = mockJobs;
 
     const tableChains: Record<string, any> = {};
     const getChain = (table: string, data: any[]) => {
@@ -76,10 +103,6 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
     };
 
     (supabaseAdmin.from as jest.Mock).mockImplementation((table: string) => {
-      if (table === "admin_background_jobs") {
-        // First call claims job, second mock returns deprecated job details
-        return getChain(table, mockJobs);
-      }
       return getChain(table, []);
     });
 
@@ -95,7 +118,7 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
     expect(updateSpy).toHaveBeenCalledWith(
       expect.objectContaining({
         status: "FAILED",
-        error_message: "Job type deprecated. Admin must request exports separately (Registrations, Results, or Ledger)."
+        error_logs: "Job type deprecated. Admin must request exports separately (Registrations, Results, or Ledger)."
       })
     );
   });
@@ -107,8 +130,8 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
         job_type: "REGISTRATIONS_EXPORT",
         status: "PENDING",
         payload: { filters: { state: "Delhi" }, requested_by: "admin-user" },
-        retry_count: 0,
-        max_retries: 3
+        attempts: 0,
+        max_attempts: 3
       }
     ];
 
@@ -128,6 +151,8 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
       }
     ];
 
+    activeMockJobs = mockJobs;
+
     const tableChains: Record<string, any> = {};
     const getChain = (table: string, data: any[]) => {
       if (!tableChains[table]) {
@@ -137,7 +162,6 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
     };
 
     (supabaseAdmin.from as jest.Mock).mockImplementation((table: string) => {
-      if (table === "admin_background_jobs") return getChain(table, mockJobs);
       if (table === "registrations") return getChain(table, mockRegs);
       return getChain(table, []);
     });
@@ -186,10 +210,12 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
         job_type: "GENERATE_DAILY_DIGEST",
         status: "PENDING",
         payload: { requested_by: "system_cron" },
-        retry_count: 0,
-        max_retries: 3
+        attempts: 0,
+        max_attempts: 3
       }
     ];
+
+    activeMockJobs = mockJobs;
 
     const tableChains: Record<string, any> = {};
     const getChain = (table: string, data: any[]) => {
@@ -200,7 +226,6 @@ describe("Background Job Worker, Exporters & Digests (Phase 3)", () => {
     };
 
     (supabaseAdmin.from as jest.Mock).mockImplementation((table: string) => {
-      if (table === "admin_background_jobs") return getChain(table, mockJobs);
       return getChain(table, []);
     });
 

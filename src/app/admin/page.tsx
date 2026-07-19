@@ -894,8 +894,17 @@ export default function AdminOverviewPage() {
       if (showPulse) {
         await Promise.all([fetchWaLogs(), fetchCoupons(), fetchSupportMessages(), fetchCmsArticles(), fetchQuestions(), fetchExams(), fetchUsers(), fetchFinance(), fetchMonitoring(), fetchAuditLogs(), fetchAnalyticsData()]);
       }
-    } catch (e) {
+    } catch (e: any) {
+      if (e.message === "Require Re-Auth") {
+        router.push("/admin/verify-2fa");
+        return;
+      }
+      if (e.message === "Unauthorized") {
+        router.push("/login");
+        return;
+      }
       console.error("Failed to load registrations in dashboard", e);
+      showToast(e.message || "Failed to load registrations.");
       setRegistrations(MOCK_REGISTRATIONS);
       setIsDemoMode(true);
     } finally {

@@ -72,8 +72,15 @@ export async function GET(request: Request) {
       query = query.gte("outreach_score", minScore);
     }
 
+    const sortBy = url.searchParams.get("sortBy") || "score";
+
+    if (sortBy === "recent") {
+      query = query.order("last_enriched_at", { ascending: false, nullsFirst: false });
+    } else {
+      query = query.order("outreach_score", { ascending: false });
+    }
+
     const { data: prospects, count, error } = await query
-      .order("outreach_score", { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (error) {

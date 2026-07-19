@@ -46,43 +46,56 @@ export async function POST(request: Request) {
       .limit(limit);
 
     if (fetchErr) {
-      return NextResponse.json({ success: false, message: "Failed to fetch pending prospects." }, { status: 500 });
+      console.error("[Enrich Pending API] Fetch prospects error:", fetchErr);
+      return NextResponse.json({ success: false, message: `Failed to fetch pending prospects: ${fetchErr.message || JSON.stringify(fetchErr)}` }, { status: 500 });
     }
 
     const prospects = pendingProspects || [];
-    const queuedJobs: string[] = [];
     const skippedCount = { duplicate: 0 };
+    const jobsToInsert: any[] = [];
 
-    for (const { id: prospectId } of prospects) {
-      const idempotencyKey = `prospect_enrich_${prospectId}`;
+    if (prospects.length > 0) {
+      const prospectIds = prospects.map((p: any) => p.id);
+      const idempotencyKeys = prospectIds.map((id: string) => `prospect_enrich_${id}`);
 
-      // Check for existing active job
-      const { data: existingJob } = await (supabaseAdmin as any)
+      // Single query to find existing active background jobs
+      const { data: existingJobs, error: jobsErr } = await (supabaseAdmin as any)
         .from("admin_background_jobs")
-        .select("id")
-        .eq("idempotency_key", idempotencyKey)
-        .in("status", ["PENDING", "PROCESSING", "RETRY_PENDING"])
-        .maybeSingle();
+        .select("idempotency_key")
+        .in("idempotency_key", idempotencyKeys)
+        .in("status", ["PENDING", "PROCESSING", "RETRY_PENDING"]);
 
-      if (existingJob) {
-        skippedCount.duplicate++;
-        continue;
+      if (jobsErr) {
+        console.error("[Enrich Pending API] Fetch existing jobs error:", jobsErr);
+        return NextResponse.json({ success: false, message: `Failed to verify existing jobs: ${jobsErr.message || JSON.stringify(jobsErr)}` }, { status: 500 });
       }
 
-      const { data: job, error: queueErr } = await (supabaseAdmin as any)
-        .from("admin_background_jobs")
-        .insert({
-          job_type: "SCHOOL_PROSPECT_ENRICH",
-          status: "PENDING",
-          payload: { prospectId },
-          idempotency_key: idempotencyKey,
-          run_at: new Date().toISOString(),
-        })
-        .select()
-        .single();
+      const existingKeys = new Set((existingJobs || []).map((j: any) => j.idempotency_key));
 
-      if (!queueErr && job) {
-        queuedJobs.push(job.id);
+      for (const p of prospects) {
+        const key = `prospect_enrich_${p.id}`;
+        if (existingKeys.has(key)) {
+          skippedCount.duplicate++;
+        } else {
+          jobsToInsert.push({
+            job_type: "SCHOOL_PROSPECT_ENRICH",
+            status: "PENDING",
+            payload: { prospectId: p.id },
+            idempotency_key: key,
+            next_retry_at: new Date().toISOString(),
+          });
+        }
+      }
+
+      if (jobsToInsert.length > 0) {
+        const { error: insertErr } = await (supabaseAdmin as any)
+          .from("admin_background_jobs")
+          .upsert(jobsToInsert, { onConflict: "idempotency_key" });
+
+        if (insertErr) {
+          console.error("[Enrich Pending API] Batch insert error:", JSON.stringify(insertErr, null, 2));
+          return NextResponse.json({ success: false, message: `Failed to queue enrichment jobs: ${insertErr.message || JSON.stringify(insertErr)}` }, { status: 500 });
+        }
       }
     }
 
@@ -93,18 +106,19 @@ export async function POST(request: Request) {
       action: "QUEUED_BULK_PROSPECT_ENRICHMENT",
       module: "SCHOOLS",
       previousValue: {},
-      newValue: { totalPending: prospects.length, queued: queuedJobs.length, skipped: skippedCount.duplicate },
+      newValue: { totalPending: prospects.length, queued: jobsToInsert.length, skipped: skippedCount.duplicate },
       ipAddress: ip,
     });
 
     return NextResponse.json({
       success: true,
       totalPendingFound: prospects.length,
-      queuedJobsCount: queuedJobs.length,
+      queuedJobsCount: jobsToInsert.length,
       skippedCount,
-      message: `Queued ${queuedJobs.length} enrichment jobs. Worker will process them in batches.`,
+      message: `Queued ${jobsToInsert.length} enrichment jobs. Worker will process them in batches.`,
     });
   } catch (err: any) {
-    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+    console.error("[Enrich Pending API] Unexpected error:", err);
+    return NextResponse.json({ success: false, message: `Unexpected error: ${err.message || err}` }, { status: 500 });
   }
 }

@@ -49,25 +49,25 @@ export async function POST(request: Request) {
       }, { status: 503 });
     }
 
-    // Proxy to the actual worker endpoint
-    const workerUrl = `${WORKER_URL_BASE}/api/admin/jobs/worker`;
-    const response = await fetch(workerUrl, {
+    // Proxy to the actual worker endpoint asynchronously to avoid Next.js local server deadlocks
+    const requestUrl = new URL(request.url);
+    const workerUrl = `${requestUrl.origin}/api/admin/jobs/worker`;
+    
+    // We trigger the fetch asynchronously without awaiting the response
+    fetch(workerUrl, {
       method: "POST",
       headers: {
         "x-cron-secret": CRON_SECRET,
         "Content-Type": "application/json",
       },
+    }).catch(err => {
+      console.error("[Asynchronous Worker Trigger Error]", err);
     });
 
-    const data = await response.json();
-
     return NextResponse.json({
-      success: response.ok,
-      workerResponse: data,
-      message: response.ok
-        ? "Worker triggered successfully."
-        : `Worker returned ${response.status}.`,
-    }, { status: response.ok ? 200 : response.status });
+      success: true,
+      message: "Worker trigger dispatched asynchronously to avoid development deadlocks."
+    }, { status: 200 });
   } catch (err: any) {
     return NextResponse.json({ success: false, message: err.message }, { status: 500 });
   }

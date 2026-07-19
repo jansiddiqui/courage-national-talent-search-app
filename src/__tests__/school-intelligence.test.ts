@@ -53,7 +53,56 @@ describe("School Intelligence Engine - Unit Tests", () => {
       const scoring = SchoolScoringService.calculateScore(mockIntel("VERIFIED"), true);
       // Classes (20) + Olympiads (20) + STEM (15) + Contacts (15) + DecisionMaker (15) + DigitalFootprint (10) + Board (5) = 100
       expect(scoring.totalScore).toBe(100);
-      expect(scoring.confidenceScore).toBe(90);
+      expect(scoring.confidenceScore).toBe(60);
+    });
+
+    it("should conform exactly to the canonical scoring breakdown contract", () => {
+      const scoring = SchoolScoringService.calculateScore(mockIntel("VERIFIED"), true);
+      const keys = Object.keys(scoring.breakdown);
+      
+      // Verification of specific contract keys
+      expect(keys).toContain("classesOffered");
+      expect(keys).toContain("olympiads");
+      expect(keys).toContain("stem");
+      expect(keys).toContain("contacts");
+      expect(keys).toContain("decisionMaker");
+      expect(keys).toContain("digitalFootprint");
+      expect(keys).toContain("board");
+      expect(keys.length).toBe(7);
+
+      // Verification of maximum weights
+      expect(scoring.breakdown.classesOffered).toBeLessThanOrEqual(20);
+      expect(scoring.breakdown.olympiads).toBeLessThanOrEqual(20);
+      expect(scoring.breakdown.stem).toBeLessThanOrEqual(15);
+      expect(scoring.breakdown.contacts).toBeLessThanOrEqual(15);
+      expect(scoring.breakdown.decisionMaker).toBeLessThanOrEqual(15);
+      expect(scoring.breakdown.digitalFootprint).toBeLessThanOrEqual(10);
+      expect(scoring.breakdown.board).toBeLessThanOrEqual(5);
+
+      // Score consistency check
+      const sum = Object.values(scoring.breakdown).reduce((a, b) => a + b, 0);
+      expect(scoring.totalScore).toBe(sum);
+    });
+
+    it("should keep zero values zero when no evidence is found", () => {
+      const emptyIntel = mockIntel("UNKNOWN");
+      // Set all values to null to simulate complete absence of evidence
+      Object.keys(emptyIntel).forEach(k => {
+        const item = (emptyIntel as any)[k];
+        if (item && typeof item === "object") {
+          item.value = null;
+        }
+      });
+
+      const scoring = SchoolScoringService.calculateScore(emptyIntel, false);
+      expect(scoring.totalScore).toBe(0);
+      expect(scoring.breakdown.classesOffered).toBe(0);
+      expect(scoring.breakdown.olympiads).toBe(0);
+      expect(scoring.breakdown.stem).toBe(0);
+      expect(scoring.breakdown.contacts).toBe(0);
+      expect(scoring.breakdown.decisionMaker).toBe(0);
+      expect(scoring.breakdown.digitalFootprint).toBe(0);
+      expect(scoring.breakdown.board).toBe(0);
     });
 
     it("should award half points for INFERRED claims", () => {
