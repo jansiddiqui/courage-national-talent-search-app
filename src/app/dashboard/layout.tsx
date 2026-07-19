@@ -10,7 +10,7 @@ import {
   LayoutDashboard, Users, ClipboardList, CreditCard, BarChart2,
   FolderOpen, Bell, HelpCircle, UserCircle, GitBranch, Share2,
   Shield, Sparkles, LogOut, ChevronLeft, ChevronRight, Menu, X,
-  Search
+  Search, Award
 } from "lucide-react";
 
 // ─── Nav Items ────────────────────────────────────────────────────────────────
@@ -18,6 +18,7 @@ import {
 const NAV_ITEMS = [
   { href: "/dashboard", label: "Workspace", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/children", label: "Children", icon: Users },
+  { href: "/dashboard/exams", label: "Exams", icon: Award },
   { href: "/dashboard/timeline", label: "Timeline", icon: GitBranch },
   { href: "/dashboard/registration", label: "Registration", icon: ClipboardList },
   { href: "/dashboard/payments", label: "Payments", icon: CreditCard },
