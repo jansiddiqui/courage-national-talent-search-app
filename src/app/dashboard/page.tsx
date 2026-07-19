@@ -186,20 +186,29 @@ export default function DashboardPage() {
             {/* Connecting Line */}
             <div className="w-px h-6 bg-slate-200 ml-4 border-l-2 border-dashed border-slate-200"></div>
 
-            {/* Step 2: Current */}
-            <div className="flex items-start gap-4 bg-blue-50 border border-blue-100 p-4 rounded-2xl">
-              <div className="mt-0.5 bg-blue-600 text-white rounded-full p-1.5 shadow-md shadow-blue-500/30 shrink-0">
-                <Play size={12} className="fill-current" />
-              </div>
-              <div>
-                <h4 className="text-blue-900 font-bold text-sm flex items-center gap-2">
-                  Current Step
-                  <span className="text-[9px] uppercase tracking-wider bg-blue-200 text-blue-800 px-2 py-0.5 rounded font-black hidden sm:inline-block">Action Required</span>
-                </h4>
-                <p className="text-sm text-blue-800 font-medium mt-1">Practice in Academy & Start Mock Test</p>
-                <p className="text-xs text-blue-600/80 mt-1">Strengthen the candidate's core cognitive reasoning and take a simulated mock exam.</p>
-              </div>
-            </div>
+             {/* Step 2: Current */}
+             <div className="flex items-start gap-4 bg-blue-50 border border-blue-100 p-4 rounded-2xl">
+               <div className="mt-0.5 bg-blue-600 text-white rounded-full p-1.5 shadow-md shadow-blue-500/30 shrink-0">
+                 <Play size={12} className="fill-current" />
+               </div>
+               <div>
+                 <h4 className="text-blue-900 font-bold text-sm flex items-center gap-2">
+                   Current Step
+                   <span className="text-[9px] uppercase tracking-wider bg-blue-200 text-blue-800 px-2 py-0.5 rounded font-black hidden sm:inline-block">Action Required</span>
+                 </h4>
+                 <p className="text-sm text-blue-800 font-medium mt-1">Practice in Academy & Start Mock Test</p>
+                 <p className="text-xs text-blue-600/80 mt-1">Strengthen the candidate's core cognitive reasoning and take a simulated mock exam.</p>
+                 <div className="mt-3">
+                   <Link 
+                     href="/academy" 
+                     className="inline-flex items-center gap-1.5 px-3.5 py-2 bg-blue-800 hover:bg-blue-950 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-blue-800/10 cursor-pointer"
+                   >
+                     Go to Academy
+                     <ArrowRight size={12} />
+                   </Link>
+                 </div>
+               </div>
+             </div>
 
             {/* Connecting Line */}
             <div className="w-px h-6 bg-slate-200 ml-4 border-l-2 border-dashed border-slate-200"></div>
