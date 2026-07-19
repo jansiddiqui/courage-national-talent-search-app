@@ -156,74 +156,415 @@ function OnboardNewSchoolForm() {
     if (!printWindow) return;
     
     const html = `
+      <!DOCTYPE html>
       <html>
         <head>
-          <title>CNTS School Credentials - ${school.name}</title>
+          <title>CNTS 2026 - Certificate of Partnership - ${school.name}</title>
           <style>
-            body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; padding: 40px; color: #1e293b; max-width: 800px; margin: 0 auto; line-height: 1.6; }
-            .header { text-align: center; border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 30px; }
-            .logo { font-size: 24px; font-weight: 900; color: #1e3a8a; letter-spacing: 1px; }
-            h1 { color: #0f172a; margin-bottom: 5px; }
-            .box { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 25px; margin-bottom: 30px; }
-            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-            .label { font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; }
-            .value { font-size: 18px; font-weight: 700; color: #0f172a; margin-top: 4px; }
-            .mono { font-family: monospace; font-size: 20px; background: #fff; padding: 4px 8px; border: 1px solid #cbd5e1; border-radius: 6px; }
-            .referral { background: #eff6ff; border: 1px dashed #93c5fd; padding: 15px; border-radius: 8px; word-break: break-all; font-family: monospace; color: #1e40af; }
-            .footer { margin-top: 50px; text-align: center; font-size: 14px; color: #64748b; }
+            @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+            
+            :root {
+              --primary: #1e3a8a;
+              --primary-light: #eff6ff;
+              --accent: #d97706;
+              --dark: #0f172a;
+              --slate-600: #475569;
+              --slate-100: #f1f5f9;
+              --slate-200: #e2e8f0;
+            }
+
+            body {
+              font-family: 'Plus Jakarta Sans', sans-serif;
+              margin: 0;
+              padding: 20px;
+              color: var(--dark);
+              background: #f8fafc;
+              line-height: 1.5;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+
+            .document-container {
+              max-width: 800px;
+              margin: 0 auto;
+              padding: 40px;
+              background: #ffffff;
+              border: 1px solid var(--slate-200);
+              border-radius: 24px;
+              box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+              position: relative;
+              overflow: hidden;
+            }
+
+            .bg-gradient-top {
+              position: absolute;
+              top: 0;
+              left: 0;
+              right: 0;
+              height: 6px;
+              background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #eab308 100%);
+            }
+
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              border-bottom: 2px solid var(--slate-100);
+              padding-bottom: 20px;
+              margin-bottom: 30px;
+            }
+
+            .brand-logo {
+              font-family: 'Outfit', sans-serif;
+              font-size: 24px;
+              font-weight: 800;
+              color: var(--primary);
+              letter-spacing: -0.5px;
+              line-height: 1;
+            }
+
+            .brand-sub {
+              font-size: 9px;
+              font-weight: 700;
+              color: var(--accent);
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              margin-top: 4px;
+            }
+
+            .doc-badge {
+              font-family: 'Outfit', sans-serif;
+              font-size: 11px;
+              font-weight: 700;
+              text-transform: uppercase;
+              color: var(--slate-600);
+              background: var(--slate-100);
+              padding: 6px 14px;
+              border-radius: 99px;
+              letter-spacing: 0.5px;
+            }
+
+            .hero {
+              text-align: center;
+              margin-bottom: 30px;
+            }
+
+            .hero-title {
+              font-family: 'Outfit', sans-serif;
+              font-size: 26px;
+              font-weight: 800;
+              color: var(--dark);
+              margin: 0;
+            }
+
+            .hero-subtitle {
+              font-size: 13px;
+              color: var(--slate-600);
+              margin-top: 6px;
+              margin-bottom: 0;
+            }
+
+            .grid-container {
+              display: grid;
+              grid-template-columns: 1.2fr 1fr;
+              gap: 20px;
+              margin-bottom: 30px;
+            }
+
+            .card {
+              border: 1px solid var(--slate-200);
+              border-radius: 16px;
+              padding: 20px;
+              background: #ffffff;
+            }
+
+            .card-title {
+              font-family: 'Outfit', sans-serif;
+              font-size: 13px;
+              font-weight: 700;
+              color: var(--primary);
+              margin-top: 0;
+              margin-bottom: 15px;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              border-bottom: 1px solid var(--slate-100);
+              padding-bottom: 6px;
+            }
+
+            .info-item {
+              margin-bottom: 12px;
+            }
+            .info-item:last-child {
+              margin-bottom: 0;
+            }
+
+            .info-label {
+              font-size: 9px;
+              font-weight: 700;
+              color: #94a3b8;
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+            }
+
+            .info-value {
+              font-size: 14px;
+              font-weight: 700;
+              color: var(--dark);
+              margin-top: 2px;
+            }
+
+            .credentials-card {
+              background: var(--primary-light);
+              border-color: #bfdbfe;
+            }
+
+            .code-box {
+              background: #ffffff;
+              border: 1px solid #93c5fd;
+              border-radius: 10px;
+              padding: 10px 14px;
+              font-family: monospace;
+              font-size: 18px;
+              font-weight: 700;
+              color: var(--primary);
+              letter-spacing: 1px;
+              display: inline-block;
+              margin-top: 2px;
+            }
+
+            .link-box {
+              background: #ffffff;
+              border: 1px dashed #93c5fd;
+              border-radius: 10px;
+              padding: 10px;
+              font-family: monospace;
+              font-size: 11px;
+              color: var(--primary);
+              word-break: break-all;
+              margin-top: 2px;
+            }
+
+            .sponsorship-badge {
+              display: inline-flex;
+              align-items: center;
+              background: #fef3c7;
+              color: #92400e;
+              border: 1px solid #fde68a;
+              border-radius: 99px;
+              padding: 4px 10px;
+              font-size: 10px;
+              font-weight: 800;
+              margin-top: 4px;
+              text-transform: uppercase;
+            }
+
+            .roadmap-title {
+              font-family: 'Outfit', sans-serif;
+              font-size: 15px;
+              font-weight: 700;
+              margin-top: 0;
+              margin-bottom: 15px;
+              color: var(--dark);
+            }
+
+            .steps-grid {
+              display: grid;
+              grid-template-columns: 1fr 1fr 1fr;
+              gap: 15px;
+              margin-bottom: 30px;
+            }
+
+            .step-card {
+              border: 1px solid var(--slate-200);
+              border-radius: 12px;
+              padding: 14px;
+              background: #fafafa;
+            }
+
+            .step-num {
+              font-family: 'Outfit', sans-serif;
+              font-size: 18px;
+              font-weight: 800;
+              color: var(--primary);
+              margin-bottom: 6px;
+            }
+
+            .step-title {
+              font-size: 11px;
+              font-weight: 700;
+              color: var(--dark);
+              margin-bottom: 4px;
+            }
+
+            .step-desc {
+              font-size: 10px;
+              color: var(--slate-600);
+              margin: 0;
+              line-height: 1.4;
+            }
+
+            .warning-box {
+              background: #fffbeb;
+              border: 1px solid #fef3c7;
+              border-radius: 12px;
+              padding: 12px 16px;
+              font-size: 11px;
+              color: #b45309;
+              margin-bottom: 30px;
+              line-height: 1.4;
+            }
+
+            .footer {
+              border-top: 1px solid var(--slate-100);
+              padding-top: 15px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              font-size: 10px;
+              color: #94a3b8;
+            }
+
+            @media print {
+              body {
+                background: white;
+                padding: 0;
+              }
+              .document-container {
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                padding: 0;
+              }
+              @page {
+                margin: 15mm;
+              }
+            }
           </style>
         </head>
         <body>
-          <div class="header">
-            <div class="logo">COURAGE NATIONAL TALENT SEARCH</div>
-            <h1>School Partnership Credentials</h1>
-            <p>Welcome to CNTS 2026. Keep this document secure.</p>
-          </div>
-          
-          <div class="box">
-            <div class="grid">
+          <div class="document-container">
+            <div class="bg-gradient-top"></div>
+            
+            <div class="header">
               <div>
-                <div class="label">School Name</div>
-                <div class="value">${school.name}</div>
+                <div class="brand-logo">COURAGE</div>
+                <div class="brand-sub">National Talent Search</div>
               </div>
-              <div>
-                <div class="label">Coordinator</div>
-                <div class="value">${school.coordinator_name} (${school.coordinator_mobile})</div>
-              </div>
+              <div class="doc-badge">Official Credentials</div>
             </div>
-          </div>
 
-          <div class="box" style="background: #f0f9ff; border-color: #bae6fd;">
-            <div class="grid">
-              <div>
-                <div class="label">School Access Code</div>
-                <div class="value mono">${school.school_code}</div>
-              </div>
-              <div>
-                <div class="label">Dashboard PIN</div>
-                <div class="value mono">${school.pin}</div>
-              </div>
+            <div class="hero">
+              <h1 class="hero-title">Certificate of School Partnership</h1>
+              <p class="hero-subtitle">Welcome to CNTS 2026. This document contains secure access credentials for your school portal.</p>
             </div>
-            <div style="margin-top: 20px;">
-              <div class="label">Dashboard Login Link</div>
-              <div class="value" style="font-size: 14px;">https://www.thecouragelibrary.com/dashboard/school/login</div>
-            </div>
-          </div>
 
-          <div class="box">
-            <div class="label" style="margin-bottom: 10px;">Direct Student Referral Link (Auto-fills Code)</div>
-            <div class="referral">https://www.thecouragelibrary.com/register?school=${school.school_code}</div>
-            <p style="font-size: 13px; color: #475569; margin-top: 10px;">
-              Share this link with your students. It will automatically waive their registration fee based on your pre-paid quota (${school.quota} seats).
-            </p>
+            <div class="grid-container">
+              <!-- School Details -->
+              <div class="card">
+                <h3 class="card-title">School Partner Profile</h3>
+                
+                <div class="info-item">
+                  <div class="info-label">Official Institution Name</div>
+                  <div class="info-value">${school.name}</div>
+                </div>
+                
+                <div class="grid-container" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0;">
+                  <div class="info-item">
+                    <div class="info-label">Affiliation Board</div>
+                    <div class="info-value">${school.board}</div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label">School City</div>
+                    <div class="info-value">${school.city}</div>
+                  </div>
+                </div>
+
+                <div class="info-item" style="margin-top: 12px;">
+                  <div class="info-label">Academic Coordinator</div>
+                  <div class="info-value">${school.coordinator_name} (${school.coordinator_mobile})</div>
+                </div>
+              </div>
+
+              <!-- Credentials -->
+              <div class="card credentials-card">
+                <h3 class="card-title" style="color: var(--primary);">Secure Portal Credentials</h3>
+                
+                <div class="info-item">
+                  <div class="info-label" style="color: #64748b;">Sponsorship Package</div>
+                  <div>
+                    <span class="sponsorship-badge">
+                      ${school.sponsorship_mode === "FULL" ? "FULL SPONSORSHIP" : school.sponsorship_mode === "PARTIAL" ? "PARTIAL SPONSORSHIP" : "NO SPONSORSHIP"}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="grid-container" style="grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 0;">
+                  <div class="info-item">
+                    <div class="info-label" style="color: #64748b;">School Code</div>
+                    <div class="code-box">${school.school_code}</div>
+                  </div>
+                  <div class="info-item">
+                    <div class="info-label" style="color: #64748b;">Access PIN</div>
+                    <div class="code-box">${school.pin}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Links & Referral Section -->
+            <div class="card" style="margin-bottom: 30px;">
+              <h3 class="card-title">Registration & Referral Channels</h3>
+              
+              <div class="grid-container" style="grid-template-columns: 1fr 1.2fr; gap: 20px; margin-bottom: 0;">
+                <div>
+                  <div class="info-label">School Portal Login</div>
+                  <div class="link-box">https://www.thecouragelibrary.com/dashboard/school/login</div>
+                  <p style="font-size: 10px; color: var(--slate-600); margin-top: 6px;">Use this URL and your PIN to log in to the School Dashboard to manage rosters.</p>
+                </div>
+                <div>
+                  <div class="info-label">Direct Student Referral Link</div>
+                  <div class="link-box">https://www.thecouragelibrary.com/register?school=${school.school_code}</div>
+                  <p style="font-size: 10px; color: var(--slate-600); margin-top: 6px;">
+                    ${school.sponsorship_mode === "FULL" 
+                      ? `Waives 100% of the student registration fee up to your quota of ${school.quota} seats.` 
+                      : school.sponsorship_mode === "PARTIAL"
+                        ? `Applies the custom ${studentDiscount}% student discount directly at checkout.`
+                        : "Enables students to register under your school name at standard price."
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Next Steps -->
+            <h3 class="roadmap-title">Onboarding Roadmap for Coordinator</h3>
+            <div class="steps-grid">
+              <div class="step-card">
+                <div class="step-num">01</div>
+                <div class="step-title">Activate Portal</div>
+                <p class="step-desc">Log in to the school dashboard to verify student seating allocation.</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">02</div>
+                <div class="step-title">Distribute Link</div>
+                <p class="step-desc">Share the student referral link via school noticeboards or WhatsApp groups.</p>
+              </div>
+              <div class="step-card">
+                <div class="step-num">03</div>
+                <div class="step-title">Track Performance</div>
+                <p class="step-desc">Monitor student registrations, download admit cards, and review final talent analytics.</p>
+              </div>
+            </div>
+
+            <div class="warning-box">
+              <strong>Security Notice:</strong> Keep these credentials confidential. Do not share the Access PIN with candidates or unauthorized personnel. The student registration link is dedicated strictly for candidates of your school.
+            </div>
+
+            <div class="footer">
+              <div>Generated on ${new Date().toLocaleDateString()}</div>
+              <div>Courage National Talent Search &copy; 2026. All rights reserved.</div>
+            </div>
           </div>
-          
-          <div class="footer">
-            Generated on ${new Date().toLocaleDateString()} | Courage National Talent Search 2026
-          </div>
-          <script>
-            window.onload = () => { window.print(); }
-          </script>
         </body>
       </html>
     `;
