@@ -148,23 +148,25 @@ export async function POST(request: Request) {
 
     // 5. Determine Role
     let role = "PARENT";
-    const phone = registration.mobile_number || "";
-    const email = registration.parent_email || "";
-
-    const query = (supabaseAdmin as any).from("admin_users").select("id, role");
-    const filters = [];
-    if (phone) {
-      filters.push(`phone_number.eq.${phone}`);
-    }
-    if (email) {
-      filters.push(`email.eq.${email.toLowerCase()}`);
-    }
     let adminUserId = undefined;
-    if (filters.length > 0) {
-      const { data: adminUser } = await query.or(filters.join(",")).maybeSingle();
-      if (adminUser) {
-        role = adminUser.role;
-        adminUserId = adminUser.id;
+    const phone = (registration.mobile_number || "").replace(/\D/g, "");
+    const email = (registration.parent_email || "").toLowerCase().trim();
+
+    const { data: adminUsers } = await (supabaseAdmin as any).from("admin_users").select("id, email, phone_number, role");
+    if (adminUsers) {
+      const match = adminUsers.find((u: any) => {
+        const uEmail = (u.email || "").toLowerCase().trim();
+        const uPhone = (u.phone_number || "").replace(/\D/g, "");
+        
+        const emailMatches = !!(email && uEmail === email);
+        const phoneMatches = !!(phone && uPhone && (phone.endsWith(uPhone) || uPhone.endsWith(phone)) && Math.min(phone.length, uPhone.length) >= 10);
+        
+        return emailMatches || phoneMatches;
+      });
+
+      if (match) {
+        role = match.role;
+        adminUserId = match.id;
       }
     }
 

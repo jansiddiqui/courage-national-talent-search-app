@@ -91,7 +91,16 @@ export async function GET() {
       return NextResponse.json({ success: false, message: "Failed to fetch registrations" }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, registrations: registrations || [] });
+    return NextResponse.json(
+      { success: true, registrations: registrations || [] },
+      {
+        headers: {
+          "Cache-Control": "private, no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0",
+        },
+      }
+    );
   } catch (error: any) {
     console.error("Registrations endpoint error:", error);
     return NextResponse.json({ success: false, message: error.message || "Internal Server Error" }, { status: 500 });

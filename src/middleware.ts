@@ -77,5 +77,5 @@ export async function middleware(request: NextRequest) {
 
 // Config to apply middleware to dashboard and admin subpaths
 export const config = {
-  matcher: ["/dashboard/:path*", "/admin/:path*"],
+  matcher: ["/dashboard/:path*", "/admin/:path*", "/admin"],
 };
