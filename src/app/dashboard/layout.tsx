@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { PortalProvider, usePortal } from "@/contexts/PortalContext";
+import SpotlightSearch from "@/components/dashboard/SpotlightSearch";
 import {
   LayoutDashboard, Users, ClipboardList, CreditCard, BarChart2,
   FolderOpen, Bell, HelpCircle, UserCircle, GitBranch, Share2,
@@ -47,6 +48,7 @@ function PortalShell({ children }: { children: React.ReactNode }) {
     isDemoMode, trackModuleVisit } = usePortal();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const sidebarCollapsed = preferences.sidebarCollapsed;
 
   const setSidebarCollapsed = (v: boolean) => updatePreference("sidebarCollapsed", v);
@@ -193,10 +195,10 @@ function PortalShell({ children }: { children: React.ReactNode }) {
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
-                placeholder="Search workspace…"
+                placeholder="Search candidates, pages..."
                 readOnly
                 className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-500 cursor-pointer focus:outline-none hover:bg-slate-100 transition-colors"
-                onClick={() => {/* Future: open search overlay */}}
+                onClick={() => setSearchOpen(true)}
               />
             </div>
           </div>
@@ -344,6 +346,14 @@ function PortalShell({ children }: { children: React.ReactNode }) {
         })}
       </nav>
 
+      {/* Spotlight Search Overlay */}
+      <SpotlightSearch
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        candidates={candidates}
+        setActiveCandidate={setActiveChild}
+        activeCandidateId={activeCandidate?.id}
+      />
     </div>
   );
 }
