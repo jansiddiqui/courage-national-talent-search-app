@@ -20,6 +20,8 @@ function OnboardNewSchoolForm() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [inquiryId, setInquiryId] = useState<string | null>(null);
+  const [studentDiscount, setStudentDiscount] = useState("20");
+  const [schoolRebate, setSchoolRebate] = useState("10");
 
   // Form State
   const [formData, setFormData] = useState({
@@ -34,6 +36,7 @@ function OnboardNewSchoolForm() {
     sponsorship_mode: "FULL",
     pin: "",
     school_code: "",
+    notes: "",
   });
 
   const generateCode = () => {
@@ -52,6 +55,7 @@ function OnboardNewSchoolForm() {
     const coordEmail = searchParams.get("coordinator_email") || "";
     const coordMobile = searchParams.get("coordinator_mobile") || "";
     const pool = searchParams.get("quota") || "";
+    const remarksParam = searchParams.get("remarks") || "";
     const inqId = searchParams.get("inquiryId");
 
     if (inqId) {
@@ -78,7 +82,8 @@ function OnboardNewSchoolForm() {
       coordinator_name: coordName || prev.coordinator_name,
       coordinator_email: coordEmail || prev.coordinator_email,
       coordinator_mobile: coordMobile || prev.coordinator_mobile,
-      quota: parsedQuota.toString()
+      quota: parsedQuota.toString(),
+      notes: remarksParam || prev.notes
     }));
 
     const cityPrefix = formData.city.substring(0, 3).toUpperCase() || "XXX";
@@ -106,7 +111,11 @@ function OnboardNewSchoolForm() {
       const res = await fetch("/api/admin/schools", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          student_discount_percent: formData.sponsorship_mode === "PARTIAL" ? parseInt(studentDiscount) || 0 : (formData.sponsorship_mode === "FULL" ? 100 : 0),
+          school_rebate_percent: formData.sponsorship_mode === "PARTIAL" ? parseInt(schoolRebate) || 0 : 0
+        })
       });
       const data = await res.json();
 
@@ -235,7 +244,10 @@ function OnboardNewSchoolForm() {
       sponsorship_mode: "FULL",
       pin: "",
       school_code: "",
+      notes: "",
     });
+    setStudentDiscount("20");
+    setSchoolRebate("10");
     setIsSuccess(false);
     setError("");
     // Generate new code for next onboarding
@@ -458,6 +470,49 @@ function OnboardNewSchoolForm() {
                           <option value="NONE">NONE (No Sponsorship - 100% Paid by Student)</option>
                         </select>
                       </div>
+                    </div>
+
+                    {formData.sponsorship_mode === "PARTIAL" && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 animate-slide-up">
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Student Discount (%) *</label>
+                          <input 
+                            type="number" 
+                            required 
+                            min="0"
+                            max="100"
+                            value={studentDiscount} 
+                            onChange={e => setStudentDiscount(e.target.value)} 
+                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-800 text-sm font-bold shadow-inner" 
+                            placeholder="e.g. 20"
+                          />
+                          <p className="text-[10px] text-slate-400">Discount student gets at checkout.</p>
+                        </div>
+                        <div className="space-y-1.5">
+                          <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">School Rebate (%) *</label>
+                          <input 
+                            type="number" 
+                            required 
+                            min="0"
+                            max="100"
+                            value={schoolRebate} 
+                            onChange={e => setSchoolRebate(e.target.value)} 
+                            className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-800 text-sm font-bold shadow-inner" 
+                            placeholder="e.g. 10"
+                          />
+                          <p className="text-[10px] text-slate-400">Commission credited to school ledger.</p>
+                        </div>
+                      </div>
+                    )}
+
+                    <div className="space-y-1.5 pt-2">
+                      <label className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">Internal Notes / Custom Requirements</label>
+                      <textarea 
+                        value={formData.notes} 
+                        onChange={e => setFormData({...formData, notes: e.target.value})} 
+                        className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 focus:bg-white rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none transition-all text-slate-800 text-sm shadow-inner min-h-[80px]" 
+                        placeholder="Tell us about preferred dates, bulk sponsorships, or request a visit by our team."
+                      />
                     </div>
                   </div>
 

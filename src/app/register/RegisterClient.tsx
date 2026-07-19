@@ -59,6 +59,26 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   const [appliedDiscount, setAppliedDiscount] = useState(0); // 0%, 25%, 50%
   const [finalPrice, setFinalPrice] = useState(99);
 
+  // Dynamically calculate final price based on school sponsorship and coupon discounts
+  useEffect(() => {
+    let basePrice = 99;
+    
+    if (isCouponApplied && appliedDiscount > 0) {
+      basePrice = Math.max(0, basePrice - Math.round((basePrice * appliedDiscount) / 100));
+    }
+    
+    if (schoolData) {
+      if (schoolData.sponsorship_mode === "FULL") {
+        basePrice = 0;
+      } else if (schoolData.sponsorship_mode === "PARTIAL") {
+        const discountPercent = schoolData.student_discount_percent !== undefined ? schoolData.student_discount_percent : 20;
+        basePrice = Math.max(0, Math.round(basePrice * (1 - discountPercent / 100)));
+      }
+    }
+    
+    setFinalPrice(basePrice);
+  }, [schoolData, isCouponApplied, appliedDiscount]);
+
   // Sandbox modal state
   const [showSandboxModal, setShowSandboxModal] = useState(false);
   const [sandboxOrderDetails, setSandboxOrderDetails] = useState<any>(null);
@@ -348,13 +368,9 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
             school_id: data.school.id
           }));
           
-          if (data.school.sponsorship_mode === "FULL") {
-            setFinalPrice(0);
-          }
         } else {
           setSchoolData(null);
           setSchoolError(data.message);
-          setFinalPrice(99); // Reset price
         }
       } catch (err) {
         setSchoolError("Network error validating school code");
@@ -611,8 +627,6 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
       if (data.success) {
         setIsCouponApplied(true);
         setAppliedDiscount(data.discount);
-        const price = Math.max(0, 99 - Math.round((99 * data.discount) / 100));
-        setFinalPrice(price);
         setCouponSuccess(`${code} applied! You received a ${data.discount}% discount.`);
       } else {
         setCouponError(data.message || "Invalid or inactive coupon code.");
@@ -628,7 +642,6 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   const removeCoupon = () => {
     setIsCouponApplied(false);
     setAppliedDiscount(0);
-    setFinalPrice(99);
     setCouponCode("");
     setCouponSuccess("");
     setCouponError("");
@@ -1400,8 +1413,16 @@ function RegisterForm({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
                         <p className="text-xs text-red-500 font-medium">{schoolError}</p>
                       )}
                       {schoolSuccess && schoolData && !schoolLoading && (
-                        <p className="text-xs text-emerald-600 font-medium bg-emerald-50 p-2 rounded-lg mt-2 border border-emerald-100 flex items-center gap-1.5">
-                          <Check size={14} /> Validated: {schoolData.name} ({schoolData.city})
+                        <p className="text-xs text-emerald-600 font-medium bg-emerald-50 p-2.5 rounded-xl mt-2 border border-emerald-100/60 flex flex-col gap-1">
+                          <span className="flex items-center gap-1.5"><Check size={14} /> Validated: {schoolData.name} ({schoolData.city})</span>
+                          {schoolData.sponsorship_mode === "FULL" && (
+                            <span className="text-[10px] text-emerald-700 font-bold pl-5">Sponsorship: 100% Free registration benefit</span>
+                          )}
+                          {schoolData.sponsorship_mode === "PARTIAL" && (
+                            <span className="text-[10px] text-emerald-700 font-bold pl-5">
+                              Sponsorship: {schoolData.student_discount_percent !== undefined ? schoolData.student_discount_percent : 20}% discount benefit applied
+                            </span>
+                          )}
                         </p>
                       )}
                     </div>

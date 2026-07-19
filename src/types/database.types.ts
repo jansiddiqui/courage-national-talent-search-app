@@ -247,6 +247,8 @@ export interface Database {
           quota: number;
           used_quota: number;
           sponsorship_mode: string;
+          student_discount_percent: number;
+          school_rebate_percent: number;
           pin: string;
           status: string;
           notes: string | null;
@@ -267,6 +269,8 @@ export interface Database {
           quota?: number;
           used_quota?: number;
           sponsorship_mode?: string;
+          student_discount_percent?: number;
+          school_rebate_percent?: number;
           pin: string;
           status?: string;
           notes?: string | null;
@@ -287,6 +291,8 @@ export interface Database {
           quota?: number;
           used_quota?: number;
           sponsorship_mode?: string;
+          student_discount_percent?: number;
+          school_rebate_percent?: number;
           pin?: string;
           status?: string;
           notes?: string | null;

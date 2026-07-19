@@ -98,6 +98,8 @@ export async function POST(request: Request) {
         quota: parseInt(body.quota) || 0,
         used_quota: 0,
         sponsorship_mode: body.sponsorship_mode || "FULL",
+        student_discount_percent: body.student_discount_percent !== undefined ? parseInt(body.student_discount_percent) : 20,
+        school_rebate_percent: body.school_rebate_percent !== undefined ? parseInt(body.school_rebate_percent) : 10,
         pin: hashedPin,
         status: body.status || "ACTIVE",
         notes: body.notes || null,

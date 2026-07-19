@@ -32,7 +32,7 @@ export async function GET(request: Request) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: school, error } = await (supabaseAdmin as any)
       .from("schools")
-      .select("id, name, city, sponsorship_mode, quota, used_quota, status")
+      .select("id, name, city, sponsorship_mode, quota, used_quota, status, notes, student_discount_percent, school_rebate_percent")
       .eq("school_code", code)
       .eq("status", "ACTIVE")
       .single();
@@ -54,6 +54,9 @@ export async function GET(request: Request) {
         name: school.name,
         city: school.city,
         sponsorship_mode: school.sponsorship_mode,
+        notes: school.notes,
+        student_discount_percent: school.student_discount_percent,
+        school_rebate_percent: school.school_rebate_percent,
         available_quota: available_quota
       } 
     });

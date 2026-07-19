@@ -96,17 +96,24 @@ export async function POST(request: Request) {
       if (!hasSupabaseAdminConfig) {
          if (cleanSchoolCode === "DEMO-123") {
            finalAmount = 0;
+         } else if (cleanSchoolCode === "DEMO-PARTIAL") {
+           finalAmount = Math.max(0, Math.round(finalAmount * 0.8));
          }
       } else {
-        const { data: school, error } = await (supabaseAdmin as any)
+         const { data: school, error } = await (supabaseAdmin as any)
           .from("schools")
-          .select("sponsorship_mode, quota, used_quota, status")
+          .select("sponsorship_mode, quota, used_quota, status, student_discount_percent")
           .eq("school_code", cleanSchoolCode)
           .eq("status", "ACTIVE")
           .maybeSingle();
         
-        if (school && school.sponsorship_mode === "FULL" && (school.quota - school.used_quota > 0)) {
-           finalAmount = 0;
+        if (school && (school.quota - school.used_quota > 0)) {
+          if (school.sponsorship_mode === "FULL") {
+            finalAmount = 0;
+          } else if (school.sponsorship_mode === "PARTIAL") {
+            const discountPercent = school.student_discount_percent !== undefined ? school.student_discount_percent : 20;
+            finalAmount = Math.max(0, Math.round(finalAmount * (1 - discountPercent / 100)));
+          }
         }
       }
     }

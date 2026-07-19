@@ -339,7 +339,7 @@ export default function SchoolPartnersPanel() {
               const strength = parsed.studentStrength || "100-200";
               const remarks = parsed.message || inq.message;
 
-              const onboardUrl = `/admin/schools/new?name=${encodeURIComponent(schoolName)}&board=${encodeURIComponent(board)}&coordinator_name=${encodeURIComponent(coordName)}&coordinator_email=${encodeURIComponent(inq.email)}&coordinator_mobile=${encodeURIComponent(inq.phone || "")}&quota=${encodeURIComponent(strength)}&inquiryId=${inq.id}`;
+              const onboardUrl = `/admin/schools/new?name=${encodeURIComponent(schoolName)}&board=${encodeURIComponent(board)}&coordinator_name=${encodeURIComponent(coordName)}&coordinator_email=${encodeURIComponent(inq.email)}&coordinator_mobile=${encodeURIComponent(inq.phone || "")}&quota=${encodeURIComponent(strength)}&remarks=${encodeURIComponent(remarks)}&inquiryId=${inq.id}`;
 
               return (
                 <div key={inq.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between">

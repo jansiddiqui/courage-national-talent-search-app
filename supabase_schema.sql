@@ -353,12 +353,16 @@ create table public.schools (
   quota integer not null default 0,
   used_quota integer not null default 0,
   sponsorship_mode text not null default 'FULL',
+  student_discount_percent integer not null default 20,
+  school_rebate_percent integer not null default 10,
   pin text not null,
   status text not null default 'ACTIVE',
   notes text,
   created_by uuid references public.admin_users(id),
   is_featured boolean default false not null,
-  joined_at timestamptz default now() not null
+  joined_at timestamptz default now() not null,
+  constraint check_student_discount_percent check (student_discount_percent >= 0 and student_discount_percent <= 100),
+  constraint check_school_rebate_percent check (school_rebate_percent >= 0 and school_rebate_percent <= 100)
 );
 
 -- Alter registrations to link school_id

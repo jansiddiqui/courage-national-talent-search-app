@@ -196,15 +196,21 @@ export async function POST(request: Request) {
 
     const cleanSchoolCode = schoolCode ? schoolCode.trim().toUpperCase() : null;
     let schoolId: string | null = null;
+    let schoolSponsorshipMode = "NONE";
+    let schoolNotes = "";
+    let schoolRebatePercent = 10;
 
     if (hasSupabaseAdminConfig && cleanSchoolCode) {
       const { data: school } = await (supabaseAdmin as any)
         .from("schools")
-        .select("id")
+        .select("id, sponsorship_mode, notes, school_rebate_percent")
         .eq("school_code", cleanSchoolCode)
         .maybeSingle();
       if (school) {
         schoolId = school.id;
+        schoolSponsorshipMode = school.sponsorship_mode || "NONE";
+        schoolNotes = school.notes || "";
+        schoolRebatePercent = school.school_rebate_percent !== undefined ? school.school_rebate_percent : 10;
       }
     }
 
@@ -227,7 +233,7 @@ export async function POST(request: Request) {
       why_participating: formData.whyParticipating,
       how_heard: formData.howHeard,
       payment_id: razorpayPaymentId,
-      payment_status: cleanSchoolCode ? "SPONSORED" : "PAID",
+      payment_status: (cleanSchoolCode && schoolSponsorshipMode === "FULL") ? "SPONSORED" : "PAID",
       registration_status: "REGISTERED",
       mobile_verified: true,
       cnts_id: cntsId,
@@ -238,7 +244,7 @@ export async function POST(request: Request) {
 
     // 3. Database Write (Updates draft if available, otherwise inserts new)
     if (hasSupabaseAdminConfig) {
-      if (cleanSchoolCode && schoolId) {
+      if (cleanSchoolCode && schoolId && (schoolSponsorshipMode === "FULL" || schoolSponsorshipMode === "PARTIAL")) {
         // Atomic quota consumption and registration
         const { error: rpcError } = await (supabaseAdmin as any).rpc("consume_school_quota_and_register", {
           p_registration_id: draftRegId || `CNTS26-${Math.random().toString(36).substring(7).toUpperCase()}`,
@@ -258,7 +264,7 @@ export async function POST(request: Request) {
           p_language: recordPayload.language,
           p_why_participating: recordPayload.why_participating,
           p_how_heard: recordPayload.how_heard,
-          p_payment_status: "SPONSORED",
+          p_payment_status: schoolSponsorshipMode === "FULL" ? "SPONSORED" : "PAID",
           p_registration_source: "SCHOOL"
         });
 
@@ -272,6 +278,27 @@ export async function POST(request: Request) {
           .from("registrations")
           .update({ cnts_id: cntsId })
           .eq("registration_id", draftRegId || recordPayload.payment_id);
+
+        // Record school rebate/commission in ledger if applicable
+        if (schoolSponsorshipMode === "PARTIAL") {
+          const rebatePercent = schoolRebatePercent;
+          if (rebatePercent > 0) {
+            const rebateAmount = Math.round(99 * rebatePercent / 100);
+            const { error: ledgerError } = await (supabaseAdmin as any)
+              .from("school_fee_ledger")
+              .insert({
+                school_id: schoolId,
+                transaction_type: "SPONSORED_CREDIT",
+                amount: rebateAmount,
+                reference_id: draftRegId || recordPayload.payment_id || `reg_${cntsId}`,
+                notes: `Rebate/Commission (${rebatePercent}%) for registration of ${recordPayload.student_name} (${cntsId})`
+              });
+
+            if (ledgerError) {
+              console.error("Failed to insert rebate in ledger:", ledgerError);
+            }
+          }
+        }
       } else {
         // Standard non-sponsored database write
         if (draftRegId) {
