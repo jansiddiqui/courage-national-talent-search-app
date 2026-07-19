@@ -176,7 +176,7 @@ function OnboardNewSchoolForm() {
             body {
               font-family: 'Plus Jakarta Sans', sans-serif;
               margin: 0;
-              padding: 20px;
+              padding: 0;
               color: var(--dark);
               background: #f8fafc;
               line-height: 1.5;
@@ -184,14 +184,77 @@ function OnboardNewSchoolForm() {
               print-color-adjust: exact;
             }
 
+            .print-toolbar {
+              background: #0f172a;
+              padding: 14px 24px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              position: sticky;
+              top: 0;
+              z-index: 100;
+              border-bottom: 1px solid #1e293b;
+              box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+
+            .toolbar-title {
+              font-family: 'Outfit', sans-serif;
+              color: white;
+              font-size: 14px;
+              font-weight: 700;
+              letter-spacing: 0.5px;
+            }
+
+            .toolbar-actions {
+              display: flex;
+              gap: 12px;
+            }
+
+            .btn-print {
+              background: #2563eb;
+              color: white;
+              border: none;
+              padding: 8px 18px;
+              border-radius: 10px;
+              font-family: 'Plus Jakarta Sans', sans-serif;
+              font-weight: 700;
+              font-size: 13px;
+              cursor: pointer;
+              transition: all 0.2s;
+              box-shadow: 0 4px 6px -1px rgba(37, 99, 235, 0.2);
+            }
+
+            .btn-print:hover {
+              background: #1d4ed8;
+              transform: translateY(-1px);
+            }
+
+            .btn-close {
+              background: #334155;
+              color: #cbd5e1;
+              border: none;
+              padding: 8px 18px;
+              border-radius: 10px;
+              font-family: 'Plus Jakarta Sans', sans-serif;
+              font-weight: 700;
+              font-size: 13px;
+              cursor: pointer;
+              transition: all 0.2s;
+            }
+
+            .btn-close:hover {
+              background: #475569;
+              color: white;
+            }
+
             .document-container {
               max-width: 800px;
-              margin: 0 auto;
-              padding: 40px;
+              margin: 40px auto;
+              padding: 50px 50px 40px 50px;
               background: #ffffff;
               border: 1px solid var(--slate-200);
               border-radius: 24px;
-              box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+              box-shadow: 0 10px 25px -3px rgba(0, 0, 0, 0.05);
               position: relative;
               overflow: hidden;
             }
@@ -201,7 +264,7 @@ function OnboardNewSchoolForm() {
               top: 0;
               left: 0;
               right: 0;
-              height: 6px;
+              height: 8px;
               background: linear-gradient(90deg, #1e3a8a 0%, #3b82f6 50%, #eab308 100%);
             }
 
@@ -234,11 +297,12 @@ function OnboardNewSchoolForm() {
 
             .doc-badge {
               font-family: 'Outfit', sans-serif;
-              font-size: 11px;
-              font-weight: 700;
+              font-size: 10px;
+              font-weight: 800;
               text-transform: uppercase;
-              color: var(--slate-600);
-              background: var(--slate-100);
+              color: var(--primary);
+              background: var(--primary-light);
+              border: 1px solid #bfdbfe;
               padding: 6px 14px;
               border-radius: 99px;
               letter-spacing: 0.5px;
@@ -251,7 +315,7 @@ function OnboardNewSchoolForm() {
 
             .hero-title {
               font-family: 'Outfit', sans-serif;
-              font-size: 26px;
+              font-size: 28px;
               font-weight: 800;
               color: var(--dark);
               margin: 0;
@@ -267,7 +331,7 @@ function OnboardNewSchoolForm() {
             .grid-container {
               display: grid;
               grid-template-columns: 1.2fr 1fr;
-              gap: 20px;
+              gap: 24px;
               margin-bottom: 30px;
             }
 
@@ -371,7 +435,7 @@ function OnboardNewSchoolForm() {
               display: grid;
               grid-template-columns: 1fr 1fr 1fr;
               gap: 15px;
-              margin-bottom: 30px;
+              margin-bottom: 35px;
             }
 
             .step-card {
@@ -403,6 +467,66 @@ function OnboardNewSchoolForm() {
               line-height: 1.4;
             }
 
+            .signature-section {
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-top: 40px;
+              margin-bottom: 30px;
+              border-top: 2px solid var(--slate-100);
+              padding-top: 30px;
+            }
+
+            .signature-card {
+              text-align: center;
+              width: 40%;
+            }
+
+            .signature-line {
+              border-top: 1.5px solid var(--slate-600);
+              width: 160px;
+              margin: 0 auto 10px auto;
+            }
+
+            .signature-name {
+              font-family: 'Outfit', sans-serif;
+              font-weight: 700;
+              font-size: 12px;
+              color: var(--dark);
+            }
+
+            .signature-title {
+              font-size: 10px;
+              color: var(--slate-600);
+              margin-top: 2px;
+            }
+
+            .official-seal {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              justify-content: center;
+              text-align: center;
+              width: 20%;
+            }
+
+            .seal-circle {
+              width: 70px;
+              height: 70px;
+              border: 2px double var(--accent);
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-family: 'Outfit', sans-serif;
+              font-size: 9px;
+              font-weight: 800;
+              color: var(--accent);
+              text-transform: uppercase;
+              letter-spacing: 0.5px;
+              transform: rotate(-10deg);
+            }
+
             .warning-box {
               background: #fffbeb;
               border: 1px solid #fef3c7;
@@ -425,6 +549,9 @@ function OnboardNewSchoolForm() {
             }
 
             @media print {
+              .no-print {
+                display: none !important;
+              }
               body {
                 background: white;
                 padding: 0;
@@ -434,6 +561,7 @@ function OnboardNewSchoolForm() {
                 border-radius: 0;
                 box-shadow: none;
                 padding: 0;
+                margin: 0 auto;
               }
               @page {
                 margin: 15mm;
@@ -442,6 +570,15 @@ function OnboardNewSchoolForm() {
           </style>
         </head>
         <body>
+          
+          <div class="no-print print-toolbar">
+            <div class="toolbar-title">Courage National Talent Search 2026</div>
+            <div class="toolbar-actions">
+              <button onclick="window.print()" class="btn-print">Print or Save as PDF</button>
+              <button onclick="window.close()" class="btn-close">Close Window</button>
+            </div>
+          </div>
+
           <div class="document-container">
             <div class="bg-gradient-top"></div>
             
@@ -560,11 +697,37 @@ function OnboardNewSchoolForm() {
               <strong>Security Notice:</strong> Keep these credentials confidential. Do not share the Access PIN with candidates or unauthorized personnel. The student registration link is dedicated strictly for candidates of your school.
             </div>
 
+            <!-- Trust Signatures and Seal -->
+            <div class="signature-section">
+              <div class="signature-card">
+                <div class="signature-line"></div>
+                <div class="signature-name">Academic Board Director</div>
+                <div class="signature-title">Courage National Talent Search</div>
+              </div>
+              
+              <div class="official-seal">
+                <div class="seal-circle">Official Seal</div>
+              </div>
+
+              <div class="signature-card">
+                <div class="signature-line"></div>
+                <div class="signature-name">Registrar</div>
+                <div class="signature-title">Courage Library Foundation</div>
+              </div>
+            </div>
+
             <div class="footer">
               <div>Generated on ${new Date().toLocaleDateString()}</div>
-              <div>Courage National Talent Search &copy; 2026. All rights reserved.</div>
+              <div>Courage National Talent Search &copy; 2026. All rights reserved. Registered Educational Trust.</div>
             </div>
           </div>
+
+          <script>
+            // Automatically launch print dialog on load
+            window.onload = () => {
+              setTimeout(() => { window.print(); }, 300);
+            };
+          </script>
         </body>
       </html>
     `;
