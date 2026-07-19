@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function NeedHelp() {
   return (
-    <section id="support" className="py-10 md:py-14 lg:py-16 bg-white">
+    <section id="support" className="py-10 md:py-14 lg:py-16 bg-transparent">
       <div className="w-full max-w-4xl mx-auto px-4 md:px-6">
         <div className="bg-white/95 backdrop-blur border border-slate-200/60 rounded-[32px] p-6 md:p-8 shadow-sm">
         
