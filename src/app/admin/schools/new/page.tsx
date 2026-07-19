@@ -1,15 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Copy, Check, CheckCircle, XCircle, RefreshCw, FileText, School } from "lucide-react";
 
 export default function OnboardNewSchoolPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center text-slate-500 font-semibold">Loading Onboarding Form...</div>}>
+      <OnboardNewSchoolForm />
+    </Suspense>
+  );
+}
+
+function OnboardNewSchoolForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [isSuccess, setIsSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+  const [inquiryId, setInquiryId] = useState<string | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -26,11 +36,6 @@ export default function OnboardNewSchoolPage() {
     school_code: "",
   });
 
-  // Generate initial code on mount
-  useEffect(() => {
-    generateCode();
-  }, []);
-
   const generateCode = () => {
     const cityPrefix = formData.city.substring(0, 3).toUpperCase() || "XXX";
     const randomNum = Math.floor(1000 + Math.random() * 9000);
@@ -38,6 +43,50 @@ export default function OnboardNewSchoolPage() {
     const pin = Math.floor(1000 + Math.random() * 9000).toString();
     setFormData(prev => ({ ...prev, school_code: code, pin }));
   };
+
+  // Generate initial code on mount and parse query parameters
+  useEffect(() => {
+    const nameParam = searchParams.get("name") || "";
+    const boardParam = searchParams.get("board") || "";
+    const coordName = searchParams.get("coordinator_name") || "";
+    const coordEmail = searchParams.get("coordinator_email") || "";
+    const coordMobile = searchParams.get("coordinator_mobile") || "";
+    const pool = searchParams.get("quota") || "";
+    const inqId = searchParams.get("inquiryId");
+
+    if (inqId) {
+      setInquiryId(inqId);
+    }
+
+    let parsedQuota = 50;
+    if (pool) {
+      const match = pool.match(/(\d+)\s*(?:to|-)\s*(\d+)/i);
+      if (match) {
+        parsedQuota = Math.floor((parseInt(match[1]) + parseInt(match[2])) / 2);
+      } else {
+        const singleMatch = pool.match(/(\d+)/);
+        if (singleMatch) {
+          parsedQuota = parseInt(singleMatch[1]);
+        }
+      }
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      name: nameParam || prev.name,
+      board: boardParam || prev.board,
+      coordinator_name: coordName || prev.coordinator_name,
+      coordinator_email: coordEmail || prev.coordinator_email,
+      coordinator_mobile: coordMobile || prev.coordinator_mobile,
+      quota: parsedQuota.toString()
+    }));
+
+    const cityPrefix = formData.city.substring(0, 3).toUpperCase() || "XXX";
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    const code = `CNTS-${cityPrefix}-${randomNum}`;
+    const pin = Math.floor(1000 + Math.random() * 9000).toString();
+    setFormData(prev => ({ ...prev, school_code: code, pin }));
+  }, [searchParams]);
 
   const handleCityChange = (city: string) => {
     setFormData(prev => {
@@ -63,6 +112,20 @@ export default function OnboardNewSchoolPage() {
 
       if (data.success) {
         setIsSuccess(true);
+        if (inquiryId) {
+          try {
+            await fetch("/api/admin/support", {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                id: inquiryId,
+                updates: { status: "RESOLVED" }
+              })
+            });
+          } catch (inqErr) {
+            console.error("Failed to auto-resolve inquiry:", inqErr);
+          }
+        }
       } else {
         setError(data.message || "Failed to add school");
       }
