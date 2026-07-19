@@ -409,13 +409,14 @@ export default function LoginPage() {
                        <Calendar size={12} className="text-slate-400" />
                        Student Date of Birth
                      </label>
-                     <CustomDatePicker
-                       id="dob"
-                       value={dob}
-                       onChange={setDob}
-                       className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-sm rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all font-semibold"
-                       disabled={loading}
-                     />
+                      <CustomDatePicker
+                        id="dob"
+                        value={dob}
+                        onChange={setDob}
+                        className="w-full px-4 py-3 border border-slate-200 bg-slate-50/50 text-sm rounded-xl outline-none focus:border-blue-800 focus:bg-white focus:ring-4 focus:ring-blue-800/10 transition-all font-semibold"
+                        disabled={loading}
+                        align="top"
+                      />
                    </div>
                 </div>
 

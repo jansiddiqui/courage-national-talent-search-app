@@ -12,6 +12,7 @@ interface CustomDatePickerProps {
   id?: string;
   placeholder?: string;
   hasError?: boolean;
+  align?: "top" | "bottom";
 }
 
 export default function CustomDatePicker({
@@ -23,6 +24,7 @@ export default function CustomDatePicker({
   id,
   placeholder = "DD/MM/YYYY",
   hasError = false,
+  align = "bottom",
 }: CustomDatePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [inputValue, setInputValue] = useState("");
@@ -231,7 +233,9 @@ export default function CustomDatePicker({
 
       {/* Calendar Popover */}
       {isOpen && (
-        <div className="absolute left-0 right-0 sm:right-auto sm:w-72 mt-2 p-4 bg-white border border-slate-200/80 rounded-2xl shadow-xl z-50 animate-fadeIn">
+        <div className={`absolute left-0 right-0 sm:right-auto sm:w-72 p-4 bg-white border border-slate-200/80 rounded-2xl shadow-xl z-50 animate-fadeIn ${
+           align === "top" ? "bottom-full mb-2" : "top-full mt-2"
+         }`}>
           {/* Header Month/Year Selector */}
           <div className="flex items-center justify-between pb-3 border-b border-slate-100 mb-3 gap-2">
             <button
