@@ -138,6 +138,15 @@ export default function ExamsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8 space-y-8">
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes fadeInQuick {
+          from { opacity: 0; transform: scale(0.96); }
+          to { opacity: 1; transform: scale(1); }
+        }
+        .animate-fade-in-quick {
+          animation: fadeInQuick 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}} />
       {/* Title Header */}
       <div>
         <h1 className="font-display font-bold text-2xl text-slate-900">Exams & Assessment</h1>
@@ -317,15 +326,15 @@ export default function ExamsPage() {
                   </div>
                 </div>
                 {cameraStatus === "success" ? (
-                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
+                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0 animate-fade-in-quick">
                     <Check size={10} className="stroke-[3]" /> Passed
                   </span>
                 ) : cameraStatus === "error" ? (
-                  <button onClick={testCamera} className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0">
+                  <button onClick={testCamera} className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0 animate-fade-in-quick">
                     Retry
                   </button>
                 ) : (
-                  <button onClick={testCamera} disabled={cameraStatus === "checking"} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-100 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0">
+                  <button onClick={testCamera} disabled={cameraStatus === "checking"} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-100 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0 animate-fade-in-quick">
                     {cameraStatus === "checking" ? "Checking..." : "Test Camera"}
                   </button>
                 )}
@@ -351,15 +360,15 @@ export default function ExamsPage() {
                   </div>
                 </div>
                 {micStatus === "success" ? (
-                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
+                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0 animate-fade-in-quick">
                     <Check size={10} className="stroke-[3]" /> Passed
                   </span>
                 ) : micStatus === "error" ? (
-                  <button onClick={testMicrophone} className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0">
+                  <button onClick={testMicrophone} className="px-3 py-1.5 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0 animate-fade-in-quick">
                     Retry
                   </button>
                 ) : (
-                  <button onClick={testMicrophone} disabled={micStatus === "checking"} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-100 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0">
+                  <button onClick={testMicrophone} disabled={micStatus === "checking"} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-100 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0 animate-fade-in-quick">
                     {micStatus === "checking" ? "Checking..." : "Test Mic"}
                   </button>
                 )}
@@ -382,11 +391,11 @@ export default function ExamsPage() {
                   </div>
                 </div>
                 {screenStatus === "success" ? (
-                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
+                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0 animate-fade-in-quick">
                     <Check size={10} className="stroke-[3]" /> Compatible
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
+                  <span className="flex items-center gap-1 text-[10px] font-black text-amber-700 bg-amber-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0 animate-fade-in-quick">
                     Warning
                   </span>
                 )}
@@ -410,11 +419,11 @@ export default function ExamsPage() {
                   </div>
                 </div>
                 {networkStatus === "success" ? (
-                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0">
+                  <span className="flex items-center gap-1 text-[10px] font-black text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full uppercase tracking-wider shrink-0 animate-fade-in-quick">
                     <Check size={10} className="stroke-[3]" /> Optimal
                   </span>
                 ) : (
-                  <button onClick={testConnection} disabled={networkStatus === "checking"} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-100 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0">
+                  <button onClick={testConnection} disabled={networkStatus === "checking"} className="px-3 py-1.5 bg-blue-50 hover:bg-blue-100 text-blue-800 border border-blue-100 rounded-xl text-[10px] font-bold transition-colors cursor-pointer shrink-0 animate-fade-in-quick">
                     {networkStatus === "checking" ? "Testing..." : "Test Speed"}
                   </button>
                 )}
@@ -424,7 +433,16 @@ export default function ExamsPage() {
             {/* Right preview box: Camera Preview box */}
             <div className="bg-slate-50 rounded-2xl border border-slate-200/60 p-4 flex flex-col items-center justify-center text-center relative overflow-hidden aspect-[4/3] md:aspect-auto">
               {cameraStatus === "success" && videoStream ? (
-                <div className="absolute inset-0 w-full h-full bg-black">
+                <div className="absolute inset-0 w-full h-full bg-black animate-webcam-fade">
+                  <style dangerouslySetInnerHTML={{__html: `
+                    @keyframes webcamFadeIn {
+                      from { opacity: 0; }
+                      to { opacity: 1; }
+                    }
+                    .animate-webcam-fade {
+                      animation: webcamFadeIn 0.3s ease-out forwards;
+                    }
+                  `}} />
                   <video
                     ref={videoRef}
                     autoPlay

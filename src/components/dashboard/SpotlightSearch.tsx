@@ -207,10 +207,26 @@ export default function SpotlightSearch({
   let itemCounter = 0;
 
   return (
-    <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-[999] flex items-start justify-center pt-20 px-4">
+    <div className="fixed inset-0 bg-slate-900/40 z-[999] flex items-start justify-center pt-20 px-4 animate-spotlight-fade">
+      <style dangerouslySetInnerHTML={{__html: `
+        @keyframes spotlightFadeIn {
+          from { opacity: 0; backdrop-filter: blur(0px); }
+          to { opacity: 1; backdrop-filter: blur(4px); }
+        }
+        @keyframes spotlightSlideUp {
+          from { opacity: 0; transform: translateY(16px) scale(0.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .animate-spotlight-fade {
+          animation: spotlightFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        .animate-spotlight-slide {
+          animation: spotlightSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+      `}} />
       <div
         ref={containerRef}
-        className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden animate-slideUp flex flex-col max-h-[70vh]"
+        className="bg-white rounded-2xl border border-slate-200 shadow-2xl w-full max-w-xl overflow-hidden animate-spotlight-slide flex flex-col max-h-[70vh]"
       >
         {/* Search header input */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-slate-100 shrink-0">
