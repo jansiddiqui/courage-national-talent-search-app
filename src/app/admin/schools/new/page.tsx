@@ -455,6 +455,7 @@ function OnboardNewSchoolForm() {
                         >
                           <option value="FULL">FULL (100% Free for Student)</option>
                           <option value="PARTIAL">PARTIAL (Split Payment)</option>
+                          <option value="NONE">NONE (No Sponsorship - 100% Paid by Student)</option>
                         </select>
                       </div>
                     </div>
