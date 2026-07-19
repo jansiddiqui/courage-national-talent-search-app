@@ -32,11 +32,19 @@ const NAV_ITEMS = [
   { href: "/dashboard/ai", label: "AI Assistant", icon: Sparkles },
 ];
 
-const MOBILE_TABS = [
+interface MobileTabItem {
+  href: string;
+  label: string;
+  icon: React.ComponentType<any>;
+  exact?: boolean;
+  badge?: boolean;
+}
+
+const MOBILE_TABS: MobileTabItem[] = [
   { href: "/dashboard", label: "Home", icon: LayoutDashboard, exact: true },
   { href: "/dashboard/children", label: "Children", icon: Users },
+  { href: "/dashboard/exams", label: "Exams", icon: Award },
   { href: "/dashboard/timeline", label: "Timeline", icon: GitBranch },
-  { href: "/dashboard/notifications", label: "Alerts", icon: Bell, badge: true },
   { href: "/dashboard/profile", label: "Profile", icon: UserCircle },
 ];
 
