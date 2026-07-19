@@ -7,7 +7,9 @@ export function generateCNTSButton(text: string, url: string): string {
     <div style="text-align: center; margin: 30px 0;">
       <a href="${url}" style="display: inline-block; background-color: #1e40af; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: bold; font-size: 16px; letter-spacing: 0.5px;">${text}</a>
       <p style="margin: 15px 0 0; color: #64748b; font-size: 12px;">If the button does not work:</p>
-      <p style="margin: 5px 0 0; color: #1e40af; font-size: 12px; word-break: break-all;">${url}</p>
+      <p style="margin: 5px 0 0; font-size: 12px; overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; padding: 0 10px;">
+        <a href="${url}" style="color: #1e40af; text-decoration: none; display: inline-block; max-width: 100%;">${url}</a>
+      </p>
     </div>
   `;
 }
@@ -31,13 +33,21 @@ function getFooter(): string {
       <h3 style="margin: 0 0 5px; color: #0f172a; font-size: 16px; font-weight: 700;">Courage National Talent Search (CNTS)</h3>
       <p style="margin: 0 0 20px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Talent Discovery Auditing</p>
       
-      <div style="margin-bottom: 20px; font-size: 14px;">
-        <a href="${PORTAL_URL}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Candidate Portal</a> | 
-        <a href="${WEBSITE_URL}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Website</a> | 
-        <a href="mailto:support@thecouragelibrary.com" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Support</a>
+      <div style="margin-bottom: 20px; font-size: 14px; line-height: 1.8;">
+        <span style="display: inline-block; white-space: nowrap;">
+          <a href="${PORTAL_URL}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Candidate Portal</a>
+        </span>
+        <span style="color: #cbd5e1; margin: 0 4px; display: inline-block; vertical-align: middle;">&bull;</span>
+        <span style="display: inline-block; white-space: nowrap;">
+          <a href="${WEBSITE_URL}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Website</a>
+        </span>
+        <span style="color: #cbd5e1; margin: 0 4px; display: inline-block; vertical-align: middle;">&bull;</span>
+        <span style="display: inline-block; white-space: nowrap;">
+          <a href="mailto:support@thecouragelibrary.com" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Support</a>
+        </span>
       </div>
       
-      <p style="margin: 0; color: #94a3b8; font-size: 12px;">You are receiving this email because a CNTS activity was performed using this email address.</p>
+      <p style="margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.5;">You are receiving this email because a CNTS activity was performed using this email address.</p>
     </div>
   `;
 }

@@ -70,8 +70,6 @@ export default function LoginPage() {
       if (res.isAuthenticated) {
         if (res.role === "ADMIN" || res.role === "SUPER_ADMIN" || res.role === "VOLUNTEER") {
           router.push("/admin");
-        } else if (res.cntsId) {
-          router.push("/academy");
         } else {
           router.push("/dashboard");
         }
@@ -98,12 +96,12 @@ export default function LoginPage() {
     try {
       const res = await authService.loginWithCredentials(cntsId.trim(), dob);
       if (res.success) {
-        setSuccessMessage("Login successful! Redirecting to Learning Academy...");
+        setSuccessMessage("Login successful! Redirecting to Parent Dashboard...");
         setTimeout(() => {
           if (res.role === "ADMIN" || res.role === "SUPER_ADMIN" || res.role === "VOLUNTEER") {
             router.push("/admin");
           } else {
-            router.push("/academy");
+            router.push("/dashboard");
           }
         }, 1200);
       } else {
