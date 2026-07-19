@@ -456,47 +456,78 @@ export default function ExamsPage() {
       )}
 
       {/* Guidelines and Rules section */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8 space-y-4">
-        <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-          <Info size={16} className="text-blue-800" />
-          Official Assessment Guidelines
-        </h3>
-        <p className="text-slate-500 text-xs leading-relaxed">
-          The CNTS Talent Search Exam is built on strict governance audits to preserve scoring integrity. 
-          Please read and remember the following rules before starting the assessment:
-        </p>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2">
-          <div className="space-y-1.5">
-            <h4 className="text-xs font-bold text-slate-800">1. Strict Anti-Cheat & Proctoring</h4>
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              Opening another browser window, resizing your screen, or navigating to another tab during the exam is strictly prohibited. 
-              The proctoring system logs all tab switches and automatically locks the test session after three warnings.
-            </p>
-          </div>
-          <div className="space-y-1.5">
-            <h4 className="text-xs font-bold text-slate-800">2. Environmental Requirements</h4>
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              Ensure you sit in a well-lit, silent room. The camera and microphone must remain active and unobstructed at all times. 
-              Only the candidate should be visible in the webcam frame throughout the duration of the test.
-            </p>
-          </div>
-          <div className="space-y-1.5">
-            <h4 className="text-xs font-bold text-slate-800">3. Working Materials & Scratch Pad</h4>
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              Candidates can use a blank piece of paper and pencil for rough reasoning calculations. 
-              Scientific calculators, mobile devices, reference textbooks, or secondary screens are strictly forbidden.
-            </p>
-          </div>
-          <div className="space-y-1.5">
-            <h4 className="text-xs font-bold text-slate-800">4. Interrupted Session Recovery</h4>
-            <p className="text-[11px] text-slate-500 leading-relaxed">
-              In case of electricity outages or internet failures, close your browser. 
-              Your active test progress is automatically saved to our cloud server every 30 seconds. 
-              You can log back into your Candidate Portal immediately to resume the test from where you left off.
-            </p>
-          </div>
+      <div className="bg-white rounded-3xl border border-slate-100 shadow-sm p-6 sm:p-8 space-y-5">
+        <div className="border-b border-slate-100 pb-3">
+          <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+            <Info size={16} className="text-blue-800" />
+            Official Assessment Guidelines
+          </h3>
+          <p className="text-slate-400 text-xs mt-1">
+            The CNTS Talent Search Exam follows strict auditing rules to preserve evaluation integrity.
+          </p>
         </div>
+
+        <ul className="space-y-4">
+          <li className="flex gap-3">
+            <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 border border-blue-100">
+              1
+            </div>
+            <div>
+              <strong className="text-xs font-bold text-slate-800 block">Strict Anti-Cheat & Auto-Lock</strong>
+              <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+                Opening another browser window, accessing other software apps, or navigating to another tab during the exam is strictly prohibited. The SafeExam system logs all tab activity and will automatically lock the test window after three warnings.
+              </p>
+            </div>
+          </li>
+
+          <li className="flex gap-3">
+            <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 border border-blue-100">
+              2
+            </div>
+            <div>
+              <strong className="text-xs font-bold text-slate-800 block">Webcam & Audio Monitoring</strong>
+              <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+                A functional webcam and microphone must remain active and unobstructed throughout the examination. The candidate must remain fully visible inside the camera frame at all times.
+              </p>
+            </div>
+          </li>
+
+          <li className="flex gap-3">
+            <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 border border-blue-100">
+              3
+            </div>
+            <div>
+              <strong className="text-xs font-bold text-slate-800 block">Rough Work & Calculator Rules</strong>
+              <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+                Candidates are permitted to have a single blank sheet of paper and a pencil for calculation scribbles. Scientific calculators, tables, textbooks, smartwatches, or secondary monitors are strictly forbidden.
+              </p>
+            </div>
+          </li>
+
+          <li className="flex gap-3">
+            <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 border border-blue-100">
+              4
+            </div>
+            <div>
+              <strong className="text-xs font-bold text-slate-800 block">Outage Auto-Save Recovery</strong>
+              <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+                If your internet connection drops or power fails, your answers are automatically synchronized to our servers every 30 seconds. Simply open the browser, log back into the portal, and you can resume the test exactly where you left off.
+              </p>
+            </div>
+          </li>
+
+          <li className="flex gap-3">
+            <div className="w-5 h-5 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center text-[10px] font-black shrink-0 mt-0.5 border border-blue-100">
+              5
+            </div>
+            <div>
+              <strong className="text-xs font-bold text-slate-800 block">Single-Device Active Session</strong>
+              <p className="text-[11px] text-slate-500 leading-relaxed mt-0.5">
+                The test can only be active on one device at a time. Logging in from another browser or machine during an active session will trigger instant session termination.
+              </p>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   );
