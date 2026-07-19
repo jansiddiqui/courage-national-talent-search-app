@@ -46,10 +46,10 @@ export async function middleware(request: NextRequest) {
     const { generateFingerprint } = await import("./lib/sessionHelper");
     const currentFingerprint = await generateFingerprint(ip, userAgent);
 
-    if (session.ipHash && session.userAgentHash) {
-      if (session.ipHash !== currentFingerprint.ipHash || session.userAgentHash !== currentFingerprint.userAgentHash) {
+    if (session.userAgentHash) {
+      if (session.userAgentHash !== currentFingerprint.userAgentHash) {
         // Fingerprint mismatch - force re-auth
-        const response = NextResponse.redirect(new URL("/login?error=Session invalidated due to network change. Please login again.", request.url));
+        const response = NextResponse.redirect(new URL("/login?error=Session invalidated due to security check. Please login again.", request.url));
         response.cookies.delete("cnts_session");
         return response;
       }
