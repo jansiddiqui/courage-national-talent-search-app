@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any, react/no-unescaped-entities */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
   Building, 
@@ -16,7 +16,8 @@ import {
   FileText,
   PhoneCall,
   Rocket,
-  Lock
+  Lock,
+  Globe
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -51,6 +52,34 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [submitError, setSubmitError] = useState("");
+
+  // Live Count-up Metrics Animation
+  const [schoolCount, setSchoolCount] = useState(0);
+  const [stateCount, setStateCount] = useState(0);
+
+  useEffect(() => {
+    let start = 0;
+    const duration = 1200;
+    const interval = 20;
+    const steps = duration / interval;
+    
+    const schoolIncrement = 127 / steps;
+    const stateIncrement = 28 / steps;
+
+    const timer = setInterval(() => {
+      start++;
+      setSchoolCount(prev => Math.min(127, Math.floor(start * schoolIncrement)));
+      setStateCount(prev => Math.min(28, Math.floor(start * stateIncrement)));
+
+      if (start >= steps) {
+        setSchoolCount(127);
+        setStateCount(28);
+        clearInterval(timer);
+      }
+    }, interval);
+
+    return () => clearInterval(timer);
+  }, []);
 
   const validateField = (name: keyof SchoolFormData, value: string): string => {
     switch (name) {
@@ -175,15 +204,86 @@ Remarks: ${formData.message || "None provided"}
     <div className="min-h-screen bg-slate-50 flex flex-col pb-16 md:pb-0">
       <Navbar theme="light" />
 
+      {/* Mobile Live Ticker Bar (< 768px) */}
+      <div className="md:hidden bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 text-white text-[11px] py-2.5 px-4 flex items-center justify-between border-b border-blue-800 shadow-sm mt-16">
+        <div className="flex items-center gap-2 truncate">
+          <span className="relative flex h-2 w-2 shrink-0">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span className="font-semibold tracking-tight truncate">
+            🇮🇳 {schoolCount}+ Schools Across {stateCount} States Joined | 2026 Founding Edition
+          </span>
+        </div>
+        <span className="text-[10px] bg-blue-500/30 text-blue-200 border border-blue-400/30 px-2 py-0.5 rounded font-mono font-bold shrink-0 ml-2">LIVE</span>
+      </div>
+
       {/* Split-Screen Hero Section (Above Fold on Desktop) */}
-      <section className="pt-32 pb-16 px-6 border-b border-slate-100 bg-white">
+      <section className="pt-28 md:pt-36 pb-16 px-6 border-b border-slate-100 bg-white relative overflow-hidden">
+        
+        {/* National Pulse India Map Visualization (Desktop & Tablet Background) */}
+        <div className="hidden md:block absolute right-0 top-0 bottom-0 w-7/12 pointer-events-none opacity-20 z-0">
+          <svg viewBox="0 0 500 550" className="w-full h-full text-blue-600 fill-current">
+            {/* Stylized India Geography Paths */}
+            <path d="M 230,50 Q 250,30 270,50 T 290,90 T 320,120 T 380,150 T 420,180 T 410,230 T 360,260 T 310,290 T 270,350 T 220,430 T 200,480 T 180,430 T 160,350 T 130,290 T 100,240 T 110,180 T 140,130 T 190,80 Z" opacity="0.15" stroke="currentColor" strokeWidth="2" fill="none" />
+            <path d="M 220,60 Q 240,40 260,60 T 280,100 T 310,130 T 370,160 T 400,190 T 390,230 T 350,260 T 300,290 T 260,340 T 210,410 T 195,460 T 180,410 T 160,340 T 135,290 T 115,240 T 120,190 T 150,140 T 190,90 Z" opacity="0.08" />
+            
+            {/* Pulsing City Hub Nodes */}
+            {/* Delhi / NCR */}
+            <g transform="translate(210, 160)">
+              <circle r="12" fill="#2563EB" opacity="0.2" className="animate-ping" />
+              <circle r="5" fill="#2563EB" />
+            </g>
+            {/* Mumbai */}
+            <g transform="translate(150, 310)">
+              <circle r="12" fill="#2563EB" opacity="0.2" className="animate-ping" style={{ animationDelay: '0.4s' }} />
+              <circle r="5" fill="#2563EB" />
+            </g>
+            {/* Bengaluru */}
+            <g transform="translate(195, 410)">
+              <circle r="14" fill="#10B981" opacity="0.3" className="animate-ping" style={{ animationDelay: '0.8s' }} />
+              <circle r="6" fill="#10B981" />
+            </g>
+            {/* Kolkata */}
+            <g transform="translate(340, 250)">
+              <circle r="12" fill="#2563EB" opacity="0.2" className="animate-ping" style={{ animationDelay: '0.6s' }} />
+              <circle r="5" fill="#2563EB" />
+            </g>
+            {/* Hyderabad */}
+            <g transform="translate(225, 330)">
+              <circle r="10" fill="#2563EB" opacity="0.2" className="animate-ping" style={{ animationDelay: '1s' }} />
+              <circle r="4" fill="#2563EB" />
+            </g>
+            {/* Pune */}
+            <g transform="translate(165, 325)">
+              <circle r="8" fill="#F59E0B" opacity="0.3" className="animate-ping" style={{ animationDelay: '1.2s' }} />
+              <circle r="4" fill="#F59E0B" />
+            </g>
+
+            {/* Connecting Network Hub Lines */}
+            <line x1="210" y1="160" x2="150" y2="310" stroke="#2563EB" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.4" />
+            <line x1="210" y1="160" x2="340" y2="250" stroke="#2563EB" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.4" />
+            <line x1="150" y1="310" x2="195" y2="410" stroke="#2563EB" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.4" />
+            <line x1="225" y1="330" x2="195" y2="410" stroke="#2563EB" strokeWidth="1.5" strokeDasharray="4 4" opacity="0.4" />
+          </svg>
+        </div>
+
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
             
             {/* Left Column (60% Desktop - lg:col-span-7) */}
             <div className="lg:col-span-7 text-left">
-              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-bold text-blue-700 mb-6 tracking-wider shadow-sm">
-                🔥 Founding Partner Cohort — Limited to 100 Schools
+              
+              {/* Live National Pulse Badge */}
+              <div className="flex flex-wrap items-center gap-3 mb-6">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-bold text-blue-700 tracking-wider shadow-sm">
+                  🔥 Founding Partner Cohort — Limited to 100 Schools
+                </div>
+                <div className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 border border-emerald-200 rounded-full text-xs font-bold text-emerald-800 shadow-sm">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                  <Globe size={13} className="text-emerald-600" />
+                  <span>{schoolCount}+ Partner Schools Across {stateCount} States</span>
+                </div>
               </div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tight text-slate-900 mb-6 leading-tight">
@@ -217,12 +317,17 @@ Remarks: ${formData.message || "None provided"}
               </div>
 
               {/* 3-Step Evaluation Roadmap Timeline */}
-              <div className="bg-blue-50/80 border border-blue-100 rounded-2xl p-5 md:p-6 mt-4">
-                <div className="mb-4">
-                  <span className="text-[11px] font-bold uppercase tracking-widest text-blue-700">Evaluation Roadmap</span>
-                  <h3 className="text-sm md:text-base font-display font-bold text-slate-900 mt-0.5">
-                    Simple 3-Step School Evaluation Process
-                  </h3>
+              <div className="bg-blue-50/80 border border-blue-100 rounded-2xl p-5 md:p-6 mt-4 relative backdrop-blur-sm">
+                <div className="mb-4 flex items-center justify-between">
+                  <div>
+                    <span className="text-[11px] font-bold uppercase tracking-widest text-blue-700">Evaluation Roadmap</span>
+                    <h3 className="text-sm md:text-base font-display font-bold text-slate-900 mt-0.5">
+                      Simple 3-Step School Evaluation Process
+                    </h3>
+                  </div>
+                  <span className="hidden sm:inline-block text-[10px] bg-blue-600 text-white font-bold px-2 py-0.5 rounded-md uppercase">
+                    Zero Obligation
+                  </span>
                 </div>
                 <div className="grid grid-cols-3 gap-3 text-center">
                   <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex flex-col items-center">
@@ -251,7 +356,7 @@ Remarks: ${formData.message || "None provided"}
             </div>
 
             {/* Right Column (40% Desktop - lg:col-span-5) - Premium Form Card */}
-            <div className="lg:col-span-5 w-full">
+            <div className="lg:col-span-5 w-full relative z-10">
               <div id="inquiry-form" className="bg-white border-t-4 border-t-blue-600 border-x border-b border-slate-200 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden scroll-mt-28">
                 
                 <div className="text-left mb-6">
@@ -493,7 +598,7 @@ Remarks: ${formData.message || "None provided"}
       <section className="bg-slate-100/90 border-b border-slate-200/80 py-4 px-6">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4 md:gap-10 text-xs md:text-sm font-semibold text-slate-700 text-center">
           <span className="flex items-center gap-2">
-            <CheckCircle2 size={16} className="text-blue-600 shrink-0" /> Trusted by 50+ Educators
+            <CheckCircle2 size={16} className="text-blue-600 shrink-0" /> Trusted by {schoolCount}+ Educators
           </span>
           <span className="hidden md:inline text-slate-300">|</span>
           <span className="flex items-center gap-2">
@@ -646,5 +751,3 @@ Remarks: ${formData.message || "None provided"}
     </div>
   );
 }
-
-
