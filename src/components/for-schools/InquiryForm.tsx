@@ -101,7 +101,7 @@ export default function InquiryForm() {
     });
 
     if (!consentGiven) {
-      setConsentError("Please provide consent to proceed with partnership inquiry.");
+      setConsentError("Please provide consent to proceed with your partnership request.");
       isValid = false;
     } else {
       setConsentError("");
@@ -175,19 +175,19 @@ Consent Given: Yes (DPDP Compliant)
       <div className="text-left mb-5">
         <div className="flex items-center gap-2 mb-1">
           <Building size={22} className="text-blue-600 shrink-0" />
-          <h2 className="text-xl font-display font-bold text-slate-900">Partner School Inquiry</h2>
+          <h2 className="text-xl font-display font-bold text-slate-900">Request a School Partnership</h2>
         </div>
         <p className="text-slate-500 text-xs leading-relaxed">
-          Submit your school details to receive the official prospectus kit and schedule an orientation briefing.
+          Submit your school details to receive the official prospectus kit and schedule an academic briefing.
         </p>
       </div>
 
       {submitSuccess ? (
         <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center py-8 text-emerald-900">
           <CheckCircle2 size={44} className="text-emerald-500 mx-auto mb-3" />
-          <h3 className="font-display font-bold text-base mb-1">Inquiry Registered Successfully!</h3>
+          <h3 className="font-display font-bold text-base mb-1">Partnership Request Received Successfully!</h3>
           <p className="text-xs text-emerald-700 max-w-md mx-auto leading-relaxed mb-4">
-            Thank you for expressing interest in CNTS 2026. An Academic Relationship Officer will contact you within 24 business hours.
+            Thank you for expressing interest in CNTS 2026. An Academic Relationship Officer will contact your office within 24 business hours.
           </p>
           <button
             onClick={() => setSubmitSuccess(false)}
@@ -312,7 +312,7 @@ Consent Given: Yes (DPDP Compliant)
                 <option value="Vice Principal">Vice Principal</option>
                 <option value="Academic Coordinator">Academic Coordinator</option>
                 <option value="Director / Trustee">School Director / Trustee</option>
-                <option value="Teacher">Teacher</option>
+                <option value="Teacher">Senior Teacher</option>
               </select>
             </div>
           </div>
@@ -364,18 +364,18 @@ Consent Given: Yes (DPDP Compliant)
 
           {/* Student Strength */}
           <div className="space-y-1">
-            <label htmlFor="studentStrength" className="text-xs font-semibold text-slate-700">Approximate Student Strength (Classes 5-8) (Optional)</label>
+            <label htmlFor="studentStrength" className="text-xs font-semibold text-slate-700">Approximate Student Pool (Classes 5-8) (Optional)</label>
             <select
               id="studentStrength"
               value={formData.studentStrength}
               onChange={(e) => handleInputChange("studentStrength", e.target.value)}
               className="w-full text-base py-2.5 px-4 rounded-xl border min-h-[44px] border-slate-200 bg-slate-50/50 focus:bg-white outline-none focus-visible:ring-2 focus-visible:ring-blue-600 focus-visible:ring-offset-2"
             >
-              <option value="">Select range...</option>
-              <option value="Under 100">Under 100</option>
-              <option value="100 - 300">100 - 300</option>
-              <option value="300 - 600">300 - 600</option>
-              <option value="600+">600+</option>
+              <option value="">Select candidate range...</option>
+              <option value="Under 100">Under 100 students</option>
+              <option value="100 - 300">100 - 300 students</option>
+              <option value="300 - 600">300 - 600 students</option>
+              <option value="600+">600+ students</option>
             </select>
           </div>
 

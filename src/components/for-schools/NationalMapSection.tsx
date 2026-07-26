@@ -1,67 +1,150 @@
-import { CheckCircle2 } from "lucide-react";
+import { Globe2, GraduationCap, Building2, Languages, MonitorCheck, ShieldCheck, Award, PhoneCall, Zap } from "lucide-react";
+import InteractiveIndiaMap from "./InteractiveIndiaMap";
 
 export default function NationalMapSection() {
   return (
-    <section className="py-20 bg-white border-y border-slate-200 px-6">
+    <section className="py-12 md:py-16 bg-slate-50 border-y border-slate-200 px-6">
       <div className="max-w-7xl mx-auto">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-blue-600">National Scope</span>
-          <h2 className="text-2xl md:text-4xl font-display font-bold tracking-tight text-slate-900 mt-2">
-            A National Initiative. Built for Every School in India.
+        
+        {/* Section Header */}
+        <div className="text-center max-w-2xl mx-auto mb-8">
+          <span className="text-xs font-bold uppercase tracking-widest text-blue-600">National Outreach</span>
+          <h2 className="text-xl md:text-2xl font-display font-bold tracking-tight text-slate-900 mt-1">
+            A national initiative built for schools across India
           </h2>
-          <p className="text-slate-600 text-sm md:text-base mt-3">
+          <p className="text-slate-600 text-xs md:text-sm mt-2">
             Supporting participating schools across urban centers, rural districts, government systems, and private boards.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center bg-slate-50 border border-slate-200 rounded-3xl p-6 md:p-10 shadow-sm">
+        {/* Combined Map + Executive Infographic Dashboard Stage */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center bg-white border border-slate-200 rounded-2xl p-4 md:p-6 shadow-sm">
           
-          {/* India Map Graphic & Coordination Hubs */}
-          <div className="lg:col-span-7 relative h-72 md:h-96 flex items-center justify-center bg-white rounded-2xl border border-slate-200 p-4 overflow-hidden">
-            <svg viewBox="0 0 500 550" className="w-full h-full text-blue-600 fill-current opacity-80">
-              <path d="M 230,50 Q 250,30 270,50 T 290,90 T 320,120 T 380,150 T 420,180 T 410,230 T 360,260 T 310,290 T 270,350 T 220,430 T 200,480 T 180,430 T 160,350 T 130,290 T 100,240 T 110,180 T 140,130 T 190,80 Z" opacity="0.12" stroke="currentColor" strokeWidth="2" fill="none" />
-              <path d="M 220,60 Q 240,40 260,60 T 280,100 T 310,130 T 370,160 T 400,190 T 390,230 T 350,260 T 300,290 T 260,340 T 210,410 T 195,460 T 180,410 T 160,340 T 135,290 T 115,240 T 120,190 T 150,140 T 190,90 Z" opacity="0.06" />
-              
-              <g transform="translate(210, 160)"><circle r="8" fill="#2563EB" /><text x="12" y="4" fontSize="10" fontWeight="bold" fill="#1E293B">Delhi-NCR Hub</text></g>
-              <g transform="translate(150, 310)"><circle r="8" fill="#2563EB" /><text x="12" y="4" fontSize="10" fontWeight="bold" fill="#1E293B">Mumbai Hub</text></g>
-              <g transform="translate(195, 410)"><circle r="8" fill="#10B981" /><text x="12" y="4" fontSize="10" fontWeight="bold" fill="#1E293B">Bengaluru Hub</text></g>
-              <g transform="translate(340, 250)"><circle r="8" fill="#2563EB" /><text x="-70" y="4" fontSize="10" fontWeight="bold" fill="#1E293B">Kolkata Hub</text></g>
-              <g transform="translate(225, 330)"><circle r="8" fill="#2563EB" /><text x="12" y="4" fontSize="10" fontWeight="bold" fill="#1E293B">Hyderabad Hub</text></g>
-              <g transform="translate(165, 325)"><circle r="6" fill="#F59E0B" /></g>
-
-              <line x1="210" y1="160" x2="150" y2="310" stroke="#2563EB" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-              <line x1="210" y1="160" x2="340" y2="250" stroke="#2563EB" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-              <line x1="150" y1="310" x2="195" y2="410" stroke="#2563EB" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-            </svg>
+          {/* Left Column: Interactive Vector SVG Map Base Layer */}
+          <div className="lg:col-span-7">
+            <InteractiveIndiaMap />
           </div>
 
-          {/* Factual Reach Checklist */}
+          {/* Right Column: Executive Infographic Panel */}
           <div className="lg:col-span-5 text-left space-y-4">
-            <h3 className="font-display font-bold text-slate-900 text-xl">National Coverage Matrix</h3>
-            <ul className="space-y-2.5 text-xs text-slate-700 font-medium">
-              <li className="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-                <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
-                <span><strong>28 States &amp; 8 Union Territories</strong> Supported</span>
-              </li>
-              <li className="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-                <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
-                <span><strong>Urban &amp; Rural District</strong> Lab Access Compatible</span>
-              </li>
-              <li className="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-                <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
-                <span><strong>CBSE, ICSE, State &amp; International Boards</strong> Supported</span>
-              </li>
-              <li className="flex items-center gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200">
-                <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
-                <span><strong>Dedicated Regional Relationship Officers</strong> Assigned</span>
-              </li>
-            </ul>
-            <p className="text-[11px] text-slate-500 italic pt-1">
-              Supporting school participation across India for the 2026 Academic Session.
-            </p>
+            
+            <div className="border-b border-slate-100 pb-3">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
+                National Network Scale
+              </span>
+              <h3 className="font-display font-bold text-slate-900 text-base md:text-lg mt-1.5">
+                Executive Reach Overview
+              </h3>
+            </div>
+
+            {/* 2x3 Metric Infographic Grid */}
+            <div className="grid grid-cols-2 gap-3">
+              
+              {/* Metric 1: States & UTs */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xl font-display font-extrabold text-blue-700">28 &amp; 8</span>
+                  <Globe2 size={18} className="text-blue-600 shrink-0" />
+                </div>
+                <strong className="text-slate-900 text-xs font-bold block">States &amp; UTs</strong>
+                <span className="text-slate-500 text-[10px] leading-tight">Pan-India coverage</span>
+              </div>
+
+              {/* Metric 2: Classes */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xl font-display font-extrabold text-slate-900">5–8</span>
+                  <GraduationCap size={18} className="text-slate-700 shrink-0" />
+                </div>
+                <strong className="text-slate-900 text-xs font-bold block">Target Cohort</strong>
+                <span className="text-slate-500 text-[10px] leading-tight">Classes 5, 6, 7 &amp; 8</span>
+              </div>
+
+              {/* Metric 3: Affiliation Boards */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-display font-extrabold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                    CBSE · ICSE · State
+                  </span>
+                  <Building2 size={18} className="text-emerald-600 shrink-0" />
+                </div>
+                <strong className="text-slate-900 text-xs font-bold block">All School Boards</strong>
+                <span className="text-slate-500 text-[10px] leading-tight">Universal syllabus alignment</span>
+              </div>
+
+              {/* Metric 4: Languages */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xs font-display font-extrabold text-slate-900 bg-white px-2 py-0.5 rounded border border-slate-200">
+                    English &amp; Hindi
+                  </span>
+                  <Languages size={18} className="text-indigo-600 shrink-0" />
+                </div>
+                <strong className="text-slate-900 text-xs font-bold block">Bilingual Medium</strong>
+                <span className="text-slate-500 text-[10px] leading-tight">Dual language option</span>
+              </div>
+
+              {/* Metric 5: Online Format */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-xl font-display font-extrabold text-emerald-700">100%</span>
+                  <MonitorCheck size={18} className="text-emerald-600 shrink-0" />
+                </div>
+                <strong className="text-slate-900 text-xs font-bold block">Online Testing</strong>
+                <span className="text-slate-500 text-[10px] leading-tight">Automated computer lab delivery</span>
+              </div>
+
+              {/* Metric 6: Security */}
+              <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200/80 flex flex-col justify-between">
+                <div className="flex items-center justify-between mb-1.5">
+                  <span className="text-[11px] font-display font-bold text-slate-900 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                    DPDP Act
+                  </span>
+                  <ShieldCheck size={18} className="text-blue-600 shrink-0" />
+                </div>
+                <strong className="text-slate-900 text-xs font-bold block">AI Proctoring</strong>
+                <span className="text-slate-500 text-[10px] leading-tight">Secure session encryption</span>
+              </div>
+
+            </div>
+
           </div>
 
         </div>
+
+        {/* Executive Footnote Assurance Strip */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mt-6 text-left">
+          <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center shrink-0">
+              <Award size={18} />
+            </div>
+            <div>
+              <strong className="text-slate-900 text-xs font-bold block">National Digital Certificates</strong>
+              <span className="text-slate-500 text-[10px]">Verifiable student &amp; school honors</span>
+            </div>
+          </div>
+
+          <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 flex items-center justify-center shrink-0">
+              <PhoneCall size={18} />
+            </div>
+            <div>
+              <strong className="text-slate-900 text-xs font-bold block">Dedicated Support Officer</strong>
+              <span className="text-slate-500 text-[10px]">Assigned relationship lead for your school</span>
+            </div>
+          </div>
+
+          <div className="bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center shrink-0">
+              <Zap size={18} />
+            </div>
+            <div>
+              <strong className="text-slate-900 text-xs font-bold block">Zero Financial Load</strong>
+              <span className="text-slate-500 text-[10px]">Fully funded testing lab infrastructure</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </section>
   );

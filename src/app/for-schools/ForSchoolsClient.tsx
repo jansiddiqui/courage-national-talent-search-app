@@ -9,26 +9,24 @@ import {
   ShieldCheck, 
   ArrowRight, 
   CheckCircle2, 
-  FileText,
-  PhoneCall,
-  Rocket,
-  Lock,
-  Download,
-  Brain,
-  Sparkles,
-  Phone,
-  MessageSquare
+  Lock, 
+  Brain, 
+  Sparkles, 
+  Phone, 
+  PhoneCall 
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { BlogPost } from "@/lib/blog";
 
-// Modular Subcomponents
-import InquiryForm from "@/components/for-schools/InquiryForm";
+// Subcomponents
+import HeroPortalSection from "@/components/for-schools/HeroPortalSection";
 import NationalMapSection from "@/components/for-schools/NationalMapSection";
+import TalentGalaxySection from "@/components/for-schools/TalentGalaxySection";
+import AcademicJourneyStepper from "@/components/for-schools/AcademicJourneyStepper";
 import DeliverablesShowcase from "@/components/for-schools/DeliverablesShowcase";
+import ParticipationFeeSection from "@/components/for-schools/ParticipationFeeSection";
 import OfficialDocumentsVault from "@/components/for-schools/OfficialDocumentsVault";
-import AcademicTimeline from "@/components/for-schools/AcademicTimeline";
 import InstitutionalFaq from "@/components/for-schools/InstitutionalFaq";
 
 export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
@@ -36,130 +34,11 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
     <div className="min-h-screen bg-slate-50 flex flex-col pb-16 md:pb-0">
       <Navbar theme="light" />
 
-      {/* Institutional Partnership Helpline Top Bar */}
-      <div className="bg-slate-900 text-white text-xs py-2 px-4 border-b border-slate-800 mt-16 flex items-center justify-between">
-        <div className="max-w-7xl mx-auto w-full flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-2">
-            <span className="bg-blue-600 text-[10px] font-bold px-2 py-0.5 rounded text-white uppercase tracking-wider">Official Portal</span>
-            <span className="text-slate-300 hidden sm:inline">Courage National Talent Search 2026 Partnership Intake</span>
-          </div>
-          <div className="flex items-center gap-4 text-slate-300 text-[11px]">
-            <a href="tel:+918360603173" className="flex items-center gap-1.5 hover:text-white transition-colors">
-              <Phone size={13} className="text-blue-400" />
-              <span>Helpline: <strong>+91 83606 03173</strong></span>
-            </a>
-            <span className="text-slate-700">|</span>
-            <a href="https://wa.me/918360603173?text=Hello%2C%20we%20want%20to%20partner%20with%20CNTS%202026" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-emerald-400 transition-colors">
-              <MessageSquare size={13} className="text-emerald-400" />
-              <span className="hidden md:inline">WhatsApp Partner Support</span>
-            </a>
-          </div>
-        </div>
-      </div>
+      {/* Hero Portal Section (Integrated 60/40 Light Split Layout) */}
+      <HeroPortalSection />
 
-      {/* Split-Screen Hero Section (Above Fold on Desktop) */}
-      <section className="pt-8 md:pt-12 pb-16 px-6 border-b border-slate-200/80 bg-white relative overflow-hidden">
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
-            
-            {/* Left Column (60% Desktop - lg:col-span-7) */}
-            <div className="lg:col-span-7 text-left">
-              
-              {/* Official Cohort Badge */}
-              <div className="flex flex-wrap items-center gap-3 mb-5">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-blue-50 border border-blue-200 rounded-full text-xs font-bold text-blue-800 shadow-sm">
-                  <Building size={14} className="text-blue-600" />
-                  <span>Official Partner Cohort — 2026 Academic Session</span>
-                </div>
-              </div>
-
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold tracking-tight text-slate-900 mb-6 leading-tight">
-                Discover Potential Beyond Marks: CNTS 2026 Founding Edition
-              </h1>
-
-              <p className="text-slate-700 text-base md:text-lg mb-3 font-medium leading-relaxed">
-                An invitation to Indian school leaders to benchmark student cognitive intelligence beyond traditional academic marks in Classes 5–8.
-              </p>
-
-              <p className="text-slate-600 text-sm mb-6 leading-relaxed">
-                CNTS evaluates core logical reasoning, spatial analysis, and conceptual understanding — delivering section-level diagnostic insights for your teaching faculty at zero setup cost to the school.
-              </p>
-
-              {/* Human Reassurance Banner */}
-              <div className="flex items-start gap-3 text-xs text-slate-700 bg-slate-100/90 border border-slate-200 p-3.5 rounded-xl mb-6">
-                <ShieldCheck size={18} className="text-blue-600 shrink-0 mt-0.5" />
-                <p className="leading-relaxed">
-                  <strong className="text-slate-900">Academic Review Note:</strong> Every partnership request is personally reviewed by the CNTS Academic Partnerships Team prior to institutional onboarding.
-                </p>
-              </div>
-
-              {/* Dual Action CTAs */}
-              <div className="flex flex-wrap items-center gap-4 mb-8">
-                <a
-                  href="#inquiry-form"
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl text-sm flex items-center justify-center gap-2 shadow-md hover:shadow-lg transition-all min-h-[48px]"
-                >
-                  Request Founding Partner Kit <ArrowRight size={16} />
-                </a>
-                <a
-                  href="#official-documents"
-                  className="bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-300 font-semibold py-3.5 px-6 rounded-xl text-sm flex items-center justify-center gap-2 transition-all min-h-[48px]"
-                >
-                  <Download size={16} className="text-slate-600" /> Access Official Documents
-                </a>
-              </div>
-
-              {/* 3-Step Zero-Load Evaluation Roadmap Timeline */}
-              <div className="bg-blue-50/70 border border-blue-100 rounded-2xl p-5 mt-4 backdrop-blur-sm">
-                <div className="mb-3 flex items-center justify-between">
-                  <div>
-                    <span className="text-[11px] font-bold uppercase tracking-widest text-blue-700">Implementation Roadmap</span>
-                    <h3 className="text-sm font-display font-bold text-slate-900 mt-0.5">
-                      Simple 3-Step Zero-Load Process
-                    </h3>
-                  </div>
-                  <span className="text-[10px] bg-blue-600 text-white font-bold px-2 py-0.5 rounded uppercase">
-                    Zero Administrative Strain
-                  </span>
-                </div>
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-1.5 shrink-0">
-                      <FileText size={16} />
-                    </div>
-                    <h4 className="font-bold text-slate-900 text-xs">1. Instant Prospectus</h4>
-                    <p className="text-slate-500 text-[10px] leading-tight">Download digital brochure</p>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-1.5 shrink-0">
-                      <PhoneCall size={16} />
-                    </div>
-                    <h4 className="font-bold text-slate-900 text-xs">2. 15-Min Briefing</h4>
-                    <p className="text-slate-500 text-[10px] leading-tight">Call with Academic Officer</p>
-                  </div>
-                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex flex-col items-center">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-1.5 shrink-0">
-                      <Rocket size={16} />
-                    </div>
-                    <h4 className="font-bold text-slate-900 text-xs">3. Zero-Cost Setup</h4>
-                    <p className="text-slate-500 text-[10px] leading-tight">Online lab hosting &amp; roll numbers</p>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            {/* Right Column (40% Desktop - lg:col-span-5) - Modular Form Component */}
-            <div className="lg:col-span-5 w-full relative z-10">
-              <InquiryForm />
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* Section 3: Pedagogical & Compliance Credentials Strip */}
-      <section className="bg-slate-100/90 border-b border-slate-200 py-4 px-6">
+      {/* Credentials & Pedagogical Compliance Strip */}
+      <section className="bg-slate-100/90 border-b border-slate-200 py-4 px-6 text-slate-800">
         <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4 md:gap-10 text-xs md:text-sm font-semibold text-slate-700 text-center">
           <span className="flex items-center gap-2">
             <CheckCircle2 size={16} className="text-blue-600 shrink-0" /> NEP 2020 Pedagogical Framework
@@ -170,7 +49,7 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
           </span>
           <span className="hidden md:inline text-slate-300">|</span>
           <span className="flex items-center gap-2">
-            <ShieldCheck size={16} className="text-blue-600 shrink-0" /> DPDP-Compliant Student Data Handling
+            <ShieldCheck size={16} className="text-blue-600 shrink-0" /> DPDP-Compliant Student Data Safety
           </span>
           <span className="hidden md:inline text-slate-300">|</span>
           <span className="flex items-center gap-2">
@@ -179,30 +58,30 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
         </div>
       </section>
 
-      {/* Section 4: Philosophical Hook (Aspirational Section) */}
-      <section className="py-16 bg-white border-b border-slate-200 px-6 text-center">
+      {/* Philosophical Hook (Aspirational Section) */}
+      <section className="py-16 md:py-20 bg-white border-b border-slate-200 px-6 text-center text-slate-900">
         <div className="max-w-4xl mx-auto">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-amber-50 border border-amber-200 rounded-full text-xs font-bold text-amber-800 mb-4">
             <Sparkles size={14} className="text-amber-600" /> Pedagogical Philosophy
           </div>
-          <h2 className="text-2xl md:text-4xl font-display font-bold text-slate-900 leading-snug mb-6">
+          <h2 className="text-2xl md:text-3xl font-display font-bold text-slate-900 leading-snug mb-4">
             "Every student deserves to be recognized for their potential—not only their marks."
           </h2>
-          <p className="text-slate-600 text-base md:text-lg leading-relaxed max-w-3xl mx-auto">
-            Traditional examinations primarily measure memory retention under strict time pressure. CNTS evaluates core cognitive reasoning, spatial logic, and conceptual problem-solving in Classes 5–8 — ensuring no student's true academic aptitude remains hidden.
+          <p className="text-slate-600 text-sm md:text-base leading-relaxed max-w-3xl mx-auto">
+            Traditional examinations primarily measure memory retention under strict time pressure. CNTS evaluates core cognitive reasoning, spatial logic, and conceptual problem-solving in Classes 5–8 — ensuring no child's true academic aptitude remains hidden.
           </p>
         </div>
       </section>
 
-      {/* Section 5: Why Schools Choose CNTS (Outcome-Driven) */}
-      <section className="py-16 max-w-7xl mx-auto px-6">
-        <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="text-xs font-bold uppercase tracking-widest text-blue-600">Institutional Outcomes</span>
+      {/* Outcome Section (Why Schools Across India Partner With CNTS) */}
+      <section className="py-16 md:py-20 max-w-7xl mx-auto px-6">
+        <div className="text-center max-w-3xl mx-auto mb-10">
+          <span className="text-xs font-bold uppercase tracking-widest text-blue-600">Institutional Value</span>
           <h2 className="text-2xl md:text-3xl font-display font-bold tracking-tight text-slate-900 mt-2">
-            Designed for Real Educational Impact
+            Why schools across India partner with CNTS
           </h2>
           <p className="text-slate-600 text-sm mt-3">
-            Hosting the CNTS diagnostic provides actionable intelligence for school leadership, department heads, and parents.
+            Hosting the CNTS assessment provides actionable intelligence for school leadership, faculty, and parents.
           </p>
         </div>
 
@@ -211,26 +90,26 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
             {
               Icon: Brain,
               color: "text-blue-600 bg-blue-50 border-blue-100",
-              title: "Uncover Hidden Aptitude",
+              title: "Uncover hidden aptitude",
               desc: "Identify bright, analytical minds who may underperform in standard rote tests, unlocking early talent discovery."
             },
             {
               Icon: BarChart3,
               color: "text-emerald-600 bg-emerald-50 border-emerald-100",
-              title: "Classroom Diagnostic Heatmaps",
+              title: "Classroom diagnostic heatmaps",
               desc: "Provide teachers with section-wise data highlighting specific conceptual strengths and curriculum gaps."
             },
             {
               Icon: Award,
               color: "text-amber-600 bg-amber-50 border-amber-100",
-              title: "Holistic Student Growth",
-              desc: "Benchmark analytical reasoning early in Classes 5–8 to prepare candidates for future competitive examinations."
+              title: "Future-ready student development",
+              desc: "Benchmark analytical reasoning early in Classes 5–8 to prepare candidates for future academic challenges."
             },
             {
               Icon: ShieldCheck,
               color: "text-indigo-600 bg-indigo-50 border-indigo-100",
-              title: "Parent Reassurance",
-              desc: "Offer parents an objective, scientific evaluation of their child's core cognitive abilities beyond report cards."
+              title: "Meaningful parent reassurance",
+              desc: "Offer parents an objective, scientific profile of their child's core cognitive abilities beyond report cards."
             }
           ].map((feat) => (
             <div 
@@ -247,76 +126,82 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
         </div>
       </section>
 
-      {/* Section 6: A National Initiative (Modular Component) */}
+      {/* Signature Section: A National Initiative (Geographic Scope) */}
       <NationalMapSection />
 
-      {/* Section 7: Deliverables Showcase (Modular Component) */}
+      {/* Aptitude Constellation Section */}
+      <TalentGalaxySection />
+
+      {/* Deliverables Showcase (Apple Product Stage Switcher) */}
       <DeliverablesShowcase />
 
-      {/* Section 8: 9-Stage Academic Lifecycle Timeline (Modular Component) */}
-      <AcademicTimeline />
+      {/* Operational Timeline Progress Stepper */}
+      <AcademicJourneyStepper />
 
-      {/* Section 9: Official Partnership Documents Vault (Modular Component) */}
+      {/* Dedicated Programme Participation Fee Section */}
+      <ParticipationFeeSection />
+
+      {/* Official Partnership Documents Vault */}
       <OfficialDocumentsVault />
 
-      {/* Section 10: Why Schools Can Trust CNTS */}
-      <section className="py-16 bg-white border-b border-slate-200 px-6">
+      {/* Institutional Reassurance Section */}
+      <section className="py-16 md:py-20 bg-white border-b border-slate-200 px-6">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-10">
             <span className="text-xs font-bold uppercase tracking-widest text-blue-600">Institutional Governance</span>
             <h2 className="text-2xl md:text-3xl font-display font-bold text-slate-900 mt-2">
-              Why Schools Can Trust CNTS
+              Why your school can trust CNTS
             </h2>
           </div>
 
           <div className="grid md:grid-cols-4 gap-6 text-left">
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
               <ShieldCheck size={24} className="text-blue-600 mb-3" />
-              <h3 className="font-bold text-slate-900 text-sm mb-1">DPDP Act Compliant</h3>
+              <h3 className="font-bold text-slate-900 text-sm mb-1">DPDP Act data safety</h3>
               <p className="text-slate-600 text-xs leading-relaxed">No individual student mobile numbers required. Roll numbers are institutionally managed.</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
               <Lock size={24} className="text-blue-600 mb-3" />
-              <h3 className="font-bold text-slate-900 text-sm mb-1">Encrypted Testing Labs</h3>
-              <p className="text-slate-600 text-xs leading-relaxed">Assessment executes in isolated browser sessions with full session encryption.</p>
+              <h3 className="font-bold text-slate-900 text-sm mb-1">Encrypted testing environment</h3>
+              <p className="text-slate-600 text-xs leading-relaxed">Assessment executes in isolated, secure browser sessions with full encryption.</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
               <PhoneCall size={24} className="text-blue-600 mb-3" />
-              <h3 className="font-bold text-slate-900 text-sm mb-1">Dedicated Support Officer</h3>
+              <h3 className="font-bold text-slate-900 text-sm mb-1">Dedicated relationship officer</h3>
               <p className="text-slate-600 text-xs leading-relaxed">Assigned Relationship Officer coordinates lab scheduling and reporting.</p>
             </div>
             <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
               <Building size={24} className="text-blue-600 mb-3" />
-              <h3 className="font-bold text-slate-900 text-sm mb-1">Registered Entity</h3>
+              <h3 className="font-bold text-slate-900 text-sm mb-1">Registered educational entity</h3>
               <p className="text-slate-600 text-xs leading-relaxed">Operated by Courage Library Educational Foundation under official governance.</p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Section 11: Institutional FAQ Accordion (Modular Component) */}
+      {/* Institutional FAQ Accordion */}
       <InstitutionalFaq />
 
-      {/* Section 12: Final Briefing & Direct Human Contact */}
-      <section className="bg-gradient-to-br from-blue-900 to-indigo-950 text-white py-16 px-6 text-center">
+      {/* Final Action Callout (Deep Navy Surface Reserved for Final CTA) */}
+      <section className="bg-gradient-to-br from-blue-900 to-indigo-950 text-white py-16 px-6 text-center border-t border-slate-800">
         <div className="max-w-4xl mx-auto">
-          <h2 className="text-2xl md:text-4xl font-display font-bold mb-4">
-            Partner Your Institution with CNTS 2026
+          <h2 className="text-2xl md:text-3xl font-display font-bold mb-3">
+            Let's build this academic partnership together
           </h2>
-          <p className="text-slate-300 text-sm md:text-base max-w-2xl mx-auto mb-8 leading-relaxed">
-            Speak directly with our Academic Partnerships Director or submit an inquiry to receive your institutional kit.
+          <p className="text-slate-300 text-sm max-w-2xl mx-auto mb-8 leading-relaxed">
+            Schedule a 15-minute briefing with our Academic Partnerships Director or submit a request to receive your school prospectus kit.
           </p>
 
           <div className="flex flex-wrap items-center justify-center gap-4 mb-8">
             <a
               href="#inquiry-form"
-              className="bg-white text-blue-900 font-bold py-3.5 px-6 rounded-xl text-sm hover:bg-slate-100 transition-colors shadow-md min-h-[48px] flex items-center gap-2"
+              className="bg-white text-blue-900 font-bold py-3.5 px-6 rounded-xl text-sm hover:bg-slate-100 transition-colors shadow-md min-h-[46px] flex items-center gap-2"
             >
-              Submit Partnership Request <ArrowRight size={16} />
+              Request a School Partnership <ArrowRight size={16} />
             </a>
             <a
               href="tel:+918360603173"
-              className="bg-blue-800/80 hover:bg-blue-800 text-white border border-blue-700 font-semibold py-3.5 px-6 rounded-xl text-sm transition-colors min-h-[48px] flex items-center gap-2"
+              className="bg-blue-800/80 hover:bg-blue-800 text-white border border-blue-700 font-semibold py-3.5 px-6 rounded-xl text-sm transition-colors min-h-[46px] flex items-center gap-2"
             >
               <Phone size={16} className="text-blue-300" /> Call Helpline: +91 83606 03173
             </a>
@@ -332,18 +217,18 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
       {initialPosts && initialPosts.length > 0 && (
         <section className="py-16 bg-white border-t border-slate-200">
           <div className="max-w-4xl mx-auto px-6">
-            <h2 className="font-display font-black text-2xl text-slate-900 mb-8 text-center">
-              School Insights &amp; Assessment Resources
+            <h2 className="font-display font-bold text-xl md:text-2xl text-slate-900 mb-8 text-center">
+              School insights &amp; assessment resources
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {initialPosts.map((post) => (
                 <Link
                   key={post.slug}
                   href={`/blog/${post.slug}`}
-                  className="group block bg-slate-50 border border-slate-200 rounded-3xl p-5 hover:shadow-md transition-all flex flex-col justify-between"
+                  className="group block bg-slate-50 border border-slate-200 rounded-2xl p-5 hover:shadow-md transition-all flex flex-col justify-between"
                 >
-                  <div className="space-y-3">
-                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  <div className="space-y-2.5">
+                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">
                       {post.category}
                     </span>
                     <h3 className="font-display font-bold text-slate-900 group-hover:text-blue-600 transition-colors text-sm leading-snug line-clamp-3">
@@ -369,7 +254,7 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
           href="#inquiry-form"
           className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold min-h-[44px] rounded-xl text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
         >
-          Request Founding Partner Kit →
+          Request a School Partnership →
         </a>
       </div>
 
