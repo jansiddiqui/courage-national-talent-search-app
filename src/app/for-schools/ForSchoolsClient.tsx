@@ -175,35 +175,316 @@ Remarks: ${formData.message || "None provided"}
     <div className="min-h-screen bg-slate-50 flex flex-col pb-16 md:pb-0">
       <Navbar theme="light" />
 
-      {/* Hero Section */}
-      <section className="pt-36 pb-12 px-6 text-center border-b border-slate-100 bg-white">
-        
-        <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-bold text-blue-700 mb-6 tracking-wider mx-auto shadow-sm">
-            🔥 Founding Partner Cohort — Limited to 100 Schools
-          </div>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-slate-900 mb-6 max-w-4xl mx-auto leading-tight">
-            Discover Potential Beyond Marks: CNTS 2026 Founding Edition
-          </h1>
-          <p className="text-slate-600 text-base md:text-lg max-w-2xl mx-auto mb-2 font-medium">
-            Empower your students in Classes 5–8 with conceptual cognitive diagnostics. Move beyond rote memorization and benchmark academic skills against state and national standards.
-          </p>
-          <p className="text-blue-700 text-sm font-semibold max-w-2xl mx-auto mb-8">
-            Join the inaugural cohort of schools redefining student assessment.
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-4">
-            <a
-              href="#inquiry-form"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all shadow-lg text-sm flex items-center gap-2 min-h-[44px]"
-            >
-              Partner with Us <ArrowRight size={16} />
-            </a>
-            <Link
-              href="/why-cnts"
-              className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-3 px-8 rounded-xl transition-all text-sm flex items-center min-h-[44px]"
-            >
-              Why CNTS?
-            </Link>
+      {/* Split-Screen Hero Section (Above Fold on Desktop) */}
+      <section className="pt-32 pb-16 px-6 border-b border-slate-100 bg-white">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start">
+            
+            {/* Left Column (60% Desktop - lg:col-span-7) */}
+            <div className="lg:col-span-7 text-left">
+              <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-bold text-blue-700 mb-6 tracking-wider shadow-sm">
+                🔥 Founding Partner Cohort — Limited to 100 Schools
+              </div>
+
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-display font-bold tracking-tight text-slate-900 mb-6 leading-tight">
+                Discover Potential Beyond Marks: CNTS 2026 Founding Edition
+              </h1>
+
+              <p className="text-slate-600 text-base md:text-lg mb-2 font-medium leading-relaxed">
+                Empower your students in Classes 5–8 with conceptual cognitive diagnostics. Move beyond rote memorization and benchmark academic skills against state and national standards.
+              </p>
+
+              <p className="text-blue-700 text-sm font-semibold mb-6">
+                Join the inaugural cohort of schools redefining student assessment.
+              </p>
+
+              {/* Mobile Hero CTA Button (Only visible < lg) */}
+              <a
+                href="#inquiry-form"
+                className="lg:hidden w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl text-base mb-8 flex items-center justify-center gap-2 shadow-lg transition-all min-h-[48px]"
+              >
+                👉 Request Founding Partner Kit
+              </a>
+
+              {/* Desktop Partnership Details Link (Only visible >= lg) */}
+              <div className="hidden lg:flex items-center gap-4 mb-8">
+                <a
+                  href="#features-section"
+                  className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-3 px-6 rounded-xl transition-all text-sm flex items-center gap-2 min-h-[44px]"
+                >
+                  View Partnership Details ↓
+                </a>
+              </div>
+
+              {/* 3-Step Evaluation Roadmap Timeline */}
+              <div className="bg-blue-50/80 border border-blue-100 rounded-2xl p-5 md:p-6 mt-4">
+                <div className="mb-4">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-blue-700">Evaluation Roadmap</span>
+                  <h3 className="text-sm md:text-base font-display font-bold text-slate-900 mt-0.5">
+                    Simple 3-Step School Evaluation Process
+                  </h3>
+                </div>
+                <div className="grid grid-cols-3 gap-3 text-center">
+                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex flex-col items-center">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-2 shrink-0">
+                      <FileText size={16} />
+                    </div>
+                    <h4 className="font-bold text-slate-900 text-xs mb-0.5">Instant Prospectus</h4>
+                    <p className="text-slate-500 text-[10px] leading-tight">Digital brochure &amp; sample papers</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex flex-col items-center">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-2 shrink-0">
+                      <PhoneCall size={16} />
+                    </div>
+                    <h4 className="font-bold text-slate-900 text-xs mb-0.5">15-Min Call</h4>
+                    <p className="text-slate-500 text-[10px] leading-tight">Briefing with Academic Director</p>
+                  </div>
+                  <div className="bg-white p-3 rounded-xl border border-slate-200/80 shadow-sm flex flex-col items-center">
+                    <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-2 shrink-0">
+                      <Rocket size={16} />
+                    </div>
+                    <h4 className="font-bold text-slate-900 text-xs mb-0.5">Zero-Cost Setup</h4>
+                    <p className="text-slate-500 text-[10px] leading-tight">Online lab hosting &amp; roll numbers</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right Column (40% Desktop - lg:col-span-5) - Premium Form Card */}
+            <div className="lg:col-span-5 w-full">
+              <div id="inquiry-form" className="bg-white border-t-4 border-t-blue-600 border-x border-b border-slate-200 rounded-2xl p-6 md:p-8 shadow-xl relative overflow-hidden scroll-mt-28">
+                
+                <div className="text-left mb-6">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Building size={24} className="text-blue-600 shrink-0" />
+                    <h2 className="text-xl md:text-2xl font-display font-bold text-slate-900">Partner School Inquiry</h2>
+                  </div>
+                  <p className="text-slate-500 text-xs mt-1 leading-relaxed">
+                    Submit your school details below to receive digital brochures, sample test papers, and onboarding guidelines.
+                  </p>
+                </div>
+
+                {submitSuccess ? (
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center py-10 text-emerald-900">
+                    <CheckCircle2 size={48} className="text-emerald-500 mx-auto mb-4 animate-bounce" />
+                    <h3 className="font-display font-bold text-base mb-1">Inquiry Submitted Successfully!</h3>
+                    <p className="text-xs text-emerald-700 max-w-md mx-auto leading-relaxed">
+                      Thank you for your interest in the Courage National Talent Search. Our representative has received your request and will call/email you shortly.
+                    </p>
+                    <button
+                      onClick={() => setSubmitSuccess(false)}
+                      className="mt-6 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm min-h-[44px]"
+                    >
+                      Submit Another Inquiry
+                    </button>
+                  </div>
+                ) : (
+                  <form onSubmit={handleSubmit} className="space-y-4 text-left">
+                    {submitError && (
+                      <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex gap-3 text-red-900 text-xs">
+                        <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" />
+                        <p>{submitError}</p>
+                      </div>
+                    )}
+
+                    {/* School Name */}
+                    <div className="space-y-1">
+                      <label htmlFor="schoolName" className="text-xs font-semibold text-slate-700">Official School Name *</label>
+                      <input
+                        id="schoolName"
+                        type="text"
+                        required
+                        value={formData.schoolName}
+                        onChange={(e) => handleInputChange("schoolName", e.target.value)}
+                        onBlur={() => handleBlur("schoolName")}
+                        placeholder="e.g., Delhi Public School or DPS"
+                        className={`w-full text-base py-2.5 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
+                          touched.schoolName && errors.schoolName 
+                            ? "border-red-300 focus:border-red-500" 
+                            : "border-slate-200 focus:border-blue-600"
+                        }`}
+                      />
+                      {touched.schoolName && errors.schoolName && (
+                        <p className="text-[11px] text-red-500 font-medium">{errors.schoolName}</p>
+                      )}
+                    </div>
+
+                    {/* School Board */}
+                    <div className="space-y-1">
+                      <label htmlFor="schoolBoard" className="text-xs font-semibold text-slate-700">Affiliation Board *</label>
+                      <select
+                        id="schoolBoard"
+                        required
+                        value={formData.schoolBoard}
+                        onChange={(e) => handleInputChange("schoolBoard", e.target.value)}
+                        onBlur={() => handleBlur("schoolBoard")}
+                        className={`w-full text-base py-2.5 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white outline-none transition-all ${
+                          touched.schoolBoard && errors.schoolBoard 
+                            ? "border-red-300 focus:border-red-500" 
+                            : "border-slate-200 focus:border-blue-600"
+                        }`}
+                      >
+                        <option value="" disabled>Select Affiliation Board...</option>
+                        <option value="CBSE">CBSE</option>
+                        <option value="ICSE">ICSE / ISC</option>
+                        <option value="State Board">State Board</option>
+                        <option value="IB">IB</option>
+                        <option value="IGCSE / Cambridge">IGCSE / Cambridge</option>
+                        <option value="Other">Other</option>
+                      </select>
+                      {touched.schoolBoard && errors.schoolBoard && (
+                        <p className="text-[11px] text-red-500 font-medium">{errors.schoolBoard}</p>
+                      )}
+                    </div>
+
+                    {/* Contact Person Name & Designation */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label htmlFor="name" className="text-xs font-semibold text-slate-700">Your Full Name *</label>
+                        <input
+                          id="name"
+                          type="text"
+                          required
+                          value={formData.name}
+                          onChange={(e) => handleInputChange("name", e.target.value)}
+                          onBlur={() => handleBlur("name")}
+                          placeholder="e.g., Mrs. Shalini Sen"
+                          className={`w-full text-base py-2.5 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
+                            touched.name && errors.name 
+                              ? "border-red-300 focus:border-red-500" 
+                              : "border-slate-200 focus:border-blue-600"
+                          }`}
+                        />
+                        {touched.name && errors.name && (
+                          <p className="text-[11px] text-red-500 font-medium">{errors.name}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-1">
+                        <label htmlFor="designation" className="text-xs font-semibold text-slate-700">Your Designation *</label>
+                        <select
+                          id="designation"
+                          value={formData.designation}
+                          onChange={(e) => handleInputChange("designation", e.target.value)}
+                          className="w-full text-base py-2.5 px-4 rounded-xl border min-h-[44px] border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
+                        >
+                          <option value="Principal">Principal</option>
+                          <option value="Vice Principal">Vice Principal</option>
+                          <option value="Academic Coordinator">Academic Coordinator</option>
+                          <option value="Director / Trustee">School Director / Trustee</option>
+                          <option value="Teacher">Teacher</option>
+                        </select>
+                      </div>
+                    </div>
+
+                    {/* Email & Phone */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label htmlFor="email" className="text-xs font-semibold text-slate-700">Official Email *</label>
+                        <input
+                          id="email"
+                          type="email"
+                          required
+                          value={formData.email}
+                          onChange={(e) => handleInputChange("email", e.target.value)}
+                          onBlur={() => handleBlur("email")}
+                          placeholder="e.g., principal@yourschool.com"
+                          className={`w-full text-base py-2.5 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
+                            touched.email && errors.email 
+                              ? "border-red-300 focus:border-red-500" 
+                              : "border-slate-200 focus:border-blue-600"
+                          }`}
+                        />
+                        {touched.email && errors.email && (
+                          <p className="text-[11px] text-red-500 font-medium">{errors.email}</p>
+                        )}
+                      </div>
+
+                      <div className="space-y-1">
+                        <label htmlFor="phone" className="text-xs font-semibold text-slate-700">Contact Number *</label>
+                        <input
+                          id="phone"
+                          type="tel"
+                          required
+                          value={formData.phone}
+                          onChange={(e) => handleInputChange("phone", e.target.value)}
+                          onBlur={() => handleBlur("phone")}
+                          placeholder="+91 XXXXX XXXXX or Landline"
+                          className={`w-full text-base py-2.5 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
+                            touched.phone && errors.phone 
+                              ? "border-red-300 focus:border-red-500" 
+                              : "border-slate-200 focus:border-blue-600"
+                          }`}
+                        />
+                        <p className="text-[11px] text-slate-500">Landline with STD code or mobile number</p>
+                        {touched.phone && errors.phone && (
+                          <p className="text-[11px] text-red-500 font-medium">{errors.phone}</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Student Strength */}
+                    <div className="space-y-1">
+                      <label htmlFor="studentStrength" className="text-xs font-semibold text-slate-700">Approximate Student Strength (Classes 5-8) (Optional)</label>
+                      <select
+                        id="studentStrength"
+                        value={formData.studentStrength}
+                        onChange={(e) => handleInputChange("studentStrength", e.target.value)}
+                        className="w-full text-base py-2.5 px-4 rounded-xl border min-h-[44px] border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
+                      >
+                        <option value="">Select range...</option>
+                        <option value="Under 100">Under 100</option>
+                        <option value="100 - 300">100 - 300</option>
+                        <option value="300 - 600">300 - 600</option>
+                        <option value="600+">600+</option>
+                      </select>
+                      <p className="text-[11px] text-slate-500">Estimate is fine — exact numbers not required</p>
+                    </div>
+
+                    {/* Remarks/Message */}
+                    <div className="space-y-1">
+                      <label htmlFor="message" className="text-xs font-semibold text-slate-700">Message / Custom Requirements (Optional)</label>
+                      <textarea
+                        id="message"
+                        rows={2}
+                        value={formData.message}
+                        onChange={(e) => handleInputChange("message", e.target.value)}
+                        placeholder="Optional: Preferred exam dates, bulk sponsorship needs, or questions."
+                        className="w-full text-base py-2.5 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white outline-none resize-none transition-all"
+                      />
+                    </div>
+
+                    {/* Privacy Note Above Button */}
+                    <div className="flex items-center gap-2 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-4 py-2.5 rounded-xl my-2">
+                      <Lock size={14} className="shrink-0 text-emerald-600" />
+                      <span>Your data is secure &amp; DPDP compliant</span>
+                    </div>
+
+                    {/* Upgraded Submit Button */}
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-transform duration-200 text-base flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px]"
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                          </svg>
+                          Submitting Inquiry...
+                        </>
+                      ) : (
+                        <>
+                          Submit Inquiry <ArrowRight size={18} />
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+
           </div>
         </div>
       </section>
@@ -225,9 +506,9 @@ Remarks: ${formData.message || "None provided"}
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className="py-20 max-w-7xl mx-auto px-6">
-        <div className="text-center max-w-3xl mx-auto mb-16">
+      {/* Features Grid (Positioned Directly Below Hero/Form Section) */}
+      <section id="features-section" className="py-16 max-w-7xl mx-auto px-6 scroll-mt-24">
+        <div className="text-center max-w-3xl mx-auto mb-12">
           <span className="text-xs font-bold uppercase tracking-widest text-blue-600">Why CNTS for Institutions</span>
           <h2 className="text-2xl md:text-3xl font-display font-bold tracking-tight text-slate-900 mt-2">
             The Gold Standard in Student Skill Mapping
@@ -300,275 +581,6 @@ Remarks: ${formData.message || "None provided"}
         </div>
       </section>
 
-      {/* Contact Form Section */}
-      <section id="inquiry-form" className="py-20 max-w-3xl mx-auto px-6 scroll-mt-24">
-        {/* 3-Step Journey Component */}
-        <div className="mb-8 bg-blue-50/80 border border-blue-100 rounded-3xl p-6 md:p-8">
-          <div className="text-center mb-6">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-blue-700">Evaluation Roadmap</span>
-            <h3 className="text-lg md:text-xl font-display font-bold text-slate-900 mt-1">
-              Simple 3-Step School Evaluation Process
-            </h3>
-          </div>
-          <div className="grid md:grid-cols-3 gap-4 text-center">
-            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
-                <FileText size={20} />
-              </div>
-              <h4 className="font-bold text-slate-900 text-xs md:text-sm mb-1">Instant Prospectus</h4>
-              <p className="text-slate-500 text-[11px] leading-snug">Receive digital brochure &amp; sample test papers</p>
-            </div>
-            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
-                <PhoneCall size={20} />
-              </div>
-              <h4 className="font-bold text-slate-900 text-xs md:text-sm mb-1">15-Min Briefing Call</h4>
-              <p className="text-slate-500 text-[11px] leading-snug">Quick call with our Academic Director</p>
-            </div>
-            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center">
-              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
-                <Rocket size={20} />
-              </div>
-              <h4 className="font-bold text-slate-900 text-xs md:text-sm mb-1">Zero-Cost Lab Setup</h4>
-              <p className="text-slate-500 text-[11px] leading-snug">Seamless online hosting &amp; roll numbers</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-12 shadow-sm relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-1.5 bg-blue-600" />
-          
-          <div className="text-center mb-8">
-            <Building size={32} className="text-blue-600 mx-auto mb-3" />
-            <h2 className="text-xl md:text-2xl font-display font-bold text-slate-900">Partner School Inquiry</h2>
-            <p className="text-slate-500 text-xs md:text-sm mt-1">
-              Submit your school details below. Our Academic Partnerships team will get in touch with you within 24 hours with brochures and guidelines.
-            </p>
-          </div>
-
-          {submitSuccess ? (
-            <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center py-10 text-emerald-900">
-              <CheckCircle2 size={48} className="text-emerald-500 mx-auto mb-4 animate-bounce" />
-              <h3 className="font-display font-bold text-base mb-1">Inquiry Submitted Successfully!</h3>
-              <p className="text-xs text-emerald-700 max-w-md mx-auto leading-relaxed">
-                Thank you for your interest in the Courage National Talent Search. Our representative has received your request and will call/email you shortly.
-              </p>
-              <button
-                onClick={() => setSubmitSuccess(false)}
-                className="mt-6 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm min-h-[44px]"
-              >
-                Submit Another Inquiry
-              </button>
-            </div>
-          ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {submitError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-4 flex gap-3 text-red-900 text-xs">
-                  <AlertCircle size={16} className="text-red-500 shrink-0 mt-0.5" />
-                  <p>{submitError}</p>
-                </div>
-              )}
-
-              <div className="grid md:grid-cols-2 gap-5">
-                {/* School Name */}
-                <div className="space-y-1.5">
-                  <label htmlFor="schoolName" className="text-xs font-semibold text-slate-700">Official School Name *</label>
-                  <input
-                    id="schoolName"
-                    type="text"
-                    required
-                    value={formData.schoolName}
-                    onChange={(e) => handleInputChange("schoolName", e.target.value)}
-                    onBlur={() => handleBlur("schoolName")}
-                    placeholder="e.g., Delhi Public School or DPS"
-                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
-                      touched.schoolName && errors.schoolName 
-                        ? "border-red-300 focus:border-red-500" 
-                        : "border-slate-200 focus:border-blue-600"
-                    }`}
-                  />
-                  {touched.schoolName && errors.schoolName && (
-                    <p className="text-[11px] text-red-500 font-medium">{errors.schoolName}</p>
-                  )}
-                </div>
-
-                {/* School Board */}
-                <div className="space-y-1.5">
-                  <label htmlFor="schoolBoard" className="text-xs font-semibold text-slate-700">Affiliation Board *</label>
-                  <select
-                    id="schoolBoard"
-                    required
-                    value={formData.schoolBoard}
-                    onChange={(e) => handleInputChange("schoolBoard", e.target.value)}
-                    onBlur={() => handleBlur("schoolBoard")}
-                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white outline-none transition-all ${
-                      touched.schoolBoard && errors.schoolBoard 
-                        ? "border-red-300 focus:border-red-500" 
-                        : "border-slate-200 focus:border-blue-600"
-                    }`}
-                  >
-                    <option value="" disabled>Select Affiliation Board...</option>
-                    <option value="CBSE">CBSE</option>
-                    <option value="ICSE">ICSE / ISC</option>
-                    <option value="State Board">State Board</option>
-                    <option value="IB">IB</option>
-                    <option value="IGCSE / Cambridge">IGCSE / Cambridge</option>
-                    <option value="Other">Other</option>
-                  </select>
-                  {touched.schoolBoard && errors.schoolBoard && (
-                    <p className="text-[11px] text-red-500 font-medium">{errors.schoolBoard}</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-5">
-                {/* Contact Person Name */}
-                <div className="space-y-1.5">
-                  <label htmlFor="name" className="text-xs font-semibold text-slate-700">Your Full Name *</label>
-                  <input
-                    id="name"
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
-                    onBlur={() => handleBlur("name")}
-                    placeholder="e.g., Mrs. Shalini Sen"
-                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
-                      touched.name && errors.name 
-                        ? "border-red-300 focus:border-red-500" 
-                        : "border-slate-200 focus:border-blue-600"
-                    }`}
-                  />
-                  {touched.name && errors.name && (
-                    <p className="text-[11px] text-red-500 font-medium">{errors.name}</p>
-                  )}
-                </div>
-
-                {/* Designation */}
-                <div className="space-y-1.5">
-                  <label htmlFor="designation" className="text-xs font-semibold text-slate-700">Your Designation *</label>
-                  <select
-                    id="designation"
-                    value={formData.designation}
-                    onChange={(e) => handleInputChange("designation", e.target.value)}
-                    className="w-full text-base py-3 px-4 rounded-xl border min-h-[44px] border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
-                  >
-                    <option value="Principal">Principal</option>
-                    <option value="Vice Principal">Vice Principal</option>
-                    <option value="Academic Coordinator">Academic Coordinator</option>
-                    <option value="Director / Trustee">School Director / Trustee</option>
-                    <option value="Teacher">Teacher</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="grid md:grid-cols-2 gap-5">
-                {/* Email */}
-                <div className="space-y-1.5">
-                  <label htmlFor="email" className="text-xs font-semibold text-slate-700">Official Email *</label>
-                  <input
-                    id="email"
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
-                    onBlur={() => handleBlur("email")}
-                    placeholder="e.g., principal@yourschool.com"
-                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
-                      touched.email && errors.email 
-                        ? "border-red-300 focus:border-red-500" 
-                        : "border-slate-200 focus:border-blue-600"
-                    }`}
-                  />
-                  {touched.email && errors.email && (
-                    <p className="text-[11px] text-red-500 font-medium">{errors.email}</p>
-                  )}
-                </div>
-
-                {/* Phone */}
-                <div className="space-y-1.5">
-                  <label htmlFor="phone" className="text-xs font-semibold text-slate-700">Contact Number *</label>
-                  <input
-                    id="phone"
-                    type="tel"
-                    required
-                    value={formData.phone}
-                    onChange={(e) => handleInputChange("phone", e.target.value)}
-                    onBlur={() => handleBlur("phone")}
-                    placeholder="+91 XXXXX XXXXX or Landline"
-                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
-                      touched.phone && errors.phone 
-                        ? "border-red-300 focus:border-red-500" 
-                        : "border-slate-200 focus:border-blue-600"
-                    }`}
-                  />
-                  {touched.phone && errors.phone && (
-                    <p className="text-[11px] text-red-500 font-medium">{errors.phone}</p>
-                  )}
-                </div>
-              </div>
-
-              {/* Student Strength */}
-              <div className="space-y-1.5">
-                <label htmlFor="studentStrength" className="text-xs font-semibold text-slate-700">Approximate Student Strength (Classes 5-8) (Optional)</label>
-                <select
-                  id="studentStrength"
-                  value={formData.studentStrength}
-                  onChange={(e) => handleInputChange("studentStrength", e.target.value)}
-                  className="w-full text-base py-3 px-4 rounded-xl border min-h-[44px] border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
-                >
-                  <option value="">Select range...</option>
-                  <option value="Under 100">Under 100</option>
-                  <option value="100 - 300">100 - 300</option>
-                  <option value="300 - 600">300 - 600</option>
-                  <option value="600+">600+</option>
-                </select>
-              </div>
-
-              {/* Remarks/Message */}
-              <div className="space-y-1.5">
-                <label htmlFor="message" className="text-xs font-semibold text-slate-700">Message / Custom Requirements (Optional)</label>
-                <textarea
-                  id="message"
-                  rows={2}
-                  value={formData.message}
-                  onChange={(e) => handleInputChange("message", e.target.value)}
-                  placeholder="Optional: Preferred exam dates, bulk sponsorship needs, or questions."
-                  className="w-full text-base py-3 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white outline-none resize-none transition-all"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-md text-sm md:text-base flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px]"
-              >
-                {isSubmitting ? (
-                  <>
-                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                    </svg>
-                    Submitting Inquiry...
-                  </>
-                ) : (
-                  <>
-                    Submit Inquiry <ArrowRight size={16} />
-                  </>
-                )}
-              </button>
-
-              {/* Privacy Assurance */}
-              <div className="pt-2 text-center text-xs text-slate-500 flex items-center justify-center gap-1.5">
-                <Lock size={13} className="text-slate-400 shrink-0" />
-                <span>Your data is secure. Compliant with DPDP Act. We never share school details.</span>
-              </div>
-            </form>
-          )}
-        </div>
-      </section>
-
       {/* Alternative Support Options */}
       <section className="bg-slate-100 border-t border-slate-200 py-16 text-center">
         <div className="max-w-4xl mx-auto px-6">
@@ -634,4 +646,5 @@ Remarks: ${formData.message || "None provided"}
     </div>
   );
 }
+
 
