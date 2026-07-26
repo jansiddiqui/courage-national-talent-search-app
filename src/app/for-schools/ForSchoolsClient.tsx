@@ -12,8 +12,11 @@ import {
   ArrowRight, 
   CheckCircle2, 
   Mail, 
-  Phone,
-  AlertCircle
+  AlertCircle,
+  FileText,
+  PhoneCall,
+  Rocket,
+  Lock
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -34,12 +37,12 @@ interface SchoolFormData {
 export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: BlogPost[] }) {
   const [formData, setFormData] = useState<SchoolFormData>({
     schoolName: "",
-    schoolBoard: "CBSE",
+    schoolBoard: "",
     name: "",
     designation: "Principal",
     email: "",
     phone: "",
-    studentStrength: "100-200",
+    studentStrength: "",
     message: "",
   });
 
@@ -53,11 +56,14 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
     switch (name) {
       case "schoolName":
         if (!value.trim()) return "School name is required";
-        if (value.trim().length < 5) return "Please enter the full official school name";
+        if (value.trim().length < 2) return "Please enter at least 2 characters";
+        return "";
+      case "schoolBoard":
+        if (!value) return "Please select an affiliation board";
         return "";
       case "name":
         if (!value.trim()) return "Contact name is required";
-        if (value.trim().length < 3) return "Name must be at least 3 characters";
+        if (value.trim().length < 2) return "Name must be at least 2 characters";
         return "";
       case "email":
         if (!value.trim()) return "Email address is required";
@@ -65,9 +71,11 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
         if (!emailRegex.test(value.trim())) return "Enter a valid email address";
         return "";
       case "phone":
-        if (!value) return "Phone number is required";
-        if (!/^[6-9]\d{9}$/.test(value)) {
-          return "Enter a valid 10-digit mobile number (starts with 6-9)";
+        if (!value.trim()) return "Phone number is required";
+        // Accepts 10-digit mobile, landlines with STD codes (e.g. 011-26123456), and +91 formatted numbers
+        const phoneRegex = /^(\+91[\-\s]?)?[0]?(91)?[1-9]\d{5,11}$|^[0-9\+\-\s\(\)]{8,15}$/;
+        if (!phoneRegex.test(value.trim())) {
+          return "Enter a valid phone or landline number";
         }
         return "";
       default:
@@ -91,11 +99,11 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate all fields
+    // Validate required fields
     const newErrors: Partial<Record<keyof SchoolFormData, string>> = {};
     let isValid = true;
 
-    (Object.keys(formData) as Array<keyof SchoolFormData>).forEach((key) => {
+    (["schoolName", "schoolBoard", "name", "email", "phone"] as Array<keyof SchoolFormData>).forEach((key) => {
       const errorMsg = validateField(key, formData[key]);
       if (errorMsg) {
         newErrors[key] = errorMsg;
@@ -123,10 +131,10 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
       const compiledMessage = `
 --- School Partnership Request ---
 School Name: ${formData.schoolName}
-School Board: ${formData.schoolBoard}
+School Board: ${formData.schoolBoard || "Not specified"}
 Coordinator Name: ${formData.name}
 Designation: ${formData.designation}
-Estimated Candidate Pool: ${formData.studentStrength} students
+Estimated Candidate Pool: ${formData.studentStrength || "Not specified"}
 Remarks: ${formData.message || "None provided"}
       `.trim();
 
@@ -134,7 +142,7 @@ Remarks: ${formData.message || "None provided"}
         name: formData.name,
         email: formData.email,
         phone: formData.phone,
-        subject: "School Partnership Inquiry",
+        subject: "School Partnership Inquiry (Founding Edition)",
         message: compiledMessage
       });
 
@@ -146,12 +154,12 @@ Remarks: ${formData.message || "None provided"}
       // Reset form
       setFormData({
         schoolName: "",
-        schoolBoard: "CBSE",
+        schoolBoard: "",
         name: "",
         designation: "Principal",
         email: "",
         phone: "",
-        studentStrength: "100-200",
+        studentStrength: "",
         message: "",
       });
       setTouched({});
@@ -164,36 +172,56 @@ Remarks: ${formData.message || "None provided"}
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
+    <div className="min-h-screen bg-slate-50 flex flex-col pb-16 md:pb-0">
       <Navbar theme="light" />
 
       {/* Hero Section */}
       <section className="pt-36 pb-12 px-6 text-center border-b border-slate-100 bg-white">
         
         <div className="max-w-7xl mx-auto px-6 relative z-10 text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-100 rounded-full text-xs font-bold text-blue-700 mb-6 uppercase tracking-wider mx-auto">
-            <Building size={12} /> Institutional Partnership Portal
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-bold text-blue-700 mb-6 tracking-wider mx-auto shadow-sm">
+            🔥 Founding Partner Cohort — Limited to 100 Schools
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-slate-900 mb-6 max-w-4xl mx-auto leading-tight">
-            Enable Talent Discovery in Your School
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight text-slate-900 mb-6 max-w-4xl mx-auto leading-tight">
+            Discover Potential Beyond Marks: CNTS 2026 Founding Edition
           </h1>
-          <p className="text-slate-500 text-base md:text-lg max-w-2xl mx-auto mb-8 font-medium">
+          <p className="text-slate-600 text-base md:text-lg max-w-2xl mx-auto mb-2 font-medium">
             Empower your students in Classes 5–8 with conceptual cognitive diagnostics. Move beyond rote memorization and benchmark academic skills against state and national standards.
+          </p>
+          <p className="text-blue-700 text-sm font-semibold max-w-2xl mx-auto mb-8">
+            Join the inaugural cohort of schools redefining student assessment.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <a
               href="#inquiry-form"
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all shadow-lg text-sm flex items-center gap-2"
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all shadow-lg text-sm flex items-center gap-2 min-h-[44px]"
             >
               Partner with Us <ArrowRight size={16} />
             </a>
             <Link
               href="/why-cnts"
-              className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-3 px-8 rounded-xl transition-all text-sm"
+              className="bg-slate-50 hover:bg-slate-100 text-slate-700 border border-slate-200 font-semibold py-3 px-8 rounded-xl transition-all text-sm flex items-center min-h-[44px]"
             >
               Why CNTS?
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Social Proof Bar */}
+      <section className="bg-slate-100/90 border-b border-slate-200/80 py-4 px-6">
+        <div className="max-w-7xl mx-auto flex flex-wrap items-center justify-center gap-4 md:gap-10 text-xs md:text-sm font-semibold text-slate-700 text-center">
+          <span className="flex items-center gap-2">
+            <CheckCircle2 size={16} className="text-blue-600 shrink-0" /> Trusted by 50+ Educators
+          </span>
+          <span className="hidden md:inline text-slate-300">|</span>
+          <span className="flex items-center gap-2">
+            <ShieldCheck size={16} className="text-blue-600 shrink-0" /> NEP 2020 Aligned
+          </span>
+          <span className="hidden md:inline text-slate-300">|</span>
+          <span className="flex items-center gap-2">
+            <Award size={16} className="text-blue-600 shrink-0" /> Cognitive Science Backed
+          </span>
         </div>
       </section>
 
@@ -273,14 +301,47 @@ Remarks: ${formData.message || "None provided"}
       </section>
 
       {/* Contact Form Section */}
-      <section id="inquiry-form" className="py-20 max-w-3xl mx-auto px-6">
-        <div className="bg-white border border-slate-200 rounded-3xl p-8 md:p-12 shadow-sm relative overflow-hidden">
+      <section id="inquiry-form" className="py-20 max-w-3xl mx-auto px-6 scroll-mt-24">
+        {/* 3-Step Journey Component */}
+        <div className="mb-8 bg-blue-50/80 border border-blue-100 rounded-3xl p-6 md:p-8">
+          <div className="text-center mb-6">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-blue-700">Evaluation Roadmap</span>
+            <h3 className="text-lg md:text-xl font-display font-bold text-slate-900 mt-1">
+              Simple 3-Step School Evaluation Process
+            </h3>
+          </div>
+          <div className="grid md:grid-cols-3 gap-4 text-center">
+            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
+                <FileText size={20} />
+              </div>
+              <h4 className="font-bold text-slate-900 text-xs md:text-sm mb-1">Instant Prospectus</h4>
+              <p className="text-slate-500 text-[11px] leading-snug">Receive digital brochure &amp; sample test papers</p>
+            </div>
+            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
+                <PhoneCall size={20} />
+              </div>
+              <h4 className="font-bold text-slate-900 text-xs md:text-sm mb-1">15-Min Briefing Call</h4>
+              <p className="text-slate-500 text-[11px] leading-snug">Quick call with our Academic Director</p>
+            </div>
+            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-sm flex flex-col items-center">
+              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center mb-3">
+                <Rocket size={20} />
+              </div>
+              <h4 className="font-bold text-slate-900 text-xs md:text-sm mb-1">Zero-Cost Lab Setup</h4>
+              <p className="text-slate-500 text-[11px] leading-snug">Seamless online hosting &amp; roll numbers</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white border border-slate-200 rounded-3xl p-6 md:p-12 shadow-sm relative overflow-hidden">
           <div className="absolute top-0 inset-x-0 h-1.5 bg-blue-600" />
           
           <div className="text-center mb-8">
             <Building size={32} className="text-blue-600 mx-auto mb-3" />
             <h2 className="text-xl md:text-2xl font-display font-bold text-slate-900">Partner School Inquiry</h2>
-            <p className="text-slate-500 text-xs mt-1">
+            <p className="text-slate-500 text-xs md:text-sm mt-1">
               Submit your school details below. Our Academic Partnerships team will get in touch with you within 24 hours with brochures and guidelines.
             </p>
           </div>
@@ -294,7 +355,7 @@ Remarks: ${formData.message || "None provided"}
               </p>
               <button
                 onClick={() => setSubmitSuccess(false)}
-                className="mt-6 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2 px-5 rounded-lg transition-colors shadow-sm"
+                className="mt-6 text-xs bg-emerald-600 hover:bg-emerald-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm min-h-[44px]"
               >
                 Submit Another Inquiry
               </button>
@@ -310,7 +371,7 @@ Remarks: ${formData.message || "None provided"}
 
               <div className="grid md:grid-cols-2 gap-5">
                 {/* School Name */}
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label htmlFor="schoolName" className="text-xs font-semibold text-slate-700">Official School Name *</label>
                   <input
                     id="schoolName"
@@ -319,40 +380,51 @@ Remarks: ${formData.message || "None provided"}
                     value={formData.schoolName}
                     onChange={(e) => handleInputChange("schoolName", e.target.value)}
                     onBlur={() => handleBlur("schoolName")}
-                    placeholder="e.g., Delhi Public School"
-                    className={`w-full text-xs py-3 px-4 rounded-xl border bg-slate-50/50 focus:bg-white transition-all outline-none ${
+                    placeholder="e.g., Delhi Public School or DPS"
+                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
                       touched.schoolName && errors.schoolName 
                         ? "border-red-300 focus:border-red-500" 
                         : "border-slate-200 focus:border-blue-600"
                     }`}
                   />
                   {touched.schoolName && errors.schoolName && (
-                    <p className="text-[10px] text-red-500 font-medium">{errors.schoolName}</p>
+                    <p className="text-[11px] text-red-500 font-medium">{errors.schoolName}</p>
                   )}
                 </div>
 
                 {/* School Board */}
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label htmlFor="schoolBoard" className="text-xs font-semibold text-slate-700">Affiliation Board *</label>
                   <select
                     id="schoolBoard"
+                    required
                     value={formData.schoolBoard}
                     onChange={(e) => handleInputChange("schoolBoard", e.target.value)}
-                    className="w-full text-xs py-3 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
+                    onBlur={() => handleBlur("schoolBoard")}
+                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white outline-none transition-all ${
+                      touched.schoolBoard && errors.schoolBoard 
+                        ? "border-red-300 focus:border-red-500" 
+                        : "border-slate-200 focus:border-blue-600"
+                    }`}
                   >
+                    <option value="" disabled>Select Affiliation Board...</option>
                     <option value="CBSE">CBSE</option>
                     <option value="ICSE">ICSE / ISC</option>
                     <option value="State Board">State Board</option>
-                    <option value="IB / Cambridge">IB / Cambridge</option>
+                    <option value="IB">IB</option>
+                    <option value="IGCSE / Cambridge">IGCSE / Cambridge</option>
                     <option value="Other">Other</option>
                   </select>
+                  {touched.schoolBoard && errors.schoolBoard && (
+                    <p className="text-[11px] text-red-500 font-medium">{errors.schoolBoard}</p>
+                  )}
                 </div>
               </div>
 
               <div className="grid md:grid-cols-2 gap-5">
                 {/* Contact Person Name */}
-                <div className="space-y-1">
-                  <label htmlFor="name" className="text-xs font-semibold text-slate-700">Coordinator/Contact Name *</label>
+                <div className="space-y-1.5">
+                  <label htmlFor="name" className="text-xs font-semibold text-slate-700">Your Full Name *</label>
                   <input
                     id="name"
                     type="text"
@@ -361,29 +433,28 @@ Remarks: ${formData.message || "None provided"}
                     onChange={(e) => handleInputChange("name", e.target.value)}
                     onBlur={() => handleBlur("name")}
                     placeholder="e.g., Mrs. Shalini Sen"
-                    className={`w-full text-xs py-3 px-4 rounded-xl border bg-slate-50/50 focus:bg-white transition-all outline-none ${
+                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
                       touched.name && errors.name 
                         ? "border-red-300 focus:border-red-500" 
                         : "border-slate-200 focus:border-blue-600"
                     }`}
                   />
                   {touched.name && errors.name && (
-                    <p className="text-[10px] text-red-500 font-medium">{errors.name}</p>
+                    <p className="text-[11px] text-red-500 font-medium">{errors.name}</p>
                   )}
                 </div>
 
                 {/* Designation */}
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label htmlFor="designation" className="text-xs font-semibold text-slate-700">Your Designation *</label>
                   <select
                     id="designation"
                     value={formData.designation}
                     onChange={(e) => handleInputChange("designation", e.target.value)}
-                    className="w-full text-xs py-3 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
+                    className="w-full text-base py-3 px-4 rounded-xl border min-h-[44px] border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
                   >
                     <option value="Principal">Principal</option>
                     <option value="Vice Principal">Vice Principal</option>
-                    <option value="Exam Coordinator">CNTS Exam Coordinator</option>
                     <option value="Academic Coordinator">Academic Coordinator</option>
                     <option value="Director / Trustee">School Director / Trustee</option>
                     <option value="Teacher">Teacher</option>
@@ -393,7 +464,7 @@ Remarks: ${formData.message || "None provided"}
 
               <div className="grid md:grid-cols-2 gap-5">
                 {/* Email */}
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label htmlFor="email" className="text-xs font-semibold text-slate-700">Official Email *</label>
                   <input
                     id="email"
@@ -402,20 +473,20 @@ Remarks: ${formData.message || "None provided"}
                     value={formData.email}
                     onChange={(e) => handleInputChange("email", e.target.value)}
                     onBlur={() => handleBlur("email")}
-                    placeholder="e.g., info@yourschool.com"
-                    className={`w-full text-xs py-3 px-4 rounded-xl border bg-slate-50/50 focus:bg-white transition-all outline-none ${
+                    placeholder="e.g., principal@yourschool.com"
+                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
                       touched.email && errors.email 
                         ? "border-red-300 focus:border-red-500" 
                         : "border-slate-200 focus:border-blue-600"
                     }`}
                   />
                   {touched.email && errors.email && (
-                    <p className="text-[10px] text-red-500 font-medium">{errors.email}</p>
+                    <p className="text-[11px] text-red-500 font-medium">{errors.email}</p>
                   )}
                 </div>
 
                 {/* Phone */}
-                <div className="space-y-1">
+                <div className="space-y-1.5">
                   <label htmlFor="phone" className="text-xs font-semibold text-slate-700">Contact Number *</label>
                   <input
                     id="phone"
@@ -424,45 +495,46 @@ Remarks: ${formData.message || "None provided"}
                     value={formData.phone}
                     onChange={(e) => handleInputChange("phone", e.target.value)}
                     onBlur={() => handleBlur("phone")}
-                    placeholder="10-digit mobile number"
-                    className={`w-full text-xs py-3 px-4 rounded-xl border bg-slate-50/50 focus:bg-white transition-all outline-none ${
+                    placeholder="+91 XXXXX XXXXX or Landline"
+                    className={`w-full text-base py-3 px-4 rounded-xl border min-h-[44px] bg-slate-50/50 focus:bg-white transition-all outline-none ${
                       touched.phone && errors.phone 
                         ? "border-red-300 focus:border-red-500" 
                         : "border-slate-200 focus:border-blue-600"
                     }`}
                   />
                   {touched.phone && errors.phone && (
-                    <p className="text-[10px] text-red-500 font-medium">{errors.phone}</p>
+                    <p className="text-[11px] text-red-500 font-medium">{errors.phone}</p>
                   )}
                 </div>
               </div>
 
               {/* Student Strength */}
-              <div className="space-y-1">
-                <label htmlFor="studentStrength" className="text-xs font-semibold text-slate-700">Estimated Candidate Pool (Classes 5-8) *</label>
+              <div className="space-y-1.5">
+                <label htmlFor="studentStrength" className="text-xs font-semibold text-slate-700">Approximate Student Strength (Classes 5-8) (Optional)</label>
                 <select
                   id="studentStrength"
                   value={formData.studentStrength}
                   onChange={(e) => handleInputChange("studentStrength", e.target.value)}
-                  className="w-full text-xs py-3 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
+                  className="w-full text-base py-3 px-4 rounded-xl border min-h-[44px] border-slate-200 bg-slate-50/50 focus:bg-white outline-none"
                 >
-                  <option value="50-100">50 to 100 Students</option>
-                  <option value="100-200">100 to 200 Students</option>
-                  <option value="200-500">200 to 500 Students</option>
-                  <option value="500+">More than 500 Students</option>
+                  <option value="">Select range...</option>
+                  <option value="Under 100">Under 100</option>
+                  <option value="100 - 300">100 - 300</option>
+                  <option value="300 - 600">300 - 600</option>
+                  <option value="600+">600+</option>
                 </select>
               </div>
 
               {/* Remarks/Message */}
-              <div className="space-y-1">
-                <label htmlFor="message" className="text-xs font-semibold text-slate-700">Message / Custom Requirements</label>
+              <div className="space-y-1.5">
+                <label htmlFor="message" className="text-xs font-semibold text-slate-700">Message / Custom Requirements (Optional)</label>
                 <textarea
                   id="message"
-                  rows={4}
+                  rows={2}
                   value={formData.message}
                   onChange={(e) => handleInputChange("message", e.target.value)}
-                  placeholder="Tell us about preferred dates, bulk sponsorships, or request a visit by our team."
-                  className="w-full text-xs py-3 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white outline-none resize-none transition-all"
+                  placeholder="Optional: Preferred exam dates, bulk sponsorship needs, or questions."
+                  className="w-full text-base py-3 px-4 rounded-xl border border-slate-200 bg-slate-50/50 focus:bg-white outline-none resize-none transition-all"
                 />
               </div>
 
@@ -470,11 +542,11 @@ Remarks: ${formData.message || "None provided"}
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-md text-xs flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all shadow-md text-sm md:text-base flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed min-h-[48px]"
               >
                 {isSubmitting ? (
                   <>
-                    <svg className="animate-spin -ml-1 mr-3 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                    <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
@@ -482,10 +554,16 @@ Remarks: ${formData.message || "None provided"}
                   </>
                 ) : (
                   <>
-                    Submit Inquiry <ArrowRight size={14} />
+                    Submit Inquiry <ArrowRight size={16} />
                   </>
                 )}
               </button>
+
+              {/* Privacy Assurance */}
+              <div className="pt-2 text-center text-xs text-slate-500 flex items-center justify-center gap-1.5">
+                <Lock size={13} className="text-slate-400 shrink-0" />
+                <span>Your data is secure. Compliant with DPDP Act. We never share school details.</span>
+              </div>
             </form>
           )}
         </div>
@@ -498,7 +576,7 @@ Remarks: ${formData.message || "None provided"}
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 text-xs text-slate-600">
             <a
               href="mailto:partners@thecouragelibrary.com"
-              className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl py-4 px-6 hover:shadow-sm transition-all w-full md:w-auto"
+              className="flex items-center gap-2 bg-white border border-slate-200 rounded-2xl py-4 px-6 hover:shadow-sm transition-all w-full md:w-auto min-h-[44px]"
             >
               <Mail size={16} className="text-blue-500" />
               <span>Email: <strong>partners@thecouragelibrary.com</strong></span>
@@ -542,7 +620,18 @@ Remarks: ${formData.message || "None provided"}
         </section>
       )}
 
+      {/* Sticky Mobile CTA */}
+      <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-slate-200 p-3 z-50 md:hidden shadow-lg">
+        <a
+          href="#inquiry-form"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold min-h-[44px] rounded-xl text-sm flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
+        >
+          Request Founding Info Kit →
+        </a>
+      </div>
+
       <Footer />
     </div>
   );
 }
+
