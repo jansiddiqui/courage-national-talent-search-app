@@ -55,13 +55,14 @@ export async function POST(request: Request) {
     };
 
     // Check provider availability before starting
+    const serperKey = process.env.SERPER_API_KEY;
     const tavilyKey = process.env.TAVILY_API_KEY;
     const googleKey = process.env.GOOGLE_SEARCH_API_KEY;
     const googleCx = process.env.GOOGLE_SEARCH_CX;
-    if (!tavilyKey && !(googleKey && googleCx)) {
+    if (!serperKey && !tavilyKey && !(googleKey && googleCx)) {
       return NextResponse.json({
         success: false,
-        message: "No search provider configured. Set TAVILY_API_KEY or GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_CX."
+        message: "No search provider configured. Set SERPER_API_KEY, TAVILY_API_KEY, or GOOGLE_SEARCH_API_KEY."
       }, { status: 503 });
     }
 

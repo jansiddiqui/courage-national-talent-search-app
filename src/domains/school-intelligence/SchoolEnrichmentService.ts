@@ -57,13 +57,20 @@ export class SchoolEnrichmentService {
         console.log(`[Enrichment] No website discovered for: ${prospect.name}`);
       }
 
-      // Default mock intelligence if search and crawl returned nothing
       let intelligence: AIExtractedIntelligence;
+      let aiExtractionSucceeded = false;
 
       if (crawledPages.length > 0) {
-        // 4. Extract Structured facts using Gemini
-        console.log(`[Enrichment] Step 3: Extracting facts using Gemini...`);
-        intelligence = await SchoolExtractionService.extractIntelligence(crawledPages);
+        // 4. Extract Structured facts using Gemini / LLM pipeline
+        console.log(`[Enrichment] Step 3: Extracting facts using AI pipeline...`);
+        try {
+          intelligence = await SchoolExtractionService.extractIntelligence(crawledPages);
+          aiExtractionSucceeded = true;
+        } catch (extractErr: any) {
+          console.warn(`[Enrichment] AI extraction error (${extractErr.message}). Falling back to safe default unknown intelligence.`);
+          intelligence = this.getDefaultUnknownIntelligence();
+          if (status === "COMPLETED") status = "PARTIAL";
+        }
       } else {
         // Safe fallback placeholder claims if crawling failed completely (ensures partial success works)
         console.log(`[Enrichment] Crawling empty, setting default UNKNOWN intelligence structure.`);
@@ -72,7 +79,15 @@ export class SchoolEnrichmentService {
 
       // 5. Score Prospect
       console.log(`[Enrichment] Step 4: Scoring prospect...`);
-      const scoring = SchoolScoringService.calculateScore(intelligence, !!websiteUrl);
+      const scoring = SchoolScoringService.calculateScore(intelligence, !!websiteUrl, prospect.name);
+
+      // Preserve existing higher score if AI extraction was skipped/rate-limited
+      const finalOutreachScore = aiExtractionSucceeded
+        ? scoring.totalScore
+        : Math.max(prospect.outreach_score || 0, scoring.totalScore);
+      const finalConfidenceScore = aiExtractionSucceeded
+        ? scoring.confidenceScore
+        : Math.max(prospect.confidence_score || 0, scoring.confidenceScore);
 
       // 6. Generate Outreach Templates
       console.log(`[Enrichment] Step 5: Generating outreach drafts...`);
@@ -80,12 +95,6 @@ export class SchoolEnrichmentService {
 
       // 7. Write Claim-Level Evidence Provenance to database
       console.log(`[Enrichment] Step 6: Writing field evidence rows...`);
-      // Delete old evidence first
-      await (supabaseAdmin as any)
-        .from("school_prospect_claims_evidence")
-        .delete()
-        .eq("prospect_id", prospectId);
-
       const evidenceRows: any[] = [];
       
       const addEvidence = (key: string, claim: any) => {
@@ -114,6 +123,12 @@ export class SchoolEnrichmentService {
       });
 
       if (evidenceRows.length > 0) {
+        // Delete old evidence first only when new evidence is present
+        await (supabaseAdmin as any)
+          .from("school_prospect_claims_evidence")
+          .delete()
+          .eq("prospect_id", prospectId);
+
         await (supabaseAdmin as any)
           .from("school_prospect_claims_evidence")
           .insert(evidenceRows);
@@ -124,11 +139,11 @@ export class SchoolEnrichmentService {
       await (supabaseAdmin as any)
         .from("school_prospects")
         .update({
-          website: websiteUrl,
+          website: websiteUrl || prospect.website,
           enrichment_status: status,
-          outreach_score: scoring.totalScore,
-          confidence_score: scoring.confidenceScore,
-          scoring_breakdown: scoring.breakdown,
+          outreach_score: finalOutreachScore,
+          confidence_score: finalConfidenceScore,
+          scoring_breakdown: aiExtractionSucceeded ? scoring.breakdown : (prospect.scoring_breakdown || scoring.breakdown),
           outreach_templates: outreach,
           last_enriched_at: new Date().toISOString(),
           updated_at: new Date().toISOString()

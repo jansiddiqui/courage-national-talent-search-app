@@ -24,25 +24,15 @@ import { SchoolEnrichmentService } from "@/domains/school-intelligence/SchoolEnr
 import { SchoolDiscoveryService } from "@/domains/school-intelligence/SchoolDiscoveryService";
 
 const CRON_SECRET = process.env.CRON_SECRET;
-const JOB_LEASE_SECONDS = 120; // 2 minutes
+const JOB_LEASE_SECONDS = 300; // 5 minutes allow ample time for crawl + AI extraction
 
 if (process.env.NODE_ENV === "development" || !process.env.NODE_ENV) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 }
 
-export async function POST(request: Request) {
-  // Fail closed: if CRON_SECRET is not configured, refuse all requests
-  if (!CRON_SECRET) {
-    return NextResponse.json({ error: "Worker not configured: CRON_SECRET is absent." }, { status: 503 });
-  }
-
-  const authHeader = request.headers.get("x-cron-secret");
-  if (!authHeader || authHeader !== CRON_SECRET) {
-    return NextResponse.json({ error: "Unauthorized: invalid CRON_SECRET." }, { status: 401 });
-  }
-
+export async function processWorkerJobs() {
   if (!hasSupabaseAdminConfig) {
-    return NextResponse.json({ message: "Worker: sandbox mode, no-op." });
+    return { processed: 0, failed: 0, processedJobs: [], failedJobs: [] };
   }
 
   const workerId = crypto.randomUUID();
@@ -84,8 +74,8 @@ export async function POST(request: Request) {
           await (supabaseAdmin as any)
             .from("school_prospects")
             .update({
-              enrichment_status: isFailed ? "FAILED" : "PENDING",
-              error_logs: "Job lease expired (worker crashed or did not complete in time)",
+              enrichment_status: isFailed ? "PARTIAL" : "PENDING",
+              error_logs: "Job lease expired (slow site crawl timeout)",
               updated_at: new Date().toISOString()
             })
             .eq("id", prospectId);
@@ -194,14 +184,15 @@ export async function POST(request: Request) {
 
         if (prospectId) {
           const isGenericEnrichError = errorMessage.includes("School enrichment failed for prospect");
-          await (supabaseAdmin as any)
-            .from("school_prospects")
-            .update({
-              enrichment_status: "PENDING",
-              ...(isGenericEnrichError ? {} : { error_logs: errorMessage }),
-              updated_at: new Date().toISOString()
-            })
-            .eq("id", prospectId);
+          if (!isGenericEnrichError) {
+            await (supabaseAdmin as any)
+              .from("school_prospects")
+              .update({
+                error_logs: errorMessage,
+                updated_at: new Date().toISOString()
+              })
+              .eq("id", prospectId);
+          }
         }
       }
 
@@ -218,7 +209,7 @@ export async function POST(request: Request) {
       module: "SYSTEM",
       previousValue: {},
       newValue: { processedJobs, failedJobs, workerId },
-      ipAddress: request.headers.get("x-forwarded-for") || "worker"
+      ipAddress: "worker"
     });
   }
 
@@ -231,8 +222,8 @@ export async function POST(request: Request) {
       .lte("next_retry_at", new Date().toISOString());
 
     if (!countErr && count && count > 0) {
-      const requestUrl = new URL(request.url);
-      const workerUrl = `${requestUrl.origin}/api/admin/jobs/worker`;
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const workerUrl = `${baseUrl}/api/admin/jobs/worker`;
       
       console.log(`[Worker] There are still ${count} pending/retry jobs. Triggering self asynchronously...`);
       fetch(workerUrl, {
@@ -249,13 +240,28 @@ export async function POST(request: Request) {
     console.error("[Worker self-trigger check failed]", selfTriggerErr);
   }
 
-  return NextResponse.json({
+  return {
     workerId,
     processed: processedJobs.length,
     failed: failedJobs.length,
     processedJobs,
     failedJobs
-  });
+  };
+}
+
+export async function POST(request: Request) {
+  // Fail closed: if CRON_SECRET is not configured, refuse all requests
+  if (!CRON_SECRET) {
+    return NextResponse.json({ error: "Worker not configured: CRON_SECRET is absent." }, { status: 503 });
+  }
+
+  const authHeader = request.headers.get("x-cron-secret");
+  if (!authHeader || authHeader !== CRON_SECRET) {
+    return NextResponse.json({ error: "Unauthorized: invalid CRON_SECRET." }, { status: 401 });
+  }
+
+  const result = await processWorkerJobs();
+  return NextResponse.json(result);
 }
 
 /**

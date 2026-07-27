@@ -18,17 +18,39 @@ export class SearchApiCollector implements SchoolCandidateCollector {
     const serperKey = process.env.SERPER_API_KEY;
 
     let rawResults: Array<{ title: string; url: string; snippet?: string }> = [];
+    let searchSuccess = false;
 
+    // 1. Try Serper if configured
     if (serperKey) {
-      rawResults = await this.searchSerper(serperKey, query, page);
-    } else if (tavilyKey) {
-      // Tavily does not support standard page offsets, so only query page 1
-      if (page === 1) {
-        rawResults = await this.searchTavily(tavilyKey, query);
+      try {
+        rawResults = await this.searchSerper(serperKey, query, page);
+        if (rawResults.length > 0) searchSuccess = true;
+      } catch (err: any) {
+        console.warn(`[SearchApiCollector] Serper search failed for "${query}": ${err.message}. Trying Tavily fallback...`);
       }
-    } else if (googleKey && googleCx) {
-      rawResults = await this.searchGoogle(googleKey, googleCx, query, page);
-    } else {
+    }
+
+    // 2. Try Tavily fallback if Serper failed or returned 0 results
+    if (!searchSuccess && tavilyKey && page === 1) {
+      try {
+        rawResults = await this.searchTavily(tavilyKey, query);
+        if (rawResults.length > 0) searchSuccess = true;
+      } catch (err: any) {
+        console.warn(`[SearchApiCollector] Tavily search failed for "${query}": ${err.message}. Trying Google CSE fallback...`);
+      }
+    }
+
+    // 3. Try Google CSE fallback if Serper & Tavily failed
+    if (!searchSuccess && googleKey && googleCx) {
+      try {
+        rawResults = await this.searchGoogle(googleKey, googleCx, query, page);
+        if (rawResults.length > 0) searchSuccess = true;
+      } catch (err: any) {
+        console.warn(`[SearchApiCollector] Google CSE search failed for "${query}": ${err.message}`);
+      }
+    }
+
+    if (!searchSuccess && rawResults.length === 0 && !serperKey && !tavilyKey && !(googleKey && googleCx)) {
       throw new Error("No search provider configured (SERPER_API_KEY, TAVILY_API_KEY, or GOOGLE_SEARCH_API_KEY + GOOGLE_SEARCH_CX)");
     }
 

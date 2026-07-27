@@ -16,7 +16,7 @@ import {
 interface Stats {
   total: number; pending: number; processing: number; completed: number;
   partial: number; failed: number; retryPending: number;
-  highFit: number; readyForOutreach: number;
+  lowScore: number; lowScorePending?: number; highFit: number; readyForOutreach: number;
   contacted: number; interested: number; partnered: number;
   activeJobs?: number;
 }
@@ -28,6 +28,7 @@ interface DiscoveryRun {
   geographies_completed: number; geographies_planned: number;
   raw_candidates_found: number; duplicates_removed: number;
   started_at: string; completed_at?: string;
+  error_summary?: string;
 }
 
 interface ProviderStatus {
@@ -80,6 +81,7 @@ export default function SchoolProspectsPanel() {
   const [triggeringWorker, setTriggeringWorker] = useState(false);
   const [stoppingQueue, setStoppingQueue] = useState(false);
   const [reprocessingFailed, setReprocessingFailed] = useState(false);
+  const [reprocessingLowScore, setReprocessingLowScore] = useState(false);
   const [resettingStuck, setResettingStuck] = useState(false);
   const lastTriggerTime = useRef<number>(0);
   const [isQueueRunning, setIsQueueRunning] = useState(false);
@@ -200,12 +202,14 @@ export default function SchoolProspectsPanel() {
       if (res.ok) {
         const data = await res.json();
         setStats(data.stats);
-        if (data.stats && (data.stats.activeJobs || 0) === 0) {
+        if (data.stats && (data.stats.activeJobs || 0) === 0 && (data.stats.processing || 0) === 0) {
           setIsQueueRunning(false);
         }
         if (data.states?.length > 0) setAvailableStates(data.states);
       }
-    } catch (err) { console.error("Stats fetch failed:", err); }
+    } catch (_) {
+      // Ignore transient network polling failures (e.g. server HMR re-compiles)
+    }
   }, []);
 
   const fetchProspects = useCallback(async () => {
@@ -218,7 +222,11 @@ export default function SchoolProspectsPanel() {
       if (stateFilter !== "ALL") params.set("state", stateFilter);
       if (statusFilter !== "ALL") params.set("status", statusFilter);
       if (outreachFilter !== "ALL") params.set("outreach_status", outreachFilter);
-      if (minScoreFilter !== "0") params.set("minScore", minScoreFilter);
+      if (minScoreFilter === "LOW_40") {
+        params.set("maxScore", "40");
+      } else if (minScoreFilter !== "0") {
+        params.set("minScore", minScoreFilter);
+      }
       if (sortBy !== "score") params.set("sortBy", sortBy);
       const res = await fetch(`/api/admin/prospects?${params}`);
       if (res.ok) {
@@ -226,7 +234,9 @@ export default function SchoolProspectsPanel() {
         setProspects(data.prospects || []);
         setTotal(data.total || 0);
       }
-    } catch (err) { console.error("Prospects fetch failed:", err); }
+    } catch (_) {
+      // Ignore transient network polling failures
+    }
     finally { setLoading(false); }
   }, [page, search, stateFilter, statusFilter, outreachFilter, minScoreFilter, sortBy]);
 
@@ -363,11 +373,12 @@ export default function SchoolProspectsPanel() {
 
     const isDiscoveryActive = activeRun && ["RUNNING", "PENDING"].includes(activeRun.status);
     const shouldTriggerEnrich = isQueueRunning && stats && stats.processing === 0 && (stats.activeJobs || 0) > 0;
-    const shouldTriggerDiscovery = isDiscoveryActive && stats && stats.processing === 0;
+    const shouldTriggerDiscovery = isDiscoveryActive;
 
     if (shouldTriggerEnrich || shouldTriggerDiscovery) {
       const now = Date.now();
-      if (now - lastTriggerTime.current > 12000) {
+      const minDelay = isDiscoveryActive ? 3000 : 12000;
+      if (now - lastTriggerTime.current > minDelay) {
         lastTriggerTime.current = now;
         triggerWorker();
       }
@@ -611,6 +622,28 @@ export default function SchoolProspectsPanel() {
       }
     } catch (_) { showToast("Network error triggering reprocessing."); }
     finally { setReprocessingFailed(false); }
+  };
+
+  const handleReprocessLowScore = async () => {
+    setReprocessingLowScore(true);
+    try {
+      const res = await fetch("/api/admin/prospects/queue", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "REPROCESS_LOW_SCORE" })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(data.message || "Reprocessing low-score prospects started.");
+        setIsQueueRunning(true);
+        await triggerWorker();
+        fetchProspects();
+        fetchStats();
+      } else {
+        showToast(data.message || "Failed to trigger reprocessing.");
+      }
+    } catch (_) { showToast("Network error triggering reprocessing."); }
+    finally { setReprocessingLowScore(false); }
   };
 
   const handleResetStuck = async () => {
@@ -901,9 +934,21 @@ export default function SchoolProspectsPanel() {
               <span className={`px-2.5 py-1 rounded-full text-[10px] font-black ${
                 activeRun.status === "RUNNING" ? "bg-amber-50 text-amber-700" :
                 activeRun.status === "COMPLETED" ? "bg-emerald-50 text-emerald-700" :
+                activeRun.status === "FAILED" ? "bg-rose-50 text-rose-700" :
                 "bg-slate-100 text-slate-600"
               }`}>{activeRun.status}</span>
             </div>
+
+            {/* Error or Live Query Status Notice */}
+            {activeRun.error_summary && (
+              <div className={`p-3 rounded-xl text-xs font-semibold flex items-center gap-2 ${
+                activeRun.status === "FAILED" ? "bg-rose-50 border border-rose-200 text-rose-800" :
+                "bg-indigo-50/70 border border-indigo-100 text-indigo-900"
+              }`}>
+                {activeRun.status === "FAILED" ? <AlertCircle size={14} className="text-rose-600 shrink-0" /> : <Sparkles size={14} className="text-indigo-600 shrink-0" />}
+                <span className="break-words">{activeRun.error_summary}</span>
+              </div>
+            )}
 
             {/* Progress bar */}
             <div className="space-y-1">
@@ -931,16 +976,28 @@ export default function SchoolProspectsPanel() {
               ))}
             </div>
 
-            {["RUNNING", "PENDING"].includes(activeRun.status) && (
-              <button
-                onClick={handleCancelDiscovery}
-                disabled={cancellingDiscovery}
-                className="w-full py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
-              >
-                {cancellingDiscovery ? <Loader2 size={13} className="animate-spin" /> : <XCircle size={13} />}
-                Stop / Cancel Discovery
-              </button>
-            )}
+            <div className="flex items-center gap-2">
+              {activeRun.status === "PENDING" && (
+                <button
+                  onClick={() => triggerWorker()}
+                  className="flex-1 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold flex items-center justify-center gap-1.5 cursor-pointer shadow-sm transition-colors"
+                >
+                  <Play size={13} />
+                  Start / Resume Processing Now
+                </button>
+              )}
+
+              {["RUNNING", "PENDING"].includes(activeRun.status) && (
+                <button
+                  onClick={handleCancelDiscovery}
+                  disabled={cancellingDiscovery}
+                  className="flex-1 py-2 bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-700 rounded-xl text-xs font-extrabold flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                >
+                  {cancellingDiscovery ? <Loader2 size={13} className="animate-spin" /> : <XCircle size={13} />}
+                  Stop / Cancel Discovery
+                </button>
+              )}
+            </div>
 
             {activeRun.status === "COMPLETED" && (
               <button onClick={() => { setView("list"); fetchProspects(); fetchStats(); }}
@@ -2106,30 +2163,75 @@ export default function SchoolProspectsPanel() {
         document.body
       )}
 
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+      {/* Header & Segmented Tab Navigation */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-800 flex items-center gap-2">
-            <School className="text-indigo-600" /> School Intelligence Engine
+          <h1 className="text-2xl font-bold tracking-tight text-slate-800 flex items-center gap-2.5">
+            <School className="text-indigo-600 w-7 h-7" /> School Intelligence Engine
           </h1>
           <p className="text-xs text-slate-500 mt-1">Discover, research, rank, and pitch prospective school partnerships nationwide</p>
         </div>
-        <div className="flex gap-2 flex-wrap">
-          <button onClick={() => { setView("contacts"); fetchContacts(); }}
-            className="px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:bg-indigo-100 transition-all">
-            <Users size={13} /> Contact List
+
+        {/* Modern Segmented Navigation Tabs */}
+        <div className="flex items-center gap-2 p-1.5 bg-slate-100/80 rounded-2xl border border-slate-200/60 shadow-inner flex-wrap sm:flex-nowrap">
+          <button
+            onClick={() => setView("list")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+              (view as string) === "list"
+                ? "bg-white text-indigo-700 shadow-sm shadow-slate-200 border border-slate-200/50"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            }`}
+          >
+            <School size={14} className={(view as string) === "list" ? "text-indigo-600" : "text-slate-400"} />
+            Prospects
+            {stats && (
+              <span className={`px-2 py-0.5 rounded-full text-[10px] font-extrabold ${(view as string) === "list" ? "bg-indigo-100 text-indigo-800" : "bg-slate-200 text-slate-600"}`}>
+                {stats.total}
+              </span>
+            )}
           </button>
-          <button onClick={() => setView("discover")}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer hover:bg-indigo-700 shadow-sm shadow-indigo-200 transition-all">
-            <Zap size={13} /> Discover Schools
+
+          <button
+            onClick={() => { setView("contacts"); fetchContacts(); }}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+              (view as string) === "contacts"
+                ? "bg-white text-indigo-700 shadow-sm shadow-slate-200 border border-slate-200/50"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            }`}
+          >
+            <Users size={14} className={(view as string) === "contacts" ? "text-indigo-600" : "text-slate-400"} />
+            Contact List
           </button>
-          <button onClick={() => setShowImporter(!showImporter)}
-            className="px-4 py-2 border border-slate-200 bg-white hover:bg-slate-50 rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer">
-            <Upload size={13} /> Import
+
+          <button
+            onClick={() => setView("discover")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+              (view as string) === "discover"
+                ? "bg-indigo-600 text-white shadow-md shadow-indigo-200"
+                : "bg-white/80 hover:bg-white text-indigo-700 border border-indigo-200/60"
+            }`}
+          >
+            <Zap size={14} className={(view as string) === "discover" ? "text-amber-300" : "text-indigo-600"} />
+            Discover Schools
           </button>
-          <button onClick={() => { fetchProspects(); fetchStats(); }}
-            className="p-2.5 bg-white border border-slate-200/50 rounded-xl text-slate-500 hover:text-slate-800 cursor-pointer">
-            <RefreshCw size={14} className={loading ? "animate-spin" : ""} />
+
+          <button
+            onClick={() => setShowImporter(!showImporter)}
+            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-1.5 cursor-pointer ${
+              showImporter
+                ? "bg-slate-800 text-white"
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/50"
+            }`}
+          >
+            <Upload size={14} /> Import
+          </button>
+
+          <button
+            onClick={() => { fetchProspects(); fetchStats(); }}
+            title="Refresh Data"
+            className="p-2 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-white transition-all cursor-pointer"
+          >
+            <RefreshCw size={14} className={loading ? "animate-spin text-indigo-600" : ""} />
           </button>
         </div>
       </div>
@@ -2149,7 +2251,7 @@ export default function SchoolProspectsPanel() {
       )}
 
       {/* Active processing progress banner */}
-      {stats && (stats.processing > 0 || stats.pending > 0) && (
+      {isQueueRunning && stats && ((stats.activeJobs || 0) > 0 || stats.pending > 0 || stats.processing > 0) && (
         <div className="p-4 bg-amber-50/60 border border-amber-100/70 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs transition-all duration-300">
           <div className="flex items-center gap-2 font-semibold text-amber-800">
             <Loader2 size={13} className="animate-spin text-amber-500" />
@@ -2192,16 +2294,18 @@ export default function SchoolProspectsPanel() {
 
       {/* KPI Cards — from real stats API */}
       {stats && (
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
           {[
-            { label: "Total", value: stats.total, color: "text-slate-800" },
-            { label: "Pending", value: stats.pending, color: "text-slate-600" },
-            { label: "Processing", value: stats.processing, color: "text-amber-700" },
-            { label: "Completed", value: stats.completed, color: "text-emerald-700" },
-            { label: "High Fit (≥70)", value: stats.highFit, color: "text-indigo-700" },
-            { label: "Contacted", value: stats.contacted, color: "text-blue-700" },
-          ].map(({ label, value, color }) => (
-            <div key={label} className="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden">
+            { label: "Total", value: stats.total, color: "text-slate-800", filter: null },
+            { label: "Pending", value: stats.pending, color: "text-slate-600", filter: null },
+            { label: "Processing", value: stats.processing, color: "text-amber-700", filter: null },
+            { label: "Completed", value: stats.completed, color: "text-emerald-700", filter: null },
+            { label: "High Fit (≥70)", value: stats.highFit, color: "text-indigo-700", filter: "70" },
+            { label: "Contacted", value: stats.contacted, color: "text-blue-700", filter: null },
+          ].map(({ label, value, color, filter }) => (
+            <div key={label}
+              onClick={() => { if (filter) { setMinScoreFilter(filter); setPage(1); } }}
+              className={`bg-white p-4 rounded-2xl border border-slate-100 shadow-sm relative overflow-hidden ${filter ? 'cursor-pointer hover:border-slate-300 transition-colors' : ''}`}>
               <span className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">{label}</span>
               <div className="flex items-center gap-2 mt-1">
                 <span className={`text-xl font-black block ${color}`}>{value}</span>
@@ -2254,7 +2358,7 @@ export default function SchoolProspectsPanel() {
           className="px-2.5 py-1.5 border border-slate-200 bg-white rounded-xl text-xs font-semibold text-slate-700 hover:border-slate-300 transition-colors">
           <option value="0">All Scores</option>
           <option value="50">Score ≥ 50</option>
-          <option value="70">Score ≥ 70</option>
+          <option value="70">Score ≥ 70 ({stats?.highFit || 0})</option>
           <option value="85">Score ≥ 85</option>
         </select>
         <select value={sortBy} onChange={e => { setSortBy(e.target.value); setPage(1); }}
@@ -2429,12 +2533,18 @@ export default function SchoolProspectsPanel() {
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => handleEnrichSingle(p.id)}
                           disabled={p.enrichment_status === "PROCESSING" || enrichingIds.includes(p.id)}
-                          className="p-1.5 border border-slate-200 rounded-lg text-slate-500 hover:text-indigo-600 hover:border-indigo-100 bg-white transition-all cursor-pointer disabled:opacity-40 flex items-center justify-center min-w-[26px] min-h-[26px]"
-                          title="Run research">
-                          {enrichingIds.includes(p.id) ? (
-                            <Loader2 size={12} className="animate-spin text-indigo-600" />
+                          className="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 text-indigo-700 rounded-lg text-[11px] font-bold flex items-center gap-1 cursor-pointer transition-all disabled:opacity-50"
+                          title="Run AI research & web discovery for this school">
+                          {enrichingIds.includes(p.id) || p.enrichment_status === "PROCESSING" ? (
+                            <>
+                              <Loader2 size={12} className="animate-spin text-indigo-600" />
+                              <span>Researching...</span>
+                            </>
                           ) : (
-                            <Play size={12} />
+                            <>
+                              <Search size={12} className="text-indigo-600" />
+                              <span>Research</span>
+                            </>
                           )}
                         </button>
                         <button onClick={() => { setSelectedProspectId(p.id); setView("detail"); }}

@@ -196,6 +196,56 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: true, message: `Reset completed. Unlocked ${jobs.length} background jobs and ${prospects.length} prospects.` });
     }
 
+    if (action === "REPROCESS_LOW_SCORE") {
+      // 1. Fetch prospects with outreach_score <= 40 (excluding those already PROCESSING)
+      const { data: lowScoreProspects } = await (supabaseAdmin as any)
+        .from("school_prospects")
+        .select("id")
+        .lte("outreach_score", 40)
+        .neq("enrichment_status", "PROCESSING");
+
+      const prospects = lowScoreProspects || [];
+      if (prospects.length === 0) {
+        return NextResponse.json({ success: true, message: "No prospects with score under 40 found to reprocess." });
+      }
+
+      const jobsToInsert = prospects.map((p: any) => ({
+        job_type: "SCHOOL_PROSPECT_ENRICH",
+        status: "PENDING",
+        payload: { prospectId: p.id },
+        idempotency_key: `prospect_enrich_${p.id}`,
+        next_retry_at: new Date().toISOString(),
+      }));
+
+      // 2. Reset status to PENDING (clean status transition without touching FAILED metrics)
+      const prospectIds = prospects.map((p: any) => p.id);
+      await (supabaseAdmin as any)
+        .from("school_prospects")
+        .update({
+          enrichment_status: "PENDING",
+          error_logs: null,
+          updated_at: new Date().toISOString()
+        })
+        .in("id", prospectIds);
+
+      // 3. Upsert background jobs
+      await (supabaseAdmin as any)
+        .from("admin_background_jobs")
+        .upsert(jobsToInsert, { onConflict: "idempotency_key" });
+
+      await writeAuditEntry(supabaseAdmin, {
+        actorId: session.id,
+        actorRole: "ADMIN",
+        action: "REPROCESSED_LOW_SCORE_PROSPECTS",
+        module: "SCHOOLS",
+        previousValue: {},
+        newValue: { reprocessedCount: prospects.length },
+        ipAddress: ip,
+      });
+
+      return NextResponse.json({ success: true, message: `Reprocessing queued for ${prospects.length} low-score (< 40) prospects.` });
+    }
+
     if (action === "REPROCESS_SELECTED") {
       if (!prospectIds || !Array.isArray(prospectIds) || prospectIds.length === 0) {
         return NextResponse.json({ success: false, message: "No prospect IDs provided." }, { status: 400 });

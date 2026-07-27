@@ -50,6 +50,8 @@ export async function GET() {
       partial: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "PARTIAL"),
       failed: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "FAILED"),
       retryPending: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("enrichment_status", "RETRY_PENDING"),
+      lowScore: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).lte("outreach_score", 40),
+      lowScorePending: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).lte("outreach_score", 40).in("enrichment_status", ["PENDING", "PROCESSING"]),
       highFit: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).gte("outreach_score", 70),
       readyForOutreach: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).eq("outreach_status", "READY_FOR_OUTREACH"),
       contacted: (supabaseAdmin as any).from("school_prospects").select("id", { count: "exact", head: true }).in("outreach_status", ["CONTACTED", "FOLLOW_UP_DUE", "REPLIED", "INTERESTED", "MEETING_SCHEDULED", "PARTNERED"]),

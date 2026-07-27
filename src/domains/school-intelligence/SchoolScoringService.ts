@@ -31,7 +31,10 @@ export class SchoolScoringService {
   /**
    * Calculate deterministic outreach score and aggregate confidence rating
    */
-  static calculateScore(intelligence: AIExtractedIntelligence, websiteFound: boolean): ScoreDetails {
+  /**
+   * Calculate deterministic outreach score and aggregate confidence rating
+   */
+  static calculateScore(intelligence: AIExtractedIntelligence, websiteFound: boolean, prospectName?: string): ScoreDetails {
     const breakdown = {
       classesOffered: 0,
       olympiads: 0,
@@ -66,6 +69,18 @@ export class SchoolScoringService {
                              text.includes("middle") || text.includes("primary") || text.includes("secondary") || text.includes("12");
       if (hasTargetClass) {
         breakdown.classesOffered = Math.round(20 * this.getStatusModifier(classes.status));
+      }
+    }
+
+    // Smart inference for target classes from school name if explicit claim is missing
+    if (breakdown.classesOffered === 0 && prospectName) {
+      const pName = prospectName.toLowerCase();
+      const isTargetLevel = pName.includes("sr. sec") || pName.includes("senior secondary") || 
+                            pName.includes("high school") || pName.includes("public school") || 
+                            pName.includes("international") || pName.includes("inter college") || 
+                            pName.includes("convent") || pName.includes("academy") || pName.includes("grammar");
+      if (isTargetLevel) {
+        breakdown.classesOffered = 10; // Inferred target schooling level (50% of 20)
       }
     }
 
@@ -120,6 +135,9 @@ export class SchoolScoringService {
         maxStatus = "INFERRED";
       }
       breakdown.contacts = Math.round(15 * this.getStatusModifier(maxStatus));
+    } else if (websiteFound) {
+      // Live web domain indicates active school digital contact channel
+      breakdown.contacts = 5;
     }
 
     // 5. Decision Maker Identified (Weight: 15)
@@ -151,6 +169,13 @@ export class SchoolScoringService {
     trackConfidence(board);
     if (board && board.value === "CBSE") {
       breakdown.board = Math.round(5 * this.getStatusModifier(board.status));
+    } else if (prospectName) {
+      const pName = prospectName.toLowerCase();
+      if (pName.includes("cbse") || pName.includes("central school") || pName.includes("kendriya vidyalaya")) {
+        breakdown.board = 3; // Inferred CBSE board from title
+      } else if (pName.includes("icse") || pName.includes("cisce")) {
+        breakdown.board = 3; // Inferred ICSE board from title
+      }
     }
 
     const totalScore = breakdown.classesOffered + breakdown.olympiads + breakdown.stem + breakdown.contacts + breakdown.decisionMaker + breakdown.digitalFootprint + breakdown.board;

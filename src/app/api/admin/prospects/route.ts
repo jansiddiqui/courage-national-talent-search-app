@@ -68,8 +68,16 @@ export async function GET(request: Request) {
     if (outreachStatus) {
       query = query.eq("outreach_status", outreachStatus);
     }
+    const maxScoreParam = url.searchParams.get("maxScore");
+
     if (minScore > 0) {
       query = query.gte("outreach_score", minScore);
+    }
+    if (maxScoreParam !== null && maxScoreParam !== "") {
+      const maxScore = parseInt(maxScoreParam, 10);
+      if (!isNaN(maxScore)) {
+        query = query.lte("outreach_score", maxScore);
+      }
     }
 
     const sortBy = url.searchParams.get("sortBy") || "score";
