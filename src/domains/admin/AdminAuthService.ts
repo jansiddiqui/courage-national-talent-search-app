@@ -48,6 +48,28 @@ export async function checkAdminPermission(
   const resolvedId = await resolveAdminId(supabaseAdmin, adminId);
   if (!resolvedId) return false;
 
+  // 1. Check direct role set in admin_users table
+  try {
+    const { data: userData } = await supabaseAdmin
+      .from('admin_users')
+      .select('role')
+      .eq('id', resolvedId)
+      .maybeSingle();
+
+    if (userData?.role) {
+      const uRole = (userData.role || "").toUpperCase();
+      if (uRole === 'SUPER_ADMIN' || uRole === 'ADMIN') return true;
+      if (uRole === 'TELE_CALLER') {
+        const allowedPrefixes = ['schools.', 'telecalling.', 'prospects.', 'support.', 'analytics.'];
+        if (allowedPrefixes.some(pref => permission.startsWith(pref))) return true;
+      }
+      if (uRole === 'VOLUNTEER' && permission.endsWith('.view')) return true;
+    }
+  } catch (err) {
+    console.error("Error checking direct admin_users role:", err);
+  }
+
+  // 2. Check RBAC junction table admin_user_roles
   const { data, error } = await supabaseAdmin
     .from('admin_user_roles')
     .select('role_id, admin_roles!inner(name, admin_role_permissions(permission_key))')

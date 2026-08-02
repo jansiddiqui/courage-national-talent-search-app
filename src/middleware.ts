@@ -36,7 +36,10 @@ export async function middleware(request: NextRequest) {
   // Admin Route Gating
   if (pathname.startsWith("/admin")) {
     const role = session.role;
-    if (role !== "ADMIN" && role !== "SUPER_ADMIN" && role !== "VOLUNTEER") {
+    const allowedAdminRoles = ["ADMIN", "SUPER_ADMIN", "VOLUNTEER", "TELE_CALLER", "EXAM_MANAGER"];
+    const isAllowedAdmin = allowedAdminRoles.includes(role) || (role && role !== "PARENT");
+
+    if (!isAllowedAdmin || role === "PARENT") {
       return NextResponse.redirect(new URL("/dashboard", request.url));
     }
 
@@ -63,7 +66,7 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(new URL("/admin/setup-2fa", request.url));
     }
 
-    if (!session.is_2fa_verified && !isSetupRoute && !isVerifyRoute) {
+    if (!session.is_2fa_verified && (role === "ADMIN" || role === "SUPER_ADMIN") && !isSetupRoute && !isVerifyRoute) {
       return NextResponse.redirect(new URL("/admin/verify-2fa", request.url));
     }
 
