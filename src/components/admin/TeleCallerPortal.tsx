@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import {
   Phone,
@@ -54,6 +54,131 @@ import {
   PanelLeftOpen,
 } from "lucide-react";
 import { CALLING_SCENARIOS, CallingScenario, LanguageMode } from "@/domains/admin/telecaller/telecallingKnowledgeBase";
+// ─── Custom Select Dropdown (portal-based to escape overflow:hidden) ────────
+interface SelectOption {
+  value: string;
+  label: string;
+}
+
+function CustomSelect({
+  value,
+  onChange,
+  options,
+  className = "",
+  colorized = false,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  options: SelectOption[];
+  className?: string;
+  colorized?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [menuStyle, setMenuStyle] = useState<React.CSSProperties>({});
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const selected = options.find(o => o.value === value) ?? options[0];
+
+  // Position the portal dropdown below the trigger button
+  const openMenu = () => {
+    if (triggerRef.current) {
+      const r = triggerRef.current.getBoundingClientRect();
+      setMenuStyle({
+        position: "fixed",
+        top: r.bottom + 4,
+        left: r.left,
+        width: r.width,
+        minWidth: Math.max(r.width, 160),
+        zIndex: 99999,
+      });
+    }
+    setOpen(v => !v);
+  };
+
+  // Close on outside click
+  useEffect(() => {
+    if (!open) return;
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const isInsideTrigger = triggerRef.current?.contains(target);
+      const isInsideMenu = (document.getElementById("custom-select-menu"))?.contains(target);
+      if (!isInsideTrigger && !isInsideMenu) setOpen(false);
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [open]);
+
+  const colorMap: Record<string, { trigger: string; dot: string }> = {
+    ONBOARDED:     { trigger: "text-emerald-700 bg-emerald-50 border-emerald-200", dot: "bg-emerald-500" },
+    INTERESTED:    { trigger: "text-indigo-700 bg-indigo-50 border-indigo-200",   dot: "bg-indigo-500"  },
+    NOT_INTERESTED:{ trigger: "text-rose-700 bg-rose-50 border-rose-200",         dot: "bg-rose-500"    },
+    FOLLOW_UP:     { trigger: "text-amber-700 bg-amber-50 border-amber-200",      dot: "bg-amber-500"   },
+    CONTACTED:     { trigger: "text-slate-700 bg-slate-50 border-slate-200",      dot: "bg-slate-400"   },
+    NEW:           { trigger: "text-blue-700 bg-blue-50 border-blue-200",         dot: "bg-blue-500"    },
+    ALL:           { trigger: "text-slate-700 bg-slate-50 border-slate-200",      dot: "bg-slate-300"   },
+  };
+
+  const triggerCls = colorized
+    ? (colorMap[value]?.trigger ?? "text-slate-700 bg-slate-50 border-slate-200")
+    : "text-slate-700 bg-slate-50 border-slate-200";
+
+  const menu = open ? createPortal(
+    <div
+      id="custom-select-menu"
+      style={menuStyle}
+      className="bg-white border border-slate-200 rounded-xl shadow-xl shadow-slate-300/30 overflow-hidden animate-in fade-in slide-in-from-top-1 duration-100"
+    >
+      <div className="py-1 max-h-60 overflow-y-auto">
+        {options.map(opt => {
+          const isActive = opt.value === value;
+          const dotColor = colorized ? (colorMap[opt.value]?.dot ?? "bg-slate-300") : null;
+          const textColor = colorized
+            ? (colorMap[opt.value]?.trigger?.split(" ")[0] ?? "text-slate-700")
+            : "text-slate-700";
+          return (
+            <button
+              key={opt.value}
+              type="button"
+              onClick={() => { onChange(opt.value); setOpen(false); }}
+              className={`w-full text-left px-3.5 py-2.5 text-xs font-semibold flex items-center gap-2 cursor-pointer transition-colors ${
+                isActive ? "bg-indigo-50 text-indigo-700" : `hover:bg-slate-50 ${textColor}`
+              }`}
+            >
+              {colorized && dotColor ? (
+                <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`} />
+              ) : (
+                <span className={`shrink-0 ${isActive ? "text-indigo-600" : "text-transparent"}`}>
+                  <Check size={11} />
+                </span>
+              )}
+              {opt.label}
+            </button>
+          );
+        })}
+      </div>
+    </div>,
+    document.body
+  ) : null;
+
+  return (
+    <div ref={wrapperRef} className={`relative ${className}`}>
+      <button
+        ref={triggerRef}
+        type="button"
+        onClick={openMenu}
+        className={`w-full flex items-center justify-between gap-2 pl-3 pr-2.5 py-2 border rounded-xl text-xs font-semibold outline-none cursor-pointer transition-all hover:border-indigo-300 ${triggerCls} ${open ? "ring-2 ring-indigo-200 border-indigo-300" : ""}`}
+      >
+        <span className="truncate">{selected.label}</span>
+        <ChevronRight
+          size={12}
+          className={`text-slate-400 shrink-0 transition-transform duration-150 ${open ? "-rotate-90" : "rotate-90"}`}
+        />
+      </button>
+      {menu}
+    </div>
+  );
+}
+// ────────────────────────────────────────────────────────────────────────────
 
 interface Prospect {
   id: string;
@@ -613,82 +738,89 @@ export function TeleCallerPortal() {
         <div className={isLeftPanelCollapsed ? "hidden" : "lg:col-span-4 space-y-4"}>
           
           {/* SCHOOL QUEUE STEPPER & FILTERS */}
-          <div className="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs space-y-3">
-            {/* Quick Queue Stepper Navigation Bar */}
-            <div className="flex items-center justify-between bg-slate-900 text-white p-2.5 rounded-2xl">
+          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-xs overflow-hidden">
+            {/* Queue Progress Header */}
+            <div className="bg-slate-900 px-4 py-3 flex items-center justify-between">
               <button
                 onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
                 disabled={currentIndex === 0}
-                className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 disabled:opacity-30 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-20 flex items-center justify-center text-white cursor-pointer transition-colors shrink-0"
               >
-                <ChevronLeft size={14} /> Prev
+                <ChevronLeft size={15} />
               </button>
 
-              {loading ? (
-                <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5 animate-pulse">
-                  <Loader2 size={13} className="animate-spin text-indigo-400" /> Loading Queue...
-                </span>
-              ) : (
-                <span className="text-xs font-extrabold text-amber-300">
-                  School {filteredProspects.length > 0 ? currentIndex + 1 : 0} of {filteredProspects.length}
-                </span>
-              )}
+              <div className="text-center">
+                {loading ? (
+                  <span className="text-xs font-semibold text-slate-400 flex items-center gap-1.5">
+                    <Loader2 size={12} className="animate-spin" /> Loading...
+                  </span>
+                ) : (
+                  <>
+                    <div className="text-xs font-bold text-white">
+                      <span className="text-amber-400">{filteredProspects.length > 0 ? currentIndex + 1 : 0}</span>
+                      <span className="text-slate-500 mx-1">/</span>
+                      <span className="text-slate-300">{filteredProspects.length}</span>
+                    </div>
+                    <div className="text-[9px] text-slate-500 font-medium uppercase tracking-widest mt-0.5">Schools in Queue</div>
+                  </>
+                )}
+              </div>
 
               <button
                 onClick={() => setCurrentIndex(prev => Math.min(filteredProspects.length - 1, prev + 1))}
                 disabled={currentIndex >= filteredProspects.length - 1 || loading}
-                className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-30 rounded-xl text-xs font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                className="w-7 h-7 rounded-lg bg-indigo-600 hover:bg-indigo-500 disabled:opacity-20 flex items-center justify-center text-white cursor-pointer transition-colors shrink-0"
               >
-                Next <ChevronRight size={14} />
+                <ChevronRight size={15} />
               </button>
             </div>
 
-            {/* Search & Dropdown Filters */}
-            <div className="relative">
-              <Search className="absolute left-3 top-2.5 text-slate-400" size={13} />
-              <input
-                value={callerSearch}
-                onChange={e => {
-                  setCallerSearch(e.target.value);
-                  setCurrentIndex(0);
-                }}
-                placeholder="Search school name, city, principal..."
-                className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            {/* Progress bar */}
+            <div className="h-0.5 bg-slate-800">
+              <div
+                className="h-full bg-indigo-500 transition-all duration-500"
+                style={{ width: filteredProspects.length > 0 ? `${((currentIndex + 1) / filteredProspects.length) * 100}%` : '0%' }}
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              <select
-                value={callerStateFilter}
-                onChange={e => {
-                  setCallerStateFilter(e.target.value);
-                  setCurrentIndex(0);
-                }}
-                className="p-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-medium outline-none"
-              >
-                <option value="ALL">All States ({uniqueStates.length})</option>
-                {uniqueStates.map(st => (
-                  <option key={st} value={st}>
-                    {st}
-                  </option>
-                ))}
-              </select>
+            {/* Search & Filters */}
+            <div className="p-3 space-y-2.5">
+              <div className="relative">
+                <Search className="absolute left-3 top-2.5 text-slate-400" size={13} />
+                <input
+                  value={callerSearch}
+                  onChange={e => {
+                    setCallerSearch(e.target.value);
+                    setCurrentIndex(0);
+                  }}
+                  placeholder="Search school, city, principal..."
+                  className="w-full pl-8 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                />
+              </div>
 
-              <select
-                value={callerStatusFilter}
-                onChange={e => {
-                  setCallerStatusFilter(e.target.value);
-                  setCurrentIndex(0);
-                }}
-                className="p-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 font-medium outline-none"
-              >
-                <option value="ALL">All Statuses</option>
-                <option value="NEW">NEW</option>
-                <option value="CONTACTED">CONTACTED</option>
-                <option value="FOLLOW_UP">FOLLOW UP</option>
-                <option value="INTERESTED">INTERESTED</option>
-                <option value="ONBOARDED">ONBOARDED</option>
-              </select>
+              <div className="grid grid-cols-2 gap-2">
+                <CustomSelect
+                  value={callerStateFilter}
+                  onChange={v => { setCallerStateFilter(v); setCurrentIndex(0); }}
+                  options={[
+                    { value: "ALL", label: `All States (${uniqueStates.length})` },
+                    ...uniqueStates.map(st => ({ value: st, label: st }))
+                  ]}
+                />
+                <CustomSelect
+                  value={callerStatusFilter}
+                  onChange={v => { setCallerStatusFilter(v); setCurrentIndex(0); }}
+                  colorized
+                  options={[
+                    { value: "ALL", label: "All Statuses" },
+                    { value: "NEW", label: "New" },
+                    { value: "CONTACTED", label: "Contacted" },
+                    { value: "FOLLOW_UP", label: "Follow Up" },
+                    { value: "INTERESTED", label: "Interested" },
+                    { value: "ONBOARDED", label: "Onboarded" },
+                  ]}
+                />
+              </div>
             </div>
           </div>
 
@@ -814,164 +946,187 @@ export function TeleCallerPortal() {
             </div>
           )}
 
-          {/* CALL OUTCOME LOGGER & CONFIDENCE MATRIX */}
+          {/* CALL OUTCOME LOGGER */}
           {currentProspect && (
-            <div className="bg-white rounded-3xl p-5 border border-slate-200/80 shadow-sm space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-                <h3 className="font-black text-xs text-slate-900 flex items-center gap-1.5 uppercase tracking-wide">
-                  <CheckCircle2 size={14} className="text-indigo-600" /> Call Outcome Logger
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-xs overflow-hidden">
+              {/* Header */}
+              <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/60">
+                <h3 className="font-bold text-xs text-slate-900 flex items-center gap-1.5 uppercase tracking-wider">
+                  <CheckCircle2 size={13} className="text-indigo-600" /> Call Outcome Logger
                 </h3>
                 <button
                   onClick={handleGenerateAICallNotes}
-                  className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 text-[10px] font-extrabold rounded-xl border border-amber-200 flex items-center gap-1 transition-all active:scale-95 cursor-pointer"
+                  className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-700 text-[10px] font-bold rounded-lg border border-amber-200 flex items-center gap-1 transition-all cursor-pointer"
                 >
-                  <Zap size={11} className="text-amber-600" /> Generate AI Call Log
+                  <Zap size={10} className="text-amber-500" /> Generate AI Log
                 </button>
               </div>
 
-              <div className="grid grid-cols-2 gap-3 text-xs">
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Outreach Outcome</label>
-                  <select
-                    value={outreachStatus}
-                    onChange={e => setOutreachStatus(e.target.value)}
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold outline-none"
-                  >
-                    <option value="CONTACTED">CONTACTED</option>
-                    <option value="FOLLOW_UP">FOLLOW UP SCHEDULED</option>
-                    <option value="INTERESTED">INTERESTED</option>
-                    <option value="ONBOARDED">ONBOARDED / PARTNERED</option>
-                    <option value="NOT_INTERESTED">NOT INTERESTED</option>
-                  </select>
+              <div className="p-4 space-y-4">
+                {/* Outreach Outcome & Objection — custom styled selects */}
+                <div className="grid grid-cols-2 gap-2.5">
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Outreach Outcome</label>
+                    <CustomSelect
+                      value={outreachStatus}
+                      onChange={setOutreachStatus}
+                      colorized
+                      options={[
+                        { value: "CONTACTED", label: "Contacted" },
+                        { value: "FOLLOW_UP", label: "Follow Up" },
+                        { value: "INTERESTED", label: "Interested" },
+                        { value: "ONBOARDED", label: "Onboarded" },
+                        { value: "NOT_INTERESTED", label: "Not Interested" },
+                      ]}
+                    />
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Objection Type</label>
+                    <CustomSelect
+                      value={objectionCategory}
+                      onChange={setObjectionCategory}
+                      options={[
+                        { value: "NONE", label: "No Objection" },
+                        { value: "COST_FEES", label: "Financial / Fee" },
+                        { value: "COMPETITION", label: "SOF / SilverZone" },
+                        { value: "SCHEDULE", label: "Exam Schedule" },
+                        { value: "TRUST", label: "Legitimacy & Trust" },
+                        { value: "GATEKEEPER", label: "Gatekeeper" },
+                      ]}
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Objection Category</label>
-                  <select
-                    value={objectionCategory}
-                    onChange={e => setObjectionCategory(e.target.value)}
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold outline-none text-[11px]"
-                  >
-                    <option value="NONE">No Objection / Clear Pitch</option>
-                    <option value="COST_FEES">Financial & Token Fee</option>
-                    <option value="COMPETITION">SOF / SilverZone Comparison</option>
-                    <option value="SCHEDULE">Exam & Syllabus Schedule</option>
-                    <option value="TRUST">Legitimacy & Trust</option>
-                    <option value="GATEKEEPER">Gatekeeper Blocked</option>
-                  </select>
+                {/* Confidence Score Slider */}
+                <div className="bg-slate-50 rounded-xl border border-slate-200 p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[10px] font-bold text-slate-600 flex items-center gap-1.5">
+                      <Sliders size={11} className="text-indigo-500" /> Confidence Score
+                    </span>
+                    <span className={`text-xs font-black px-2.5 py-0.5 rounded-lg border ${
+                      conversionConfidence >= 70 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                      conversionConfidence >= 40 ? "bg-amber-50 text-amber-700 border-amber-200" :
+                      "bg-rose-50 text-rose-600 border-rose-200"
+                    }`}>
+                      {conversionConfidence}%
+                    </span>
+                  </div>
+                  <input
+                    type="range"
+                    min={10}
+                    max={100}
+                    step={5}
+                    value={conversionConfidence}
+                    onChange={e => setConversionConfidence(Number(e.target.value))}
+                    className="w-full accent-indigo-600 cursor-pointer h-1.5"
+                  />
+                  <div className="flex justify-between text-[9px] text-slate-400 font-medium">
+                    <span>Low</span><span>Medium</span><span>High</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Conversion Confidence Slider */}
-              <div className="space-y-1 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
-                <div className="flex items-center justify-between text-[11px]">
-                  <span className="font-bold text-slate-700 flex items-center gap-1">
-                    <Sliders size={12} className="text-indigo-600" /> Confidence Score
-                  </span>
-                  <span className="font-black text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md border border-indigo-200">
-                    {conversionConfidence}%
-                  </span>
+                {/* Next Touchpoint */}
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Next Touchpoint</label>
+                  <input
+                    type="datetime-local"
+                    value={nextFollowup}
+                    onChange={e => setNextFollowup(e.target.value)}
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-700 font-semibold outline-none text-xs focus:ring-2 focus:ring-indigo-300 transition-all"
+                  />
+                  <div className="flex items-center gap-1.5 pt-0.5">
+                    {[
+                      { label: "Tomorrow 11AM", hours: 24 },
+                      { label: "In 48 Hours", hours: 48 },
+                      { label: "Day 5", hours: 120 },
+                    ].map(p => (
+                      <button
+                        key={p.hours}
+                        onClick={() => setPresetFollowupDate(p.hours)}
+                        className="px-2.5 py-1 bg-slate-100 hover:bg-indigo-50 hover:text-indigo-700 hover:border-indigo-200 border border-transparent rounded-lg text-[10px] font-semibold text-slate-600 transition-all cursor-pointer"
+                      >
+                        {p.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <input
-                  type="range"
-                  min={10}
-                  max={100}
-                  step={5}
-                  value={conversionConfidence}
-                  onChange={e => setConversionConfidence(Number(e.target.value))}
-                  className="w-full accent-indigo-600 cursor-pointer"
-                />
-              </div>
 
-              {/* Next Scheduled Touchpoint Presets */}
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase block">Next Touchpoint</label>
-                <input
-                  type="datetime-local"
-                  value={nextFollowup}
-                  onChange={e => setNextFollowup(e.target.value)}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-800 font-bold outline-none text-[11px]"
-                />
-                <div className="flex items-center gap-1.5 flex-wrap text-[10px] font-bold">
-                  <span className="text-slate-400">Presets:</span>
-                  <button onClick={() => setPresetFollowupDate(24)} className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 rounded-md text-slate-700">Tomorrow 11 AM</button>
-                  <button onClick={() => setPresetFollowupDate(48)} className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 rounded-md text-slate-700">In 48 Hours</button>
-                  <button onClick={() => setPresetFollowupDate(120)} className="px-2 py-0.5 bg-slate-100 hover:bg-slate-200 rounded-md text-slate-700">Day 5 Touch</button>
+                {/* Call Notes */}
+                <div className="space-y-1.5">
+                  <label className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Discussion Notes</label>
+                  <textarea
+                    rows={3}
+                    value={callNotes}
+                    onChange={e => setCallNotes(e.target.value)}
+                    placeholder="Record principal feedback, fee discussions, coordinator notes..."
+                    className="w-full px-3 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-300 outline-none resize-none transition-all placeholder:text-slate-400"
+                  />
                 </div>
-              </div>
 
-              <div>
-                <label className="text-[10px] font-bold text-slate-500 uppercase block mb-1">Call Discussion Notes</label>
-                <textarea
-                  rows={3}
-                  value={callNotes}
-                  onChange={e => setCallNotes(e.target.value)}
-                  placeholder="Record Principal feedback, fee discussions, or coordinator notes..."
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:ring-2 focus:ring-indigo-300 outline-none resize-none"
-                />
-              </div>
+                {/* Quick Actions — 2x2 grid */}
+                <div className="space-y-2">
+                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Quick Actions</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => {
+                        const text = `Respected Principal Dr. ${currentProspect.principal_name || ""},\nGreetings from Courage National Talent Search (CNTS 2026), powered by Courage Library.\n\n• Onboarding: 100% FREE (₹0)\n• Voluntary Student Fee: ₹99\n• Link: thecouragelibrary.com/cnts`;
+                        copyText(text);
+                        window.open(`https://web.whatsapp.com`, "_blank");
+                      }}
+                      className="flex items-center justify-center gap-1.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-semibold text-[11px] rounded-xl cursor-pointer transition-all active:scale-95"
+                    >
+                      <Send size={12} /> WhatsApp Kit
+                    </button>
 
-              {/* Embedded Quick Execution Actions */}
-              <div className="space-y-1.5 pt-1">
-                <span className="text-[10px] font-extrabold text-slate-500 uppercase tracking-wide block">1-Click Quick Actions</span>
-                <div className="flex items-center gap-1.5 flex-wrap">
+                    <button
+                      onClick={() => setPresetFollowupDate(24)}
+                      className="flex items-center justify-center gap-1.5 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-semibold text-[11px] rounded-xl cursor-pointer transition-all active:scale-95"
+                    >
+                      <Calendar size={12} /> Callback Tomorrow
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setOutreachStatus("ONBOARDED");
+                        handleSaveCallLog(true);
+                      }}
+                      className="flex items-center justify-center gap-1.5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-[11px] rounded-xl cursor-pointer shadow-sm transition-all active:scale-95"
+                    >
+                      <CheckCircle2 size={12} /> Mark Onboarded
+                    </button>
+
+                    <button
+                      onClick={() => {
+                        setOutreachStatus("NOT_INTERESTED");
+                        handleSaveCallLog(true);
+                      }}
+                      className="flex items-center justify-center gap-1.5 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-semibold text-[11px] rounded-xl cursor-pointer transition-all active:scale-95"
+                    >
+                      <XCircle size={12} /> Not Interested
+                    </button>
+                  </div>
+                </div>
+
+                {/* Save Buttons */}
+                <div className="flex items-center gap-2 pt-1">
                   <button
-                    onClick={() => {
-                      const text = `Respected Principal Dr. ${currentProspect.principal_name || ""},\nGreetings from Courage National Talent Search (CNTS 2026), powered by Courage Library.\n\n• Onboarding: 100% FREE (₹0)\n• Voluntary Student Fee: ₹99\n• Link: thecouragelibrary.com/cnts`;
-                      copyText(text);
-                      window.open(`https://web.whatsapp.com`, "_blank");
-                    }}
-                    className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 font-extrabold text-[11px] rounded-xl flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                    onClick={() => handleSaveCallLog(true)}
+                    disabled={savingCall}
+                    className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-xl flex items-center justify-center gap-2 cursor-pointer shadow-sm transition-all active:scale-98 disabled:opacity-50"
                   >
-                    <Send size={12} /> WhatsApp Kit
+                    {savingCall ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
+                    Save & Next School <ArrowRight size={13} />
                   </button>
 
                   <button
-                    onClick={() => setPresetFollowupDate(24)}
-                    className="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-extrabold text-[11px] rounded-xl flex items-center gap-1 cursor-pointer transition-all active:scale-95"
+                    onClick={() => handleSaveCallLog(false)}
+                    disabled={savingCall}
+                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-semibold rounded-xl cursor-pointer transition-colors border border-slate-200"
                   >
-                    <Calendar size={12} /> Callback Tomorrow
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setOutreachStatus("ONBOARDED");
-                      handleSaveCallLog(true);
-                    }}
-                    className="px-2.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-[11px] rounded-xl flex items-center gap-1 cursor-pointer shadow-2xs transition-all active:scale-95"
-                  >
-                    <CheckCircle2 size={12} /> Onboard
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      setOutreachStatus("NOT_INTERESTED");
-                      handleSaveCallLog(true);
-                    }}
-                    className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-extrabold text-[11px] rounded-xl flex items-center gap-1 cursor-pointer transition-all active:scale-95"
-                  >
-                    <XCircle size={12} /> Not Interested
+                    Save Only
                   </button>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2 pt-1">
-                <button
-                  onClick={() => handleSaveCallLog(true)}
-                  disabled={savingCall}
-                  className="flex-1 py-3 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold rounded-2xl flex items-center justify-center gap-2 cursor-pointer shadow-md transition-all active:scale-98 disabled:opacity-50"
-                >
-                  {savingCall ? <Loader2 size={14} className="animate-spin" /> : <CheckCircle2 size={14} />}
-                  Save & Next School <ArrowRight size={14} />
-                </button>
-
-                <button
-                  onClick={() => handleSaveCallLog(false)}
-                  disabled={savingCall}
-                  className="px-4 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-2xl cursor-pointer transition-colors"
-                >
-                  Save Only
-                </button>
               </div>
             </div>
           )}
@@ -982,127 +1137,111 @@ export function TeleCallerPortal() {
            ───────────────────────────────────────────────────────────────────────────── */}
         <div className={isLeftPanelCollapsed ? "lg:col-span-12 space-y-4" : "lg:col-span-8 space-y-4"}>
           
-          {/* TOP TABS HEADER (SCRIPT BANK | OBJECTION HEATMAP | DOCUMENTS | AI ASSISTANT) */}
-          <div className="bg-white rounded-3xl p-4 border border-slate-200/80 shadow-xs flex items-center justify-between gap-3 flex-wrap">
-            <div className="flex items-center gap-2 flex-wrap">
+          {/* TOP TABS HEADER */}
+          <div className="bg-white rounded-2xl border border-slate-200/60 shadow-xs">
+            <div className="flex items-center gap-1 px-3 pt-3 overflow-x-auto no-scrollbar">
               {/* Quick Uncollapse Button when side panel is collapsed */}
               {isLeftPanelCollapsed && (
                 <button
                   onClick={() => setIsLeftPanelCollapsed(false)}
-                  className="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-extrabold rounded-2xl flex items-center gap-1.5 transition-all shadow-sm cursor-pointer"
+                  className="px-3 py-2 bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold rounded-xl flex items-center gap-1.5 transition-all shadow-sm cursor-pointer shrink-0 mr-1"
                 >
-                  <PanelLeftOpen size={14} className="text-amber-400" /> Expand Side Panel
+                  <PanelLeftOpen size={13} className="text-amber-400" /> Expand
                 </button>
               )}
 
-              <button
-                onClick={() => setActiveRightTab("scripts")}
-                className={`px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
-                  activeRightTab === "scripts" ? "bg-indigo-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                <BookOpen size={14} /> Live Script Bank
-              </button>
-
-              <button
-                onClick={() => setActiveRightTab("heatmap")}
-                className={`px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
-                  activeRightTab === "heatmap" ? "bg-indigo-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                <BarChart3 size={14} /> Objection Heatmap
-              </button>
-
-              <button
-                onClick={() => setActiveRightTab("documents")}
-                className={`px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
-                  activeRightTab === "documents" ? "bg-indigo-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                <FileText size={14} /> Document Launcher
-              </button>
-
-              <button
-                onClick={() => setActiveRightTab("ai")}
-                className={`px-4 py-2 rounded-2xl text-xs font-extrabold flex items-center gap-2 transition-all cursor-pointer ${
-                  activeRightTab === "ai" ? "bg-indigo-600 text-white shadow-md" : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-                }`}
-              >
-                <Bot size={14} /> AI Sales Assistant
-              </button>
+              {([
+                { id: "scripts", label: "Script Bank", icon: BookOpen },
+                { id: "heatmap", label: "Objection Heatmap", icon: BarChart3 },
+                { id: "documents", label: "Documents", icon: FileText },
+                { id: "ai", label: "AI Assistant", icon: Bot },
+              ] as { id: "scripts" | "heatmap" | "documents" | "ai"; label: string; icon: any }[]).map(tab => (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveRightTab(tab.id)}
+                  className={`flex items-center gap-1.5 px-3.5 py-2.5 text-xs font-semibold whitespace-nowrap border-b-2 transition-all cursor-pointer shrink-0 ${
+                    activeRightTab === tab.id
+                      ? "border-indigo-600 text-indigo-600"
+                      : "border-transparent text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <tab.icon size={13} />
+                  {tab.label}
+                </button>
+              ))}
             </div>
 
             {/* In-Header Quick School Navigation when Left Panel is Collapsed */}
             {isLeftPanelCollapsed && currentProspect && (
-              <div className="flex items-center gap-2 bg-slate-900 text-white px-3 py-1.5 rounded-2xl text-xs font-extrabold">
+              <div className="px-3 pb-2 flex items-center gap-2 border-t border-slate-100 pt-2">
                 <button
                   onClick={() => setCurrentIndex(prev => Math.max(0, prev - 1))}
                   disabled={currentIndex === 0}
-                  className="hover:text-amber-400 disabled:opacity-30"
+                  className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-30 flex items-center justify-center cursor-pointer"
                 >
-                  <ChevronLeft size={14} />
+                  <ChevronLeft size={13} className="text-slate-600" />
                 </button>
-                <span className="text-amber-300 truncate max-w-[200px]">{currentProspect.name}</span>
+                <span className="text-xs font-semibold text-slate-700 truncate flex-1">{currentProspect.name}</span>
                 <button
                   onClick={() => setCurrentIndex(prev => Math.min(filteredProspects.length - 1, prev + 1))}
                   disabled={currentIndex >= filteredProspects.length - 1}
-                  className="hover:text-amber-400 disabled:opacity-30"
+                  className="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 disabled:opacity-30 flex items-center justify-center cursor-pointer"
                 >
-                  <ChevronRight size={14} />
+                  <ChevronRight size={13} className="text-slate-600" />
                 </button>
               </div>
             )}
           </div>
 
-          {/* TAB 1: LIVE SCRIPT BANK (SPACIOUS 8 OR 12-COL LAYOUT!) */}
+          {/* TAB 1: LIVE SCRIPT BANK */}
           {activeRightTab === "scripts" && (
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-5">
-              
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-xs p-5 space-y-4">
+
               {/* Smart Context Pitch Guidance Card */}
-              <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-4 border border-indigo-800/50 space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-bold text-indigo-300 uppercase tracking-widest flex items-center gap-1.5">
-                    <Zap size={12} className="text-amber-400" /> Suggested Starting Pitch
+              <div className="bg-gradient-to-r from-slate-900 to-indigo-950 text-white rounded-xl p-4 border border-indigo-800/40 flex items-start justify-between gap-4">
+                <div className="space-y-1">
+                  <span className="text-[9px] font-bold text-indigo-400 uppercase tracking-widest flex items-center gap-1">
+                    <Zap size={10} className="text-amber-400" /> Suggested Starting Pitch
                   </span>
-                  <span className="text-[10px] text-slate-400 font-medium">
-                    {currentProspect?.outreach_status === "NEW" ? "First Touch" : currentProspect?.outreach_status === "FOLLOW_UP" ? "Follow-Up Call" : "Standard Outreach"}
-                  </span>
+                  <h4 className="font-semibold text-sm text-white leading-snug">20-Second Permission Hook Opener</h4>
+                  <p className="text-[11px] text-slate-400 leading-relaxed">
+                    {currentProspect ? `Calling ${currentProspect.name}. Ask permission for 2 minutes before presenting the 4 cognitive domains.` : "Select a school from the queue to begin."}
+                  </p>
                 </div>
-                <h4 className="font-semibold text-sm text-amber-200 leading-snug">20-Second Permission Hook Opener</h4>
-                <p className="text-[11px] text-slate-400 leading-relaxed">
-                  {currentProspect ? `Calling ${currentProspect.name}. Ask permission for 2 minutes before presenting the 4 cognitive domains.` : "Select a school from the queue to begin."}
-                </p>
+                <span className="text-[10px] text-slate-500 font-medium shrink-0 pt-0.5">
+                  {currentProspect?.outreach_status === "NEW" ? "First Touch" : currentProspect?.outreach_status === "FOLLOW_UP" ? "Follow-Up" : "Standard"}
+                </span>
               </div>
 
               {/* Search & Category Pills */}
-              <div className="space-y-3">
+              <div className="space-y-2.5">
                 <div className="relative">
-                  <Search className="absolute left-3.5 top-3 text-slate-400" size={14} />
+                  <Search className="absolute left-3.5 top-2.5 text-slate-400" size={13} />
                   <input
                     value={scriptSearch}
                     onChange={e => setScriptSearch(e.target.value)}
-                    placeholder="Search pitch scripts, objections, Q&A by keyword..."
-                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                    placeholder="Search scripts, objections, Q&A..."
+                    className="w-full pl-9 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-300"
                   />
                 </div>
 
-                <div className="flex items-center gap-2 overflow-x-auto pb-1 text-xs no-scrollbar scrollbar-none">
+                <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
                   {[
-                    { key: "all", label: "All Scenarios" },
-                    { key: "opening", label: "Permission Openings" },
-                    { key: "gatekeeper", label: "Receptionist & Gatekeeper" },
-                    { key: "academic", label: "Academic & Syllabus" },
-                    { key: "trust", label: "Trust & Accreditation" },
-                    { key: "competition", label: "SOF & Competition" },
-                    { key: "followup_cadence", label: "Multi-Touch Cadence" },
-                    { key: "emergency", label: "Emergency & Recovery" },
+                    { key: "all", label: "All" },
+                    { key: "opening", label: "Opening" },
+                    { key: "gatekeeper", label: "Gatekeeper" },
+                    { key: "academic", label: "Academic" },
+                    { key: "trust", label: "Trust" },
+                    { key: "competition", label: "SOF" },
+                    { key: "followup_cadence", label: "Cadence" },
+                    { key: "emergency", label: "Recovery" },
                   ].map(cat => (
                     <button
                       key={cat.key}
                       onClick={() => setActiveCategory(cat.key)}
-                      className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer text-[11px] ${
+                      className={`px-3 py-1.5 rounded-lg font-semibold whitespace-nowrap transition-all duration-150 cursor-pointer text-[11px] shrink-0 ${
                         activeCategory === cat.key
-                          ? "bg-slate-900 text-white shadow-sm"
+                          ? "bg-indigo-600 text-white"
                           : "bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800"
                       }`}
                     >
@@ -1113,10 +1252,10 @@ export function TeleCallerPortal() {
               </div>
 
               {/* SCRIPT LIST CARDS */}
-              <div className="space-y-5 pt-2">
+              <div className="space-y-3 pt-1">
                 {filteredScripts.length === 0 ? (
-                  <div className="py-16 text-center text-xs text-slate-500 font-medium">
-                    No scripts match your search query.
+                  <div className="py-16 text-center text-xs text-slate-400 font-medium">
+                    No scripts match your search.
                   </div>
                 ) : (
                   filteredScripts.map((item: CallingScenario) => {
@@ -1125,62 +1264,58 @@ export function TeleCallerPortal() {
                     const scriptText = genderizeScript(item.script[language] || item.script["en"]);
                     const psychologyText = item.psychologyReason?.[language] || item.psychologyReason?.["en"];
 
+                    const signalConfig = {
+                      positive: { label: "High Signal", cls: "bg-emerald-50 text-emerald-700 border-emerald-200", dot: "bg-emerald-500" },
+                      negative: { label: "Objection", cls: "bg-rose-50 text-rose-700 border-rose-200", dot: "bg-rose-500" },
+                      neutral: { label: "General", cls: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-500" },
+                    }[item.buyingSignal as "positive" | "negative" | "neutral"] ?? { label: "General", cls: "bg-amber-50 text-amber-700 border-amber-200", dot: "bg-amber-500" };
+
                     return (
-                      <div key={item.id} className="p-5 rounded-2xl border border-slate-200/80 bg-slate-50/50 space-y-4 hover:bg-white transition-colors duration-150">
-                        <div className="flex items-center justify-between border-b border-slate-200/80 pb-3">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider flex items-center gap-1.5 ${
-                              item.buyingSignal === "positive" ? "bg-emerald-50 text-emerald-700 border border-emerald-200" :
-                              item.buyingSignal === "negative" ? "bg-rose-50 text-rose-700 border border-rose-200" :
-                              "bg-amber-50 text-amber-700 border border-amber-200"
-                            }`}>
-                              <span className={`w-1.5 h-1.5 rounded-full ${
-                                item.buyingSignal === "positive" ? "bg-emerald-500" :
-                                item.buyingSignal === "negative" ? "bg-rose-500" : "bg-amber-500"
-                              }`} />
-                              {item.buyingSignal === "positive" ? "High Buying Signal" : item.buyingSignal === "negative" ? "Objection Handling" : "General Query"}
+                      <div key={item.id} className="rounded-xl border border-slate-200/80 bg-white hover:border-indigo-200 transition-colors duration-150 overflow-hidden">
+                        {/* Card Top Bar */}
+                        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-100 bg-slate-50/60">
+                          <div className="flex items-center gap-2">
+                            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold flex items-center gap-1 border ${signalConfig.cls}`}>
+                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${signalConfig.dot}`} />
+                              {signalConfig.label}
                             </span>
-
-                            <span className="px-2.5 py-1 bg-white text-slate-700 text-xs font-bold rounded-lg border border-slate-200">
-                              {item.expectedRole || "Principal"}
-                            </span>
+                            <span className="text-[10px] font-medium text-slate-400">{item.expectedRole || "Principal"}</span>
                           </div>
-
                           <button
                             onClick={() => copyText(scriptText, item.id)}
-                            className={`px-3 py-1.5 text-xs font-semibold rounded-lg flex items-center gap-1.5 cursor-pointer transition-all duration-200 ${
+                            className={`px-2.5 py-1 text-xs font-semibold rounded-lg flex items-center gap-1 cursor-pointer transition-all duration-200 ${
                               copiedId === item.id
-                                ? "bg-emerald-600 text-white border border-emerald-500"
-                                : "bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300"
+                                ? "bg-emerald-600 text-white"
+                                : "bg-white text-slate-600 border border-slate-200 hover:border-indigo-300 hover:text-indigo-600"
                             }`}
                           >
-                            {copiedId === item.id ? <Check size={13} className="text-white" /> : <Copy size={13} />}
+                            {copiedId === item.id ? <Check size={12} className="text-white" /> : <Copy size={12} />}
                             {copiedId === item.id ? "Copied" : "Copy"}
                           </button>
                         </div>
 
-                        <div>
-                          <h4 className="font-extrabold text-slate-900 text-sm flex items-center gap-2">
-                            <Sparkles size={15} className="text-indigo-600 shrink-0" />
-                            {titleText}
-                          </h4>
-                          {subtitleText && <p className="text-xs text-slate-500 mt-0.5 font-medium">{subtitleText}</p>}
-                        </div>
-
-                        {/* Sales Psychology Insight Box */}
-                        {psychologyText && (
-                          <div className="p-3 bg-amber-50 rounded-2xl border border-amber-200/80 text-xs text-amber-900 flex items-start gap-2.5">
-                            <Brain size={16} className="text-amber-600 shrink-0 mt-0.5" />
-                            <div>
-                              <span className="font-extrabold block text-[10px] uppercase text-amber-800 tracking-wide">Why they ask this:</span>
-                              <p className="font-medium text-slate-700 mt-0.5 leading-relaxed">{psychologyText}</p>
-                            </div>
+                        {/* Card Body */}
+                        <div className="px-4 py-3 space-y-3">
+                          <div>
+                            <h4 className="font-bold text-slate-900 text-sm leading-snug">{titleText}</h4>
+                            {subtitleText && <p className="text-[11px] text-slate-400 mt-0.5">{subtitleText}</p>}
                           </div>
-                        )}
 
-                        {/* Script Text Box */}
-                        <div className="p-4 bg-white rounded-2xl border border-slate-200 text-xs sm:text-sm font-sans font-medium text-slate-900 leading-relaxed whitespace-pre-line select-all shadow-inner">
-                          {scriptText}
+                          {/* Why they ask this */}
+                          {psychologyText && (
+                            <div className="flex items-start gap-2 p-2.5 bg-amber-50/80 rounded-lg border border-amber-100 text-xs">
+                              <Brain size={13} className="text-amber-500 shrink-0 mt-0.5" />
+                              <div>
+                                <span className="font-bold text-amber-800 text-[9px] uppercase tracking-wide block">Why they ask this</span>
+                                <p className="text-slate-600 mt-0.5 leading-relaxed">{psychologyText}</p>
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Script Text */}
+                          <div className="pl-3 border-l-2 border-indigo-200 text-xs text-slate-700 leading-relaxed whitespace-pre-line font-medium select-all">
+                            {scriptText}
+                          </div>
                         </div>
                       </div>
                     );
@@ -1192,7 +1327,7 @@ export function TeleCallerPortal() {
 
           {/* TAB 2: REAL-TIME OBJECTION HEATMAP */}
           {activeRightTab === "heatmap" && (
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-xs p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2">
                   <BarChart3 size={16} className="text-indigo-600" /> Objection Heatmap
@@ -1225,9 +1360,9 @@ export function TeleCallerPortal() {
             </div>
           )}
 
-          {/* TAB 3: OFFICIAL DOCUMENT LAUNCHER (WITH IN-PAGE PDF VIEWER) */}
+          {/* TAB 3: OFFICIAL DOCUMENT LAUNCHER */}
           {activeRightTab === "documents" && (
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-xs p-5 space-y-4">
               <div className="flex items-center justify-between border-b border-slate-100 pb-3">
                 <h3 className="font-black text-sm text-slate-900 flex items-center gap-2">
                   <FileText size={18} className="text-indigo-600" /> Official CNTS Document Drawer
@@ -1302,8 +1437,8 @@ export function TeleCallerPortal() {
 
           {/* TAB 4: AI SALES ASSISTANT */}
           {activeRightTab === "ai" && (
-            <div className="bg-white rounded-3xl p-6 border border-slate-200/80 shadow-sm space-y-4">
-              <h3 className="font-black text-sm text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-xs p-5 space-y-4">
+              <h3 className="font-bold text-sm text-slate-900 flex items-center gap-2 border-b border-slate-100 pb-3">
                 <Bot size={18} className="text-indigo-600" /> AI Sales Assistant Co-Pilot
               </h3>
 

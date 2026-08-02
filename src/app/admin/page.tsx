@@ -50,20 +50,14 @@ interface MetricCardProps {
 
 function MetricCard({ title, value, desc, icon: Icon, color }: MetricCardProps) {
   return (
-    <div className="bg-white rounded-2xl border border-slate-150/60 p-6 shadow-sm shadow-slate-100/50 flex items-start justify-between hover:translate-y-[-2px] hover:shadow-md hover:shadow-slate-100 transition-all duration-300">
-      <div className="space-y-2">
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
-          {title}
-        </span>
-        <h3 className="font-display font-bold text-2xl text-slate-800 leading-none">
-          {value}
-        </h3>
-        <p className="text-xs text-slate-400 font-medium">
-          {desc}
-        </p>
+    <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-xs hover:shadow-md transition-all duration-200 flex items-center gap-4 group">
+      <div className={`p-3 rounded-xl ${color} shrink-0 transition-transform duration-200 group-hover:scale-110`}>
+        <Icon size={20} />
       </div>
-      <div className={`p-2.5 rounded-xl ${color} shadow-sm`}>
-        <Icon size={18} />
+      <div className="min-w-0">
+        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{title}</p>
+        <h3 className="font-bold text-2xl text-slate-900 leading-tight tracking-tight">{value}</h3>
+        <p className="text-[11px] text-slate-400 font-medium truncate">{desc}</p>
       </div>
     </div>
   );
@@ -1115,29 +1109,29 @@ export default function AdminOverviewPage() {
       )}
 
       {/* Main Content Dashboard */}
-      <main className="max-w-7xl mx-auto px-6 py-10 md:px-12 space-y-8 animate-slide-up">
+      <main className="max-w-7xl mx-auto px-4 py-6 md:px-8 space-y-6 animate-slide-up">
         
         {/* Title bar with Sync */}
         {["overview", "analytics", "revenue_analytics", "geo_analytics", "academy_analytics", "exam_analytics", "engagement_analytics", "forecasts"].includes(activeTab) && (
-          <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+        <div className="flex items-center justify-between pb-4 border-b border-slate-100">
             <div>
-              <h1 className="text-xl font-bold text-slate-800">Admin Overview</h1>
-              <p className="text-xs text-slate-500 mt-0.5">Real-time statistics & analytics boards</p>
+              <h1 className="text-lg font-bold text-slate-900">Admin Overview</h1>
+              <p className="text-xs text-slate-400 mt-0.5">Real-time statistics &amp; analytics</p>
             </div>
             <div className="flex items-center gap-2">
               <button
                 onClick={() => loadData(true)}
                 disabled={refreshing}
-                className={`p-2.5 text-slate-500 hover:text-slate-800 bg-white hover:bg-slate-50 rounded-xl transition-all border border-slate-200/50 flex items-center justify-center gap-1.5 text-xs font-semibold cursor-pointer ${
+                className={`px-3 py-2 text-slate-500 hover:text-slate-800 bg-white hover:bg-slate-50 rounded-xl transition-all border border-slate-200 flex items-center gap-1.5 text-xs font-semibold cursor-pointer ${
                   refreshing ? "opacity-60 cursor-not-allowed" : ""
                 }`}
               >
-                <RefreshCw size={14} className={refreshing ? "animate-spin" : ""} />
-                Sync Data
+                <RefreshCw size={13} className={refreshing ? "animate-spin" : ""} />
+                Sync
               </button>
               <button
                 onClick={() => router.push("/admin/registrations")}
-                className="px-4 py-2.5 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md shadow-blue-800/10 hover:shadow-blue-700/20 flex items-center justify-center gap-1.5 cursor-pointer"
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer"
               >
                 <FileText size={13} />
                 Registrations Table
@@ -1167,34 +1161,34 @@ export default function AdminOverviewPage() {
         {activeTab === "overview" && (
           <>
             {/* Analytics KPIs grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
               <MetricCard
                 title="Total Registrations"
                 value={totalCount}
                 desc="Lifetime candidate signups"
                 icon={Users}
-                color="bg-blue-50 text-blue-700"
+                color="bg-indigo-50 text-indigo-600"
               />
               <MetricCard
                 title="Today's Signups"
                 value={todayCount}
-                desc="Registrations on current date"
+                desc="Registrations today"
                 icon={Calendar}
-                color="bg-emerald-50 text-emerald-700"
+                color="bg-emerald-50 text-emerald-600"
               />
               <MetricCard
                 title="Payment Coverage"
                 value={`${coveragePct.toFixed(1)}%`}
-                desc={`${paidCount} of ${totalCount} entries completed`}
+                desc={`${paidCount} of ${totalCount} entries`}
                 icon={CheckCircle}
-                color="bg-amber-50 text-amber-700"
+                color="bg-amber-50 text-amber-600"
               />
               <MetricCard
                 title="States Reached"
                 value={statesReachedCount}
                 desc="Represented across India"
                 icon={MapPin}
-                color="bg-purple-50 text-purple-700"
+                color="bg-purple-50 text-purple-600"
               />
             </div>
 
@@ -1202,30 +1196,25 @@ export default function AdminOverviewPage() {
             <div className="grid lg:grid-cols-3 gap-6">
               
               {/* Class Breakdown bar chart */}
-              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-6">
+              <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-xs space-y-4">
                 <div>
-                  <h3 className="font-display font-bold text-slate-800 text-base">
-                    Registrations by Class
-                  </h3>
-                  <p className="text-xs text-slate-500">Distribution across Class 5 to 8</p>
+                  <h3 className="font-bold text-slate-900 text-sm">Registrations by Class</h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Distribution across Class 5 to 8</p>
                 </div>
-                
-                <div className="space-y-4">
-                  {["5", "6", "7", "8"].map((cls) => {
+                <div className="space-y-3">
+                  {["5", "6", "7", "8"].map((cls, idx) => {
                     const count = classCounts[cls] || 0;
                     const pct = totalCount > 0 ? (count / totalCount) * 100 : 0;
-                    
+                    const colors = ["bg-indigo-500", "bg-violet-500", "bg-purple-500", "bg-fuchsia-500"];
                     return (
-                      <div key={cls} className="space-y-1.5">
-                        <div className="flex justify-between text-xs font-medium text-slate-600">
-                          <span>Class {cls}</span>
-                          <span className="font-bold text-slate-800">
-                            {count} ({Math.round(pct)}%)
-                          </span>
+                      <div key={cls} className="space-y-1">
+                        <div className="flex justify-between text-xs">
+                          <span className="font-semibold text-slate-600">Class {cls}</span>
+                          <span className="font-bold text-slate-800">{count} <span className="text-slate-400 font-normal">({Math.round(pct)}%)</span></span>
                         </div>
-                        <div className="h-2 bg-slate-50 rounded-full overflow-hidden border border-slate-100/50">
-                          <div 
-                            className="h-full bg-blue-800 rounded-full transition-all duration-500"
+                        <div className="h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                          <div
+                            className={`h-full ${colors[idx]} rounded-full transition-all duration-700`}
                             style={{ width: `${pct}%` }}
                           />
                         </div>
@@ -1236,103 +1225,97 @@ export default function AdminOverviewPage() {
               </div>
 
               {/* State Rankings */}
-              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm space-y-6">
+              <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-xs space-y-4">
                 <div>
-                  <h3 className="font-display font-bold text-slate-800 text-base">
-                    Registrations by State
-                  </h3>
-                  <p className="text-xs text-slate-500">Top 5 active locations</p>
+                  <h3 className="font-bold text-slate-900 text-sm">Registrations by State</h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Top 5 active locations</p>
                 </div>
-
-                <div className="space-y-3">
+                <div className="space-y-1">
                   {sortedStates.length > 0 ? (
                     sortedStates.map(([state, count], idx) => {
                       const pct = totalCount > 0 ? (count / totalCount) * 100 : 0;
+                      const medals = ["🥇", "🥈", "🥉", "4", "5"];
                       return (
-                        <div key={state} className="flex items-center justify-between text-xs py-2 border-b border-slate-50 last:border-none">
-                          <div className="flex items-center gap-2">
-                            <span className="w-5 h-5 bg-slate-50 text-slate-400 font-bold border border-slate-100 rounded-md flex items-center justify-center text-[10px]">
-                              {idx + 1}
-                            </span>
-                            <span className="font-semibold text-slate-700 truncate max-w-[150px]">{state}</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="h-1.5 w-16 bg-slate-50 rounded-full overflow-hidden">
-                              <div className="h-full bg-purple-600 rounded-full" style={{ width: `${pct}%` }} />
+                        <div key={state} className="flex items-center gap-3 py-2 border-b border-slate-100 last:border-none">
+                          <span className="text-sm w-5 text-center shrink-0">{medals[idx]}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex justify-between items-center text-xs mb-1">
+                              <span className="font-semibold text-slate-700 truncate">{state}</span>
+                              <span className="font-bold text-slate-900 shrink-0 ml-2">{count}</span>
                             </div>
-                            <span className="font-bold text-slate-800 w-8 text-right">{count}</span>
+                            <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                              <div className="h-full bg-purple-500 rounded-full" style={{ width: `${pct}%` }} />
+                            </div>
                           </div>
                         </div>
                       );
                     })
                   ) : (
-                    <div className="text-center py-6 text-xs text-slate-400 font-medium">No state data recorded</div>
+                    <div className="text-center py-8 text-xs text-slate-400 font-medium">No state data recorded yet</div>
                   )}
                 </div>
               </div>
 
               {/* Sources and Language distribution */}
-              <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm flex flex-col justify-between gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <h3 className="font-display font-bold text-slate-800 text-base">
-                      Registration Channels
-                    </h3>
-                    <p className="text-xs text-slate-500">UTM campaigns and referrers</p>
-                  </div>
+              <div className="bg-white rounded-2xl border border-slate-200/60 p-5 shadow-xs flex flex-col gap-5">
+                <div>
+                  <h3 className="font-bold text-slate-900 text-sm">Registration Channels</h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">UTM campaigns and referrers</p>
+                </div>
 
-                  <div className="space-y-2.5">
-                    {sortedSources.map(([source, count]) => {
-                      const pct = totalCount > 0 ? (count / totalCount) * 100 : 0;
-                      return (
-                        <div key={source} className="flex items-center justify-between text-xs">
+                <div className="flex-1 space-y-2.5">
+                  {sortedSources.length > 0 ? sortedSources.map(([source, count], idx) => {
+                    const pct = totalCount > 0 ? (count / totalCount) * 100 : 0;
+                    const dotColors = ["bg-amber-500", "bg-indigo-500", "bg-emerald-500", "bg-rose-500", "bg-purple-500"];
+                    return (
+                      <div key={source} className="space-y-1">
+                        <div className="flex items-center justify-between text-xs">
                           <span className="font-semibold text-slate-600 flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                            <div className={`w-2 h-2 rounded-full shrink-0 ${dotColors[idx % dotColors.length]}`} />
                             {source}
                           </span>
-                          <span className="font-bold text-slate-800">{count} ({Math.round(pct)}%)</span>
+                          <span className="font-bold text-slate-800">{count} <span className="text-slate-400 font-normal">({Math.round(pct)}%)</span></span>
                         </div>
-                      );
-                    })}
-                  </div>
+                        <div className="h-1 bg-slate-100 rounded-full overflow-hidden">
+                          <div className={`h-full ${dotColors[idx % dotColors.length]} rounded-full transition-all duration-700`} style={{ width: `${pct}%` }} />
+                        </div>
+                      </div>
+                    );
+                  }) : (
+                    <div className="text-xs text-slate-400 text-center py-4">No channel data yet</div>
+                  )}
                 </div>
 
-                <div className="border-t border-slate-100 pt-4 flex items-center justify-between">
-                  <div>
-                    <h4 className="text-xs font-semibold text-slate-700">Language Splits</h4>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Medium of examination chosen</p>
-                  </div>
-                  <div className="flex items-center gap-3 text-xs">
-                    <div className="text-center bg-blue-50/50 border border-blue-150 px-3 py-1.5 rounded-xl">
-                      <div className="text-[10px] font-semibold text-slate-400">EN</div>
-                      <div className="font-bold text-blue-900">{langCounts["English"] || 0}</div>
+                <div className="border-t border-slate-100 pt-4">
+                  <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-3">Language Medium</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs">
+                    <div className="bg-indigo-50 border border-indigo-100 rounded-xl p-3 text-center">
+                      <div className="text-[10px] font-bold text-indigo-400 uppercase tracking-wide">English</div>
+                      <div className="font-bold text-indigo-900 text-lg">{langCounts["English"] || 0}</div>
                     </div>
-                    <div className="text-center bg-emerald-50/30 border border-emerald-150 px-3 py-1.5 rounded-xl">
-                      <div className="text-[10px] font-semibold text-slate-400">HI</div>
-                      <div className="font-bold text-emerald-950">{langCounts["Hindi"] || 0}</div>
+                    <div className="bg-emerald-50 border border-emerald-100 rounded-xl p-3 text-center">
+                      <div className="text-[10px] font-bold text-emerald-500 uppercase tracking-wide">Hindi</div>
+                      <div className="font-bold text-emerald-900 text-lg">{langCounts["Hindi"] || 0}</div>
                     </div>
                   </div>
                 </div>
-
               </div>
 
             </div>
 
             {/* Recent registrations listing */}
-            <div className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden">
-              <div className="p-6 border-b border-slate-100 flex items-center justify-between">
+            <div className="bg-white rounded-2xl border border-slate-200/60 shadow-xs overflow-hidden">
+              <div className="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
                 <div>
-                  <h3 className="font-display font-bold text-slate-800 text-base">
-                    Recent registrations
-                  </h3>
-                  <p className="text-xs text-slate-500">The last 5 candidates recorded</p>
+                  <h3 className="font-bold text-slate-900 text-sm">Recent Registrations</h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">Last 5 candidates recorded</p>
                 </div>
                 <button
                   onClick={() => router.push("/admin/registrations")}
-                  className="text-xs font-bold text-blue-800 hover:text-blue-700 flex items-center gap-1 group cursor-pointer"
+                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 group cursor-pointer"
                 >
-                  View Full Table
-                  <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform" />
+                  View All
+                  <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform" />
                 </button>
               </div>
 

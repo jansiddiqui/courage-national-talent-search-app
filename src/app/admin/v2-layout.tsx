@@ -202,7 +202,7 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
       </aside>
 
       {/* Main Content Area */}
-      <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-[1700px] mx-auto w-full overflow-hidden">
+      <main className="flex-1 p-3 sm:p-4 md:p-4 max-w-[1700px] mx-auto w-full overflow-hidden">
         {children}
       </main>
     </div>

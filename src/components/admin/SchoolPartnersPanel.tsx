@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { School, Search, Plus, Copy, Check, Users, CheckCircle, RefreshCw } from "lucide-react";
+import { School, Search, Plus, Copy, Check, Users, CheckCircle, Phone, Mail, FileDown, Eye, EyeOff } from "lucide-react";
 
 export default function SchoolPartnersPanel() {
   const router = useRouter();
@@ -254,73 +254,105 @@ export default function SchoolPartnersPanel() {
         loading ? (
           <div className="py-20 text-center">Loading schools...</div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-in-quick">
-            {filteredSchools.map(school => (
-              <div key={school.id} className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm hover:shadow-md transition-all">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="font-bold text-slate-800 leading-tight">{school.name}</h3>
-                    <p className="text-xs text-slate-500 mt-1">{school.city} • {school.board}</p>
-                  </div>
-                  <span className={`px-2 py-1 text-[10px] font-bold rounded-lg uppercase tracking-wider ${school.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-700' : 'bg-red-100 text-red-700'}`}>
-                    {school.status}
-                  </span>
-                </div>
-
-                <div className="flex gap-2 mb-4 bg-slate-50 p-3 rounded-xl border border-slate-100 relative group cursor-pointer" onClick={() => copyToClipboard(school.school_code)}>
-                  <div className="flex-1">
-                    <p className="text-[10px] font-semibold text-slate-400 uppercase">School Code</p>
-                    <p className="font-mono font-bold text-slate-700">{school.school_code}</p>
-                  </div>
-                  <div className="flex-1 border-l border-slate-200 pl-3">
-                    <p className="text-[10px] font-semibold text-slate-400 uppercase">Login PIN</p>
-                    <p className="font-mono font-bold text-slate-700">{school.pin}</p>
-                  </div>
-                  <div className="absolute right-3 top-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    {copiedCode === school.school_code ? <Check size={16} className="text-emerald-500" /> : <Copy size={16} className="text-slate-400" />}
-                  </div>
-                </div>
-
-                <div className="space-y-3 mb-4">
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-500">Coordinator</span>
-                    <span className="font-medium text-slate-700">{school.coordinator_name || "N/A"}</span>
-                  </div>
-                  <div className="flex justify-between items-center text-sm">
-                    <span className="text-slate-500">Phone</span>
-                    <span className="font-medium text-slate-700">{school.coordinator_mobile || "N/A"}</span>
-                  </div>
-                  <div className="pt-2">
-                    <button 
-                      onClick={() => printCredentials(school)}
-                      className="w-full text-center text-xs font-bold text-blue-600 hover:text-blue-800 bg-blue-50 hover:bg-blue-100 py-2 rounded-lg transition-colors border border-blue-100"
-                    >
-                      Generate Credentials PDF
-                    </button>
-                  </div>
-                </div>
-
-                <div className="pt-4 border-t border-slate-100">
-                  <div className="flex justify-between items-end mb-2">
-                    <span className="text-xs font-semibold text-slate-500 uppercase flex items-center gap-1">
-                      <Users size={12} /> Quota Usage
-                    </span>
-                    <span className="text-sm font-bold text-slate-700">
-                      {school.used_quota} <span className="text-slate-400 font-normal">/ {school.quota}</span>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 animate-fade-in-quick">
+            {filteredSchools.map(school => {
+              const usedPct = Math.min(100, (school.used_quota / (school.quota || 1)) * 100);
+              const isQuotaFull = school.used_quota >= school.quota;
+              return (
+              <div key={school.id} className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden shadow-xs hover:shadow-md hover:border-slate-300 transition-all duration-200 flex flex-col">
+                
+                {/* Card Header */}
+                <div className="p-4 border-b border-slate-100">
+                  <div className="flex justify-between items-start gap-2">
+                    <div className="min-w-0">
+                      <h3 className="font-bold text-slate-900 leading-snug text-sm truncate">{school.name}</h3>
+                      <p className="text-[11px] text-slate-400 mt-0.5 font-medium">{school.city} • <span className="text-indigo-600">{school.board}</span></p>
+                    </div>
+                    <span className={`shrink-0 px-2.5 py-0.5 text-[10px] font-bold rounded-full uppercase tracking-wide ${
+                      school.status === 'ACTIVE'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : 'bg-rose-50 text-rose-700 border border-rose-200'
+                    }`}>
+                      {school.status}
                     </span>
                   </div>
-                  <div className="w-full bg-slate-100 rounded-full h-2">
-                    <div 
-                      className={`h-2 rounded-full ${school.used_quota >= school.quota ? 'bg-red-500' : 'bg-blue-500'}`}
-                      style={{ width: `${Math.min(100, (school.used_quota / (school.quota || 1)) * 100)}%` }}
-                    ></div>
+                </div>
+
+                {/* Credentials Block */}
+                <div
+                  className="mx-4 mt-3 grid grid-cols-2 divide-x divide-slate-200 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer group hover:bg-indigo-50/50 hover:border-indigo-200 transition-colors"
+                  onClick={() => copyToClipboard(school.school_code)}
+                  title="Click to copy school code"
+                >
+                  <div className="p-3">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">School Code</p>
+                    <p className="font-mono font-bold text-slate-800 text-sm tracking-wide">{school.school_code}</p>
+                  </div>
+                  <div className="p-3 relative">
+                    <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest mb-1">Login PIN</p>
+                    <p className="font-mono font-bold text-slate-400 text-sm tracking-widest select-none">••••••••</p>
+                    <div className="absolute right-2.5 top-1/2 -translate-y-1/2">
+                      {copiedCode === school.school_code
+                        ? <Check size={13} className="text-emerald-500" />
+                        : <Copy size={13} className="text-slate-300 group-hover:text-indigo-500 transition-colors" />}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Coordinator Info */}
+                <div className="px-4 py-3 space-y-2">
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="w-6 h-6 rounded-full bg-indigo-50 border border-indigo-100 flex items-center justify-center shrink-0">
+                      <Users size={11} className="text-indigo-500" />
+                    </div>
+                    <span className="text-slate-500 shrink-0">Coordinator</span>
+                    <span className="font-semibold text-slate-800 truncate ml-auto text-right">{school.coordinator_name || "—"}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-xs">
+                    <div className="w-6 h-6 rounded-full bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+                      <Phone size={11} className="text-emerald-500" />
+                    </div>
+                    <span className="text-slate-500 shrink-0">Mobile</span>
+                    <span className="font-semibold text-slate-800 ml-auto font-mono">{school.coordinator_mobile || "—"}</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="px-4 pb-3">
+                  <button
+                    onClick={() => printCredentials(school)}
+                    className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-600 py-2 rounded-lg transition-all duration-200 border border-indigo-100 hover:border-indigo-600"
+                  >
+                    <FileDown size={13} /> Generate Credentials PDF
+                  </button>
+                </div>
+
+                {/* Quota Footer */}
+                <div className="px-4 pb-4 pt-1 border-t border-slate-100 mt-auto">
+                  <div className="flex justify-between items-center mb-1.5">
+                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1">
+                      <Users size={10} /> Quota
+                    </span>
+                    <span className="text-xs font-bold text-slate-700">
+                      {school.used_quota} <span className="text-slate-400 font-normal text-[10px]">/ {school.quota} seats</span>
+                    </span>
+                  </div>
+                  <div className="w-full bg-slate-100 rounded-full h-1.5 overflow-hidden">
+                    <div
+                      className={`h-full rounded-full transition-all duration-500 ${
+                        isQuotaFull ? 'bg-rose-500' : usedPct > 70 ? 'bg-amber-500' : 'bg-emerald-500'
+                      }`}
+                      style={{ width: `${usedPct}%` }}
+                    />
                   </div>
                 </div>
               </div>
-            ))}
+              );
+            })}
             {filteredSchools.length === 0 && (
-              <div className="col-span-full py-12 text-center bg-slate-50 border border-dashed border-slate-200 rounded-2xl">
-                <p className="text-slate-500">No schools found.</p>
+              <div className="col-span-full py-16 text-center bg-white border border-dashed border-slate-200 rounded-2xl">
+                <School size={32} className="text-slate-300 mx-auto mb-2" />
+                <p className="text-sm font-medium text-slate-400">No schools found.</p>
               </div>
             )}
           </div>
