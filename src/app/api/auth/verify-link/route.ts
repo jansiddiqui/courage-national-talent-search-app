@@ -93,7 +93,9 @@ export async function GET(request: Request) {
 
     // Redirect to dashboard or admin dashboard
     let redirectPath = "/dashboard";
-    if (isAdmin) {
+    if (verified.role === "TELE_CALLER") {
+      redirectPath = "/admin/prospects/caller";
+    } else if (isAdmin) {
       if (isSetupRoute) redirectPath = "/admin/setup-2fa";
       else if (isVerifyRoute) redirectPath = "/admin/verify-2fa";
       else redirectPath = "/admin";

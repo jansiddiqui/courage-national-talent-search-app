@@ -18,6 +18,7 @@ interface Permission {
 
 interface AdminUser {
   id: string;
+  name?: string | null;
   email: string;
   role: string;
 }
@@ -35,6 +36,14 @@ export default function RbacPage() {
   const [newRoleName, setNewRoleName] = useState("");
   const [newRoleDesc, setNewRoleDesc] = useState("");
   const [creatingRole, setCreatingRole] = useState(false);
+
+  // Create user form
+  const [showCreateUser, setShowCreateUser] = useState(false);
+  const [newUserName, setNewUserName] = useState("");
+  const [newUserEmail, setNewUserEmail] = useState("");
+  const [newUserPhone, setNewUserPhone] = useState("");
+  const [newUserRole, setNewUserRole] = useState("TELE_CALLER");
+  const [creatingUser, setCreatingUser] = useState(false);
 
   // Assign role form
   const [assignAdminId, setAssignAdminId] = useState("");
@@ -91,6 +100,40 @@ export default function RbacPage() {
       showToast(e.message || "Network error.");
     } finally {
       setCreatingRole(false);
+    }
+  };
+
+  const handleCreateUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newUserEmail.trim() && !newUserPhone.trim()) return;
+    setCreatingUser(true);
+    try {
+      const res = await fetch("/api/admin/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: newUserName.trim() || undefined,
+          email: newUserEmail.trim() || undefined,
+          phone_number: newUserPhone.trim() || undefined,
+          role: newUserRole || "TELE_CALLER",
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast("Team Member onboarded successfully!");
+        setShowCreateUser(false);
+        setNewUserName("");
+        setNewUserEmail("");
+        setNewUserPhone("");
+        setNewUserRole("TELE_CALLER");
+        fetchData();
+      } else {
+        showToast(data.message || "Failed to add agent.");
+      }
+    } catch (e: any) {
+      showToast(e.message || "Network error.");
+    } finally {
+      setCreatingUser(false);
     }
   };
 
@@ -171,14 +214,101 @@ export default function RbacPage() {
                 <Key size={18} className="text-blue-800" />
                 Roles ({roles.length})
               </h2>
-              <button
-                onClick={() => setShowCreateRole(true)}
-                className="px-4 py-2 bg-blue-800 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
-              >
-                <Plus size={14} />
-                Create Role
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setShowCreateUser(true)}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                >
+                  <UserCheck size={14} />
+                  + Onboard Team Member
+                </button>
+                <button
+                  onClick={() => setShowCreateRole(true)}
+                  className="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+                >
+                  <Plus size={14} />
+                  Create Custom Role
+                </button>
+              </div>
             </div>
+
+            {/* Create User / Team Member Modal */}
+            {showCreateUser && (
+              <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 p-6 w-full max-w-md space-y-4">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div className="flex items-center gap-2">
+                      <UserCheck size={20} className="text-indigo-600" />
+                      <div>
+                        <h3 className="font-bold text-slate-800 text-base">Onboard New Team Member</h3>
+                        <p className="text-[10px] text-slate-500 font-medium">Provision access for calling team & partners</p>
+                      </div>
+                    </div>
+                  </div>
+                  <form onSubmit={handleCreateUser} className="space-y-3">
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Full Name</label>
+                      <input
+                        type="text"
+                        value={newUserName}
+                        onChange={e => setNewUserName(e.target.value)}
+                        placeholder="e.g. Rahul Sharma"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Email Address</label>
+                      <input
+                        type="email"
+                        value={newUserEmail}
+                        onChange={e => setNewUserEmail(e.target.value)}
+                        placeholder="e.g. outreach.agent@cnts.org"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Phone Number (Optional)</label>
+                      <input
+                        type="tel"
+                        value={newUserPhone}
+                        onChange={e => setNewUserPhone(e.target.value)}
+                        placeholder="e.g. +91 9876543210"
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Assigned Role</label>
+                      <select
+                        value={newUserRole}
+                        onChange={e => setNewUserRole(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-600 outline-none cursor-pointer"
+                      >
+                        <option value="TELE_CALLER">TELE_CALLER (School Outreach Specialist)</option>
+                        {roles.map(r => (
+                          <option key={r.id} value={r.name}>{r.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex gap-2 pt-2">
+                      <button
+                        type="submit"
+                        disabled={creatingUser || (!newUserEmail.trim() && !newUserPhone.trim())}
+                        className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-all shadow-md cursor-pointer"
+                      >
+                        {creatingUser ? "Onboarding..." : "Complete Onboarding"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowCreateUser(false)}
+                        className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition-all cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            )}
 
             {/* Create Role Modal */}
             {showCreateRole && (
@@ -308,18 +438,30 @@ export default function RbacPage() {
               </h2>
               <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6">
                 <form onSubmit={handleAssignRole} className="flex flex-col md:flex-row gap-4 items-end">
-                  <div className="flex-1">
-                    <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Admin</label>
-                    <select
-                      value={assignAdminId}
-                      onChange={e => setAssignAdminId(e.target.value)}
-                      className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-800/20 focus:border-blue-800 bg-white"
-                    >
-                      <option value="">— Select Admin —</option>
-                      {admins.map(a => (
-                        <option key={a.id} value={a.id}>{a.email}</option>
-                      ))}
-                    </select>
+                  <div className="flex-1 space-y-1">
+                    <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider">Admin User / Email</label>
+                    {admins.length > 0 ? (
+                      <select
+                        value={assignAdminId}
+                        onChange={e => setAssignAdminId(e.target.value)}
+                        className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-800/20 focus:border-blue-800 bg-white cursor-pointer"
+                      >
+                        <option value="">— Select Admin User —</option>
+                        {admins.map(a => (
+                          <option key={a.id} value={a.id}>
+                            {a.name ? `${a.name} (${a.email})` : a.email} (Role: {a.role || "admin"})
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <input
+                        type="text"
+                        value={assignAdminId}
+                        onChange={e => setAssignAdminId(e.target.value)}
+                        placeholder="Enter admin email or ID (e.g. caller@school.com)"
+                        className="w-full px-3 py-2.5 border border-slate-200 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-800/20 focus:border-blue-800 bg-white"
+                      />
+                    )}
                   </div>
                   <div className="flex-1">
                     <label className="block text-xs font-semibold text-slate-500 mb-1 uppercase tracking-wider">Role</label>
@@ -356,16 +498,18 @@ export default function RbacPage() {
                   <table className="w-full text-sm">
                     <thead>
                       <tr className="border-b border-slate-100 bg-slate-50">
-                        <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email</th>
-                        <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Current Role</th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Full Name</th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Email / Phone</th>
+                        <th className="text-left px-6 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wider">Assigned Role</th>
                       </tr>
                     </thead>
                     <tbody>
                       {admins.map(admin => (
                         <tr key={admin.id} className="border-b border-slate-50 hover:bg-slate-50/50 transition-colors">
-                          <td className="px-6 py-4 text-slate-700 font-medium">{admin.email}</td>
+                          <td className="px-6 py-4 font-bold text-slate-800">{admin.name || "—"}</td>
+                          <td className="px-6 py-4 text-slate-600 font-medium">{admin.email}</td>
                           <td className="px-6 py-4">
-                            <span className="inline-flex px-2.5 py-1 bg-purple-50 text-purple-700 rounded-lg text-xs font-bold">
+                            <span className="inline-flex px-2.5 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs font-bold">
                               {admin.role || "admin"}
                             </span>
                           </td>

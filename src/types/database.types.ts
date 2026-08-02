@@ -190,19 +190,25 @@ export interface Database {
       admin_users: {
         Row: {
           id: string;
-          phone_number: string;
+          name?: string | null;
+          email?: string | null;
+          phone_number?: string | null;
           role: string;
           created_at: string;
         };
         Insert: {
           id?: string;
-          phone_number: string;
+          name?: string | null;
+          email?: string | null;
+          phone_number?: string | null;
           role?: string;
           created_at?: string;
         };
         Update: {
           id?: string;
-          phone_number?: string;
+          name?: string | null;
+          email?: string | null;
+          phone_number?: string | null;
           role?: string;
           created_at?: string;
         };

@@ -67,6 +67,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const {
       id,
+      name,
       email,
       phone_number,
       role
@@ -107,6 +108,7 @@ export async function POST(request: Request) {
         const { data: updated, error: updateErr } = await (supabaseAdmin as any)
           .from("admin_users")
           .update({
+            name: name ? name.trim() : null,
             email: email ? email.trim() : null,
             phone_number: phone_number ? phone_number.trim() : null,
             role
@@ -135,6 +137,7 @@ export async function POST(request: Request) {
         const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
           .from("admin_users")
           .insert({
+            name: name ? name.trim() : null,
             email: email ? email.trim() : null,
             phone_number: phone_number ? phone_number.trim() : null,
             role

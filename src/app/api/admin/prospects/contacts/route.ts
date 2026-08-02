@@ -72,7 +72,7 @@ export async function GET(request: Request) {
     while (true) {
       const { data, error: prospectsErr } = await (supabaseAdmin as any)
         .from("school_prospects")
-        .select("id, name, state, city, website, enrichment_status, outreach_status")
+        .select("id, name, state, city, website, enrichment_status, outreach_status, outreach_score, confidence_score")
         .order("name", { ascending: true })
         .range(prospectsPage * pageSize, (prospectsPage + 1) * pageSize - 1);
 
@@ -130,6 +130,8 @@ export async function GET(request: Request) {
       website: p.website,
       enrichment_status: p.enrichment_status,
       outreach_status: p.outreach_status || "NEW",
+      outreach_score: p.outreach_score || 0,
+      confidence_score: p.confidence_score || 0,
       principal_name: principalMap.get(p.id) || null,
       email: contactMap.get(p.id)?.email || null,
       phone: contactMap.get(p.id)?.phone || null,

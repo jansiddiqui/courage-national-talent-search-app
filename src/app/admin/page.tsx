@@ -38,6 +38,7 @@ import { fetchRegistrations, fetchSystemSettings, updateSystemSetting, fetchCont
 import { hasSupabaseConfig } from "@/lib/supabaseClient";
 import SchoolPartnersPanel from "@/components/admin/SchoolPartnersPanel";
 import SchoolProspectsPanel from "@/components/admin/SchoolProspectsPanel";
+import { TeleCallerPortal } from "@/components/admin/TeleCallerPortal";
 
 interface MetricCardProps {
   title: string;
@@ -173,7 +174,7 @@ export default function AdminOverviewPage() {
   const [analyticsTimezone, setAnalyticsTimezone] = useState<string>("Asia/Kolkata");
 
   // Tab State
-  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support" | "schools" | "prospects" | "cms" | "questions" | "exams" | "users" | "finance" | "reports" | "monitoring" | "audit" | "developer" | "analytics" | "revenue_analytics" | "geo_analytics" | "academy_analytics" | "exam_analytics" | "engagement_analytics" | "forecasts">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "settings" | "whatsapp" | "coupons" | "support" | "schools" | "prospects" | "caller" | "cms" | "questions" | "exams" | "users" | "finance" | "reports" | "monitoring" | "audit" | "developer" | "analytics" | "revenue_analytics" | "geo_analytics" | "academy_analytics" | "exam_analytics" | "engagement_analytics" | "forecasts">("overview");
 
   const searchParams = useSearchParams();
   const tabParam = searchParams.get("tab");
@@ -3306,6 +3307,11 @@ export default function AdminOverviewPage() {
         {/* Tab 6b: School Prospects */}
         {activeTab === "prospects" && (
           <SchoolProspectsPanel />
+        )}
+
+        {/* Tab 6c: Tele-Calling Portal */}
+        {activeTab === "caller" && (
+          <TeleCallerPortal />
         )}
 
         {/* Tab 8: Question Bank */}

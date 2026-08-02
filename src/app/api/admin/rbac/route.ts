@@ -26,12 +26,24 @@ export async function GET() {
   const hasPerm = await checkAdminPermission(supabaseAdmin, payload.id || payload.email || payload.phone, "rbac.manage");
   if (!hasPerm) return NextResponse.json({ error: "Forbidden: rbac.manage permission required." }, { status: 403 });
 
-  const [rolesRes, permsRes] = await Promise.all([
+  const [rolesRes, permsRes, adminsRes] = await Promise.all([
     db.from("admin_roles").select("id, name, description, created_at"),
     db.from("admin_permissions").select("key, description"),
+    db.from("admin_users").select("id, name, email, phone_number, role, created_at").order("created_at", { ascending: false }),
   ]);
 
-  return NextResponse.json({ roles: rolesRes.data || [], permissions: permsRes.data || [] });
+  const adminsList = (adminsRes.data || []).map((a: any) => ({
+    id: a.id,
+    name: a.name || null,
+    email: a.email || a.phone_number || a.id,
+    role: a.role || "admin",
+  }));
+
+  return NextResponse.json({
+    roles: rolesRes.data || [],
+    permissions: permsRes.data || [],
+    admins: adminsList,
+  });
 }
 
 export async function POST(request: Request) {
@@ -52,11 +64,19 @@ export async function POST(request: Request) {
   const { action, roleId, adminId, permissionKey, roleName, roleDescription } = body;
 
   if (action === "assign_role") {
-    const { error } = await db.from("admin_user_roles").upsert({ admin_id: adminId, role_id: roleId });
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    let targetRoleId = roleId;
+    if (!targetRoleId && body.roleName) {
+      const { data: roleData } = await db.from("admin_roles").select("id").eq("name", body.roleName).maybeSingle();
+      if (roleData) targetRoleId = roleData.id;
+    }
+    if (!targetRoleId) {
+      return NextResponse.json({ success: false, message: "Role ID or valid Role Name is required" }, { status: 400 });
+    }
+    const { error } = await db.from("admin_user_roles").upsert({ admin_id: adminId, role_id: targetRoleId });
+    if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     await writeAuditEntry(supabaseAdmin, {
       actorId: payload.id, actorRole: payload.role || "admin", action: "RBAC_ROLE_ASSIGNED",
-      module: "RBAC", previousValue: {}, newValue: { adminId, roleId },
+      module: "RBAC", previousValue: {}, newValue: { adminId, roleId: targetRoleId },
       ipAddress: request.headers.get("x-forwarded-for") || "unknown"
     });
     return NextResponse.json({ success: true });
@@ -65,7 +85,7 @@ export async function POST(request: Request) {
   if (action === "revoke_role") {
     const { error } = await db.from("admin_user_roles")
       .delete().eq("admin_id", adminId).eq("role_id", roleId);
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     await writeAuditEntry(supabaseAdmin, {
       actorId: payload.id, actorRole: payload.role || "admin", action: "RBAC_ROLE_REVOKED",
       module: "RBAC", previousValue: { adminId, roleId }, newValue: {},
@@ -75,16 +95,21 @@ export async function POST(request: Request) {
   }
 
   if (action === "create_role") {
+    const finalRoleName = roleName || body.name;
+    const finalRoleDesc = roleDescription || body.description || "";
+    if (!finalRoleName) {
+      return NextResponse.json({ success: false, message: "Role name is required" }, { status: 400 });
+    }
     const { data, error } = await db.from("admin_roles")
-      .insert({ name: roleName, description: roleDescription })
+      .insert({ name: finalRoleName, description: finalRoleDesc })
       .select("id").single();
-    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+    if (error) return NextResponse.json({ success: false, message: error.message }, { status: 500 });
     if (permissionKey) {
       await db.from("admin_role_permissions").insert({ role_id: data.id, permission_key: permissionKey });
     }
     await writeAuditEntry(supabaseAdmin, {
       actorId: payload.id, actorRole: payload.role || "admin", action: "RBAC_ROLE_CREATED",
-      module: "RBAC", previousValue: {}, newValue: { roleName, roleDescription, roleId: data.id },
+      module: "RBAC", previousValue: {}, newValue: { roleName: finalRoleName, roleDescription: finalRoleDesc, roleId: data.id },
       ipAddress: request.headers.get("x-forwarded-for") || "unknown"
     });
     return NextResponse.json({ success: true, roleId: data.id });

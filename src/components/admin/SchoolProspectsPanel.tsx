@@ -10,6 +10,7 @@ import {
   ChevronDown, Loader2, StopCircle, TrendingUp, FileText, Download, Phone,
   HelpCircle
 } from "lucide-react";
+import { TeleCallerPortal } from "@/components/admin/TeleCallerPortal";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -121,7 +122,7 @@ export default function SchoolProspectsPanel() {
   const [editPartnershipSignalsCoding, setEditPartnershipSignalsCoding] = useState(false);
 
   // ── State: Navigation ──
-  const [view, setView] = useState<"list" | "detail" | "discover" | "contacts">("list");
+  const [view, setView] = useState<"list" | "detail" | "discover" | "contacts" | "telecaller">("list");
   const [selectedProspectId, setSelectedProspectId] = useState<string | null>(null);
   const [detailData, setDetailData] = useState<any>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
@@ -150,9 +151,19 @@ export default function SchoolProspectsPanel() {
   const [contactStateFilter, setContactStateFilter] = useState("ALL");
   const [contactStatusFilter, setContactStatusFilter] = useState("ALL");
   const [contactTypeFilter, setContactTypeFilter] = useState<string>("ALL");
+  const [contactScoreFilter, setContactScoreFilter] = useState<string>("ALL");
   const [selectedContactIds, setSelectedContactIds] = useState<string[]>([]);
   const [bulkModalType, setBulkModalType] = useState<"email" | "phone" | null>(null);
   const [bulkDelimiter, setBulkDelimiter] = useState<"comma" | "semicolon" | "newline">("comma");
+
+  // ── State: Bulk Outreach Status Update ──
+  const [bulkOutreachModalOpen, setBulkOutreachModalOpen] = useState(false);
+  const [bulkTargetIds, setBulkTargetIds] = useState<string[]>([]);
+  const [bulkSelectedStatus, setBulkSelectedStatus] = useState("CONTACTED");
+  const [bulkSelectedChannel, setBulkSelectedChannel] = useState("");
+  const [bulkNextFollowup, setBulkNextFollowup] = useState("");
+  const [bulkNotes, setBulkNotes] = useState("");
+  const [updatingBulkOutreach, setUpdatingBulkOutreach] = useState(false);
 
   // ── State: Discovery ──
   const [discoveryScope, setDiscoveryScope] = useState<"ALL_INDIA" | "SELECTED_STATES">("ALL_INDIA");
@@ -749,6 +760,42 @@ export default function SchoolProspectsPanel() {
     finally { setSavingOutreach(false); }
   };
 
+  const handleSaveBulkOutreach = async () => {
+    if (bulkTargetIds.length === 0 || !bulkSelectedStatus) return;
+    setUpdatingBulkOutreach(true);
+    try {
+      const res = await fetch("/api/admin/prospects/bulk-outreach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          prospectIds: bulkTargetIds,
+          outreach_status: bulkSelectedStatus,
+          outreach_channel: bulkSelectedChannel || undefined,
+          outreach_notes: bulkNotes || undefined,
+          next_followup_at: bulkNextFollowup ? new Date(bulkNextFollowup).toISOString() : undefined,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        showToast(data.message || `Updated status for ${bulkTargetIds.length} school(s).`);
+        setBulkOutreachModalOpen(false);
+        setBulkNotes("");
+        setBulkNextFollowup("");
+        setSelectedContactIds([]);
+        setSelectedIds([]);
+        if (view === "contacts") fetchContacts();
+        else fetchProspects();
+        fetchStats();
+      } else {
+        showToast(data.message || "Failed to update outreach status.");
+      }
+    } catch (_) {
+      showToast("Network error updating outreach status.");
+    } finally {
+      setUpdatingBulkOutreach(false);
+    }
+  };
+
   const handleSaveSchoolInfo = async () => {
     if (!selectedProspectId) return;
     setSavingSchoolInfo(true);
@@ -801,6 +848,136 @@ export default function SchoolProspectsPanel() {
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
     showToast("Copied!");
+  };
+
+  const renderBulkOutreachModal = () => {
+    if (!bulkOutreachModalOpen || !mounted) return null;
+    return createPortal(
+      <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 animate-fadeIn">
+        <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-md w-full overflow-hidden flex flex-col transform scale-100 transition-all duration-300">
+          {/* Modal Header */}
+          <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-amber-50/50">
+            <div className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                <FileText size={18} />
+              </div>
+              <div>
+                <h3 className="font-bold text-slate-800 text-sm">Bulk Outreach Update</h3>
+                <p className="text-[10px] text-slate-500 mt-0.5 font-medium font-sans">Update status & notes for selected schools</p>
+              </div>
+            </div>
+            <button onClick={() => setBulkOutreachModalOpen(false)}
+              className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-xl cursor-pointer transition-colors">
+              <XCircle size={18} />
+            </button>
+          </div>
+
+          {/* Modal Body */}
+          <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+            {/* Target Count Banner */}
+            <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200/60 flex items-center justify-between">
+              <span className="text-xs font-bold text-amber-900">Target Schools:</span>
+              <span className="px-2.5 py-0.5 bg-amber-200/80 text-amber-900 font-extrabold rounded-full text-xs">
+                {bulkTargetIds.length} school{bulkTargetIds.length !== 1 ? "s" : ""} selected
+              </span>
+            </div>
+
+            {/* Status Selection */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">New Outreach Status</label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { status: "NEW", label: "New", color: "bg-slate-100 text-slate-700 border-slate-200" },
+                  { status: "READY_FOR_OUTREACH", label: "Ready", color: "bg-blue-50 text-blue-700 border-blue-200" },
+                  { status: "CONTACTED", label: "Contacted", color: "bg-amber-50 text-amber-700 border-amber-200" },
+                  { status: "FOLLOW_UP_DUE", label: "Follow Up Due", color: "bg-orange-50 text-orange-700 border-orange-200" },
+                  { status: "REPLIED", label: "Replied", color: "bg-purple-50 text-purple-700 border-purple-200" },
+                  { status: "INTERESTED", label: "Interested", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                  { status: "MEETING_SCHEDULED", label: "Meeting Scheduled", color: "bg-teal-50 text-teal-700 border-teal-200" },
+                  { status: "NOT_INTERESTED", label: "Not Interested", color: "bg-rose-50 text-rose-700 border-rose-200" },
+                  { status: "PARTNERED", label: "Partnered", color: "bg-indigo-50 text-indigo-700 border-indigo-200" },
+                ].map(item => (
+                  <button
+                    key={item.status}
+                    type="button"
+                    onClick={() => setBulkSelectedStatus(item.status)}
+                    className={`p-2.5 rounded-xl text-xs font-bold text-left transition-all border cursor-pointer flex items-center justify-between ${
+                      bulkSelectedStatus === item.status
+                        ? `${item.color} ring-2 ring-amber-500 shadow-xs`
+                        : "bg-slate-50 text-slate-600 border-slate-200/60 hover:bg-slate-100"
+                    }`}
+                  >
+                    <span>{item.label}</span>
+                    {bulkSelectedStatus === item.status && <CheckCircle2 size={12} className="text-amber-600 shrink-0" />}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Channel Selection */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Outreach Channel (Optional)</label>
+              <select
+                value={bulkSelectedChannel}
+                onChange={e => setBulkSelectedChannel(e.target.value)}
+                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-amber-500 outline-none"
+              >
+                <option value="">Keep Existing Channel</option>
+                <option value="EMAIL">Email Campaign</option>
+                <option value="PHONE">Phone Call</option>
+                <option value="WHATSAPP">WhatsApp Broadcast</option>
+                <option value="IN_PERSON">In-Person Visit</option>
+                <option value="EVENT">Event / Olympiad Pitch</option>
+              </select>
+            </div>
+
+            {/* Next Follow-Up Date */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Next Follow-Up Date (Optional)</label>
+              <input
+                type="date"
+                value={bulkNextFollowup}
+                onChange={e => setBulkNextFollowup(e.target.value)}
+                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-amber-500 outline-none cursor-pointer"
+              />
+            </div>
+
+            {/* Notes */}
+            <div className="space-y-1.5">
+              <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Outreach Notes (Optional)</label>
+              <textarea
+                rows={2}
+                value={bulkNotes}
+                onChange={e => setBulkNotes(e.target.value)}
+                placeholder="e.g. Sent CNTS National Olympiad invitation brochure to school principal."
+                className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-amber-500 outline-none resize-none"
+              />
+            </div>
+          </div>
+
+          {/* Modal Footer */}
+          <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+            <button
+              type="button"
+              onClick={() => setBulkOutreachModalOpen(false)}
+              className="px-4 py-2 text-slate-600 hover:text-slate-800 text-xs font-bold rounded-xl cursor-pointer"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
+              onClick={handleSaveBulkOutreach}
+              disabled={updatingBulkOutreach}
+              className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-md shadow-amber-200 transition-all disabled:opacity-50"
+            >
+              {updatingBulkOutreach ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
+              {updatingBulkOutreach ? "Updating..." : `Update ${bulkTargetIds.length} School(s)`}
+            </button>
+          </div>
+        </div>
+      </div>,
+      document.body
+    );
   };
 
   // ─── View: Discovery Workspace ──────────────────────────────────────────────
@@ -1595,7 +1772,13 @@ export default function SchoolProspectsPanel() {
       else if (contactTypeFilter === "MISSING_EMAIL") matchType = !c.email;
       else if (contactTypeFilter === "MISSING_PHONE") matchType = !c.phone;
 
-      return matchSearch && matchState && matchStatus && matchType;
+      let matchScore = true;
+      const score = (c as any).outreach_score || 0;
+      if (contactScoreFilter === "HIGH") matchScore = score >= 70;
+      else if (contactScoreFilter === "MID") matchScore = score >= 41 && score <= 69;
+      else if (contactScoreFilter === "LOW") matchScore = score <= 40;
+
+      return matchSearch && matchState && matchStatus && matchType && matchScore;
     });
 
     const uniqueStates = Array.from(new Set(contacts.map((c: any) => c.state).filter(Boolean))).sort() as string[];
@@ -1626,6 +1809,7 @@ export default function SchoolProspectsPanel() {
     return (
       <div className="space-y-6 text-slate-800 animate-fadeIn">
         <ToastNotice toast={toast} />
+        {renderBulkOutreachModal()}
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
@@ -1664,6 +1848,18 @@ export default function SchoolProspectsPanel() {
               title="Extract phone numbers for bulk messaging"
             >
               <Phone size={13} /> {selectedContactIds.length > 0 ? `Copy Phones (${selectedPhonesCount})` : `Copy Phones (${allFilteredPhonesCount})`}
+            </button>
+
+            <button
+              onClick={() => {
+                setBulkTargetIds(selectedContactIds.length > 0 ? selectedContactIds : filtered.map((c: any) => c.id));
+                setBulkOutreachModalOpen(true);
+              }}
+              disabled={filtered.length === 0}
+              className="px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:bg-slate-300 text-white rounded-xl text-xs font-bold flex items-center gap-1.5 cursor-pointer shadow-sm shadow-amber-100 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              title="Bulk update outreach status for selected school contacts"
+            >
+              <FileText size={13} /> {selectedContactIds.length > 0 ? `Update Outreach (${selectedContactIds.length})` : `Update Outreach (${filtered.length})`}
             </button>
 
             <button
@@ -1720,8 +1916,15 @@ export default function SchoolProspectsPanel() {
             <option value="MISSING_EMAIL">Missing Email</option>
             <option value="MISSING_PHONE">Missing Phone / Mobile</option>
           </select>
-          {(contactSearch || contactStateFilter !== "ALL" || contactStatusFilter !== "ALL" || contactTypeFilter !== "ALL") && (
-            <button onClick={() => { setContactSearch(""); setContactStateFilter("ALL"); setContactStatusFilter("ALL"); setContactTypeFilter("ALL"); }}
+          <select value={contactScoreFilter} onChange={e => setContactScoreFilter(e.target.value)}
+            className="px-2.5 py-2 border border-slate-200 bg-white rounded-xl text-xs font-semibold text-slate-700 hover:border-slate-300 transition-colors cursor-pointer">
+            <option value="ALL">All Scores</option>
+            <option value="HIGH">High Fit (≥ 70)</option>
+            <option value="MID">Medium Fit (41–69)</option>
+            <option value="LOW">Low Score (≤ 40)</option>
+          </select>
+          {(contactSearch || contactStateFilter !== "ALL" || contactStatusFilter !== "ALL" || contactTypeFilter !== "ALL" || contactScoreFilter !== "ALL") && (
+            <button onClick={() => { setContactSearch(""); setContactStateFilter("ALL"); setContactStatusFilter("ALL"); setContactTypeFilter("ALL"); setContactScoreFilter("ALL"); }}
               className="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 border border-slate-200 bg-white rounded-xl cursor-pointer transition-colors">
               Clear
             </button>
@@ -1852,9 +2055,18 @@ export default function SchoolProspectsPanel() {
                         )}
                       </td>
                       <td className="p-4">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${STATUS_COLORS[c.outreach_status] || "bg-slate-100 text-slate-600"}`}>
-                          {(c.outreach_status || "NEW").replace(/_/g, " ")}
-                        </span>
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${STATUS_COLORS[c.outreach_status] || "bg-slate-100 text-slate-600"}`}>
+                            {(c.outreach_status || "NEW").replace(/_/g, " ")}
+                          </span>
+                          <span className={`px-1.5 py-0.5 rounded-md text-[10px] font-extrabold border ${
+                            (c.outreach_score || 0) >= 70 ? "bg-emerald-50 text-emerald-700 border-emerald-200" :
+                            (c.outreach_score || 0) >= 41 ? "bg-amber-50 text-amber-700 border-amber-200" :
+                            "bg-slate-100 text-slate-600 border-slate-200"
+                          }`} title={`Outreach Score: ${c.outreach_score || 0} pts`}>
+                            {c.outreach_score || 0} pts
+                          </span>
+                        </div>
                       </td>
                       <td className="p-4 text-right">
                         <button
@@ -1979,11 +2191,68 @@ export default function SchoolProspectsPanel() {
     );
   }
 
+  // ─── View: Tele-Calling Portal ─────────────────────────────────
+  if ((view as string) === "telecaller") {
+    return (
+      <div className="space-y-6 text-slate-800 animate-fadeIn">
+        <ToastNotice toast={toast} />
+        {renderBulkOutreachModal()}
+
+        {/* Top Tab Bar Bar inside Tele-Calling View */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight text-slate-800 flex items-center gap-2.5">
+              <School className="text-indigo-600 w-7 h-7" /> School Intelligence Engine
+            </h1>
+            <p className="text-xs text-slate-500 mt-1">Discover, research, rank, and pitch prospective school partnerships nationwide</p>
+          </div>
+
+          <div className="flex items-center gap-2 p-1.5 bg-slate-100/80 rounded-2xl border border-slate-200/60 shadow-inner flex-wrap sm:flex-nowrap">
+            <button
+              onClick={() => setView("list")}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-2 cursor-pointer transition-all"
+            >
+              <School size={14} className="text-slate-400" />
+              Prospects
+            </button>
+
+            <button
+              onClick={() => { setView("contacts"); fetchContacts(); }}
+              className="px-4 py-2 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 hover:bg-slate-200/50 flex items-center gap-2 cursor-pointer transition-all"
+            >
+              <Users size={14} className="text-slate-400" />
+              Contact List
+            </button>
+
+            <button
+              onClick={() => setView("telecaller")}
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-slate-900 text-white shadow-sm flex items-center gap-2 cursor-pointer transition-all"
+            >
+              <Phone size={14} className="text-amber-400 animate-pulse" />
+              Tele-Calling Portal
+            </button>
+
+            <button
+              onClick={() => setView("discover")}
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-white/80 hover:bg-white text-indigo-700 border border-indigo-200/60 flex items-center gap-2 cursor-pointer transition-all"
+            >
+              <Zap size={14} className="text-indigo-600" />
+              Discover Schools
+            </button>
+          </div>
+        </div>
+
+        <TeleCallerPortal />
+      </div>
+    );
+  }
+
   // ─── View: Main List ───────────────────────────────────────────────────────
 
   return (
     <div className="space-y-6 text-slate-800">
       <ToastNotice toast={toast} />
+      {renderBulkOutreachModal()}
 
       {/* Help / Information Guide Modal */}
       {showInfoModal && mounted && createPortal(
@@ -2204,6 +2473,18 @@ export default function SchoolProspectsPanel() {
           </button>
 
           <button
+            onClick={() => setView("telecaller")}
+            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
+              (view as string) === "telecaller"
+                ? "bg-slate-900 text-white shadow-sm"
+                : "bg-slate-900/90 text-white hover:bg-slate-900 shadow-sm"
+            }`}
+          >
+            <Phone size={14} className="text-amber-400 animate-pulse" />
+            Tele-Calling Portal
+          </button>
+
+          <button
             onClick={() => setView("discover")}
             className={`px-4 py-2 rounded-xl text-xs font-bold transition-all duration-200 flex items-center gap-2 cursor-pointer ${
               (view as string) === "discover"
@@ -2387,6 +2668,11 @@ export default function SchoolProspectsPanel() {
                 className="px-4 py-2 border border-indigo-200 hover:bg-indigo-100 text-indigo-700 rounded-xl font-bold flex items-center gap-1.5 cursor-pointer transition-all duration-200 active:scale-95">
                 <RefreshCw size={12} />
                 Reprocess
+              </button>
+              <button onClick={() => { setBulkTargetIds(selectedIds); setBulkOutreachModalOpen(true); }}
+                className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-xl font-bold flex items-center gap-1.5 cursor-pointer transition-all duration-200 active:scale-95 shadow-sm">
+                <FileText size={12} />
+                Update Outreach ({selectedIds.length})
               </button>
             </div>
           </div>
@@ -2602,6 +2888,123 @@ export default function SchoolProspectsPanel() {
           </div>
         )}
       </div>
+
+      {/* Bulk Outreach Status Modal */}
+      {bulkOutreachModalOpen && mounted && createPortal(
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center z-[9999] p-4 animate-fadeIn">
+          <div className="bg-white rounded-3xl shadow-2xl border border-slate-100 max-w-md w-full overflow-hidden flex flex-col transform scale-100 transition-all duration-300">
+            {/* Modal Header */}
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-amber-50/50">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center">
+                  <FileText size={18} />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-800 text-sm">Bulk Outreach Update</h3>
+                  <p className="text-[10px] text-slate-500 mt-0.5 font-medium">Update status & notes for selected schools</p>
+                </div>
+              </div>
+              <button onClick={() => setBulkOutreachModalOpen(false)}
+                className="p-1.5 hover:bg-slate-100 text-slate-400 hover:text-slate-600 rounded-xl cursor-pointer transition-colors">
+                <XCircle size={18} />
+              </button>
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 space-y-4 max-h-[80vh] overflow-y-auto">
+              {/* Target Count Banner */}
+              <div className="p-3 bg-amber-50/60 rounded-xl border border-amber-200/60 flex items-center justify-between">
+                <span className="text-xs font-bold text-amber-900">Target Schools:</span>
+                <span className="px-2.5 py-0.5 bg-amber-200/80 text-amber-900 font-extrabold rounded-full text-xs">
+                  {bulkTargetIds.length} school{bulkTargetIds.length !== 1 ? "s" : ""} selected
+                </span>
+              </div>
+
+              {/* Status Selection */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">New Outreach Status</label>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    { status: "NEW", label: "New", color: "bg-slate-100 text-slate-700 border-slate-200" },
+                    { status: "READY_FOR_OUTREACH", label: "Ready", color: "bg-blue-50 text-blue-700 border-blue-200" },
+                    { status: "CONTACTED", label: "Contacted", color: "bg-amber-50 text-amber-700 border-amber-200" },
+                    { status: "FOLLOW_UP_DUE", label: "Follow Up Due", color: "bg-orange-50 text-orange-700 border-orange-200" },
+                    { status: "REPLIED", label: "Replied", color: "bg-purple-50 text-purple-700 border-purple-200" },
+                    { status: "INTERESTED", label: "Interested", color: "bg-emerald-50 text-emerald-700 border-emerald-200" },
+                    { status: "MEETING_SCHEDULED", label: "Meeting Scheduled", color: "bg-teal-50 text-teal-700 border-teal-200" },
+                    { status: "NOT_INTERESTED", label: "Not Interested", color: "bg-rose-50 text-rose-700 border-rose-200" },
+                    { status: "PARTNERED", label: "Partnered", color: "bg-indigo-50 text-indigo-700 border-indigo-200" },
+                  ].map(item => (
+                    <button
+                      key={item.status}
+                      type="button"
+                      onClick={() => setBulkSelectedStatus(item.status)}
+                      className={`p-2.5 rounded-xl text-xs font-bold text-left transition-all border cursor-pointer flex items-center justify-between ${
+                        bulkSelectedStatus === item.status
+                          ? `${item.color} ring-2 ring-amber-500 shadow-xs`
+                          : "bg-slate-50 text-slate-600 border-slate-200/60 hover:bg-slate-100"
+                      }`}
+                    >
+                      <span>{item.label}</span>
+                      {bulkSelectedStatus === item.status && <CheckCircle2 size={12} className="text-amber-600 shrink-0" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Channel Selection */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Outreach Channel (Optional)</label>
+                <select
+                  value={bulkSelectedChannel}
+                  onChange={e => setBulkSelectedChannel(e.target.value)}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700 focus:ring-2 focus:ring-amber-500 outline-none"
+                >
+                  <option value="">Keep Existing Channel</option>
+                  <option value="EMAIL">Email Campaign</option>
+                  <option value="PHONE">Phone Call</option>
+                  <option value="WHATSAPP">WhatsApp Broadcast</option>
+                  <option value="IN_PERSON">In-Person Visit</option>
+                  <option value="EVENT">Event / Olympiad Pitch</option>
+                </select>
+              </div>
+
+              {/* Notes */}
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Outreach Notes (Optional)</label>
+                <textarea
+                  rows={2}
+                  value={bulkNotes}
+                  onChange={e => setBulkNotes(e.target.value)}
+                  placeholder="e.g. Sent CNTS National Olympiad invitation brochure to school principal."
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-700 focus:ring-2 focus:ring-amber-500 outline-none resize-none"
+                />
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-slate-50 border-t border-slate-100 flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setBulkOutreachModalOpen(false)}
+                className="px-4 py-2 text-slate-600 hover:text-slate-800 text-xs font-bold rounded-xl cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleSaveBulkOutreach}
+                disabled={updatingBulkOutreach}
+                className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl flex items-center gap-1.5 cursor-pointer shadow-md shadow-amber-200 transition-all disabled:opacity-50"
+              >
+                {updatingBulkOutreach ? <Loader2 size={13} className="animate-spin" /> : <CheckCircle2 size={13} />}
+                {updatingBulkOutreach ? "Updating..." : `Update ${bulkTargetIds.length} School(s)`}
+              </button>
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 }

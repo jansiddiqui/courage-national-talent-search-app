@@ -68,7 +68,9 @@ export default function LoginPage() {
 
     authService.checkSession().then((res) => {
       if (res.isAuthenticated) {
-        if (res.role === "ADMIN" || res.role === "SUPER_ADMIN" || res.role === "VOLUNTEER") {
+        if (res.role === "TELE_CALLER") {
+          router.push("/admin/prospects/caller");
+        } else if (res.role === "ADMIN" || res.role === "SUPER_ADMIN" || res.role === "VOLUNTEER") {
           router.push("/admin");
         } else {
           router.push("/dashboard");
@@ -96,9 +98,11 @@ export default function LoginPage() {
     try {
       const res = await authService.loginWithCredentials(cntsId.trim(), dob);
       if (res.success) {
-        setSuccessMessage("Login successful! Redirecting to Parent Dashboard...");
+        setSuccessMessage("Login successful! Redirecting...");
         setTimeout(() => {
-          if (res.role === "ADMIN" || res.role === "SUPER_ADMIN" || res.role === "VOLUNTEER") {
+          if (res.role === "TELE_CALLER") {
+            router.push("/admin/prospects/caller");
+          } else if (res.role === "ADMIN" || res.role === "SUPER_ADMIN" || res.role === "VOLUNTEER") {
             router.push("/admin");
           } else {
             router.push("/dashboard");
