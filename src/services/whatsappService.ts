@@ -292,6 +292,61 @@ export class WhatsAppService {
       "SCHOOL_MEETING_CONFIRMATION"
     );
   }
+
+  /**
+   * Updates an existing message record in whatsapp_logs when a Meta status webhook callback is received
+   */
+  public async updateStatusByWamid(
+    metaMessageId: string,
+    rawStatus: string,
+    timestamp?: string,
+    errors?: any[]
+  ): Promise<boolean> {
+    if (!metaMessageId) return false;
+
+    let mappedStatus = "SENT";
+    const statusLower = (rawStatus || "").toLowerCase();
+    if (statusLower === "sent") mappedStatus = "SENT";
+    else if (statusLower === "delivered") mappedStatus = "DELIVERED";
+    else if (statusLower === "read") mappedStatus = "READ";
+    else if (statusLower === "failed") mappedStatus = "FAILED";
+
+    try {
+      const updateData: Record<string, any> = {
+        status: mappedStatus
+      };
+
+      if (timestamp) {
+        updateData.created_at = timestamp;
+      }
+
+      if (errors && errors.length > 0) {
+        updateData.error_details = JSON.stringify(errors);
+      }
+
+      const { data, error } = await (supabaseAdmin as any)
+        .from("whatsapp_logs")
+        .update(updateData)
+        .eq("meta_message_id", metaMessageId)
+        .select();
+
+      if (error) {
+        console.error(`[WhatsApp Service] Error updating WAMID ${metaMessageId}:`, error);
+        return false;
+      }
+
+      const success = !!(data && data.length > 0);
+      if (success) {
+        console.log(`[WhatsApp Service] WAMID ${metaMessageId} status updated to ${mappedStatus}`);
+      } else {
+        console.log(`[WhatsApp Service] WAMID ${metaMessageId} not found in whatsapp_logs database.`);
+      }
+      return success;
+    } catch (e) {
+      console.error(`[WhatsApp Service] Exception updating WAMID ${metaMessageId}:`, e);
+      return false;
+    }
+  }
 }
 
 export const whatsappService = new WhatsAppService();
