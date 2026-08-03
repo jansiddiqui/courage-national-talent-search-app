@@ -126,6 +126,8 @@ export class WhatsAppService {
       "forgot_id_recovery": "en",
       "result_available": "en",
       "_founding_family_welcome": "en",
+      "school_meeting_confirmation": "en",
+      "meeting_confirmation": "en",
     };
 
     const languageCode = templateLanguageMap[templateName] || "en_US";
@@ -269,6 +271,25 @@ export class WhatsAppService {
       "_founding_family_welcome",
       [parentName, familyId],
       "FOUNDING_FAMILY_WELCOME"
+    );
+  }
+
+  /**
+   * Sends transactional School Principal Meeting Confirmation Meta Template
+   */
+  public async sendSchoolMeetingConfirmation(
+    phoneNumber: string,
+    principalName: string,
+    meetingTime: string,
+    schoolName: string,
+    meetingMode: string,
+    meetingLink: string
+  ): Promise<boolean> {
+    return this.sendTemplateMessage(
+      phoneNumber,
+      "school_meeting_confirmation",
+      [principalName, meetingTime, schoolName, meetingMode, meetingLink || "https://thecouragelibrary.com"],
+      "SCHOOL_MEETING_CONFIRMATION"
     );
   }
 }

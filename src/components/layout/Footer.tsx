@@ -7,6 +7,7 @@ const footerNav = [
     title: "Platform",
     links: [
       { label: "Home", href: "/" },
+      { label: "Courage Partner", href: "/partners" },
       { label: "Why CNTS?", href: "/why-cnts" },
       { label: "About CNTS", href: "/about" },
       { label: "For Schools", href: "/for-schools" },

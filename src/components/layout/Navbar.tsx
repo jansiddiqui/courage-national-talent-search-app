@@ -160,6 +160,13 @@ const navCategories: NavCategory[] = [
     label: "Resources",
     links: [
       { 
+        label: "Courage Partner", 
+        href: "/partners", 
+        icon: Heart,
+        iconBg: "bg-blue-50/85",
+        iconColor: "text-blue-600"
+      },
+      { 
         label: "For Schools", 
         href: "/for-schools", 
         icon: Building,
@@ -201,6 +208,10 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
   const [mobileOpenCategory, setMobileOpenCategory] = useState<number | null>(null);
+  
+  // Single vs Multi-Role State
+  const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
+  const [userRoles, setUserRoles] = useState<string[]>(['PARENT', 'PARTNER']); // Default multi-role for demo
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -208,6 +219,15 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
         const { authService } = await import("@/services/authService");
         const session = await authService.checkSession();
         setIsAuthenticated(session.isAuthenticated);
+        if (session.isAuthenticated) {
+          if (session.role === 'ADMIN' || session.role === 'SUPER_ADMIN') {
+            setUserRoles(['ADMIN', 'PARENT', 'PARTNER']);
+          } else if (session.role === 'PARTNER') {
+            setUserRoles(['PARTNER']);
+          } else if (session.role === 'PARENT') {
+            setUserRoles(['PARENT']);
+          }
+        }
       } catch (e) {
         // ignore
       }
@@ -382,12 +402,72 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
           {/* Call to Actions */}
           <div className="hidden md:flex items-center gap-4">
             {isAuthenticated ? (
-              <Link
-                href="/dashboard"
-                className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold rounded-xl transition-all duration-200 shadow-sm"
-              >
-                Dashboard
-              </Link>
+              userRoles.length > 1 ? (
+                /* Multi-Role User: Ask which dashboard to enter */
+                <div className="relative">
+                  <button
+                    onClick={() => setDashboardDropdownOpen(!dashboardDropdownOpen)}
+                    className="px-5 py-2.5 bg-[#0F172A] text-white text-xs font-bold rounded-xl transition-all duration-200 shadow-md hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer"
+                  >
+                    <span>Dashboard</span>
+                    <ChevronDown size={14} className={`transition-transform duration-200 ${dashboardDropdownOpen ? 'rotate-180 text-amber-400' : 'text-slate-400'}`} />
+                  </button>
+
+                  {/* Multi-Role Floating Switcher Dropdown */}
+                  {dashboardDropdownOpen && (
+                    <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200/80 shadow-2xl rounded-2xl p-2 z-50 animate-slide-up">
+                      <div className="text-[10px] uppercase font-bold text-slate-400 px-3 py-1.5 tracking-wider">
+                        Select Portal Workspace
+                      </div>
+
+                      {userRoles.includes('ADMIN') && (
+                        <Link
+                          href="/admin"
+                          onClick={() => setDashboardDropdownOpen(false)}
+                          className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 transition-all font-bold text-xs text-slate-900"
+                        >
+                          <ShieldCheck className="w-4 h-4 text-amber-500 shrink-0" />
+                          <span>Admin Control Center</span>
+                        </Link>
+                      )}
+
+                      {userRoles.includes('PARENT') && (
+                        <Link
+                          href="/dashboard"
+                          onClick={() => setDashboardDropdownOpen(false)}
+                          className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 transition-all font-bold text-xs text-indigo-900"
+                        >
+                          <GraduationCap className="w-4 h-4 text-indigo-600 shrink-0" />
+                          <span>Parent & Student Dashboard</span>
+                        </Link>
+                      )}
+
+                      {userRoles.includes('PARTNER') && (
+                        <Link
+                          href="/partners?view=workspace"
+                          onClick={() => setDashboardDropdownOpen(false)}
+                          className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 transition-all font-bold text-xs text-amber-950"
+                        >
+                          <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
+                          <span>Partner Workspace</span>
+                        </Link>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ) : (
+                /* Single-Role User: Direct Redirection with NO questions asked */
+                <Link
+                  href={
+                    userRoles.includes('PARTNER') ? "/partners?view=workspace" :
+                    userRoles.includes('ADMIN') ? "/admin" :
+                    "/dashboard"
+                  }
+                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold rounded-xl transition-all duration-200 shadow-sm"
+                >
+                  Dashboard
+                </Link>
+              )
             ) : (
               <>
                 <Link

@@ -28,14 +28,56 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Forbidden: notification.broadcast permission required." }, { status: 403 });
     }
 
+    const body = await request.json();
+    const { 
+      audience, 
+      templateName, 
+      channel, 
+      recipientPhone, 
+      principalName, 
+      meetingTime, 
+      schoolName, 
+      meetingMode, 
+      meetingLink 
+    } = body;
+
+    if (!audience || !templateName || !channel) {
+      return NextResponse.json({ success: false, message: "Missing audience, templateName, or channel parameters" }, { status: 400 });
+    }
+
+    // 1-ON-1 INSTANT WHATSAPP MEETING CONFIRMATION DISPATCH
+    if (audience === "INDIVIDUAL_PRINCIPAL" || templateName === "MEETING_CONFIRMATION" || templateName === "school_meeting_confirmation") {
+      const { whatsappService } = await import("@/services/whatsappService");
+      const targetPhone = recipientPhone || "8707884735";
+      
+      const sent = await whatsappService.sendSchoolMeetingConfirmation(
+        targetPhone,
+        principalName || "Dr. R. K. Sharma",
+        meetingTime || "Today at 7:00 PM",
+        schoolName || "Delhi Public School, Lucknow",
+        meetingMode || "Google Meet",
+        meetingLink || "https://meet.google.com/qzz-gykt-msm"
+      );
+
+      await writeAuditEntry(supabaseAdmin, {
+        actorId: payload.id,
+        actorRole: payload.role || "admin",
+        action: "DISPATCHED_INSTANT_WHATSAPP",
+        module: "COMMUNICATIONS",
+        previousValue: {},
+        newValue: { targetPhone, templateName: "school_meeting_confirmation", sent },
+        ipAddress: request.headers.get("x-forwarded-for") || "unknown"
+      });
+
+      return NextResponse.json({ 
+        success: sent, 
+        status: sent ? "SENT" : "FAILED", 
+        recipientPhone: targetPhone,
+        message: sent ? `Meta WhatsApp Template dispatched to ${targetPhone}` : "Meta API dispatch failed. Check WHATSAPP_ACCESS_TOKEN in .env.local"
+      });
+    }
+
     if (hasSupabaseAdminConfig) {
-      const body = await request.json();
-      const { audience, templateName, channel } = body;
-
-      if (!audience || !templateName || !channel) {
-        return NextResponse.json({ success: false, message: "Missing audience, templateName, or channel parameters" }, { status: 400 });
-      }
-
       const { queued, jobId } = await createBroadcastCampaign(supabaseAdmin, {
         audience,
         templateName,

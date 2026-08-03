@@ -887,6 +887,15 @@ export function TeleCallerPortal() {
                       >
                         <Phone size={10} /> Call
                       </a>
+                      <a
+                        href={`https://wa.me/${(currentProspect.phone || "").replace(/\D/g, "").length === 10 ? `91${(currentProspect.phone || "").replace(/\D/g, "")}` : (currentProspect.phone || "").replace(/\D/g, "")}?text=${encodeURIComponent(`Respected Principal ${currentProspect.principal_name || "Ma'am/Sir"},\n\nGreetings from Courage National Talent Search (CNTS) Academic Team!\n\nThis message confirms our scheduled discussion meeting regarding CNTS 2026 Student Scholarships & School Partnership:\n\n📅 *Meeting Time:* Today at 7:00 PM\n🏫 *School:* ${currentProspect.name || "School"}\n💻 *Mode:* Google Meet\n🔗 *Meeting Link:* https://meet.google.com/qzz-gykt-msm\n👥 *Agenda:* Student Scholarship Badges, ₹0 Cost Model & Exam Portal Walkthrough\n\nPlease let us know if you need to adjust the time. Looking forward to our conversation at 7:00 PM.\n\nWarm regards,\n*Courage National Talent Search (CNTS) Team*\nPowered by Courage Library\nOfficial Support: www.thecouragelibrary.com`)}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="px-2.5 py-1 bg-indigo-600 text-white rounded-lg font-bold text-[10px] flex items-center gap-1 hover:bg-indigo-700 transition-colors shadow-2xs cursor-pointer"
+                        title="Send WhatsApp Business Meeting Confirmation (7 PM)"
+                      >
+                        <MessageSquare size={10} /> WA 7 PM Confirmation
+                      </a>
                       <button
                         onClick={() => copyText(currentProspect.phone!, "phone")}
                         className={`px-2 py-1 rounded-lg text-[10px] font-bold flex items-center gap-1 transition-all duration-200 cursor-pointer ${
