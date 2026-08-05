@@ -65,7 +65,7 @@ export class WhatsAppService {
 
     try {
       const response = await fetch(
-        `https://graph.facebook.com/v20.0/${this.phoneId}/messages`,
+        `https://graph.facebook.com/v22.0/${this.phoneId}/messages`,
         {
           method: "POST",
           headers: {
@@ -118,7 +118,8 @@ export class WhatsAppService {
     phoneNumber: string,
     templateName: string,
     parameters: string[],
-    messageType: string
+    messageType: string,
+    explicitLanguageCode?: string
   ): Promise<boolean> {
     const templateLanguageMap: Record<string, string> = {
       "registration_success": "en_US",
@@ -126,11 +127,11 @@ export class WhatsAppService {
       "forgot_id_recovery": "en",
       "result_available": "en",
       "_founding_family_welcome": "en",
-      "school_meeting_confirmation": "en",
-      "meeting_confirmation": "en",
+      "school_meeting_confirmation": "en_US",
+      "meeting_confirmation": "en_US",
     };
 
-    const languageCode = templateLanguageMap[templateName] || "en_US";
+    const languageCode = explicitLanguageCode || templateLanguageMap[templateName] || "en_US";
 
     const payload = {
       type: "template",
@@ -285,11 +286,32 @@ export class WhatsAppService {
     meetingMode: string,
     meetingLink: string
   ): Promise<boolean> {
+    const params = [
+      principalName, 
+      meetingTime, 
+      schoolName, 
+      meetingMode, 
+      meetingLink || "https://thecouragelibrary.com"
+    ];
+
+    // Attempt 1: send with en_US (English US)
+    const successUs = await this.sendTemplateMessage(
+      phoneNumber,
+      "school_meeting_confirmation",
+      params,
+      "SCHOOL_MEETING_CONFIRMATION",
+      "en_US"
+    );
+
+    if (successUs) return true;
+
+    // Attempt 2: Fallback with en (English)
     return this.sendTemplateMessage(
       phoneNumber,
       "school_meeting_confirmation",
-      [principalName, meetingTime, schoolName, meetingMode, meetingLink || "https://thecouragelibrary.com"],
-      "SCHOOL_MEETING_CONFIRMATION"
+      params,
+      "SCHOOL_MEETING_CONFIRMATION",
+      "en"
     );
   }
 
