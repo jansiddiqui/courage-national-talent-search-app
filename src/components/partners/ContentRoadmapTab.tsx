@@ -16,7 +16,13 @@ import {
   FileText,
   Share2,
   Zap,
-  Target
+  Target,
+  Bot,
+  ExternalLink,
+  Wand2,
+  Globe,
+  Sliders,
+  MessageSquare
 } from 'lucide-react';
 
 interface ContentRoadmapTabProps {
@@ -49,12 +55,44 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<number>(1);
 
+  // MASTER AI PROMPT GENERATOR STATE
+  const [promptLanguage, setPromptLanguage] = useState<string>('Hinglish');
+  const [promptFormat, setPromptFormat] = useState<string>('Reel / Short (60 Sec)');
+  const [promptAudience, setPromptAudience] = useState<string>('Parents of Class 5-8 Students');
+  const [copiedMasterPrompt, setCopiedMasterPrompt] = useState<boolean>(false);
+
   const referralLink = `https://thecouragelibrary.com/register?ref=${referralCode}`;
 
   const copyScript = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  // DYNAMIC MASTER AI PROMPT GENERATION
+  const masterAiPrompt = `ACT AS A WORLD-CLASS EDUCATION CONTENT CREATOR & VIRAL SCRIPTWRITER.
+
+Your task is to write a highly engaging, viral ${promptFormat} script in ${promptLanguage}.
+
+TARGET AUDIENCE: ${promptAudience}.
+PROJECT & EVENT: Courage National Talent Search (CNTS) 2026 (Exam Date: 30 August 2026, Registration Fee: ₹99).
+
+CORE OBJECTIVES & SCRIPT STRUCTURE:
+1. OPENING HOOK (First 3 Seconds): Create an attention-grabbing, pattern-interrupt hook about Class 5, 6, 7 & 8 student cognitive talent and national merit recognition.
+2. PAIN POINT / PROBLEM: Explain why school report card marks (95%) only test memory, whereas CNTS tests Critical Thinking, Logical Reasoning, Science & Mathematics.
+3. SOLUTION & VALUE: Present CNTS 2026 as the ultimate national diagnostic assessment for Class 5-8 students. Mention the official diagnostic report and national rank certificates.
+4. CALL TO ACTION (CTA): Tell the viewer to click the link in bio/description using official referral code "${referralCode}" (${referralLink}).
+
+PLEASE FORMAT THE OUTPUT WITH:
+- Visual Scene Cues [Camera Angle & B-Roll Action]
+- Word-for-Word Spoken Audio Script (in ${promptLanguage})
+- On-Screen Text Overlay Captions
+- Video Title & 5 High-Reach Trending Hashtags`;
+
+  const copyMasterPrompt = () => {
+    navigator.clipboard.writeText(masterAiPrompt);
+    setCopiedMasterPrompt(true);
+    setTimeout(() => setCopiedMasterPrompt(false), 2500);
   };
 
   const timelinePhases: TimelinePhase[] = [
@@ -127,7 +165,7 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
           title: '🚨 Video #5: URGENT: Only 3 Days Left to Register for CNTS 2026!',
           type: 'Reel / Short',
           hookText: '“LAST CHANCE! Registrations for CNTS 2026 close in 72 hours! Don’t let your child miss out…”',
-          scriptOutline: '1. Urgency Hook: Registrations closing in 3 days.\n2. Remind ₹99 fee, 100% merit scholarship, and national rank certificate.\n3. Show how fast mobile registration takes (60 seconds).\n4. Strong CTA: Click link in bio RIGHT NOW before portal closes!',
+          scriptOutline: '1. Urgency Hook: Registrations closing in 3 days.\n2. Remind ₹99 fee, national rank certificate, and report.\n3. Show how fast mobile registration takes (60 seconds).\n4. Strong CTA: Click link in bio RIGHT NOW before portal closes!',
           callToAction: `URGENT: Register before deadline closes: ${referralLink}`,
           recommendedPostingDays: 'Post on Aug 23 - Aug 24'
         },
@@ -182,6 +220,44 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
     }
   ];
 
+  const aiToolsList = [
+    {
+      name: 'ChatGPT',
+      type: 'Master Script Generation',
+      icon: '🤖',
+      url: 'https://chatgpt.com',
+      desc: 'Paste the Master Prompt to generate complete viral scripts in your language.'
+    },
+    {
+      name: 'Claude AI',
+      type: 'High-Converting Copy',
+      icon: '🧠',
+      url: 'https://claude.ai',
+      desc: 'Generates natural, humanized Hinglish & regional language scripts.'
+    },
+    {
+      name: 'Google Gemini',
+      type: 'Real-Time Insights',
+      icon: '✨',
+      url: 'https://gemini.google.com',
+      desc: 'Great for factual educational talking points and YouTube video titles.'
+    },
+    {
+      name: 'ElevenLabs',
+      type: 'Realistic AI Voiceover',
+      icon: '🎙️',
+      url: 'https://elevenlabs.io',
+      desc: 'Generate ultra-realistic voiceovers in Hindi/English for your video reels.'
+    },
+    {
+      name: 'CapCut / OpusClip',
+      type: 'Auto-Captions & Shorts',
+      icon: '🎬',
+      url: 'https://www.capcut.com',
+      desc: 'Auto-generate animated subtitles and edit 60-second shorts in 1 click.'
+    }
+  ];
+
   return (
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto font-sans text-[#0F172A]">
 
@@ -198,7 +274,7 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
               Content & Video Roadmap to Aug 30 Exam
             </h1>
             <p className="text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed">
-              Students & parents don't register on Day 1. Use this day-by-day video sequence to educate, build trust, and drive high candidate enrolments.
+              Use our Master AI Prompt Generator below to generate full video scripts in your language using ChatGPT, Claude, or Gemini!
             </p>
           </div>
 
@@ -226,6 +302,138 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
             </button>
           ))}
         </div>
+      </div>
+
+      {/* MASTER AI PROMPT SYSTEM & TOOL RECOMMENDER ENGINE */}
+      <div className="bg-white rounded-3xl border border-indigo-100 p-6 sm:p-8 shadow-sm space-y-6">
+        
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wider text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-md border border-indigo-100">
+              <Bot className="w-4 h-4 text-indigo-600" /> Master AI Prompt Generator
+            </div>
+            <h2 className="font-display text-xl font-bold text-slate-900">
+              Generate 100% Perfect AI Video Scripts in Your Language
+            </h2>
+          </div>
+
+          <button
+            type="button"
+            onClick={copyMasterPrompt}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0 flex items-center justify-center gap-2"
+          >
+            {copiedMasterPrompt ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
+            <span>{copiedMasterPrompt ? 'Master Prompt Copied!' : 'Copy Master AI Prompt'}</span>
+          </button>
+        </div>
+
+        {/* PROMPT CONTROLS SELECTORS */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          
+          {/* Selector 1: Language */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
+              <Globe className="w-3.5 h-3.5 text-indigo-600" /> Target Language
+            </label>
+            <select
+              value={promptLanguage}
+              onChange={(e) => setPromptLanguage(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+              <option value="Hinglish">Hinglish (Hindi + English)</option>
+              <option value="Hindi">Hindi (शुद्ध हिंदी)</option>
+              <option value="English">English</option>
+              <option value="Tamil">Tamil (தமிழ்)</option>
+              <option value="Telugu">Telugu (తెలుగు)</option>
+              <option value="Bengali">Bengali (বাংলা)</option>
+              <option value="Marathi">Marathi (मराठी)</option>
+              <option value="Gujarati">Gujarati (ગુજરાતી)</option>
+              <option value="Kannada">Kannada (কন্নড়)</option>
+            </select>
+          </div>
+
+          {/* Selector 2: Format */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
+              <Video className="w-3.5 h-3.5 text-indigo-600" /> Video Format
+            </label>
+            <select
+              value={promptFormat}
+              onChange={(e) => setPromptFormat(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+              <option value="Reel / Short (60 Sec)">Instagram Reel / YouTube Short (60 Sec)</option>
+              <option value="Long YouTube Video (3-5 Min)">Long YouTube Video (3–5 Min)</option>
+              <option value="WhatsApp Broadcast Message">WhatsApp Broadcast Text & Audio Note</option>
+            </select>
+          </div>
+
+          {/* Selector 3: Audience */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
+              <Sliders className="w-3.5 h-3.5 text-indigo-600" /> Target Audience
+            </label>
+            <select
+              value={promptAudience}
+              onChange={(e) => setPromptAudience(e.target.value)}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+              <option value="Parents of Class 5-8 Students">Parents of Class 5–8 Students</option>
+              <option value="Class 5-8 Students">Class 5–8 Students Directly</option>
+              <option value="School Principals & Teachers">School Principals & Teachers</option>
+              <option value="Coaching Institutes & Tutors">Coaching Institutes & Tutors</option>
+            </select>
+          </div>
+
+        </div>
+
+        {/* GENERATED MASTER PROMPT DISPLAY BOX */}
+        <div className="bg-[#0F172A] text-white rounded-2xl p-5 border border-slate-800 space-y-3 shadow-inner">
+          <div className="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span className="text-[10px] font-mono uppercase font-bold text-amber-300 tracking-wider">
+              Generated Master AI Prompt (Ready to Paste in ChatGPT / Claude)
+            </span>
+            <span className="text-[10px] text-slate-400 font-mono">
+              Auto-filled with Code: <strong className="text-amber-300">{referralCode}</strong>
+            </span>
+          </div>
+
+          <pre className="whitespace-pre-wrap font-mono text-xs text-indigo-200 leading-relaxed max-h-56 overflow-y-auto scrollbar-thin">
+            {masterAiPrompt}
+          </pre>
+        </div>
+
+        {/* RECOMMENDED AI TOOLS DISCOVERY SUITE */}
+        <div className="space-y-3 pt-2">
+          <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+            <Wand2 className="w-4 h-4 text-indigo-600" /> Recommended AI Tools Suite
+          </h3>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {aiToolsList.map(tool => (
+              <a
+                key={tool.name}
+                href={tool.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-slate-50 hover:bg-indigo-50/60 border border-slate-200 hover:border-indigo-200 rounded-2xl p-3.5 space-y-1.5 transition-all group flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-xl">{tool.icon}</span>
+                    <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition-colors" />
+                  </div>
+                  <h4 className="font-bold text-xs text-slate-900 mt-2">{tool.name}</h4>
+                  <span className="text-[10px] text-indigo-600 font-bold block">{tool.type}</span>
+                </div>
+                <p className="text-[11px] text-slate-500 font-medium leading-tight pt-1">
+                  {tool.desc}
+                </p>
+              </a>
+            ))}
+          </div>
+        </div>
+
       </div>
 
       {/* SELECTED PHASE DETAILED SEQUENCE */}
