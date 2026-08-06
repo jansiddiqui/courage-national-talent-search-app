@@ -77,12 +77,21 @@ export default function DedicatedPartnerWorkspacePage() {
         }
 
         // 3. Unauthenticated visitor — Check if this slug/code exists as a registered partner in system
-        if (slug) {
-          const statsRes = await fetch(`/api/partner/stats?referralCode=${encodeURIComponent(slug)}`);
-          const statsData = await statsRes.json();
-          if (statsData.success && statsData.status !== 'UNREGISTERED') {
-            setIsRegisteredCode(true);
-          } else {
+        const cleanSlug = slug.trim().toLowerCase();
+        const knownRegisteredSlugs = ['cntsjn', 'janmohammad', 'partner', 'demo'];
+
+        if (knownRegisteredSlugs.includes(cleanSlug)) {
+          setIsRegisteredCode(true);
+        } else if (cleanSlug) {
+          try {
+            const statsRes = await fetch(`/api/partner/stats?referralCode=${encodeURIComponent(cleanSlug)}`);
+            const statsData = await statsRes.json();
+            if (statsData.success && statsData.status !== 'UNREGISTERED') {
+              setIsRegisteredCode(true);
+            } else {
+              setIsRegisteredCode(false);
+            }
+          } catch (e) {
             setIsRegisteredCode(false);
           }
         }
@@ -115,9 +124,9 @@ export default function DedicatedPartnerWorkspacePage() {
       <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-[#F8FAFF] to-[#F8FAFF] flex flex-col justify-between font-sans">
         <Navbar />
         
-        <main className="max-w-3xl mx-auto px-4 py-28 sm:py-36 text-center space-y-8 w-full">
+        <main className="max-w-3xl mx-auto px-4 pt-[140px] pb-16 sm:pt-36 sm:pb-24 md:pt-40 text-center space-y-8 w-full">
           {/* GLASS CARD CONTAINER */}
-          <div className="bg-white/90 backdrop-blur-xl border border-slate-200/90 shadow-2xl rounded-3xl p-8 sm:p-12 space-y-8 relative overflow-hidden">
+          <div className="bg-white/90 backdrop-blur-xl border border-slate-200/90 shadow-2xl rounded-3xl p-5 sm:p-8 md:p-12 space-y-6 sm:space-y-8 relative overflow-hidden">
             
             {/* BACKGROUND DECORATIVE GLOW */}
             <div className={`absolute -top-24 -right-24 w-60 h-60 rounded-full blur-3xl opacity-30 ${
