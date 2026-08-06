@@ -367,47 +367,17 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
     <div className="w-full bg-gradient-to-b from-indigo-50/70 via-[#F8FAFF] to-[#F8FAFF] min-h-screen pt-[140px] sm:pt-36 md:pt-40 pb-20 text-[#0F172A]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         
-        {/* HEADER BRAND & PROGRESS BAR */}
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm mb-8">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-            <div>
-              <div className="inline-flex items-center gap-1.5 bg-amber-500/10 text-amber-900 border border-amber-300 px-3 py-1 rounded-full text-xs font-bold mb-2">
-                <Award className="w-4 h-4 text-amber-600" /> Selective Creator Partner Application
-              </div>
-              <h1 className="font-display text-3xl md:text-4xl font-bold text-slate-900">
-                Apply to Become a Courage Partner
-              </h1>
-              <p className="text-sm text-slate-500 mt-1">
-                Founding Slot #385 Available • Reviewed individually within 24 hours
-              </p>
-            </div>
-
-            <button
-              onClick={onCancel}
-              className="btn-outline text-xs py-2 px-4 w-fit cursor-pointer"
-            >
-              Cancel & Exit
-            </button>
+        {/* HEADER BRAND & APPLICATION BADGE */}
+        <div className="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200/90 shadow-sm mb-6 sm:mb-8 space-y-2.5">
+          <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-900 border border-amber-200 px-3 py-1 rounded-full text-xs font-bold">
+            <Award className="w-4 h-4 text-amber-600" /> Selective Creator Partner Application
           </div>
-
-          {/* Stepper Progress Indicator */}
-          <div className="grid grid-cols-3 gap-2 border-t border-slate-100 pt-6">
-            <div className={`p-3 rounded-xl border text-xs font-bold transition-all ${
-              step === 1 ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : step > 1 ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-slate-50 text-slate-400'
-            }`}>
-              1. Creator Profile & Photo
-            </div>
-            <div className={`p-3 rounded-xl border text-xs font-bold transition-all ${
-              step === 2 ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : step > 2 ? 'bg-emerald-50 text-emerald-900 border-emerald-200' : 'bg-slate-50 text-slate-400'
-            }`}>
-              2. Channels & Proof Screenshots
-            </div>
-            <div className={`p-3 rounded-xl border text-xs font-bold transition-all ${
-              step === 3 ? 'bg-slate-900 text-white border-slate-900 shadow-sm' : 'bg-slate-50 text-slate-400'
-            }`}>
-              3. Referral Code & Pledge
-            </div>
-          </div>
+          <h1 className="font-display text-2xl sm:text-4xl font-black text-slate-900 tracking-tight">
+            Apply to Become a Courage Partner
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium">
+            Founding Slot #385 Available • Reviewed individually within 24 hours
+          </p>
         </div>
 
         {/* STEP 1: DETAILED CREATOR PROFILE & PHOTO */}
@@ -580,12 +550,20 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
               )}
             </div>
 
-            <div className="pt-4 flex justify-end">
+            <div className="pt-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={onCancel}
+                className="w-full sm:w-auto px-6 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs transition-all cursor-pointer text-center"
+              >
+                Cancel
+              </button>
+
               <button
                 type="submit"
-                className="btn-primary text-sm px-8 py-3.5 shadow-lg bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                Next: Channels & Proof Screenshots <ArrowRight className="w-4 h-4 ml-1" />
+                Next: Channels & Verification <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </form>
@@ -787,19 +765,29 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
               })}
             </div>
 
-            <div className="pt-4 flex items-center justify-between border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                className="btn-outline text-xs px-5 py-2.5 cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" /> Back
-              </button>
+            <div className="pt-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="w-1/2 sm:w-auto px-5 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-all cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(1)}
+                  className="w-1/2 sm:w-auto px-5 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Back
+                </button>
+              </div>
+
               <button
                 type="submit"
-                className="btn-primary text-sm px-8 py-3.5 shadow-lg bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                Next: Custom Referral Code <ArrowRight className="w-4 h-4 ml-1" />
+                Next: Custom Referral Code <ArrowRight className="w-4 h-4" />
               </button>
             </div>
           </form>
@@ -1005,19 +993,29 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
               )}
             </div>
 
-            <div className="pt-4 flex items-center justify-between border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setStep(2)}
-                className="btn-outline text-xs px-5 py-2.5 cursor-pointer"
-              >
-                <ArrowLeft className="w-4 h-4 mr-1" /> Back
-              </button>
+            <div className="pt-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <button
+                  type="button"
+                  onClick={onCancel}
+                  className="w-1/2 sm:w-auto px-5 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-all cursor-pointer text-center"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="w-1/2 sm:w-auto px-5 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1"
+                >
+                  <ArrowLeft className="w-4 h-4" /> Back
+                </button>
+              </div>
+
               <button
                 type="submit"
-                className="btn-primary text-sm px-8 py-3.5 shadow-lg bg-emerald-600 hover:bg-emerald-700 cursor-pointer"
+                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
               >
-                Submit Application & Generate Code <Sparkles className="w-4 h-4 ml-1" />
+                Submit Application <Sparkles className="w-4 h-4 text-amber-300" />
               </button>
             </div>
           </form>
