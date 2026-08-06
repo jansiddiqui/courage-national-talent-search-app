@@ -45,13 +45,27 @@ interface MissionItem {
 }
 
 export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
-  partnerName = 'Jan Mohammad',
+  partnerName = 'Partner',
   referralCode = 'CNTSJN',
 }) => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [selectedMission, setSelectedMission] = useState<MissionItem | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
   const [showPayoutModal, setShowPayoutModal] = useState(false);
+  const [realRegistrations, setRealRegistrations] = useState<number>(0);
+
+  React.useEffect(() => {
+    if (referralCode) {
+      fetch(`/api/partner/stats?referralCode=${encodeURIComponent(referralCode)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setRealRegistrations(data.totalRegistrations || 0);
+          }
+        })
+        .catch(err => console.error('Failed to fetch mission stats:', err));
+    }
+  }, [referralCode]);
 
   const missions: MissionItem[] = [
     {
@@ -61,9 +75,9 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       missionText: 'Mobilize Class 5-8 students in your region to register for Courage National Talent Search 2026 and qualify for 100% merit scholarships.',
       targetAudience: 'Class 5-8 Students, Parents, Educators & School Networks',
       duration: 'Aug 1, 2026 - Sep 30, 2026',
-      progressPercent: 78,
+      progressPercent: Math.min(100, Math.round((realRegistrations / 100) * 100)),
       studentsTargeted: 100,
-      studentsAchieved: 78,
+      studentsAchieved: realRegistrations,
       rewardText: '₹50 honorarium per verified CNTS registration + Founding Partner Badge',
       badgeUnlocked: '🥈 CNTS Founding Mobilizer',
       status: 'Featured',
@@ -76,9 +90,9 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       missionText: 'Identify & guide economically underprivileged students from rural and semi-urban districts to register for CNTS 2026 full scholarship waivers.',
       targetAudience: 'Rural Schools, NGO Students, Tier-2 & Tier-3 Communities',
       duration: 'Aug 10, 2026 - Sep 15, 2026',
-      progressPercent: 45,
+      progressPercent: Math.min(100, Math.round((realRegistrations / 250) * 100)),
       studentsTargeted: 250,
-      studentsAchieved: 112,
+      studentsAchieved: realRegistrations,
       rewardText: '₹75 per rural candidate + Community Champion Badge',
       badgeUnlocked: '🌟 CNTS Community Champion',
       status: 'Active',
@@ -91,9 +105,9 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       missionText: 'Connect school principals or academic coordinators to register their entire Class 5-8 student body for CNTS 2026 institutional diagnostic assessment.',
       targetAudience: 'School Principals, Vice-Principals, Academic Coordinators',
       duration: 'Ongoing 2026',
-      progressPercent: 60,
+      progressPercent: Math.min(100, Math.round((realRegistrations / 10) * 100)),
       studentsTargeted: 10,
-      studentsAchieved: 6,
+      studentsAchieved: Math.min(10, Math.floor(realRegistrations / 20)),
       rewardText: '₹5,000 institutional grant per connected school + Verified School Partner Badge',
       badgeUnlocked: '🏫 Verified School Partner',
       status: 'Active',

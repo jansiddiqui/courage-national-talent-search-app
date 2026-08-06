@@ -20,11 +20,23 @@ interface PartnerReputationAndAnalyticsProps {
 }
 
 export const PartnerReputationAndAnalytics: React.FC<PartnerReputationAndAnalyticsProps> = ({
-  partnerName = 'Jan Mohammad',
+  partnerName = 'Partner',
   referralCode = 'CNTSJN',
 }) => {
-  // Simulated verified registrations — in production this comes from API
-  const verifiedRegistrations = 124;
+  const [verifiedRegistrations, setVerifiedRegistrations] = React.useState<number>(0);
+
+  React.useEffect(() => {
+    if (referralCode) {
+      fetch(`/api/partner/stats?referralCode=${encodeURIComponent(referralCode)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setVerifiedRegistrations(data.totalRegistrations || 0);
+          }
+        })
+        .catch(err => console.error('Failed to fetch analytics:', err));
+    }
+  }, [referralCode]);
 
   const tiers = [
     { tier: 'Bronze',   min: 1,   max: 25,  rate: '₹25 / Student', bonus: 'Base Tier',        badge: '🥉 Bronze Mobilizer', color: 'border-slate-200 bg-slate-50 text-slate-800',               perks: ['Standard Referral Link', 'WhatsApp Templates', 'Digital Certificate'] },

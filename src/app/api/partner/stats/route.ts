@@ -49,7 +49,7 @@ export async function GET(request: Request) {
       }
     }
 
-    // Query real candidate registrations from registrations table
+    // Query real candidate registrations from registrations table exclusively
     let verifiedRegistrationsCount = 0;
     let conversionsRoster: any[] = [];
 
@@ -65,7 +65,7 @@ export async function GET(request: Request) {
 
         conversionsRoster = regs.map((r: any) => ({
           refId: r.registration_id || r.cnts_id || `CNTS-2026-${r.id.substring(0, 4)}`,
-          region: r.district ? `${r.district}, ${r.state || 'India'}` : 'Uttar Pradesh Region',
+          region: r.district ? `${r.district}, ${r.state || 'India'}` : 'Region Unspecified',
           fee: `₹${r.registration_fee || 99} Paid`,
           amount: `+₹${honorariumRate.toFixed(2)}`,
           date: new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -74,31 +74,19 @@ export async function GET(request: Request) {
       }
     }
 
-    // If sandbox mode or no registrations yet, provide realistic preview roster
-    if (conversionsRoster.length === 0) {
-      verifiedRegistrationsCount = 124;
-      conversionsRoster = [
-        { refId: 'CNTS-2026-8901', region: 'Lucknow Region, UP', fee: '₹99 Paid', amount: `+₹${honorariumRate.toFixed(2)}`, date: 'Aug 3, 2026', status: 'Verified & Credited' },
-        { refId: 'CNTS-2026-7452', region: 'Kanpur Region, UP', fee: '₹99 Paid', amount: `+₹${honorariumRate.toFixed(2)}`, date: 'Aug 2, 2026', status: 'Verified & Credited' },
-        { refId: 'CNTS-2026-6120', region: 'Lucknow Region, UP', fee: '₹99 Paid', amount: `+₹${honorariumRate.toFixed(2)}`, date: 'Aug 2, 2026', status: 'Verified & Credited' },
-        { refId: 'CNTS-2026-4431', region: 'Varanasi Region, UP', fee: '₹99 Paid', amount: `+₹${honorariumRate.toFixed(2)}`, date: 'Aug 1, 2026', status: 'Verified & Credited' },
-        { refId: 'CNTS-2026-3198', region: 'Prayagraj Region, UP', fee: '₹99 Paid', amount: `+₹${honorariumRate.toFixed(2)}`, date: 'Jul 31, 2026', status: 'Verified & Credited' },
-      ];
-    }
-
     const totalHonorariumEarned = verifiedRegistrationsCount * honorariumRate;
 
     return NextResponse.json({
       success: true,
       referralCode: cleanRef,
-      partnerName: partnerDbRecord?.full_name || 'Jan Mohammad',
+      partnerName: partnerDbRecord?.full_name || 'Partner Account',
       status: partnerDbRecord?.status || 'PENDING',
       honorariumRate,
       totalRegistrations: verifiedRegistrationsCount,
       totalHonorariumEarned: `₹${totalHonorariumEarned.toLocaleString('en-IN')}`,
       rawHonorariumEarned: totalHonorariumEarned,
-      referralClicks: Math.max(verifiedRegistrationsCount * 14, 1845),
-      conversionRate: '6.7%',
+      referralClicks: 0,
+      conversionRate: verifiedRegistrationsCount > 0 ? '100.0%' : '0.0%',
       conversionsRoster,
     });
   } catch (error) {

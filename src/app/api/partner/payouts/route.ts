@@ -44,11 +44,7 @@ export async function GET() {
       }
     }
 
-    if (payoutRequests.length === 0) {
-      payoutRequests = [
-        { id: 'mock-1', reqId: 'REQ-1042', amount: '₹3,100', rawAmount: 3100, date: 'Aug 3, 2026', batchDate: 'Monday, Aug 10, 2026', status: 'Pending Weekly Batch', method: 'Registered Payout Account' },
-      ];
-    }
+    // Return real payout requests exclusively from Supabase DB
 
     return NextResponse.json({
       success: true,

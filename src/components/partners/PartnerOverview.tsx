@@ -26,7 +26,7 @@ interface PartnerOverviewProps {
 }
 
 export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
-  partnerName = 'Jan Mohammad',
+  partnerName = 'Partner',
   referralCode = 'CNTSJN',
   onOpenChildModal,
   onNavigateToTab
@@ -41,19 +41,13 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
     status: string;
     conversionsRoster: any[];
   }>({
-    totalRegistrations: 124,
-    totalHonorariumEarned: '₹3,100',
+    totalRegistrations: 0,
+    totalHonorariumEarned: '₹0',
     honorariumRate: 25,
-    referralClicks: 1845,
-    conversionRate: '6.7%',
+    referralClicks: 0,
+    conversionRate: '0.0%',
     status: 'PENDING',
-    conversionsRoster: [
-      { refId: "CNTS-2026-8901", region: "Lucknow Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 3, 2026", status: "Verified & Credited" },
-      { refId: "CNTS-2026-7452", region: "Kanpur Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 2, 2026", status: "Verified & Credited" },
-      { refId: "CNTS-2026-6120", region: "Lucknow Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 2, 2026", status: "Verified & Credited" },
-      { refId: "CNTS-2026-4431", region: "Varanasi Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 1, 2026", status: "Verified & Credited" },
-      { refId: "CNTS-2026-3198", region: "Prayagraj Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Jul 31, 2026", status: "Verified & Credited" }
-    ]
+    conversionsRoster: []
   });
 
   useEffect(() => {
@@ -63,11 +57,11 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
         .then(data => {
           if (data.success) {
             setStats({
-              totalRegistrations: data.totalRegistrations,
-              totalHonorariumEarned: data.totalHonorariumEarned,
+              totalRegistrations: data.totalRegistrations || 0,
+              totalHonorariumEarned: data.totalHonorariumEarned || '₹0',
               honorariumRate: data.honorariumRate || 25,
-              referralClicks: data.referralClicks,
-              conversionRate: data.conversionRate,
+              referralClicks: data.referralClicks || 0,
+              conversionRate: data.conversionRate || '0.0%',
               status: data.status || 'PENDING',
               conversionsRoster: data.conversionsRoster || []
             });
@@ -101,69 +95,65 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
         </div>
       )}
 
-      {/* EXECUTIVE PERFORMANCE ANALYTICS BANNER */}
-      <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 border border-slate-800 shadow-2xl space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-          <div className="flex items-center gap-3.5">
-            <div className="p-3.5 rounded-2xl bg-amber-400/20 border border-amber-400/30 text-amber-300">
-              <Users className="w-6 h-6 text-amber-400" />
-            </div>
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 font-mono">
-                Live Partner Referral Analytics
-              </span>
-              <h2 className="font-display text-xl sm:text-2xl font-bold text-white">
-                Total Registrations via Code ({referralCode})
-              </h2>
-            </div>
+      {/* OVERVIEW METRICS HERO CARD */}
+      <div className="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+          <div className="space-y-1">
+            <span className="text-[10.5px] font-mono font-extrabold uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">
+              LIVE PARTNER REFERRAL ANALYTICS
+            </span>
+            <h2 className="font-display text-2xl sm:text-3xl font-black text-white pt-2">
+              Total Registrations via Code ({referralCode})
+            </h2>
           </div>
 
           <button
             onClick={() => setShowPayoutModal(true)}
-            className="btn-primary text-xs py-3 px-5 bg-emerald-500 hover:bg-emerald-600 font-bold text-slate-950 flex items-center justify-center gap-2 shadow-lg cursor-pointer rounded-2xl transition-all hover:scale-105"
+            className="py-3 px-5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-2xl border border-white/20 transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
           >
-            <CreditCard className="w-4 h-4" /> Setup Payout UPI / Upload QR
+            <CreditCard className="w-4 h-4 text-emerald-400" /> Setup Payout UPI / Upload QR
           </button>
         </div>
 
+        {/* METRICS GRID */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
-            <span className="text-slate-400 text-xs font-semibold block mb-1">Total Registrations</span>
-            <div className="font-mono text-3xl font-black text-amber-300">{stats.totalRegistrations}</div>
-            <span className="text-[10.5px] text-slate-400 font-mono block mt-1">Verified Candidate Enrolments</span>
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Total Registrations</span>
+            <span className="font-mono text-2xl sm:text-3xl font-black text-amber-400 block">{stats.totalRegistrations}</span>
+            <span className="text-[10px] text-slate-500 font-semibold block">Verified Candidate Enrolments</span>
           </div>
 
-          <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
-            <span className="text-slate-400 text-xs font-semibold block mb-1">Total Honorarium Earned</span>
-            <div className="font-mono text-3xl font-black text-emerald-400">{stats.totalHonorariumEarned}</div>
-            <span className="text-[10.5px] text-emerald-400 block mt-1">₹{stats.honorariumRate} per candidate (Admin Set)</span>
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Total Honorarium Earned</span>
+            <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-400 block">{stats.totalHonorariumEarned}</span>
+            <span className="text-[10px] text-emerald-500 font-semibold block">₹{stats.honorariumRate} per candidate (Admin Set)</span>
           </div>
 
-          <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
-            <span className="text-slate-400 text-xs font-semibold block mb-1">Referral Link Clicks</span>
-            <div className="font-mono text-3xl font-black text-indigo-300">{stats.referralClicks.toLocaleString('en-IN')}</div>
-            <span className="text-[10.5px] text-indigo-300 block mt-1">Total link visitors</span>
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Referral Link Clicks</span>
+            <span className="font-mono text-2xl sm:text-3xl font-black text-indigo-400 block">{stats.referralClicks.toLocaleString()}</span>
+            <span className="text-[10px] text-slate-500 font-semibold block">Total link visitors</span>
           </div>
 
-          <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
-            <span className="text-slate-400 text-xs font-semibold block mb-1">Conversion Rate</span>
-            <div className="font-mono text-3xl font-black text-white">{stats.conversionRate}</div>
-            <span className="text-[10.5px] text-emerald-400 block mt-1">High conversion partner</span>
+          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+            <span className="text-[10px] text-slate-400 uppercase font-bold block">Conversion Rate</span>
+            <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-300 block">{stats.conversionRate}</span>
+            <span className="text-[10px] text-emerald-400 font-semibold block">Verified referral performance</span>
           </div>
         </div>
       </div>
 
-      {/* DUAL ROLE: REGISTER MY CHILD (₹0 WAIVER) QUICK BANNER */}
-      <div className="bg-amber-50/90 border border-amber-200 p-6 rounded-3xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 text-amber-950 shadow-sm">
-        <div className="flex items-center gap-3.5">
-          <div className="p-3 rounded-2xl bg-amber-400 text-slate-950 shrink-0">
-            <GraduationCap className="w-6 h-6" />
+      {/* PARTNER CHILD FEE WAIVER CARD */}
+      <div className="bg-amber-50/80 border border-amber-300/80 rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+        <div className="flex items-center gap-4">
+          <div className="p-3.5 rounded-2xl bg-amber-400 text-slate-950 shrink-0">
+            <GraduationCap className="w-6 h-6 text-slate-950" />
           </div>
           <div>
             <h3 className="font-bold text-base text-amber-950">
               Partner Child Fee Waiver (100% Waived)
             </h3>
-            <p className="text-xs text-amber-900">
+            <p className="text-xs text-amber-900 mt-0.5">
               As an official Courage Partner, enroll your own Class 5–8 children with ₹0 registration fee.
             </p>
           </div>
@@ -171,65 +161,83 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
 
         <button
           onClick={onOpenChildModal}
-          className="btn-primary text-xs py-3 px-6 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl shrink-0 cursor-pointer shadow"
+          className="w-full sm:w-auto py-3.5 px-6 bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
         >
-          Register My Child (₹0 Fee) <ArrowRight className="w-4 h-4" />
+          Register My Child (₹0 Fee) <ArrowRight className="w-4 h-4 text-amber-400" />
         </button>
       </div>
 
-      {/* PRIVACY-PROTECTED REFERRAL CONVERSIONS ROSTER TABLE */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
+      {/* VERIFIED REFERRAL CONVERSIONS ROSTER */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
           <div>
-            <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+            <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-emerald-600" /> Verified Referral Conversions Roster
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 mt-0.5">
               Anonymized student registration log via your referral code ({referralCode}) for student privacy compliance.
             </p>
           </div>
-          <span className="text-xs font-bold font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full w-fit">
+
+          <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 shrink-0">
             {stats.totalRegistrations} Verified Enrolments
           </span>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead>
-              <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-semibold">
-                <th className="py-3 px-2">Registration Ref ID</th>
-                <th className="py-3 px-2">Region / District</th>
-                <th className="py-3 px-2">Fee Status</th>
-                <th className="py-3 px-2">Honorarium</th>
-                <th className="py-3 px-2">Registered Date</th>
-                <th className="py-3 px-2">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-              {stats.conversionsRoster.map((row, i) => (
-                <tr key={i} className="hover:bg-slate-50">
-                  <td className="py-3.5 px-2 font-mono font-bold text-indigo-900">{row.refId}</td>
-                  <td className="py-3.5 px-2 font-semibold text-slate-700">{row.region}</td>
-                  <td className="py-3.5 px-2 font-mono font-semibold text-slate-800">{row.fee}</td>
-                  <td className="py-3.5 px-2 font-mono font-bold text-emerald-700">{row.amount}</td>
-                  <td className="py-3.5 px-2 text-slate-500">{row.date}</td>
-                  <td className="py-3.5 px-2">
-                    <span className="bg-emerald-50 text-emerald-700 font-bold px-2.5 py-0.5 rounded-full text-[10px] border border-emerald-200 inline-flex items-center gap-1">
-                      <Check className="w-3 h-3 text-emerald-600" /> {row.status}
-                    </span>
-                  </td>
+        {stats.conversionsRoster.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+                <tr className="border-b border-slate-200 text-[11px] font-mono font-extrabold text-slate-400 uppercase tracking-wider">
+                  <th className="py-3 px-4">Candidate ID</th>
+                  <th className="py-3 px-4">Region</th>
+                  <th className="py-3 px-4">Exam Fee Status</th>
+                  <th className="py-3 px-4">Honorarium Credit</th>
+                  <th className="py-3 px-4">Date</th>
+                  <th className="py-3 px-4">Verification</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-xs">
+                {stats.conversionsRoster.map((item: any, idx: number) => (
+                  <tr key={idx} className="hover:bg-slate-50/80 transition-colors font-medium text-slate-800">
+                    <td className="py-3.5 px-4 font-mono font-bold text-indigo-700">{item.refId}</td>
+                    <td className="py-3.5 px-4 text-slate-600">{item.region}</td>
+                    <td className="py-3.5 px-4 font-mono font-semibold text-slate-700">{item.fee}</td>
+                    <td className="py-3.5 px-4 font-mono font-black text-emerald-600">{item.amount}</td>
+                    <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">{item.date}</td>
+                    <td className="py-3.5 px-4">
+                      <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                        <Check className="w-3 h-3 text-emerald-600" /> {item.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-slate-50/60 rounded-2xl border border-dashed border-slate-200 space-y-3">
+            <Users className="w-9 h-9 text-slate-300 mx-auto" />
+            <div className="space-y-1">
+              <h4 className="font-bold text-sm text-slate-800">No Verified Candidate Registrations Yet</h4>
+              <p className="text-xs text-slate-500 max-w-md mx-auto">
+                Share your referral code <strong className="font-mono text-indigo-600">{referralCode}</strong> with parents, teachers, and students to start tracking live candidate mobilizations.
+              </p>
+            </div>
+            <button
+              onClick={() => onNavigateToTab && onNavigateToTab('referral')}
+              className="py-2.5 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer transition-all inline-flex items-center gap-1.5 mt-2"
+            >
+              Get Referral Link & Media Kit <ArrowRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
-      {/* PAYOUT ACCOUNT SETUP MODAL */}
+      {/* PAYOUT ACCOUNT MODAL */}
       <PayoutAccountModal
         isOpen={showPayoutModal}
         onClose={() => setShowPayoutModal(false)}
-        partnerName={partnerName}
         referralCode={referralCode}
       />
     </div>
