@@ -40,10 +40,10 @@ export const PartnerReputationAndAnalytics: React.FC<PartnerReputationAndAnalyti
 
   const tiers = [
     { tier: 'Bronze',   min: 1,   max: 25,  rate: '₹25 / Student', bonus: 'Base Tier',        badge: '🥉 Bronze Mobilizer', color: 'border-slate-200 bg-slate-50 text-slate-800',               perks: ['Standard Referral Link', 'WhatsApp Templates', 'Digital Certificate'] },
-    { tier: 'Silver',   min: 26,  max: 50,  rate: '₹25 / Student', bonus: '+ ₹500 Bonus',     badge: '🥈 Silver Mobilizer', color: 'border-slate-300 bg-slate-100 text-slate-900',              perks: ['Custom Referral Code', 'Printable QR Poster', 'Priority Payouts'] },
-    { tier: 'Gold',     min: 51,  max: 100, rate: '₹25 / Student', bonus: '+ ₹1,500 Bonus',   badge: '🥇 Gold Mobilizer',   color: 'border-amber-300 bg-amber-50 text-amber-950',              perks: ['Verified Badge', 'Instant UPI Settlement', 'Featured Profile'] },
-    { tier: 'Platinum', min: 101, max: 250, rate: '₹25 / Student', bonus: '+ ₹5,000 Bonus',   badge: '💎 Platinum Partner', color: 'border-indigo-200 bg-indigo-50 text-indigo-950',           perks: ['School Drive Grants', 'Account Manager', 'Child Fee Waiver'] },
-    { tier: 'Founding', min: 251, max: Infinity, rate: '₹25 / Student', bonus: '+ ₹15,000 Bonus', badge: '🌟 Founding Partner', color: 'border-emerald-300 bg-emerald-50 text-emerald-950', perks: ['Hall of Fame Listing', 'Physical Trophy', 'Lifetime Revenue Share'] },
+    { tier: 'Silver',   min: 26,  max: 50,  rate: '₹30 / Student', bonus: '+ ₹500 Bonus',     badge: '🥈 Silver Mobilizer', color: 'border-slate-300 bg-slate-100 text-slate-900',              perks: ['Custom Referral Code', 'Printable QR Poster', 'Priority Payouts'] },
+    { tier: 'Gold',     min: 51,  max: 100, rate: '₹40 / Student', bonus: '+ ₹1,500 Bonus',   badge: '🥇 Gold Mobilizer',   color: 'border-amber-300 bg-amber-50 text-amber-950',              perks: ['Verified Badge', 'Instant UPI Settlement', 'Featured Profile'] },
+    { tier: 'Platinum', min: 101, max: 250, rate: '₹50 / Student', bonus: '+ ₹5,000 Bonus',   badge: '💎 Platinum Partner', color: 'border-indigo-200 bg-indigo-50 text-indigo-950',           perks: ['School Drive Grants', 'Account Manager', 'Child Fee Waiver'] },
+    { tier: 'Founding', min: 251, max: Infinity, rate: '₹60 / Student', bonus: '+ ₹15,000 Bonus', badge: '🌟 Founding Partner', color: 'border-emerald-300 bg-emerald-50 text-emerald-950', perks: ['Hall of Fame Listing', 'Physical Trophy', 'Lifetime Revenue Share'] },
   ];
 
   const currentTierObj = tiers.find(t => verifiedRegistrations >= t.min && verifiedRegistrations <= t.max) || tiers[0];
@@ -232,7 +232,7 @@ export const PartnerReputationAndAnalytics: React.FC<PartnerReputationAndAnalyti
                   </span>
                 )}
                 <div className="space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">{item.min}–{item.max === Infinity ? '251+' : item.max} Students</span>
+                  <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">{item.max === Infinity ? '251+ Students' : `${item.min}–${item.max} Students`}</span>
                   <h4 className="font-display font-black text-lg">{item.tier}</h4>
                   <div className="font-mono text-xs font-bold text-emerald-700">{item.rate}</div>
                   <div className="text-[11px] font-extrabold text-indigo-700">{item.bonus}</div>
