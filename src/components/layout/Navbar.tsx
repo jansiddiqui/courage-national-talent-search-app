@@ -217,7 +217,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState<number | null>(null);
-  const [mobileOpenCategory, setMobileOpenCategory] = useState<number | null>(null);
+  const [mobileOpenCategory, setMobileOpenCategory] = useState<number | null>(0);
   
   // Single vs Multi-Role State
   const [dashboardDropdownOpen, setDashboardDropdownOpen] = useState(false);
@@ -473,10 +473,10 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
         <div className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden animate-fade-in" onClick={() => setMenuOpen(false)}>
           <div 
             onClick={e => e.stopPropagation()}
-            className="fixed inset-x-0 top-[70px] bg-white border-b border-slate-200 shadow-2xl p-6 z-50 space-y-6 max-h-[85vh] overflow-y-auto rounded-b-3xl animate-slide-down"
+            className={`fixed inset-x-0 ${scrolled ? 'top-[60px]' : 'top-[78px]'} bg-white border-b border-slate-200 shadow-2xl p-5 z-50 space-y-5 max-h-[82vh] overflow-y-auto rounded-b-3xl animate-slide-down`}
           >
             {/* Quick Mobile Action Buttons */}
-            <div className="flex items-center gap-2 pt-2 pb-4 border-b border-slate-100">
+            <div className="flex items-center gap-2 pt-1 pb-3 border-b border-slate-100">
               <RegisterCTA />
               <Link
                 href="/login"
@@ -488,30 +488,30 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
             </div>
 
             {/* Mobile Categories Accordion Navigation */}
-            <div className="space-y-4">
+            <div className="space-y-3">
               <Link
                 href="/"
                 onClick={() => setMenuOpen(false)}
-                className="font-extrabold text-sm text-slate-900 flex items-center justify-between p-2 rounded-xl hover:bg-slate-50"
+                className="font-extrabold text-xs text-slate-900 flex items-center justify-between p-2 rounded-xl hover:bg-slate-50"
               >
                 <span>Home Overview</span>
-                <ChevronRight size={16} className="text-slate-400" />
+                <ChevronRight size={15} className="text-slate-400" />
               </Link>
 
               {navCategories.map((cat, idx) => {
                 const isOpen = mobileOpenCategory === idx;
                 return (
-                  <div key={cat.label} className="space-y-2 border-t border-slate-100 pt-3">
+                  <div key={cat.label} className="space-y-1.5 border-t border-slate-100 pt-2.5">
                     <button
                       onClick={() => setMobileOpenCategory(isOpen ? null : idx)}
-                      className="w-full flex items-center justify-between text-xs font-mono uppercase font-bold text-slate-400 tracking-wider cursor-pointer p-1"
+                      className="w-full flex items-center justify-between text-[11px] font-mono uppercase font-extrabold text-slate-400 tracking-wider cursor-pointer p-1"
                     >
-                      <span>{cat.label}</span>
-                      <ChevronDown size={14} className={`transition-transform ${isOpen ? "rotate-180 text-indigo-600" : ""}`} />
+                      <span className={isOpen ? "text-indigo-600 font-black" : ""}>{cat.label}</span>
+                      <ChevronDown size={14} className={`transition-transform duration-200 ${isOpen ? "rotate-180 text-indigo-600" : "text-slate-400"}`} />
                     </button>
 
-                    {(isOpen || true) && (
-                      <div className="grid grid-cols-1 gap-1 pl-2">
+                    {isOpen && (
+                      <div className="grid grid-cols-1 gap-1 pl-1 pt-1 animate-fade-in">
                         {cat.links.map(link => {
                           const IconComp = link.icon;
                           return (
@@ -519,7 +519,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                               key={link.href}
                               href={link.href}
                               onClick={() => setMenuOpen(false)}
-                              className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-indigo-50 text-xs font-semibold text-slate-800"
+                              className="flex items-center gap-2.5 p-2 rounded-xl hover:bg-indigo-50 text-xs font-semibold text-slate-800 transition-colors"
                             >
                               <div className={`p-1.5 rounded-lg ${link.iconBg} ${link.iconColor} shrink-0`}>
                                 <IconComp size={15} />
@@ -536,13 +536,13 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
             </div>
 
             {/* Mobile Footer Partner Workspace Link */}
-            <div className="pt-4 border-t border-slate-100">
+            <div className="pt-3 border-t border-slate-100">
               <Link
                 href="/partners"
                 onClick={() => setMenuOpen(false)}
                 className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow"
               >
-                <Heart size={16} /> Courage Partner Platform <ArrowRight size={16} />
+                <Heart size={15} /> Courage Partner Platform <ArrowRight size={15} />
               </Link>
             </div>
           </div>
