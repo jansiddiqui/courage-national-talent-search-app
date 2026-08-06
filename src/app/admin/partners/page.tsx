@@ -23,7 +23,6 @@ import {
   UserCheck,
   UserX
 } from 'lucide-react';
-import AdminV2Layout from '../v2-layout';
 
 export default function AdminPartnersPage() {
   const [activeTab, setActiveTab] = useState<'approvals' | 'directory' | 'payouts' | 'broadcast'>('approvals');
@@ -239,7 +238,7 @@ export default function AdminPartnersPage() {
   const pendingPayouts = payouts.filter(p => p.status === 'PENDING');
 
   return (
-    <AdminV2Layout>
+    <>
       <div className="space-y-8 p-6 md:p-8 animate-fade-in max-w-7xl mx-auto">
         
         {/* TOP BANNER */}
@@ -716,6 +715,6 @@ export default function AdminPartnersPage() {
           </div>
         )}
       </div>
-    </AdminV2Layout>
+    </>
   );
 }
