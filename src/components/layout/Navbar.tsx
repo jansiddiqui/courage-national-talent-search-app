@@ -101,16 +101,16 @@ const navCategories: NavCategory[] = [
         iconColor: "text-blue-600"
       },
       { 
-        label: "Language Pathway", 
-        href: "/academy/language", 
-        icon: Languages,
+        label: "Critical Thinking", 
+        href: "/academy/critical", 
+        icon: Sparkles,
         iconBg: "bg-blue-50/85",
         iconColor: "text-blue-600"
       },
       { 
-        label: "Critical Thinking", 
-        href: "/academy/critical", 
-        icon: Sparkles,
+        label: "Language Mastery", 
+        href: "/academy/language", 
+        icon: Languages,
         iconBg: "bg-blue-50/85",
         iconColor: "text-blue-600"
       },
@@ -127,30 +127,37 @@ const navCategories: NavCategory[] = [
         iconColor: "text-blue-600"
       },
       { 
-        label: "Test Guidelines", 
+        label: "Exam Instructions", 
         href: "/exam-instructions", 
         icon: Info,
         iconBg: "bg-blue-50/85",
         iconColor: "text-blue-600"
       },
       { 
-        label: "Download Admit Card", 
-        href: "/admit-card-portal", 
-        icon: CreditCard,
+        label: "Mock Test", 
+        href: "/mock-exam", 
+        icon: Award,
         iconBg: "bg-blue-50/85",
         iconColor: "text-blue-600"
       },
       { 
-        label: "Sample Brain Report", 
-        href: "/sample-report", 
+        label: "System Check", 
+        href: "/system-check", 
+        icon: ShieldCheck,
+        iconBg: "bg-blue-50/85",
+        iconColor: "text-blue-600"
+      },
+      { 
+        label: "Search Results", 
+        href: "/results", 
         icon: BarChart3,
         iconBg: "bg-blue-50/85",
         iconColor: "text-blue-600"
       },
       { 
-        label: "Results Portal", 
-        href: "/results", 
-        icon: Award,
+        label: "Admit Card Portal", 
+        href: "/admit-card-portal", 
+        icon: CreditCard,
         iconBg: "bg-blue-50/85",
         iconColor: "text-blue-600"
       },
@@ -289,314 +296,172 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
             ? theme === "dark"
               ? "top-0 bg-slate-950/95 border-b border-slate-800/60 shadow-sm py-3 backdrop-blur-md"
               : "top-0 bg-white/95 border-b border-slate-200/80 shadow-sm py-3 backdrop-blur-md"
-            : "top-[38px] bg-transparent py-5"
+            : "top-[38px] bg-transparent py-4"
         }`}
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
           
-          {/* Logo */}
+          {/* Logo & Brand Identity — HIGH-END INSTITUTIONAL DESIGN */}
           <Link href="/" className="flex items-center gap-3 group">
-            <div className="relative w-10 h-10 transition-transform duration-300 group-hover:scale-105">
+            <div className="relative w-10 h-10 rounded-2xl bg-white border border-slate-200/90 shadow-sm p-1.5 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-105 group-hover:border-indigo-400 group-hover:shadow-md">
               <Image
                 src="/images/logo.png"
                 alt="CNTS Logo"
-                fill
-                className="object-contain"
+                width={32}
+                height={32}
+                className="w-full h-full object-contain"
                 priority
               />
             </div>
-            <div>
-              <div className={`font-display font-black text-base leading-none tracking-tight transition-colors ${
-                isDarkNavbar ? "text-white" : "text-slate-900"
-              }`}>
-                CNTS
+            
+            <div className="flex flex-col justify-center">
+              <div className="flex items-center gap-1.5">
+                <span className={`font-display font-black text-lg leading-none tracking-tight transition-colors ${
+                  isDarkNavbar ? "text-white" : "text-slate-900"
+                }`}>
+                  CNTS
+                </span>
+                <span className="font-mono text-[10px] font-extrabold text-amber-600 bg-amber-50 px-1.5 py-0.2 rounded border border-amber-200">
+                  2026
+                </span>
               </div>
-              <span className={`text-[9px] leading-tight font-extrabold tracking-widest uppercase block mt-1 transition-colors ${
-                isDarkNavbar ? "text-blue-400" : "text-blue-700"
+              <span className={`text-[9.5px] font-mono font-extrabold tracking-wider uppercase block mt-1 transition-colors ${
+                isDarkNavbar ? "text-indigo-400" : "text-indigo-700"
               }`}>
-                Powered by Courage Library
+                POWERED BY COURAGE LIBRARY
               </span>
             </div>
           </Link>
 
-          {/* Desktop Navigation Links with SaaS Dropdowns */}
-          <div className={`hidden md:flex items-center gap-1 p-1 rounded-xl border relative transition-all duration-200 ${
-            isDarkNavbar
-              ? "bg-slate-950/40 border-white/5"
-              : "bg-slate-100/50 border-slate-200/40"
-          }`}>
-            
-            {/* Direct Home Link */}
+          {/* Desktop Navigation Links */}
+          <div className="hidden lg:flex items-center gap-1 bg-white/70 backdrop-blur-md p-1.5 rounded-2xl border border-slate-200/70 shadow-xs">
             <Link
               href="/"
-              className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 ${
-                isDarkNavbar
-                  ? "text-slate-300 hover:text-white hover:bg-white/5"
-                  : "text-slate-600 hover:text-blue-700 hover:bg-white hover:shadow-sm"
-              }`}
+              className="px-3.5 py-2 text-xs font-bold text-slate-700 hover:text-indigo-600 hover:bg-slate-100/80 rounded-xl transition-all"
             >
               Home
             </Link>
 
-            {navCategories.map((category, catIdx) => {
-              const isDropdownOpen = activeDropdown === catIdx;
-              return (
-                <div
-                  key={category.label}
-                  className="relative"
-                  onMouseEnter={() => setActiveDropdown(catIdx)}
-                  onMouseLeave={() => setActiveDropdown(null)}
+            {navCategories.map((cat, catIdx) => (
+              <div
+                key={cat.label}
+                className="relative"
+                onMouseEnter={() => setActiveDropdown(catIdx)}
+                onMouseLeave={() => setActiveDropdown(null)}
+              >
+                <button
+                  className={`px-3.5 py-2 text-xs font-bold rounded-xl flex items-center gap-1 transition-all cursor-pointer ${
+                    activeDropdown === catIdx
+                      ? "text-indigo-600 bg-indigo-50/80 font-extrabold"
+                      : "text-slate-700 hover:text-indigo-600 hover:bg-slate-100/80"
+                  }`}
                 >
-                  <button
-                    className={`px-3.5 py-1.5 text-xs font-bold rounded-lg transition-all duration-200 flex items-center gap-1 cursor-pointer select-none ${
-                      isDropdownOpen
-                        ? "bg-white text-blue-700 shadow-sm"
-                        : isDarkNavbar
-                        ? "text-slate-300 hover:text-white hover:bg-white/5"
-                        : "text-slate-600 hover:text-blue-700 hover:bg-white/40"
+                  {cat.label}
+                  <ChevronDown
+                    size={13}
+                    className={`transition-transform duration-200 ${
+                      activeDropdown === catIdx ? "rotate-180 text-indigo-600" : "text-slate-400"
                     }`}
-                  >
-                    <span>{category.label}</span>
-                    <ChevronDown 
-                      size={12} 
-                      className={`transition-transform duration-200 ${isDropdownOpen ? "rotate-180" : "rotate-0"}`} 
-                    />
-                  </button>
+                  />
+                </button>
 
-                  {/* Premium SaaS Dropdown Floating Card - Smooth Apple-Style Popover with Triangle */}
-                  <div 
-                    className={`absolute top-full left-1/2 -translate-x-1/2 mt-2 w-[240px] bg-white border border-slate-200/70 shadow-2xl rounded-2xl p-2 z-50 transition-all duration-250 ease-out origin-top ${
-                      isDropdownOpen 
-                        ? "opacity-100 translate-y-0 scale-100 pointer-events-auto" 
-                        : "opacity-0 -translate-y-2.5 scale-95 pointer-events-none"
-                    }`}
-                  >
-                    {/* Small Connector Pointer Arrow */}
-                    <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-t border-l border-slate-200/70 rotate-45 z-40" />
-
-                    <div className="space-y-0.5 relative z-10 bg-white rounded-xl">
-                      {category.links.map((subLink) => {
-                        const SubIcon = subLink.icon;
+                {/* Dropdown Menu */}
+                {activeDropdown === catIdx && (
+                  <div className="absolute top-full left-0 pt-2 w-64 z-50 animate-fade-in">
+                    <div className="bg-white rounded-2xl p-2 border border-slate-200 shadow-xl space-y-1">
+                      {cat.links.map((link) => {
+                        const Icon = link.icon;
                         return (
                           <Link
-                            key={subLink.href}
-                            href={subLink.href}
-                            className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50/80 transition-all group/item text-left"
+                            key={link.href}
+                            href={link.href}
+                            className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-indigo-50/60 transition-colors group/item"
                           >
-                            <div className="w-7 h-7 rounded-lg bg-blue-50/80 text-blue-650 flex items-center justify-center shrink-0 group-hover/item:bg-blue-600 group-hover/item:text-white group-hover/item:scale-105 transition-all duration-300">
-                              <SubIcon size={14} className="stroke-[2.2]" />
+                            <div className={`p-2 rounded-lg ${link.iconBg} ${link.iconColor} shrink-0 group-hover/item:scale-110 transition-transform`}>
+                              <Icon size={16} />
                             </div>
-                            <span className="font-bold text-slate-800 text-xs sm:text-[13px] group-hover/item:text-blue-700 group-hover/item:translate-x-0.5 transition-all duration-200">
-                              {subLink.label}
-                            </span>
+                            <div>
+                              <span className="font-bold text-xs text-slate-800 group-hover/item:text-indigo-700 block">
+                                {link.label}
+                              </span>
+                            </div>
                           </Link>
                         );
                       })}
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                )}
+              </div>
+            ))}
           </div>
 
-          {/* Call to Actions */}
-          <div className="hidden md:flex items-center gap-4">
+          {/* Action Right Area */}
+          <div className="hidden sm:flex items-center gap-3">
             {isAuthenticated ? (
-              userRoles.length > 1 ? (
-                /* Multi-Role User: Ask which dashboard to enter */
-                <div className="relative">
-                  <button
-                    onClick={() => setDashboardDropdownOpen(!dashboardDropdownOpen)}
-                    className="px-5 py-2.5 bg-[#0F172A] text-white text-xs font-bold rounded-xl transition-all duration-200 shadow-md hover:bg-slate-800 flex items-center gap-1.5 cursor-pointer"
-                  >
-                    <span>Dashboard</span>
-                    <ChevronDown size={14} className={`transition-transform duration-200 ${dashboardDropdownOpen ? 'rotate-180 text-amber-400' : 'text-slate-400'}`} />
-                  </button>
-
-                  {/* Multi-Role Floating Switcher Dropdown */}
-                  {dashboardDropdownOpen && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white border border-slate-200/80 shadow-2xl rounded-2xl p-2 z-50 animate-slide-up">
-                      <div className="text-[10px] uppercase font-bold text-slate-400 px-3 py-1.5 tracking-wider">
-                        Select Portal Workspace
-                      </div>
-
-                      {userRoles.includes('ADMIN') && (
-                        <Link
-                          href="/admin"
-                          onClick={() => setDashboardDropdownOpen(false)}
-                          className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 transition-all font-bold text-xs text-slate-900"
-                        >
-                          <ShieldCheck className="w-4 h-4 text-amber-500 shrink-0" />
-                          <span>Admin Control Center</span>
-                        </Link>
-                      )}
-
-                      {userRoles.includes('PARENT') && (
-                        <Link
-                          href="/dashboard"
-                          onClick={() => setDashboardDropdownOpen(false)}
-                          className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 transition-all font-bold text-xs text-indigo-900"
-                        >
-                          <GraduationCap className="w-4 h-4 text-indigo-600 shrink-0" />
-                          <span>Parent & Student Dashboard</span>
-                        </Link>
-                      )}
-
-                      {userRoles.includes('PARTNER') && (
-                        <Link
-                          href="/partners?view=workspace"
-                          onClick={() => setDashboardDropdownOpen(false)}
-                          className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-slate-100 transition-all font-bold text-xs text-amber-950"
-                        >
-                          <Sparkles className="w-4 h-4 text-amber-600 shrink-0" />
-                          <span>Partner Workspace</span>
-                        </Link>
-                      )}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                /* Single-Role User: Direct Redirection with NO questions asked */
-                <Link
-                  href={
-                    userRoles.includes('PARTNER') ? "/partners?view=workspace" :
-                    userRoles.includes('ADMIN') ? "/admin" :
-                    "/dashboard"
-                  }
-                  className="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold rounded-xl transition-all duration-200 shadow-sm"
+              <div className="relative">
+                <button
+                  onClick={() => setDashboardDropdownOpen(!dashboardDropdownOpen)}
+                  className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center gap-2 cursor-pointer transition-all"
                 >
-                  Dashboard
-                </Link>
-              )
+                  <span>Dashboard</span>
+                  <ChevronDown size={13} className={dashboardDropdownOpen ? "rotate-180" : ""} />
+                </button>
+
+                {/* Single vs Multi-role Dropdown */}
+                {dashboardDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl p-2 border border-slate-200 shadow-2xl z-50 space-y-1">
+                    <span className="text-[10px] font-mono font-bold uppercase text-slate-400 px-3 py-1 block">Switch Workspace</span>
+                    {userRoles.includes('PARENT') && (
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setDashboardDropdownOpen(false)}
+                        className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-indigo-50 text-xs font-bold text-slate-800"
+                      >
+                        <GraduationCap size={16} className="text-indigo-600" /> Parent Dashboard
+                      </Link>
+                    )}
+                    {userRoles.includes('PARTNER') && (
+                      <Link
+                        href="/partners?view=workspace"
+                        onClick={() => setDashboardDropdownOpen(false)}
+                        className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-indigo-50 text-xs font-bold text-slate-800"
+                      >
+                        <Heart size={16} className="text-pink-600" /> Partner Workspace
+                      </Link>
+                    )}
+                    {userRoles.includes('ADMIN') && (
+                      <Link
+                        href="/admin"
+                        onClick={() => setDashboardDropdownOpen(false)}
+                        className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-indigo-50 text-xs font-bold text-slate-800"
+                      >
+                        <ShieldCheck size={16} className="text-amber-600" /> Admin Console
+                      </Link>
+                    )}
+                  </div>
+                )}
+              </div>
             ) : (
-              <>
+              <div className="flex items-center gap-2">
                 <Link
                   href="/login"
-                  className={`text-xs font-bold transition-colors ${
-                    isDarkNavbar
-                      ? "text-slate-300 hover:text-white"
-                      : "text-slate-600 hover:text-blue-700"
-                  }`}
+                  className="px-4 py-2.5 text-xs font-bold text-slate-700 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all"
                 >
                   Login
                 </Link>
-                <RegisterCTA
-                  unauthenticatedText="Register Now"
-                  authenticatedText="Register Another Child"
-                  className="px-5 py-2.5 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-all duration-200 shadow-md shadow-blue-600/10 hover:shadow-lg hover:-translate-y-0.5 cursor-pointer"
-                />
-              </>
+                <RegisterCTA />
+              </div>
             )}
           </div>
 
-          {/* Mobile menu button */}
+          {/* Mobile Hamburger Toggle */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className={`md:hidden p-2 rounded-lg transition-colors ${
-              isDarkNavbar
-                ? "text-slate-300 hover:bg-white/10"
-                : "text-slate-600 hover:bg-slate-100"
-            }`}
-            aria-label="Toggle mobile menu"
+            className="lg:hidden p-2.5 text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer"
           >
             {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
         </div>
-
-        {/* Mobile popover panel drawer */}
-        {menuOpen && (
-          <div className={`md:hidden mt-3 mx-4 rounded-2xl p-4 shadow-xl border backdrop-blur-xl transition-all duration-300 ${
-            theme === "dark"
-              ? "bg-slate-950/98 border-slate-800 text-white"
-              : "bg-white/98 border-slate-200/80 text-slate-950"
-          }`}>
-            <div className="space-y-2">
-              
-              {/* Direct Mobile Home Link */}
-              <div className="border-b border-slate-100 pb-2">
-                <Link
-                  href="/"
-                  onClick={() => setMenuOpen(false)}
-                  className="block py-2 text-xs font-bold text-slate-700 hover:text-blue-700"
-                >
-                  Home
-                </Link>
-              </div>
-
-              {navCategories.map((category, catIdx) => {
-                const isMobileCatOpen = mobileOpenCategory === catIdx;
-                return (
-                  <div key={category.label} className="border-b border-slate-100 pb-2 last:border-0 last:pb-0">
-                    <button
-                      onClick={() => setMobileOpenCategory(isMobileCatOpen ? null : catIdx)}
-                      className={`w-full flex items-center justify-between py-2 text-xs font-bold text-slate-700 hover:text-blue-700 cursor-pointer`}
-                    >
-                      <span>{category.label}</span>
-                      <ChevronDown 
-                        size={14} 
-                        className={`transition-transform duration-200 ${isMobileCatOpen ? "rotate-180 text-blue-700" : "rotate-0 text-slate-400"}`} 
-                      />
-                    </button>
-                    
-                    {/* Collapsible Mobile Sub-links */}
-                    {isMobileCatOpen && (
-                      <div className="pl-3 mt-1.5 space-y-1.5 animate-fade-in">
-                        {category.links.map((subLink) => (
-                          <Link
-                            key={subLink.href}
-                            href={subLink.href}
-                            onClick={() => setMenuOpen(false)}
-                            className="block py-1.5 text-[11px] font-bold text-slate-500 hover:text-blue-750"
-                          >
-                            {subLink.label}
-                          </Link>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className={`mt-4 pt-3 border-t flex flex-col gap-2.5 ${
-              theme === "dark" ? "border-white/10" : "border-slate-100"
-            }`}>
-              {isAuthenticated ? (
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMenuOpen(false)}
-                  className={`block w-full text-center px-5 py-3 text-xs font-bold rounded-xl ${
-                    theme === "dark"
-                      ? "bg-white/10 text-white hover:bg-white/15"
-                      : "bg-slate-100 text-slate-800 hover:bg-slate-200"
-                  }`}
-                >
-                  Dashboard
-                </Link>
-              ) : (
-                <>
-                  <Link
-                    href="/login"
-                    onClick={() => setMenuOpen(false)}
-                    className={`block w-full text-center px-5 py-3 text-xs font-bold rounded-xl ${
-                      theme === "dark"
-                        ? "bg-white/10 text-white hover:bg-white/15"
-                        : "bg-slate-100 text-slate-800 hover:bg-slate-200"
-                    }`}
-                  >
-                    Login
-                  </Link>
-                  <RegisterCTA
-                    unauthenticatedText="Register Now"
-                    authenticatedText="Register Another Child"
-                    className="block w-full text-center px-5 py-3 bg-blue-600 text-white text-xs font-bold rounded-xl hover:bg-blue-700 shadow-md shadow-blue-600/10 cursor-pointer"
-                    onClick={() => setMenuOpen(false)}
-                  />
-                </>
-              )}
-            </div>
-          </div>
-        )}
       </nav>
     </>
   );
