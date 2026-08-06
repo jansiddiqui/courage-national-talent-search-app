@@ -66,13 +66,25 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
   useEffect(() => {
     const checkPartnerAuth = async () => {
       try {
-        const { authService } = await import('@/services/authService');
-        const session = await authService.checkSession();
-        if (session.isAuthenticated) {
+        const res = await fetch('/api/partner/session');
+        const data = await res.json();
+        if (data.isAuthenticated && data.partner) {
           setIsRegisteredPartner(true);
+          return;
         }
+
+        const savedPartner = localStorage.getItem('cnts_partner_session');
+        if (savedPartner) {
+          const parsed = JSON.parse(savedPartner);
+          if (parsed && (parsed.customSlug || parsed.referralCode || parsed.fullName)) {
+            setIsRegisteredPartner(true);
+            return;
+          }
+        }
+
+        setIsRegisteredPartner(false);
       } catch (e) {
-        // ignore
+        setIsRegisteredPartner(false);
       }
     };
     checkPartnerAuth();
