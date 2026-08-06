@@ -127,56 +127,17 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* LIVE REFERRAL REGISTRATIONS & PERFORMANCE BANNER */}
-      <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 border border-slate-800 shadow-2xl space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-          <div className="flex items-center gap-3.5">
-            <div className="p-3.5 rounded-2xl bg-amber-400/20 border border-amber-400/30 text-amber-300">
-              <Users className="w-6 h-6 text-amber-400" />
-            </div>
-            <div>
-              <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 font-mono">
-                Live Partner Referral Analytics & Payout Status
-              </span>
-              <h2 className="font-display text-xl sm:text-2xl font-bold text-white">
-                Total Registrations via Your Referral Code
-              </h2>
-            </div>
-          </div>
-
-          <button
-            onClick={() => setShowPayoutModal(true)}
-            className="btn-primary text-xs py-3 px-5 bg-emerald-500 hover:bg-emerald-600 font-bold text-slate-950 flex items-center justify-center gap-2 shadow-lg cursor-pointer rounded-xl transition-all hover:scale-105"
-          >
-            <CreditCard className="w-4 h-4" /> Setup Payout UPI / Upload Payment QR
-          </button>
+      {/* CLEAN MISSIONS HEADER */}
+      <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 border border-slate-800 shadow-xl space-y-3">
+        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-3 py-1.5 rounded-full">
+          <Compass className="w-3.5 h-3.5 text-amber-400" /> Flagship Mission Hub
         </div>
-
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
-            <span className="text-slate-400 text-xs font-semibold block mb-1">Total Registrations</span>
-            <div className="font-mono text-3xl font-black text-amber-300">124</div>
-            <span className="text-[10.5px] text-slate-400 font-mono block mt-1">Verified Candidate Enrolments</span>
-          </div>
-
-          <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
-            <span className="text-slate-400 text-xs font-semibold block mb-1">Total Honorarium Earned</span>
-            <div className="font-mono text-3xl font-black text-emerald-400">₹3,100</div>
-            <span className="text-[10.5px] text-emerald-400 block mt-1">₹25 per candidate (Max Capped)</span>
-          </div>
-
-          <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
-            <span className="text-slate-400 text-xs font-semibold block mb-1">Referral Link Clicks</span>
-            <div className="font-mono text-3xl font-black text-indigo-300">1,845</div>
-            <span className="text-[10.5px] text-indigo-300 block mt-1">Total link visitors</span>
-          </div>
-
-          <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
-            <span className="text-slate-400 text-xs font-semibold block mb-1">Conversion Rate</span>
-            <div className="font-mono text-3xl font-black text-white">6.7%</div>
-            <span className="text-[10.5px] text-emerald-400 block mt-1">High conversion partner</span>
-          </div>
-        </div>
+        <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+          Courage Partner Missions & Bounties
+        </h1>
+        <p className="text-slate-300 text-xs md:text-sm max-w-2xl leading-relaxed">
+          Participate in active mobilization drives to unlock milestone bonuses, institutional grants, and verified reputation badges.
+        </p>
       </div>
 
       {/* SECTION HEADER */}
