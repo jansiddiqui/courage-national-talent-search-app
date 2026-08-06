@@ -22,7 +22,12 @@ import {
   Globe, 
   BookOpen,
   Calendar,
-  Star
+  Star,
+  DollarSign,
+  ChevronDown,
+  ChevronUp,
+  Flame,
+  Check
 } from 'lucide-react';
 
 interface PartnersLandingProps {
@@ -40,6 +45,10 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
 }) => {
   const router = useRouter();
   const [isRegisteredPartner, setIsRegisteredPartner] = useState(false);
+  
+  // Interactive Calculator State
+  const [calcStudents, setCalcStudents] = useState<number>(100);
+  const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(0);
 
   useEffect(() => {
     const checkPartnerAuth = async () => {
@@ -55,27 +64,65 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
     };
     checkPartnerAuth();
   }, []);
+
+  // Dynamic Rate & Tier Calculator Logic
+  const getTierAndRate = (count: number) => {
+    if (count >= 251) return { tier: 'FOUNDING PARTNER', rate: 65, color: 'text-amber-400 bg-amber-400/10 border-amber-400/30' };
+    if (count >= 101) return { tier: 'PLATINUM MOBILIZER', rate: 50, color: 'text-purple-400 bg-purple-400/10 border-purple-400/30' };
+    if (count >= 51) return { tier: 'GOLD MOBILIZER', rate: 40, color: 'text-amber-300 bg-amber-300/10 border-amber-300/30' };
+    if (count >= 26) return { tier: 'SILVER MOBILIZER', rate: 30, color: 'text-slate-300 bg-slate-300/10 border-slate-300/30' };
+    return { tier: 'BRONZE MOBILIZER', rate: 25, color: 'text-amber-600 bg-amber-600/10 border-amber-600/30' };
+  };
+
+  const currentTierInfo = getTierAndRate(calcStudents);
+  const estimatedEarnings = calcStudents * currentTierInfo.rate;
+
+  const faqs = [
+    {
+      q: 'How does the Partner Honorarium payout work?',
+      a: 'Partners earn a direct honorarium rate per verified candidate registration (from ₹25 up to ₹65+ depending on tier and scale). Payouts are batched weekly every Monday directly into your linked UPI ID or Bank account.'
+    },
+    {
+      q: 'Who can apply to become a Courage Partner?',
+      a: 'Any content creator, YouTube educator, school teacher, coordinator, Telegram admin, WhatsApp community lead, educational NGO, or career mentor can join.'
+    },
+    {
+      q: 'How fast is partner application approval?',
+      a: 'Applications are reviewed individually within 24 hours. Once approved, your referral link, custom QR codes, and AI content copilot are activated immediately.'
+    },
+    {
+      q: 'Are candidate registrations tracked live?',
+      a: 'Yes! Your partner workspace includes live real-time candidate registration counters, conversion graphs, revenue projections, and weekly settlement statuses.'
+    }
+  ];
+
   return (
     <div className="w-full bg-[#F8FAFF] min-h-screen text-[#0F172A] pb-24">
-      {/* HERO SECTION */}
-      <section className="relative px-4 pt-28 pb-20 md:pt-36 md:pb-32 overflow-hidden mesh-bg">
+      
+      {/* HIGH-IMPACT AMBIENT HERO SECTION */}
+      <section className="relative px-4 pt-28 pb-20 md:pt-36 md:pb-32 overflow-hidden bg-gradient-to-b from-slate-950 via-indigo-950 via-slate-900 to-indigo-950 text-white">
+        
+        {/* Glow Orbs */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-500/15 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-10 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+
         <div className="max-w-5xl mx-auto text-center relative z-10">
           
-          {/* 1. FOUNDING PARTNER PROGRAM URGENCY CARD (Clean, no overlap with fixed Navbar) */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-2.5 bg-[#0F172A] text-white px-4 py-2.5 rounded-2xl shadow-xl border border-slate-800 mb-8 max-w-3xl mx-auto text-xs md:text-sm">
-            <span className="inline-flex items-center gap-1 bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 rounded-full font-bold text-xs">
-              🏅 Founding Partner Program
+          {/* FOUNDING PARTNER PROGRAM URGENCY BADGE */}
+          <div className="inline-flex flex-wrap items-center justify-center gap-2.5 bg-slate-900/90 backdrop-blur-md text-white px-4 py-2.5 rounded-full shadow-2xl border border-amber-400/30 mb-8 max-w-3xl mx-auto text-xs md:text-sm">
+            <span className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-0.5 rounded-full font-extrabold text-xs">
+              <Flame className="w-3.5 h-3.5 text-amber-400 animate-bounce" /> Founding Partner Cohort
             </span>
             <span className="text-slate-300 font-medium hidden sm:inline">
-              First 1,000 partners receive lifetime profile recognition.
+              First 1,000 partners receive lifetime profile recognition & priority payouts.
             </span>
-            <span className="font-mono text-emerald-400 font-bold bg-emerald-950/80 px-2 py-0.5 rounded text-xs border border-emerald-800">
+            <span className="font-mono text-emerald-400 font-extrabold bg-emerald-950/90 px-2.5 py-0.5 rounded-full text-xs border border-emerald-800">
               384 / 1,000 Claimed
             </span>
             <button 
               onClick={onOpenApply}
               aria-label="Claim Founding Partner status"
-              className="text-amber-400 hover:text-amber-300 underline font-bold flex items-center gap-1 ml-1 cursor-pointer"
+              className="text-amber-300 hover:text-white underline font-bold flex items-center gap-1 ml-1 cursor-pointer"
             >
               Claim Status <ArrowRight className="w-3.5 h-3.5 inline" />
             </button>
@@ -83,21 +130,23 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
 
           {/* Institutional Sub-Badge */}
           <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-slate-700 text-xs md:text-sm font-medium">
-              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-              Official Partnership Platform of Courage Library
+            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 px-4 py-1.5 rounded-full text-slate-200 text-xs md:text-sm font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              Official Creator & Partner Ecosystem of Courage Library
             </div>
           </div>
 
           {/* Main Editorial Headline */}
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-slate-900 leading-[1.08] mb-6">
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08] mb-6">
             Mobilize Students for <br className="hidden sm:block" />
-            <span className="gradient-text">Courage National Talent Search</span> 2026.
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-indigo-300 to-emerald-300">
+              Courage Talent Search 2026.
+            </span>
           </h1>
 
           {/* Subtitle / Mission Statement */}
-          <p className="max-w-3xl mx-auto text-lg md:text-xl text-slate-600 font-normal leading-relaxed mb-10">
-            This is not an affiliate network. This is the central ecosystem where creators, teachers, school coordinators, NGOs, Telegram admins, WhatsApp leaders, and educators collaborate with Courage Library to connect 100,000+ Class 5-8 students to 100% Merit Scholarships through CNTS 2026.
+          <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-slate-300 font-normal leading-relaxed mb-10">
+            The central ecosystem where creators, teachers, school leads, NGOs, and community leaders collaborate with Courage Library to connect 100,000+ Class 5–8 students to 100% Merit Scholarships through CNTS 2026.
           </p>
 
           {/* Primary Action Buttons */}
@@ -105,7 +154,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             <div className="flex items-center justify-center pt-2 mb-16">
               <button
                 onClick={onViewDemoWorkspace}
-                className="btn-primary text-lg px-10 py-4.5 shadow-2xl flex items-center gap-3 bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer font-bold rounded-2xl transition-all hover:scale-105"
+                className="text-base sm:text-lg px-10 py-4.5 shadow-2xl flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white cursor-pointer font-extrabold rounded-2xl transition-all hover:scale-105"
               >
                 <Sparkles className="w-5 h-5 text-amber-300" /> Go to Partner Workspace <ArrowRight className="w-5 h-5" />
               </button>
@@ -114,72 +163,149 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2 mb-16">
               <button
                 onClick={onOpenApply}
-                className="btn-primary text-base px-8 py-4 shadow-xl hover:shadow-2xl flex items-center gap-2 bg-slate-900 text-white hover:bg-slate-800 cursor-pointer"
+                className="text-base px-8 py-4 shadow-xl hover:shadow-2xl flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black rounded-2xl transition-all hover:scale-105 cursor-pointer"
               >
-                Apply to Become a Courage Partner <ArrowRight className="w-5 h-5" />
+                Apply to Become a Partner <ArrowRight className="w-5 h-5" />
               </button>
               
               <button
                 onClick={() => router.push('/login?tab=partner')}
-                className="btn-outline text-base px-7 py-4 border-slate-300 hover:bg-slate-100 flex items-center gap-2 cursor-pointer font-bold text-slate-800"
+                className="text-base px-7 py-4 border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl flex items-center gap-2 cursor-pointer transition-all"
               >
-                Login <Sparkles className="w-4 h-4 text-amber-500" />
+                Login to Partner Portal <Sparkles className="w-4 h-4 text-amber-400" />
               </button>
               
               <button
                 onClick={onExploreMissions}
-                className="w-full sm:w-auto btn-outline text-base px-8 py-4 h-auto hover:bg-slate-100 cursor-pointer"
+                className="w-full sm:w-auto text-base px-8 py-4 border border-white/15 bg-white/5 hover:bg-white/10 backdrop-blur-md text-slate-300 font-semibold rounded-2xl flex items-center justify-center gap-2 cursor-pointer transition-all"
               >
-                <Compass className="w-5 h-5 text-indigo-700" />
+                <Compass className="w-5 h-5 text-indigo-400" />
                 Explore Active Missions
               </button>
             </div>
           )}
 
           {/* Value Pillars Line */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left pt-6 border-t border-slate-200/80">
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-white/50">
-              <div className="p-2 rounded-lg bg-indigo-50 text-indigo-700">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left pt-6 border-t border-white/10">
+            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm text-slate-900">Mission First</h4>
-                <p className="text-xs text-slate-500">Educational impact before everything</p>
+                <h4 className="font-bold text-sm text-white">Mission First</h4>
+                <p className="text-xs text-slate-400">Educational impact priority</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-white/50">
-              <div className="p-2 rounded-lg bg-emerald-50 text-emerald-700">
+
+            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0">
                 <Users className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm text-slate-900">Community Second</h4>
-                <p className="text-xs text-slate-500">Trusted peer educator network</p>
+                <h4 className="font-bold text-sm text-white">Community</h4>
+                <p className="text-xs text-slate-400">Trusted educator network</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-white/50">
-              <div className="p-2 rounded-lg bg-amber-50 text-amber-700">
+
+            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-300 shrink-0">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm text-slate-900">Growth Third</h4>
-                <p className="text-xs text-slate-500">Skills, reach & certifications</p>
+                <h4 className="font-bold text-sm text-white">Growth & Reach</h4>
+                <p className="text-xs text-slate-400">Skills & certifications</p>
               </div>
             </div>
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-white/50">
-              <div className="p-2 rounded-lg bg-blue-50 text-blue-700">
+
+            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
+              <div className="p-2 rounded-xl bg-blue-500/20 text-blue-300 shrink-0">
                 <Award className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-semibold text-sm text-slate-900">Earnings Fourth</h4>
-                <p className="text-xs text-slate-500">Transparent & honorific payouts</p>
+                <h4 className="font-bold text-sm text-white">Honorarium</h4>
+                <p className="text-xs text-slate-400">Weekly Monday settlements</p>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* CORE PHILOSOPHY / WHY COURAGE CHOOSES YOU */}
-      <section className="py-20 px-4 bg-white border-y border-slate-200/80">
+      {/* INTERACTIVE HONORARIUM & EARNINGS CALCULATOR WIDGET */}
+      <section className="py-16 px-4 bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto bg-gradient-to-br from-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-10 text-white shadow-2xl border border-slate-800 relative overflow-hidden">
+          
+          <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+
+          <div className="text-center space-y-3 mb-8">
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono font-extrabold text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full uppercase tracking-wider">
+              <Zap className="w-3.5 h-3.5 text-amber-400" /> Interactive Partner Calculator
+            </span>
+            <h2 className="font-display text-2xl sm:text-3xl font-black">
+              Calculate Your Candidate Mobilization Honorarium
+            </h2>
+            <p className="text-slate-300 text-xs sm:text-sm max-w-xl mx-auto">
+              Move the slider below to project your weekly potential earnings and unlock partner tier achievements.
+            </p>
+          </div>
+
+          <div className="space-y-6 max-w-2xl mx-auto bg-slate-900/90 p-6 rounded-2xl border border-slate-800">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Mobilized Students:</span>
+              <span className="font-mono text-2xl font-black text-amber-300">{calcStudents} Candidates</span>
+            </div>
+
+            {/* Slider */}
+            <input
+              type="range"
+              min={10}
+              max={500}
+              step={5}
+              value={calcStudents}
+              onChange={e => setCalcStudents(Number(e.target.value))}
+              className="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400"
+            />
+
+            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 font-bold">
+              <span>10 Candidates</span>
+              <span>100 Candidates</span>
+              <span>250 Candidates</span>
+              <span>500+ Candidates</span>
+            </div>
+
+            {/* Calculator Result Box */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Current Tier</span>
+                <span className={`text-xs font-black font-mono px-2 py-0.5 rounded border inline-block ${currentTierInfo.color}`}>
+                  {currentTierInfo.tier}
+                </span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
+                <span className="text-[10px] text-slate-400 uppercase font-bold block">Honorarium Rate</span>
+                <span className="font-mono text-xl font-black text-emerald-400 block">₹{currentTierInfo.rate} / Student</span>
+              </div>
+
+              <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/30 text-center space-y-1 bg-emerald-950/20">
+                <span className="text-[10px] text-emerald-400 uppercase font-bold block">Est. Payout</span>
+                <span className="font-mono text-2xl font-black text-emerald-300 block">₹{estimatedEarnings.toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+
+            <div className="text-center pt-2">
+              <button
+                onClick={onOpenApply}
+                className="py-3 px-8 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl shadow-lg cursor-pointer transition-all hover:scale-105 inline-flex items-center gap-2"
+              >
+                Claim Your Referral Code <ArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* CORE PHILOSOPHY */}
+      <section className="py-20 px-4 bg-white border-b border-slate-200/80">
         <div className="max-w-6xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <span className="text-indigo-700 font-semibold text-xs uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">
@@ -194,7 +320,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-indigo-300 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-indigo-300 transition-all">
               <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 flex items-center justify-center mb-4">
                 <ShieldCheck className="w-6 h-6" />
               </div>
@@ -204,7 +330,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
               </p>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-emerald-300 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-emerald-300 transition-all">
               <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center mb-4">
                 <Sparkles className="w-6 h-6" />
               </div>
@@ -214,7 +340,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
               </p>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-amber-300 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-amber-300 transition-all">
               <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
                 <GraduationCap className="w-6 h-6" />
               </div>
@@ -224,7 +350,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
               </p>
             </div>
 
-            <div className="p-6 rounded-xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 transition-all">
+            <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200/80 hover:border-blue-300 transition-all">
               <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center mb-4">
                 <HeartHandshake className="w-6 h-6" />
               </div>
@@ -237,51 +363,70 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
         </div>
       </section>
 
-      {/* WHO CAN BECOME A COURAGE PARTNER */}
-      <section className="py-20 px-4 bg-[#F8FAFF]">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-emerald-700 font-semibold text-xs uppercase tracking-widest bg-emerald-50 px-3 py-1 rounded-full">
-              Universal Ecosystem
+      {/* NATIONAL IMPACT COUNTER */}
+      <section className="py-16 px-4 bg-[#0F172A] text-white">
+        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+          <div className="p-4">
+            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-emerald-400 mb-2 font-mono">
+              250,000+
+            </div>
+            <p className="text-xs md:text-sm text-slate-400 font-semibold">Students Impacted</p>
+          </div>
+          <div className="p-4">
+            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-amber-400 mb-2 font-mono">
+              1,400+
+            </div>
+            <p className="text-xs md:text-sm text-slate-400 font-semibold">Schools Connected</p>
+          </div>
+          <div className="p-4">
+            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-blue-400 mb-2 font-mono">
+              ₹1.2 Cr+
+            </div>
+            <p className="text-xs md:text-sm text-slate-400 font-semibold">Scholarships Disbursed</p>
+          </div>
+          <div className="p-4">
+            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-indigo-400 mb-2 font-mono">
+              3,840+
+            </div>
+            <p className="text-xs md:text-sm text-slate-400 font-semibold">Active Courage Partners</p>
+          </div>
+        </div>
+      </section>
+
+      {/* FREQUENTLY ASKED QUESTIONS (FAQ ACCORDION) */}
+      <section className="py-20 px-4 bg-white">
+        <div className="max-w-4xl mx-auto space-y-8">
+          <div className="text-center space-y-2">
+            <span className="text-indigo-700 font-bold text-xs uppercase tracking-widest bg-indigo-50 px-3 py-1 rounded-full">
+              Partner FAQs
             </span>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-slate-900 mt-4 mb-4">
-              Who is a Courage Partner?
+            <h2 className="font-display text-3xl font-bold text-slate-900">
+              Frequently Asked Questions
             </h2>
-            <p className="text-slate-600 text-base md:text-lg">
-              Courage Partner is designed for every individual or organization dedicated to unlocking student talent across India.
-            </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {[
-              { title: 'YouTube Creators', icon: Video, color: 'text-red-600 bg-red-50' },
-              { title: 'LinkedIn Voices', icon: Share2, color: 'text-blue-600 bg-blue-50' },
-              { title: 'School Teachers', icon: GraduationCap, color: 'text-indigo-600 bg-indigo-50' },
-              { title: 'School Coordinators', icon: Building2, color: 'text-purple-600 bg-purple-50' },
-              { title: 'Telegram Admins', icon: MessageSquare, color: 'text-sky-600 bg-sky-50' },
-              { title: 'WhatsApp Admins', icon: MessageSquare, color: 'text-emerald-600 bg-emerald-50' },
-              { title: 'Educational NGOs', icon: HeartHandshake, color: 'text-pink-600 bg-pink-50' },
-              { title: 'Campus Ambassadors', icon: Users, color: 'text-amber-600 bg-amber-50' },
-              { title: 'Instagram Creators', icon: Video, color: 'text-fuchsia-600 bg-fuchsia-50' },
-              { title: 'Bloggers & Newsletters', icon: FileText, color: 'text-slate-600 bg-slate-100' },
-              { title: 'Discord Leaders', icon: MessageSquare, color: 'text-indigo-600 bg-indigo-50' },
-              { title: 'Coaching Institutes', icon: BookOpen, color: 'text-teal-600 bg-teal-50' },
-              { title: 'Career Mentors', icon: Award, color: 'text-amber-600 bg-amber-50' },
-              { title: 'Parent Communities', icon: Users, color: 'text-rose-600 bg-rose-50' },
-              { title: 'Public Speakers', icon: Globe, color: 'text-violet-600 bg-violet-50' },
-            ].map((persona, idx) => {
-              const IconComp = persona.icon;
+          <div className="space-y-3">
+            {faqs.map((faq, idx) => {
+              const isOpen = openFaqIndex === idx;
               return (
-                <div 
+                <div
                   key={idx}
-                  className="bg-white p-4 rounded-xl border border-slate-200/80 shadow-sm hover:shadow-md transition-all flex flex-col items-center text-center group"
+                  className="border border-slate-200 rounded-2xl overflow-hidden bg-slate-50 transition-all"
                 >
-                  <div className={`w-10 h-10 rounded-lg ${persona.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                    <IconComp className="w-5 h-5" />
-                  </div>
-                  <span className="font-semibold text-xs sm:text-sm text-slate-800">
-                    {persona.title}
-                  </span>
+                  <button
+                    onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
+                    className="w-full p-5 text-left font-bold text-sm text-slate-900 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-100/80 transition-colors"
+                  >
+                    <span>{faq.q}</span>
+                    <span className="p-1 rounded-lg bg-white border border-slate-200 text-slate-500 shrink-0">
+                      {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                    </span>
+                  </button>
+                  {isOpen && (
+                    <div className="p-5 pt-0 text-xs text-slate-600 leading-relaxed border-t border-slate-200/60 bg-white">
+                      {faq.a}
+                    </div>
+                  )}
                 </div>
               );
             })}
@@ -289,145 +434,19 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
         </div>
       </section>
 
-      {/* ECOSYSTEM CAPABILITIES */}
-      <section className="py-20 px-4 bg-white border-y border-slate-200/80">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center max-w-3xl mx-auto mb-16">
-            <span className="text-amber-700 font-semibold text-xs uppercase tracking-widest bg-amber-50 px-3 py-1 rounded-full">
-              Full Platform Infrastructure
-            </span>
-            <h2 className="font-display text-3xl md:text-4xl font-bold text-slate-900 mt-4 mb-4">
-              Everything You Need to Drive Impact
-            </h2>
-            <p className="text-slate-600 text-base md:text-lg">
-              Courage Partner provides world-class SaaS tooling designed to help you create content, track reach, earn recognition, and grow professionally.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-2xl bg-[#F8FAFF] border border-slate-200">
-              <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-6 shadow-md">
-                <Zap className="w-6 h-6" />
-              </div>
-              <h3 className="font-display text-xl font-bold text-slate-900 mb-3">AI Copilot Studio</h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                Instant AI generators for WhatsApp broadcasts, Telegram posts, LinkedIn articles, Instagram Reel scripts, and carousel graphics tailored to Indian students.
-              </p>
-              <ul className="space-y-2 text-xs font-medium text-slate-700">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Multi-platform format switching</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> High-converting educational copy</li>
-              </ul>
-            </div>
-
-            <div className="p-8 rounded-2xl bg-[#F8FAFF] border border-slate-200">
-              <div className="w-12 h-12 rounded-xl bg-emerald-600 text-white flex items-center justify-center mb-6 shadow-md">
-                <Compass className="w-6 h-6" />
-              </div>
-              <h3 className="font-display text-xl font-bold text-slate-900 mb-3">Opportunity Marketplace</h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                Access active national missions—from CNTS Talent Search enrollment to Teacher Excellence drives and Scholarship Awareness weeks.
-              </p>
-              <ul className="space-y-2 text-xs font-medium text-slate-700">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Real-time mission progress tracking</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Official downloadable media kits</li>
-              </ul>
-            </div>
-
-            <div className="p-8 rounded-2xl bg-[#F8FAFF] border border-slate-200">
-              <div className="w-12 h-12 rounded-xl bg-amber-600 text-white flex items-center justify-center mb-6 shadow-md">
-                <Award className="w-6 h-6" />
-              </div>
-              <h3 className="font-display text-xl font-bold text-slate-900 mb-3">Certified Credentials</h3>
-              <p className="text-sm text-slate-600 leading-relaxed mb-4">
-                Earn institutional certifications, physical certificates of honor, and LinkedIn credentials as your impact score grows.
-              </p>
-              <ul className="space-y-2 text-xs font-medium text-slate-700">
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Verified Courage Partner Badges</li>
-                <li className="flex items-center gap-2"><CheckCircle2 className="w-4 h-4 text-emerald-600" /> Public GitHub-style partner profile</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* NATIONAL IMPACT COUNTER */}
-      <section className="py-16 px-4 bg-[#0F172A] text-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div className="p-4">
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-emerald-400 mb-2">
-              250,000+
-            </div>
-            <p className="text-xs md:text-sm text-slate-400 font-medium">Students Impacted</p>
-          </div>
-          <div className="p-4">
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-amber-400 mb-2">
-              1,400+
-            </div>
-            <p className="text-xs md:text-sm text-slate-400 font-medium">Schools Connected</p>
-          </div>
-          <div className="p-4">
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-blue-400 mb-2">
-              ₹1.2 Cr+
-            </div>
-            <p className="text-xs md:text-sm text-slate-400 font-medium">Scholarships Disbursed</p>
-          </div>
-          <div className="p-4">
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-bold text-indigo-400 mb-2">
-              3,840+
-            </div>
-            <p className="text-xs md:text-sm text-slate-400 font-medium">Active Courage Partners</p>
-          </div>
-        </div>
-      </section>
-
-      {/* FEATURED PARTNER SPOTLIGHT */}
-      <section className="py-20 px-4 bg-white border-b border-slate-200">
-        <div className="max-w-5xl mx-auto bg-gradient-to-br from-indigo-900 to-slate-900 text-white rounded-3xl p-8 md:p-12 shadow-xl relative overflow-hidden">
-          <div className="relative z-10 flex flex-col md:flex-row items-center gap-8">
-            <div className="w-32 h-32 md:w-40 md:h-40 rounded-2xl bg-amber-400 p-1 flex-shrink-0 shadow-lg">
-              <div className="w-full h-full rounded-xl bg-slate-800 flex items-center justify-center text-3xl font-bold text-amber-300">
-                AS
-              </div>
-            </div>
-            <div className="flex-1 text-center md:text-left">
-              <div className="inline-flex items-center gap-2 bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-semibold mb-3 border border-amber-400/30">
-                <Star className="w-3.5 h-3.5 fill-amber-300" /> Featured Partner Spotlight
-              </div>
-              <h3 className="font-display text-2xl md:text-3xl font-bold mb-2">
-                Ananya Sharma
-              </h3>
-              <p className="text-sm text-indigo-200 mb-4 font-medium">
-                LinkedIn Creator & Educator • 32,000+ Professional Network • Bihar School Outreach Lead
-              </p>
-              <blockquote className="text-sm md:text-base text-slate-300 italic mb-6 leading-relaxed">
-                "Courage Partner allowed me to connect 14 rural schools in Bihar with CNTS scholarship exams. The institutional support, brand kit, and clear mission made it feel like I was building a legacy for my state."
-              </blockquote>
-              <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 text-xs">
-                <span className="bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg text-emerald-400 font-mono">
-                  Impact: 1,420 Students Mobilized
-                </span>
-                <span className="bg-slate-800/80 border border-slate-700 px-3 py-1.5 rounded-lg text-amber-300 font-mono">
-                  Founding Partner #0084
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CALL TO ACTION FOOTER */}
       <section className="py-20 px-4 text-center">
-        <div className="max-w-3xl mx-auto">
-          <h2 className="font-display text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+        <div className="max-w-3xl mx-auto bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-8 sm:p-12 rounded-3xl text-white shadow-2xl border border-slate-800">
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-4">
             Ready to Join the National Educational Movement?
           </h2>
-          <p className="text-slate-600 text-base md:text-lg mb-8">
+          <p className="text-slate-300 text-base md:text-lg mb-8">
             Applications are reviewed individually within 24 hours. Join 3,800+ educators, creators, and leaders creating real opportunities.
           </p>
           {isRegisteredPartner ? (
             <button
               onClick={onViewDemoWorkspace}
-              className="btn-primary text-base px-9 py-4 shadow-xl flex items-center gap-2.5 bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer font-bold rounded-2xl mx-auto"
+              className="text-base px-9 py-4 shadow-xl flex items-center gap-2.5 bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer font-bold rounded-2xl mx-auto"
             >
               <Sparkles className="w-5 h-5 text-amber-300" /> Go to Partner Workspace <ArrowRight className="w-5 h-5" />
             </button>
@@ -435,14 +454,14 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <button
                 onClick={onOpenApply}
-                className="w-full sm:w-auto btn-primary text-base px-8 py-4 h-auto shadow-lg hover:shadow-xl cursor-pointer"
+                className="w-full sm:w-auto text-base px-8 py-4 shadow-lg hover:shadow-xl cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2"
               >
                 <HeartHandshake className="w-5 h-5" />
                 Apply to Become a Courage Partner
               </button>
               <button
                 onClick={() => router.push('/login?tab=partner')}
-                className="w-full sm:w-auto btn-outline text-base px-8 py-4 h-auto cursor-pointer font-bold text-slate-800"
+                className="w-full sm:w-auto text-base px-8 py-4 cursor-pointer font-bold text-white border border-white/20 bg-white/10 hover:bg-white/20 rounded-2xl"
               >
                 Login to Account
               </button>
