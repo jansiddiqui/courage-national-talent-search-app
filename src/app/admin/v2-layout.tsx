@@ -24,7 +24,10 @@ import {
   Phone,
   PanelLeftClose,
   PanelLeftOpen,
-  Users
+  Users,
+  Sparkles,
+  ChevronRight,
+  Zap
 } from "lucide-react";
 
 interface NavLink {
@@ -32,6 +35,8 @@ interface NavLink {
   label: string;
   icon: any;
   exact?: boolean;
+  badge?: string;
+  badgeColor?: string;
 }
 
 interface NavGroup {
@@ -68,7 +73,7 @@ const linkGroups: NavGroup[] = [
   {
     title: "Campaigns & Marketing",
     links: [
-      { href: "/admin/partners", label: "Partners & Creators", icon: Users },
+      { href: "/admin/partners", label: "Partners & Creators", icon: Users, badge: "LIVE", badgeColor: "bg-emerald-500 text-white" },
       { href: "/admin/notifications", label: "Broadcasts", icon: MessageSquare },
       { href: "/admin?tab=whatsapp", label: "Notification Logs", icon: MessageSquare },
       { href: "/admin?tab=coupons", label: "Promo & Coupon Mgr", icon: Percent },
@@ -117,21 +122,25 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-[#F8FAFF] font-sans antialiased">
       {/* Sidebar Navigation - Left Side (Supports 64px Collapsed Icon-Only Mode) */}
-      <aside className={`w-full ${isSidebarCollapsed ? "md:w-16" : "md:w-64"} bg-white border-b md:border-b-0 md:border-r border-slate-200/60 flex flex-col shrink-0 md:sticky md:top-0 md:h-screen z-30 shadow-sm transition-all duration-300 ease-in-out`}>
+      <aside className={`w-full ${isSidebarCollapsed ? "md:w-20" : "md:w-64"} bg-white border-b md:border-b-0 md:border-r border-slate-200/80 flex flex-col shrink-0 md:sticky md:top-0 md:h-screen z-30 shadow-md transition-all duration-300 ease-in-out`}>
+        
         {/* Brand Section & Mobile Toggle Header */}
-        <div className={`p-3 md:p-4 border-b border-slate-100 flex items-center ${isSidebarCollapsed ? "md:flex-col md:justify-center" : "justify-between"} gap-2`}>
-          <div className="flex items-center gap-2.5">
+        <div className={`p-3.5 md:p-4 border-b border-slate-100 flex items-center ${isSidebarCollapsed ? "md:flex-col md:justify-center" : "justify-between"} gap-2`}>
+          <div className="flex items-center gap-3">
             {/* Courage Library Official Logo */}
-            <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200/80 p-1 flex items-center justify-center shadow-xs shrink-0" title="Courage Library CNTS Admin">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-900 to-slate-950 p-1.5 flex items-center justify-center shadow-md shrink-0" title="Courage Library CNTS Admin">
               <img src="/images/logo.png" alt="Courage Library Logo" className="w-7 h-7 object-contain" />
             </div>
             
             {!isSidebarCollapsed && (
               <div>
-                <h2 className="font-extrabold text-sm text-slate-800 leading-tight">CNTS Admin</h2>
-                <span className="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md mt-0.5 inline-block uppercase tracking-wider">
-                  V2.0 Console
-                </span>
+                <h2 className="font-extrabold text-sm text-slate-900 leading-tight">CNTS Admin</h2>
+                <div className="flex items-center gap-1.5 mt-0.5">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-[9.5px] font-bold font-mono text-indigo-700 uppercase tracking-wider">
+                    V2.0 CONSOLE
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -139,10 +148,10 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
           {/* Desktop Sidebar Collapse Toggle */}
           <button
             onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className="hidden md:flex p-1.5 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
-            title={isSidebarCollapsed ? "Expand Sidebar (Ctrl+B)" : "Collapse Sidebar (Icon-Only Mode)"}
+            className="hidden md:flex p-2 hover:bg-slate-100 rounded-xl text-slate-400 hover:text-slate-800 transition-colors cursor-pointer"
+            title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
           >
-            {isSidebarCollapsed ? <PanelLeftOpen size={16} className="text-indigo-600" /> : <PanelLeftClose size={16} />}
+            {isSidebarCollapsed ? <PanelLeftOpen size={18} className="text-indigo-600" /> : <PanelLeftClose size={18} />}
           </button>
 
           {/* Hamburger toggle button on mobile */}
@@ -154,19 +163,19 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
           </button>
         </div>
 
-        {/* Navigation list grouped by Section */}
-        <nav className={`flex-1 py-3 ${isSidebarCollapsed ? "px-1.5" : "pr-3 pl-1"} overflow-y-auto [&::-webkit-scrollbar]:hidden space-y-4 md:block ${
+        {/* Navigation list grouped by Section with Bottom Padding to prevent Floating Widget overlap */}
+        <nav className={`flex-1 py-4 px-3 overflow-y-auto [&::-webkit-scrollbar]:hidden space-y-5 pb-20 md:block ${
           isMobileMenuOpen ? "block" : "hidden"
         }`}>
           {linkGroups.map((group, groupIdx) => (
-            <div key={group.title + groupIdx} className="space-y-1">
+            <div key={group.title + groupIdx} className="space-y-1.5">
               {!isSidebarCollapsed && (
-                <h3 className="px-4 text-[9px] font-bold uppercase tracking-wider text-slate-400">
+                <h3 className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400 font-mono">
                   {group.title}
                 </h3>
               )}
 
-              <div className="space-y-[2px]">
+              <div className="space-y-1">
                 {group.links.map((link) => {
                   const Icon = link.icon;
                   const active = isActive(link.href, link.exact);
@@ -178,22 +187,32 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
                         router.push(link.href);
                         setIsMobileMenuOpen(false);
                       }}
-                      className={`w-full flex items-center gap-3 text-xs font-medium transition-all text-left cursor-pointer ${
+                      className={`w-full flex items-center justify-between text-xs font-semibold transition-all text-left cursor-pointer group ${
                         isSidebarCollapsed
-                          ? `justify-center py-2.5 px-0 rounded-xl ${
+                          ? `justify-center py-3 px-0 rounded-2xl ${
                               active
-                                ? "bg-indigo-600 text-white font-bold shadow-md shadow-indigo-200"
-                                : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
+                                ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold shadow-md shadow-indigo-500/20"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
                             }`
-                          : `py-2 rounded-r-xl ${
+                          : `py-2.5 px-3.5 rounded-2xl ${
                               active
-                                ? "bg-indigo-50/80 text-indigo-700 font-bold border-l-4 border-indigo-600 pl-3 shadow-xs"
-                                : "text-slate-500 hover:text-slate-900 hover:bg-slate-50/80 pl-4"
+                                ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-extrabold shadow-md shadow-indigo-500/25 scale-[1.01]"
+                                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/90"
                             }`
                       }`}
                     >
-                      <Icon size={16} className={isSidebarCollapsed ? (active ? "text-white" : "text-slate-500") : (active ? "text-indigo-600" : "text-slate-400")} />
-                      {!isSidebarCollapsed && <span>{link.label}</span>}
+                      <div className="flex items-center gap-3">
+                        <Icon size={17} className={isSidebarCollapsed ? (active ? "text-white" : "text-slate-500 group-hover:text-indigo-600") : (active ? "text-white" : "text-slate-400 group-hover:text-indigo-600 transition-colors")} />
+                        {!isSidebarCollapsed && <span className="tracking-tight">{link.label}</span>}
+                      </div>
+
+                      {!isSidebarCollapsed && link.badge && (
+                        <span className={`text-[9.5px] font-black px-2 py-0.5 rounded-full font-mono shadow-xs ${
+                          active ? "bg-white/20 text-white" : (link.badgeColor || "bg-indigo-100 text-indigo-800")
+                        }`}>
+                          {link.badge}
+                        </span>
+                      )}
                     </button>
                   );
                 })}
@@ -201,6 +220,22 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
             </div>
           ))}
         </nav>
+
+        {/* Sidebar Footer User Badge */}
+        {!isSidebarCollapsed && (
+          <div className="p-3 m-3 bg-slate-50 border border-slate-200/80 rounded-2xl flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-xl bg-indigo-900 text-white font-bold text-xs flex items-center justify-center shadow-xs">
+                AD
+              </div>
+              <div className="overflow-hidden">
+                <span className="font-bold text-xs text-slate-800 block truncate">Admin Console</span>
+                <span className="text-[10px] text-slate-400 block truncate">Super Admin</span>
+              </div>
+            </div>
+            <Zap className="w-4 h-4 text-amber-500 shrink-0" />
+          </div>
+        )}
       </aside>
 
       {/* Main Content Area */}
