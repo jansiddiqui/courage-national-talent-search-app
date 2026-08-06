@@ -7,10 +7,10 @@ import {
   CheckCircle2, 
   ArrowRight, 
   Copy, 
-  Share2, 
-  ShieldCheck,
   Check,
-  Zap
+  Zap,
+  Clock,
+  ShieldCheck
 } from 'lucide-react';
 import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
 
@@ -30,7 +30,7 @@ export const ApprovalMomentModal: React.FC<ApprovalMomentModalProps> = ({
   partnerId,
   partnerSlug,
   referralCode,
-  audienceScale = '1k - 10k',
+  audienceScale = '10k - 50k',
   onEnterWorkspace
 }) => {
   const [copied, setCopied] = React.useState(false);
@@ -48,84 +48,83 @@ export const ApprovalMomentModal: React.FC<ApprovalMomentModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
-      <div className="bg-white rounded-3xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden text-center p-8 md:p-10 animate-slide-up relative">
-        {/* Confetti Glow Background */}
-        <div className="absolute inset-0 bg-gradient-to-b from-amber-500/10 via-indigo-500/5 to-transparent pointer-events-none" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+      <div className="bg-white rounded-3xl max-w-lg w-full shadow-2xl border border-slate-200 overflow-hidden text-center p-6 sm:p-9 animate-scale-up relative space-y-5">
+        
+        {/* CONFETTI DECORATIVE GLOW */}
+        <div className="absolute inset-0 bg-gradient-to-b from-amber-400/10 via-indigo-500/5 to-transparent pointer-events-none" />
 
-        {/* Badge Icon */}
-        <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 p-1 mx-auto mb-6 shadow-xl relative z-10 animate-bounce">
-          <div className="w-full h-full rounded-full bg-[#0F172A] flex items-center justify-center text-amber-300">
-            <Award className="w-10 h-10" />
-          </div>
-        </div>
-
-        {/* Celebration Title */}
-        <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 text-xs font-bold px-3 py-1 rounded-full mb-3 border border-emerald-200">
-          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Application Approved & Referral Code Active
-        </div>
-
-        <h2 className="font-display text-3xl md:text-4xl font-bold text-slate-900 mb-2">
-          Congratulations {applicantName || 'Jan'} 🎉
-        </h2>
-
-        <p className="text-slate-600 text-sm mb-6 leading-relaxed">
-          Welcome to the official Courage Partner Network! Your assigned referral code and rate tier have been generated.
-        </p>
-
-        {/* Official Credentials & Referral Code Box */}
-        <div className="bg-[#0F172A] text-white rounded-2xl p-6 mb-6 text-left border border-slate-800 shadow-inner space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-            <div>
-              <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
-                Official Referral Code
-              </span>
-              <div className="font-mono text-2xl font-bold text-amber-300">
-                {activeRefCode}
-              </div>
-            </div>
-
-            <div className="bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full text-xs font-bold">
-              ⚡ {assignedTier.sharePercent}% Share ({assignedTier.perRegistrationAmount}/reg)
-            </div>
-          </div>
-
-          <div>
-            <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase block mb-1">
-              Your Official Courage Referral Link
-            </span>
-            <div className="flex items-center gap-2 bg-slate-900 p-2.5 rounded-xl border border-slate-700">
-              <span className="font-mono text-xs text-indigo-300 truncate flex-1">
-                {link}
-              </span>
-              <button
-                onClick={copyLink}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-colors cursor-pointer shrink-0"
-              >
-                {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
-                {copied ? 'Copied' : 'Copy Link'}
-              </button>
+        {/* CELEBRATION ICON BADGE */}
+        <div className="relative z-10">
+          <div className="w-20 h-20 rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 p-1 mx-auto shadow-lg animate-bounce">
+            <div className="w-full h-full rounded-full bg-[#0F172A] flex items-center justify-center text-amber-300">
+              <Award className="w-10 h-10" />
             </div>
           </div>
         </div>
 
-        {/* Assigned Tier Highlights */}
-        <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-left mb-6 text-xs text-amber-900">
-          <div className="font-bold flex items-center gap-1 mb-1">
-            <Zap className="w-4 h-4 text-amber-600" /> Assigned Creator Tier: {assignedTier.tierName}
-          </div>
-          <p className="text-amber-900/80">
-            Based on your reach scale, you earn {assignedTier.sharePercent}% revenue share (₹{assignedTier.perRegistrationAmount} per verified student) + ₹{assignedTier.milestoneBonus.toLocaleString()} milestone bonus.
+        {/* CELEBRATION STATUS BADGE */}
+        <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 text-xs font-extrabold px-3.5 py-1 rounded-full border border-emerald-200">
+          <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Application Received & Referral Link Generated
+        </div>
+
+        {/* MAIN CONGRATULATIONS TITLE */}
+        <div>
+          <h2 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            Congratulations, {applicantName || 'Partner'}! 🎉
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 font-medium mt-1.5 leading-relaxed">
+            Welcome to the official Courage Partner Platform! Your application has been received and your unique referral link is ready.
           </p>
         </div>
 
-        {/* Primary Enter Action */}
+        {/* REFERRAL LINK CARD */}
+        <div className="bg-[#0F172A] text-white rounded-2xl p-4 sm:p-5 text-left border border-slate-800 shadow-inner space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-mono font-extrabold uppercase tracking-widest text-slate-400">
+              Official Referral Code
+            </span>
+            <span className="text-xs font-mono font-black text-amber-300 bg-amber-400/10 px-2.5 py-0.5 rounded border border-amber-400/20">
+              {activeRefCode}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
+            <span className="font-mono text-xs text-indigo-300 truncate flex-1 font-semibold">
+              {link}
+            </span>
+            <button
+              type="button"
+              onClick={copyLink}
+              className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold px-3 py-1.5 rounded-lg flex items-center gap-1 transition-all cursor-pointer shrink-0 shadow-xs"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
+              {copied ? 'Copied' : 'Copy Link'}
+            </button>
+          </div>
+        </div>
+
+        {/* VERIFICATION NOTICE & TIER RECAP */}
+        <div className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-left text-xs text-amber-950 flex items-start gap-2.5">
+          <Clock className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+          <div className="space-y-0.5">
+            <span className="font-extrabold block text-amber-950">Under Review • Reviewed within 24 Hours</span>
+            <span className="text-amber-900/80 font-medium text-[11px] block">
+              Starting Rate: <strong>₹{assignedTier.perRegistrationAmount} per verified student</strong> ({assignedTier.tierName}). Our Partner Desk is reviewing your application.
+            </span>
+          </div>
+        </div>
+
+        {/* ENTER WORKSPACE BUTTON */}
         <button
+          type="button"
           onClick={onEnterWorkspace}
-          className="w-full btn-primary text-base py-4 shadow-xl hover:shadow-2xl flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 cursor-pointer"
+          className="w-full py-4 px-6 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 hover:opacity-95 text-white font-black text-sm rounded-2xl shadow-xl shadow-indigo-600/25 hover:shadow-indigo-600/40 hover:scale-[1.01] active:scale-[0.99] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2"
         >
-          Enter Creator Partner Workspace <ArrowRight className="w-5 h-5" />
+          <span>Enter Partner Workspace</span>
+          <ArrowRight className="w-4 h-4 text-amber-300" />
         </button>
+
       </div>
     </div>
   );
