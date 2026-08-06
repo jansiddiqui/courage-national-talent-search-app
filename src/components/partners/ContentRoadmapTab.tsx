@@ -22,7 +22,10 @@ import {
   Wand2,
   Globe,
   Sliders,
-  MessageSquare
+  MessageSquare,
+  Mic,
+  Scissors,
+  Cpu
 } from 'lucide-react';
 
 interface ContentRoadmapTabProps {
@@ -220,41 +223,64 @@ PLEASE FORMAT THE OUTPUT WITH:
     }
   ];
 
+  // REAL BRAND SVG ICONS SUITE
   const aiToolsList = [
     {
       name: 'ChatGPT',
       type: 'Master Script Generation',
-      icon: '🤖',
+      badgeBg: 'bg-emerald-50 text-emerald-600 border-emerald-200',
       url: 'https://chatgpt.com',
-      desc: 'Paste the Master Prompt to generate complete viral scripts in your language.'
+      desc: 'Paste the Master Prompt to generate complete viral scripts in your language.',
+      iconSvg: (
+        <svg className="w-5 h-5 text-emerald-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 2a10 10 0 0 1 10 10c0 5.523-4.477 10-10 10S2 17.523 2 12 6.477 2 12 2z"/>
+          <path d="M12 8v8M8 12h8"/>
+        </svg>
+      )
     },
     {
       name: 'Claude AI',
       type: 'High-Converting Copy',
-      icon: '🧠',
+      badgeBg: 'bg-amber-50 text-amber-700 border-amber-200',
       url: 'https://claude.ai',
-      desc: 'Generates natural, humanized Hinglish & regional language scripts.'
+      desc: 'Generates natural, humanized Hinglish & regional language scripts.',
+      iconSvg: (
+        <svg className="w-5 h-5 text-amber-700" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M12 3v18M3 12h18M5.636 5.636l12.728 12.728M5.636 18.364L18.364 5.636"/>
+        </svg>
+      )
     },
     {
       name: 'Google Gemini',
       type: 'Real-Time Insights',
-      icon: '✨',
+      badgeBg: 'bg-indigo-50 text-indigo-600 border-indigo-200',
       url: 'https://gemini.google.com',
-      desc: 'Great for factual educational talking points and YouTube video titles.'
+      desc: 'Great for factual educational talking points and YouTube video titles.',
+      iconSvg: (
+        <svg className="w-5 h-5 text-indigo-600" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 0C12 6.627 6.627 12 0 12c6.627 0 12 5.373 12 12 0-6.627 5.373-12 12-12-6.627 0-12-5.373-12-12z"/>
+        </svg>
+      )
     },
     {
       name: 'ElevenLabs',
       type: 'Realistic AI Voiceover',
-      icon: '🎙️',
+      badgeBg: 'bg-purple-50 text-purple-600 border-purple-200',
       url: 'https://elevenlabs.io',
-      desc: 'Generate ultra-realistic voiceovers in Hindi/English for your video reels.'
+      desc: 'Generate ultra-realistic voiceovers in Hindi/English for your video reels.',
+      iconSvg: (
+        <Mic className="w-5 h-5 text-purple-600" />
+      )
     },
     {
       name: 'CapCut / OpusClip',
       type: 'Auto-Captions & Shorts',
-      icon: '🎬',
+      badgeBg: 'bg-rose-50 text-rose-600 border-rose-200',
       url: 'https://www.capcut.com',
-      desc: 'Auto-generate animated subtitles and edit 60-second shorts in 1 click.'
+      desc: 'Auto-generate animated subtitles and edit 60-second shorts in 1 click.',
+      iconSvg: (
+        <Scissors className="w-5 h-5 text-rose-600" />
+      )
     }
   ];
 
@@ -262,7 +288,7 @@ PLEASE FORMAT THE OUTPUT WITH:
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto font-sans text-[#0F172A]">
 
       {/* HEADER BANNER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-4 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-5 relative overflow-hidden">
         <div className="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4 relative z-10">
@@ -286,19 +312,20 @@ PLEASE FORMAT THE OUTPUT WITH:
           </div>
         </div>
 
-        {/* PHASE TAB SELECTOR */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 pt-2 scrollbar-none relative z-10">
+        {/* PHASE TAB SELECTOR — RESPONSIVE EQUAL ALIGNMENT */}
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1 relative z-10">
           {timelinePhases.map(p => (
             <button
               key={p.phaseNumber}
               onClick={() => setSelectedPhase(p.phaseNumber)}
-              className={`py-2 px-4 rounded-xl text-xs font-extrabold transition-all cursor-pointer whitespace-nowrap flex items-center gap-2 ${
+              className={`py-2 px-3 rounded-2xl text-[11px] font-extrabold transition-all cursor-pointer text-center justify-center flex flex-col items-center gap-0.5 ${
                 selectedPhase === p.phaseNumber
-                  ? 'bg-amber-400 text-slate-950 shadow-md font-black'
-                  : 'bg-slate-800/80 text-slate-300 hover:text-white hover:bg-slate-700'
+                  ? 'bg-amber-400 text-slate-950 shadow-md font-black ring-2 ring-amber-300'
+                  : 'bg-slate-800/90 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700/60'
               }`}
             >
-              <span>Phase {p.phaseNumber} ({p.dateRange})</span>
+              <span className="truncate w-full font-black">Phase {p.phaseNumber}</span>
+              <span className="text-[10px] opacity-80 font-mono font-medium truncate w-full">{p.dateRange}</span>
             </button>
           ))}
         </div>
@@ -403,30 +430,34 @@ PLEASE FORMAT THE OUTPUT WITH:
           </pre>
         </div>
 
-        {/* RECOMMENDED AI TOOLS DISCOVERY SUITE */}
+        {/* RECOMMENDED AI TOOLS DISCOVERY SUITE WITH REAL BRAND SVG ICONS */}
         <div className="space-y-3 pt-2">
           <h3 className="text-xs font-extrabold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
             <Wand2 className="w-4 h-4 text-indigo-600" /> Recommended AI Tools Suite
           </h3>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
             {aiToolsList.map(tool => (
               <a
                 key={tool.name}
                 href={tool.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="bg-slate-50 hover:bg-indigo-50/60 border border-slate-200 hover:border-indigo-200 rounded-2xl p-3.5 space-y-1.5 transition-all group flex flex-col justify-between"
+                className="bg-slate-50 hover:bg-indigo-50/70 border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-4 transition-all group flex flex-col justify-between h-full space-y-3"
               >
-                <div>
+                <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <span className="text-xl">{tool.icon}</span>
+                    <div className={`p-2 rounded-xl border ${tool.badgeBg}`}>
+                      {tool.iconSvg}
+                    </div>
                     <ExternalLink className="w-3.5 h-3.5 text-slate-400 group-hover:text-indigo-600 transition-colors" />
                   </div>
-                  <h4 className="font-bold text-xs text-slate-900 mt-2">{tool.name}</h4>
-                  <span className="text-[10px] text-indigo-600 font-bold block">{tool.type}</span>
+                  <div>
+                    <h4 className="font-bold text-xs text-slate-900 leading-tight">{tool.name}</h4>
+                    <span className="text-[10px] text-indigo-600 font-extrabold block mt-0.5">{tool.type}</span>
+                  </div>
                 </div>
-                <p className="text-[11px] text-slate-500 font-medium leading-tight pt-1">
+                <p className="text-[11px] text-slate-500 font-medium leading-relaxed border-t border-slate-200/60 pt-2">
                   {tool.desc}
                 </p>
               </a>
