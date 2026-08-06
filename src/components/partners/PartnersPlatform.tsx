@@ -64,17 +64,42 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
         setViewMode('apply');
       }
 
-      const savedPartner = localStorage.getItem('cnts_partner_session');
-      if (savedPartner) {
-        try {
-          const parsed = JSON.parse(savedPartner);
-          if (parsed && parsed.fullName) {
-            setApplicantData(parsed);
+      // Check real partner session from API
+      fetch('/api/partner/session')
+        .then(res => res.json())
+        .then(data => {
+          if (data.isAuthenticated && data.partner) {
+            setApplicantData(data.partner);
+            if (viewParam === 'workspace' || viewParam === 'dashboard') {
+              setViewMode('workspace');
+            }
+          } else {
+            const savedPartner = localStorage.getItem('cnts_partner_session');
+            if (savedPartner) {
+              try {
+                const parsed = JSON.parse(savedPartner);
+                if (parsed && parsed.fullName) {
+                  setApplicantData(parsed);
+                }
+              } catch (e) {
+                // ignore
+              }
+            }
           }
-        } catch (e) {
-          // ignore
-        }
-      }
+        })
+        .catch(() => {
+          const savedPartner = localStorage.getItem('cnts_partner_session');
+          if (savedPartner) {
+            try {
+              const parsed = JSON.parse(savedPartner);
+              if (parsed && parsed.fullName) {
+                setApplicantData(parsed);
+              }
+            } catch (e) {
+              // ignore
+            }
+          }
+        });
     }
   }, []);
 

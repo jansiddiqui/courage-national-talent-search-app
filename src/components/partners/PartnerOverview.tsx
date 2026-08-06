@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Users, 
   CreditCard, 
@@ -13,7 +13,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Building2,
-  Calendar
+  Calendar,
+  AlertTriangle
 } from 'lucide-react';
 import { PayoutAccountModal } from './PayoutAccountModal';
 
@@ -31,9 +32,75 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
   onNavigateToTab
 }) => {
   const [showPayoutModal, setShowPayoutModal] = useState(false);
+  const [stats, setStats] = useState<{
+    totalRegistrations: number;
+    totalHonorariumEarned: string;
+    honorariumRate: number;
+    referralClicks: number;
+    conversionRate: string;
+    status: string;
+    conversionsRoster: any[];
+  }>({
+    totalRegistrations: 124,
+    totalHonorariumEarned: '₹3,100',
+    honorariumRate: 25,
+    referralClicks: 1845,
+    conversionRate: '6.7%',
+    status: 'PENDING',
+    conversionsRoster: [
+      { refId: "CNTS-2026-8901", region: "Lucknow Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 3, 2026", status: "Verified & Credited" },
+      { refId: "CNTS-2026-7452", region: "Kanpur Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 2, 2026", status: "Verified & Credited" },
+      { refId: "CNTS-2026-6120", region: "Lucknow Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 2, 2026", status: "Verified & Credited" },
+      { refId: "CNTS-2026-4431", region: "Varanasi Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 1, 2026", status: "Verified & Credited" },
+      { refId: "CNTS-2026-3198", region: "Prayagraj Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Jul 31, 2026", status: "Verified & Credited" }
+    ]
+  });
+
+  useEffect(() => {
+    if (referralCode) {
+      fetch(`/api/partner/stats?referralCode=${encodeURIComponent(referralCode)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.success) {
+            setStats({
+              totalRegistrations: data.totalRegistrations,
+              totalHonorariumEarned: data.totalHonorariumEarned,
+              honorariumRate: data.honorariumRate || 25,
+              referralClicks: data.referralClicks,
+              conversionRate: data.conversionRate,
+              status: data.status || 'PENDING',
+              conversionsRoster: data.conversionsRoster || []
+            });
+          }
+        })
+        .catch(err => console.error('Failed to fetch partner stats:', err));
+    }
+  }, [referralCode]);
 
   return (
     <div className="space-y-8 animate-fade-in">
+      {/* PENDING APPROVAL NOTICE BANNER (WHEN APPLICATION IS PENDING ADMIN REVIEW) */}
+      {stats.status === 'PENDING' && (
+        <div className="bg-amber-50 border border-amber-300 rounded-3xl p-5 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+          <div className="flex items-center gap-3.5">
+            <div className="p-3 rounded-2xl bg-amber-400 text-slate-950 shrink-0">
+              <AlertTriangle className="w-6 h-6 text-slate-950" />
+            </div>
+            <div>
+              <h3 className="font-bold text-base text-amber-950 flex items-center gap-2">
+                Application Under Verification & Review
+              </h3>
+              <p className="text-xs text-amber-900 mt-0.5">
+                Your partner application (Code: <strong className="font-mono">{referralCode}</strong>) is under review by our Courage Admin Team. You can share your link and set up payouts while verification is in progress.
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-mono font-bold bg-amber-200 text-amber-950 px-3.5 py-1.5 rounded-full shrink-0 border border-amber-400">
+            Status: PENDING ADMIN APPROVAL
+          </span>
+        </div>
+      )}
+
       {/* EXECUTIVE PERFORMANCE ANALYTICS BANNER */}
       <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 border border-slate-800 shadow-2xl space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
@@ -62,25 +129,25 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
             <span className="text-slate-400 text-xs font-semibold block mb-1">Total Registrations</span>
-            <div className="font-mono text-3xl font-black text-amber-300">124</div>
+            <div className="font-mono text-3xl font-black text-amber-300">{stats.totalRegistrations}</div>
             <span className="text-[10.5px] text-slate-400 font-mono block mt-1">Verified Candidate Enrolments</span>
           </div>
 
           <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
             <span className="text-slate-400 text-xs font-semibold block mb-1">Total Honorarium Earned</span>
-            <div className="font-mono text-3xl font-black text-emerald-400">₹3,100</div>
-            <span className="text-[10.5px] text-emerald-400 block mt-1">₹25 per candidate (Max Capped)</span>
+            <div className="font-mono text-3xl font-black text-emerald-400">{stats.totalHonorariumEarned}</div>
+            <span className="text-[10.5px] text-emerald-400 block mt-1">₹{stats.honorariumRate} per candidate (Admin Set)</span>
           </div>
 
           <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
             <span className="text-slate-400 text-xs font-semibold block mb-1">Referral Link Clicks</span>
-            <div className="font-mono text-3xl font-black text-indigo-300">1,845</div>
+            <div className="font-mono text-3xl font-black text-indigo-300">{stats.referralClicks.toLocaleString('en-IN')}</div>
             <span className="text-[10.5px] text-indigo-300 block mt-1">Total link visitors</span>
           </div>
 
           <div className="bg-slate-900/80 p-4.5 rounded-2xl border border-slate-800 shadow-inner">
             <span className="text-slate-400 text-xs font-semibold block mb-1">Conversion Rate</span>
-            <div className="font-mono text-3xl font-black text-white">6.7%</div>
+            <div className="font-mono text-3xl font-black text-white">{stats.conversionRate}</div>
             <span className="text-[10.5px] text-emerald-400 block mt-1">High conversion partner</span>
           </div>
         </div>
@@ -122,7 +189,7 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
             </p>
           </div>
           <span className="text-xs font-bold font-mono bg-emerald-50 text-emerald-800 border border-emerald-200 px-3 py-1 rounded-full w-fit">
-            124 Verified Enrolments
+            {stats.totalRegistrations} Verified Enrolments
           </span>
         </div>
 
@@ -139,13 +206,7 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-              {[
-                { refId: "CNTS-2026-8901", region: "Lucknow Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 3, 2026", status: "Verified & Credited" },
-                { refId: "CNTS-2026-7452", region: "Kanpur Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 2, 2026", status: "Verified & Credited" },
-                { refId: "CNTS-2026-6120", region: "Lucknow Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 2, 2026", status: "Verified & Credited" },
-                { refId: "CNTS-2026-4431", region: "Varanasi Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Aug 1, 2026", status: "Verified & Credited" },
-                { refId: "CNTS-2026-3198", region: "Prayagraj Region, UP", fee: "₹99 Paid", amount: "+₹25.00", date: "Jul 31, 2026", status: "Verified & Credited" }
-              ].map((row, i) => (
+              {stats.conversionsRoster.map((row, i) => (
                 <tr key={i} className="hover:bg-slate-50">
                   <td className="py-3.5 px-2 font-mono font-bold text-indigo-900">{row.refId}</td>
                   <td className="py-3.5 px-2 font-semibold text-slate-700">{row.region}</td>

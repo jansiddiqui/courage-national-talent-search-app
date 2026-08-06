@@ -328,13 +328,13 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateStep3()) {
       const finalRefCode = formData.referralCode || (formData.fullName ? PartnerReferralEngine.generateReferralCode(formData.fullName) : 'CNTS01');
       const finalSlug = formData.customSlug || (formData.fullName ? formData.fullName.toLowerCase().replace(/\s+/g, '') : 'creator');
 
-      onSubmitted({
+      const payload = {
         ...formData,
         profileImage,
         referralCode: finalRefCode,
@@ -342,7 +342,24 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
         platformDetails,
         totalReach,
         audienceScale: currentScale
-      });
+      };
+
+      try {
+        const res = await fetch('/api/partner/apply', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+        const data = await res.json();
+        if (data.partner) {
+          onSubmitted(data.partner);
+        } else {
+          onSubmitted(payload);
+        }
+      } catch (err) {
+        console.error('Error submitting application:', err);
+        onSubmitted(payload);
+      }
     }
   };
 

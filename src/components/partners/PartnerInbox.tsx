@@ -24,48 +24,29 @@ interface Message {
 export const PartnerInbox: React.FC<PartnerInboxProps> = ({
   partnerName = 'Jan Mohammad',
 }) => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: 'm1',
-      sender: 'Courage Partner Desk',
-      title: 'Founding Partner Badge Granted 🏅',
-      preview: 'Congratulations! Your Founding Partner status has been locked in.',
-      fullBody: `Dear ${partnerName},\n\nCongratulations! 🎉 Your Founding Partner status has officially been locked in. You are among the first 500 verified partners of the Courage National Talent Search 2026 initiative.\n\nYour Founding Partner badge is now permanently visible on your public partner profile and all earned certificates. This credential is recognized by Courage Library as a lifetime institutional achievement.\n\nThank you for your belief in early-stage educational excellence.\n\n— Courage Partner Desk`,
-      time: '10 mins ago',
-      unread: true,
-      category: 'Badge',
-    },
-    {
-      id: 'm2',
-      sender: 'Finance Operations',
-      title: 'Monthly Honorarium Settled: ₹3,100 Available',
-      preview: 'Your settlement for July-August 2026 mobilization has been verified and added to your available withdrawal balance.',
-      fullBody: `Dear ${partnerName},\n\nYour monthly honorarium for July–August 2026 has been successfully verified and credited to your available payout balance.\n\n💰 Amount Credited: ₹3,100\n📅 Verification Date: August 3, 2026\n🏦 Next Disbursement: Monday, August 10, 2026\n\nYou can initiate a withdrawal request from the Payouts & Requests tab anytime. Minimum withdrawal is ₹100.\n\nFor any settlement discrepancy, raise a support ticket within 7 days.\n\n— Finance Operations Team`,
-      time: '2 hours ago',
-      unread: true,
-      category: 'Payout',
-    },
-    {
-      id: 'm3',
-      sender: 'Campaign Leadership',
-      title: 'CNTS 2026 Phase 1 Awareness Week Live',
-      preview: 'New media assets, school brochure PDFs, and AI script templates are now live in your workspace.',
-      fullBody: `Dear ${partnerName},\n\nCNTS 2026 Phase 1 Awareness Week is now officially live! 🚀\n\nNew resources available in your workspace:\n• 📄 School Brochure PDF (A4, Print-Ready)\n• 🎨 Social Media Templates (9:16, 1:1, 16:9)\n• 🤖 AI-Generated WhatsApp, LinkedIn & Reel Scripts\n• 📊 Campaign Tracking Dashboard (live now)\n\nTarget: 500 student registrations in Phase 1.\nYour current progress: 78 registrations.\n\nKeep mobilizing — every referral counts!\n\n— Campaign Leadership`,
-      time: '1 day ago',
-      unread: true,
-      category: 'Mission',
-    },
-    {
-      id: 'm4',
-      sender: 'System Notification',
-      title: 'Workspace Security Check Completed ✅',
-      preview: 'Your partner workspace login was verified securely. No suspicious activity detected.',
-      fullBody: `Dear ${partnerName},\n\nA routine security verification was performed on your partner workspace account.\n\n✅ Status: Secure\n📍 Last Login: Today, 9:15 AM\n🔒 Two-Factor Auth: Active\n\nIf you did not initiate this login, please raise a support ticket immediately.\n\n— Courage Security Team`,
-      time: '3 days ago',
-      unread: false,
-      category: 'System',
-    },
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  React.useEffect(() => {
+    fetch('/api/partner/inbox')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.notifications) {
+          setMessages(data.notifications.map((n: any) => ({
+            id: n.id,
+            sender: n.sender,
+            title: n.title,
+            preview: n.preview,
+            fullBody: n.body,
+            time: n.time,
+            unread: n.isUnread,
+            category: n.category || 'System',
+          })));
+        }
+      })
+      .catch(err => console.error('Failed to fetch inbox notifications:', err))
+      .finally(() => setLoading(false));
+  }, []);
 
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -73,10 +54,14 @@ export const PartnerInbox: React.FC<PartnerInboxProps> = ({
 
   const markAllRead = () => {
     setMessages(prev => prev.map(m => ({ ...m, unread: false })));
+    messages.forEach(m => {
+      fetch(`/api/partner/inbox/${m.id}/read`, { method: 'PATCH' }).catch(() => {});
+    });
   };
 
   const markRead = (id: string) => {
     setMessages(prev => prev.map(m => m.id === id ? { ...m, unread: false } : m));
+    fetch(`/api/partner/inbox/${id}/read`, { method: 'PATCH' }).catch(() => {});
   };
 
   const dismissMessage = (id: string) => {

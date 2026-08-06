@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   CreditCard, 
   ArrowUpRight, 
@@ -24,14 +24,12 @@ export const PayoutCenter: React.FC<PayoutCenterProps> = ({
 }) => {
   const [withdrawAmount, setWithdrawAmount] = useState('3100');
   const [requestSubmitted, setRequestSubmitted] = useState(false);
-  const [requestsList, setRequestsList] = useState([
-    { id: 'REQ-1042', amount: '₹3,100', date: 'Aug 3, 2026', batchDate: 'Monday, Aug 10, 2026', status: 'Pending Weekly Batch', method: 'Registered Payout Account' }
-  ]);
+  const [requestsList, setRequestsList] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // settled txns total = 1500 + 1000 + 600 = 3100
   const lifetimeDisbursed = '₹3,100';
   const lifetimeDisbursedSubtext = '3 settled payouts: Jul 15, Jul 28, Aug 2';
-  const hasPrimaryPayoutAccount = true; // set false to show warning
+  const hasPrimaryPayoutAccount = true;
 
   const transactions = [
     { id: 'TXN-9021', date: 'Aug 2, 2026', campaign: 'CNTS 2026 Referral Honorarium', amount: '₹1,500', status: 'Settled', method: 'UPI Instant' },
@@ -39,19 +37,44 @@ export const PayoutCenter: React.FC<PayoutCenterProps> = ({
     { id: 'TXN-8512', date: 'Jul 15, 2026', campaign: 'CNTS Mobilization Phase 1', amount: '₹600', status: 'Settled', method: 'UPI Instant' },
   ];
 
-  const handleWithdrawalRequest = (e: React.FormEvent) => {
+  useEffect(() => {
+    fetch('/api/partner/payouts')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.requests) {
+          setRequestsList(data.requests);
+        }
+      })
+      .catch(err => console.error('Failed to load payouts:', err))
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleWithdrawalRequest = async (e: React.FormEvent) => {
     e.preventDefault();
-    const newReq = {
-      id: `REQ-${Math.floor(1000 + Math.random() * 9000)}`,
-      amount: `₹${withdrawAmount}`,
-      date: 'Aug 3, 2026',
-      batchDate: 'Monday, Aug 10, 2026',
-      status: 'Pending Weekly Batch',
-      method: 'Registered Payout Account'
-    };
-    setRequestsList([newReq, ...requestsList]);
-    setRequestSubmitted(true);
-    setTimeout(() => setRequestSubmitted(false), 3000);
+    try {
+      const res = await fetch('/api/partner/payouts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ amount: withdrawAmount })
+      });
+      const data = await res.json();
+      if (data.success && data.request) {
+        setRequestsList(prev => [data.request, ...prev]);
+        setRequestSubmitted(true);
+        setTimeout(() => setRequestSubmitted(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to submit withdrawal:', err);
+    }
+  };
+
+  const handleCancelRequest = async (id: string, index: number) => {
+    try {
+      await fetch(`/api/partner/payouts/${id}`, { method: 'DELETE' });
+      setRequestsList(prev => prev.filter((_, i) => i !== index));
+    } catch (err) {
+      console.error('Failed to cancel request:', err);
+    }
   };
 
   return (
@@ -215,7 +238,7 @@ export const PayoutCenter: React.FC<PayoutCenterProps> = ({
                     </td>
                     <td className="py-3.5 px-2">
                       <button
-                        onClick={() => setRequestsList(prev => prev.filter((_, j) => j !== i))}
+                        onClick={() => handleCancelRequest(req.id, i)}
                         className="flex items-center gap-1 text-[10px] font-bold text-rose-600 hover:text-rose-800 cursor-pointer"
                         title="Cancel this request"
                       >

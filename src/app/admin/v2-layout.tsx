@@ -24,6 +24,7 @@ import {
   Phone,
   PanelLeftClose,
   PanelLeftOpen,
+  Users
 } from "lucide-react";
 
 interface NavLink {
@@ -67,6 +68,7 @@ const linkGroups: NavGroup[] = [
   {
     title: "Campaigns & Marketing",
     links: [
+      { href: "/admin/partners", label: "Partners & Creators", icon: Users },
       { href: "/admin/notifications", label: "Broadcasts", icon: MessageSquare },
       { href: "/admin?tab=whatsapp", label: "Notification Logs", icon: MessageSquare },
       { href: "/admin?tab=coupons", label: "Promo & Coupon Mgr", icon: Percent },

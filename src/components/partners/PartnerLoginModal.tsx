@@ -11,7 +11,8 @@ import {
   Sparkles, 
   CheckCircle2,
   Lock,
-  RefreshCw
+  RefreshCw,
+  AlertTriangle
 } from 'lucide-react';
 
 interface PartnerLoginModalProps {
@@ -27,39 +28,81 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
   onLoginSuccess,
   onSwitchToApply
 }) => {
-  const [loginMethod, setLoginMethod] = useState<'phone' | 'email' | 'code'>('phone');
+  const [loginMethod, setLoginMethod] = useState<'email' | 'phone' | 'code'>('email');
   const [phoneOrEmailOrCode, setPhoneOrEmailOrCode] = useState('');
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
-  const handleSendOtp = (e: React.FormEvent) => {
+  const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!phoneOrEmailOrCode) return;
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
+    setError(null);
+
+    try {
+      // Send OTP via email API
+      const targetEmail = loginMethod === 'email' 
+        ? phoneOrEmailOrCode 
+        : (phoneOrEmailOrCode.includes('@') ? phoneOrEmailOrCode : `${phoneOrEmailOrCode.toLowerCase().replace(/[^a-z0-9]/g, '')}@couragepartner.id`);
+
+      const res = await fetch('/api/partner/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: targetEmail })
+      });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Failed to send OTP');
+      }
+
       setOtpSent(true);
-    }, 800);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error sending OTP');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleVerifyOtp = (e: React.FormEvent) => {
+  const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      onLoginSuccess({
-        fullName: 'Jan Mohammad',
-        customSlug: 'cntsjn',
-        partnerId: 'CP-2026-000384',
-        referralCode: phoneOrEmailOrCode.toUpperCase().includes('CNTS') ? phoneOrEmailOrCode.toUpperCase() : 'CNTSJN',
-        audienceScale: '50k - 250k',
-        primaryRole: 'Infotainment & Knowledge Content'
+    setError(null);
+
+    try {
+      const targetEmail = loginMethod === 'email' 
+        ? phoneOrEmailOrCode 
+        : (phoneOrEmailOrCode.includes('@') ? phoneOrEmailOrCode : `${phoneOrEmailOrCode.toLowerCase().replace(/[^a-z0-9]/g, '')}@couragepartner.id`);
+
+      const res = await fetch('/api/partner/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: targetEmail, otp })
       });
+
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Invalid OTP');
+      }
+
+      if (!data.isRegistered) {
+        // Unregistered partner -> open apply modal
+        onClose();
+        onSwitchToApply();
+        return;
+      }
+
+      onLoginSuccess(data.partner);
       onClose();
-    }, 800);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Error verifying OTP');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -82,25 +125,23 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
             <span className="font-display font-bold text-lg text-white">Courage Partner Login</span>
           </div>
           <p className="text-xs text-slate-400">
-            Sign in to access your AI Studio, referral analytics, and payout center.
+            Sign in via Email OTP to access your AI Studio, referral analytics, and payout center.
           </p>
         </div>
 
         {/* Login Form Body */}
         <div className="p-6 md:p-8 space-y-6">
+          {error && (
+            <div className="p-3 bg-rose-50 border border-rose-200 rounded-xl text-xs text-rose-800 flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-rose-600 shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
           {!otpSent ? (
             <form onSubmit={handleSendOtp} className="space-y-4">
               {/* Method Switch Tabs */}
               <div className="grid grid-cols-3 gap-1 bg-slate-100 p-1 rounded-xl text-xs font-semibold">
-                <button
-                  type="button"
-                  onClick={() => setLoginMethod('phone')}
-                  className={`py-2 rounded-lg flex items-center justify-center gap-1 cursor-pointer transition-all ${
-                    loginMethod === 'phone' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600'
-                  }`}
-                >
-                  <Smartphone className="w-3.5 h-3.5" /> WhatsApp
-                </button>
                 <button
                   type="button"
                   onClick={() => setLoginMethod('email')}
@@ -109,6 +150,15 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
                   }`}
                 >
                   <Mail className="w-3.5 h-3.5" /> Email
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLoginMethod('phone')}
+                  className={`py-2 rounded-lg flex items-center justify-center gap-1 cursor-pointer transition-all ${
+                    loginMethod === 'phone' ? 'bg-white text-slate-900 shadow-sm font-bold' : 'text-slate-600'
+                  }`}
+                >
+                  <Smartphone className="w-3.5 h-3.5" /> Phone
                 </button>
                 <button
                   type="button"
@@ -123,16 +173,16 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
 
               <div>
                 <label className="block text-xs font-bold text-slate-700 mb-1">
-                  {loginMethod === 'phone' && 'Registered WhatsApp Mobile Number *'}
                   {loginMethod === 'email' && 'Registered Email Address *'}
+                  {loginMethod === 'phone' && 'Registered Mobile / WhatsApp Number *'}
                   {loginMethod === 'code' && 'Your Referral Code (e.g. CNTSJN) *'}
                 </label>
                 <input
-                  type={loginMethod === 'phone' ? 'tel' : loginMethod === 'email' ? 'email' : 'text'}
+                  type={loginMethod === 'email' ? 'email' : 'text'}
                   required
                   placeholder={
-                    loginMethod === 'phone' ? '+91 98765 43210' :
                     loginMethod === 'email' ? 'jan@example.com' :
+                    loginMethod === 'phone' ? '+91 83606 03173' :
                     'CNTSJN'
                   }
                   value={phoneOrEmailOrCode}
@@ -146,7 +196,7 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
                 disabled={loading || !phoneOrEmailOrCode}
                 className="w-full btn-primary text-xs py-3.5 bg-indigo-600 hover:bg-indigo-700 font-bold shadow-md cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Send Verification OTP'} <ArrowRight className="w-4 h-4" />
+                {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Send Email Verification OTP'} <ArrowRight className="w-4 h-4" />
               </button>
 
               <div className="pt-2 text-center text-xs text-slate-500">
@@ -181,7 +231,6 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
                   onChange={e => setOtp(e.target.value)}
                   className="w-full px-4 py-3 rounded-xl border border-slate-200 text-center font-mono text-xl font-bold tracking-widest focus:ring-2 focus:ring-indigo-600"
                 />
-                <span className="text-[11px] text-slate-400 block text-right mt-1">Demo OTP: Enter any 6 digits</span>
               </div>
 
               <button
@@ -197,7 +246,7 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
                 onClick={() => setOtpSent(false)}
                 className="w-full text-center text-xs text-slate-500 hover:text-slate-800 py-1 cursor-pointer"
               >
-                ← Change Number / Method
+                ← Change Email / Method
               </button>
             </form>
           )}
