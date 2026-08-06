@@ -54,22 +54,26 @@ export async function GET() {
         .eq('email', payload.email)
         .maybeSingle();
 
-      if (dbPartner) {
-        partnerData = {
-          id: dbPartner.id,
-          fullName: dbPartner.full_name,
-          email: dbPartner.email,
-          phone: dbPartner.phone,
-          referralCode: dbPartner.referral_code,
-          customSlug: dbPartner.custom_slug,
-          partnerId: dbPartner.partner_id,
-          primaryRole: dbPartner.primary_role || 'Content Creator & Educator',
-          audienceScale: dbPartner.audience_scale || '10k - 50k',
-          status: dbPartner.status || 'PENDING',
-          tier: dbPartner.tier || 'BRONZE',
-          honorariumRate: dbPartner.honorarium_rate || 25,
-        };
+      if (!dbPartner) {
+        // Partner record was deleted from Supabase DB — clear cookie and revoke session
+        cookieStore.delete('cnts_partner_session');
+        return NextResponse.json({ isAuthenticated: false, message: 'Partner record no longer exists.' });
       }
+
+      partnerData = {
+        id: dbPartner.id,
+        fullName: dbPartner.full_name,
+        email: dbPartner.email,
+        phone: dbPartner.phone,
+        referralCode: dbPartner.referral_code,
+        customSlug: dbPartner.custom_slug,
+        partnerId: dbPartner.partner_id,
+        primaryRole: dbPartner.primary_role || 'Content Creator & Educator',
+        audienceScale: dbPartner.audience_scale || '10k - 50k',
+        status: dbPartner.status || 'PENDING',
+        tier: dbPartner.tier || 'BRONZE',
+        honorariumRate: dbPartner.honorarium_rate || 25,
+      };
     }
 
     return NextResponse.json({
