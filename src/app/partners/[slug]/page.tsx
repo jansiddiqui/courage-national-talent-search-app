@@ -15,8 +15,7 @@ import { PaymentSetupAndRulesTab } from '@/components/partners/PaymentSetupAndRu
 import { GrowthCenter } from '@/components/partners/GrowthCenter';
 import { PartnerSupportCenter } from '@/components/partners/PartnerSupportCenter';
 import { PartnerInbox } from '@/components/partners/PartnerInbox';
-import { PartnerLoginModal } from '@/components/partners/PartnerLoginModal';
-import { ShieldAlert, Lock, ArrowRight, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Lock, Sparkles, ArrowRight } from 'lucide-react';
 
 export default function DedicatedPartnerWorkspacePage() {
   const params = useParams();
@@ -28,7 +27,6 @@ export default function DedicatedPartnerWorkspacePage() {
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [partnerData, setPartnerData] = useState<any>(null);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   useEffect(() => {
     const verifyPartnerAccess = async () => {
@@ -38,11 +36,7 @@ export default function DedicatedPartnerWorkspacePage() {
         const data = await res.json();
 
         if (data.isAuthenticated && data.partner) {
-          const p = data.partner;
-          const userSlug = (p.customSlug || p.referralCode || '').toLowerCase();
-          
-          // Match slug or allow partner to view their own workspace
-          setPartnerData(p);
+          setPartnerData(data.partner);
           setIsAuthenticated(true);
           setLoading(false);
           return;
@@ -75,15 +69,6 @@ export default function DedicatedPartnerWorkspacePage() {
     verifyPartnerAccess();
   }, [slug]);
 
-  const handleLoginSuccess = (data: any) => {
-    setPartnerData(data);
-    setIsAuthenticated(true);
-    setIsLoginModalOpen(false);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cnts_partner_session', JSON.stringify(data));
-    }
-  };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8FAFF] flex flex-col justify-center items-center space-y-4">
@@ -93,35 +78,35 @@ export default function DedicatedPartnerWorkspacePage() {
     );
   }
 
-  // ACCESS LOCKED VIEW FOR UNAUTHENTICATED VISITORS
+  // ACCESS LOCKED VIEW FOR UNAUTHENTICATED VISITORS — UNIFIED WITH ROOT /login?tab=partner
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-[#F8FAFF] flex flex-col justify-between">
         <Navbar />
         
-        <main className="max-w-2xl mx-auto px-4 py-32 text-center space-y-6">
+        <main className="max-w-2xl mx-auto px-4 py-36 text-center space-y-6">
           <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-3xl flex items-center justify-center mx-auto shadow-sm border border-amber-200">
             <Lock className="w-8 h-8" />
           </div>
 
           <div className="space-y-2">
             <span className="text-xs font-mono font-extrabold uppercase tracking-widest text-amber-700 bg-amber-50 px-3.5 py-1 rounded-full border border-amber-200">
-              Partner Workspace Access Protected
+              Partner Workspace Protected
             </span>
             <h1 className="font-display text-3xl font-black text-slate-900">
               Authentication Required for /partners/{slug || 'workspace'}
             </h1>
             <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
-              This workspace dashboard is private to registered Courage Partners. Please log in with your OTP to access your referral counters, payouts, and AI studio.
+              This workspace dashboard is private to registered Courage Partners. Please log in via the central Partner Portal tab to access your referral counters, payouts, and AI studio.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
             <button
-              onClick={() => setIsLoginModalOpen(true)}
+              onClick={() => router.push('/login?tab=partner')}
               className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" /> Partner Login via OTP
+              <Sparkles className="w-4 h-4 text-amber-300" /> Go to Partner Portal Login <ArrowRight className="w-4 h-4" />
             </button>
             <button
               onClick={() => router.push('/partners/apply')}
@@ -133,13 +118,6 @@ export default function DedicatedPartnerWorkspacePage() {
         </main>
 
         <Footer />
-
-        <PartnerLoginModal
-          isOpen={isLoginModalOpen}
-          onClose={() => setIsLoginModalOpen(false)}
-          onLoginSuccess={handleLoginSuccess}
-          onSwitchToApply={() => router.push('/partners/apply')}
-        />
       </div>
     );
   }

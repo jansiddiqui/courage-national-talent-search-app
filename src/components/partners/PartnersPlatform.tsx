@@ -6,7 +6,6 @@ import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
 import { PartnersLanding } from './PartnersLanding';
 import { CreatorApplicationPage } from './CreatorApplicationPage';
-import { PartnerLoginModal } from './PartnerLoginModal';
 import { ApprovalMomentModal } from './ApprovalMomentModal';
 
 interface PartnersPlatformProps {
@@ -19,7 +18,6 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'landing' | 'apply'>(initialView);
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [applicantData, setApplicantData] = useState<any>(null);
 
   useEffect(() => {
@@ -88,15 +86,6 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
     setIsApprovalModalOpen(true);
   };
 
-  const handleLoginSuccess = (partnerData: any) => {
-    const slug = (partnerData.customSlug || partnerData.referralCode || 'partner').toLowerCase();
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cnts_partner_session', JSON.stringify(partnerData));
-    }
-    setIsLoginModalOpen(false);
-    router.push(`/partners/${slug}`);
-  };
-
   const handleEnterWorkspaceFromApproval = () => {
     setIsApprovalModalOpen(false);
     const slug = (applicantData?.customSlug || applicantData?.referralCode || 'partner').toLowerCase();
@@ -111,7 +100,7 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
           <Navbar />
           <PartnersLanding
             onOpenApply={() => setViewMode('apply')}
-            onOpenLogin={() => setIsLoginModalOpen(true)}
+            onOpenLogin={() => router.push('/login?tab=partner')}
             onExploreMissions={() => {
               const slug = (applicantData?.customSlug || 'cntsjn').toLowerCase();
               router.push(`/partners/${slug}`);
@@ -136,14 +125,6 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
           <Footer />
         </>
       )}
-
-      {/* PARTNER LOGIN MODAL */}
-      <PartnerLoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-        onSwitchToApply={() => setViewMode('apply')}
-      />
 
       {/* APPROVAL MOMENT REVEAL MODAL */}
       <ApprovalMomentModal
