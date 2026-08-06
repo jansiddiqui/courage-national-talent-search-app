@@ -15,7 +15,21 @@ import { PaymentSetupAndRulesTab } from '@/components/partners/PaymentSetupAndRu
 import { GrowthCenter } from '@/components/partners/GrowthCenter';
 import { PartnerSupportCenter } from '@/components/partners/PartnerSupportCenter';
 import { PartnerInbox } from '@/components/partners/PartnerInbox';
-import { Lock, Sparkles, ArrowRight, UserPlus, CheckCircle2, AlertCircle } from 'lucide-react';
+import { 
+  Lock, 
+  Sparkles, 
+  ArrowRight, 
+  UserPlus, 
+  CheckCircle2, 
+  ShieldCheck,
+  Copy,
+  Check,
+  ExternalLink,
+  Zap,
+  Award,
+  TrendingUp,
+  CreditCard
+} from 'lucide-react';
 
 export default function DedicatedPartnerWorkspacePage() {
   const params = useParams();
@@ -28,6 +42,7 @@ export default function DedicatedPartnerWorkspacePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isRegisteredCode, setIsRegisteredCode] = useState(false);
   const [partnerData, setPartnerData] = useState<any>(null);
+  const [copiedUrl, setCopiedUrl] = useState(false);
 
   useEffect(() => {
     const verifyPartnerAccess = async () => {
@@ -85,89 +100,203 @@ export default function DedicatedPartnerWorkspacePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8FAFF] flex flex-col justify-center items-center space-y-4">
-        <div className="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xs font-mono font-bold text-slate-500">Checking Partner Registration Status...</p>
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50/70 via-[#F8FAFF] to-[#F8FAFF] flex flex-col justify-center items-center space-y-4">
+        <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
+        <p className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider">Verifying Partner Handle Authentication...</p>
       </div>
     );
   }
 
-  // ACCESS LOCKED VIEW FOR UNAUTHENTICATED VISITORS
+  // PREMIUM GLASSMORPHIC ACCESS LOCKED VIEW FOR UNAUTHENTICATED VISITORS
   if (!isAuthenticated) {
+    const handleUrl = `thecouragelibrary.com/partners/${slug}`;
+
     return (
-      <div className="min-h-screen bg-[#F8FAFF] flex flex-col justify-between">
+      <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-[#F8FAFF] to-[#F8FAFF] flex flex-col justify-between font-sans">
         <Navbar />
         
-        <main className="max-w-2xl mx-auto px-4 py-36 text-center space-y-6">
-          {/* CASE A: REGISTERED PARTNER CODE -> SHOW LOGIN */}
-          {isRegisteredCode ? (
-            <>
-              <div className="w-16 h-16 bg-amber-100 text-amber-600 rounded-3xl flex items-center justify-center mx-auto shadow-sm border border-amber-200">
-                <Lock className="w-8 h-8" />
-              </div>
+        <main className="max-w-3xl mx-auto px-4 py-28 sm:py-36 text-center space-y-8 w-full">
+          {/* GLASS CARD CONTAINER */}
+          <div className="bg-white/90 backdrop-blur-xl border border-slate-200/90 shadow-2xl rounded-3xl p-8 sm:p-12 space-y-8 relative overflow-hidden">
+            
+            {/* BACKGROUND DECORATIVE GLOW */}
+            <div className={`absolute -top-24 -right-24 w-60 h-60 rounded-full blur-3xl opacity-30 ${
+              isRegisteredCode ? 'bg-indigo-500' : 'bg-emerald-500'
+            }`} />
 
-              <div className="space-y-2">
-                <span className="text-xs font-mono font-extrabold uppercase tracking-widest text-amber-700 bg-amber-50 px-3.5 py-1 rounded-full border border-amber-200">
-                  Registered Partner Workspace
-                </span>
-                <h1 className="font-display text-3xl font-black text-slate-900">
-                  Login to Access /partners/{slug || 'workspace'}
-                </h1>
-                <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
-                  This workspace belongs to registered Courage Partner <strong className="font-mono text-indigo-600 uppercase">{slug}</strong>. Please log in with your credentials to access your dashboard.
-                </p>
-              </div>
+            {/* CASE A: REGISTERED PARTNER WORKSPACE -> PROMPT LOGIN */}
+            {isRegisteredCode ? (
+              <>
+                {/* ICON EMBLEM */}
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-slate-900 to-indigo-950 text-amber-400 rounded-3xl flex items-center justify-center mx-auto shadow-xl border border-indigo-800 ring-8 ring-indigo-50/80 transform hover:scale-105 transition-transform duration-300">
+                    <ShieldCheck className="w-10 h-10" />
+                  </div>
+                </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-                <button
-                  onClick={() => router.push('/login?tab=partner')}
-                  className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <Sparkles className="w-4 h-4 text-amber-300" /> Login to Partner Workspace <ArrowRight className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => router.push('/partners/apply')}
-                  className="w-full sm:w-auto px-7 py-3.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs rounded-2xl transition-all cursor-pointer"
-                >
-                  Apply to Become a Partner
-                </button>
-              </div>
-            </>
-          ) : (
-            /* CASE B: UNREGISTERED PARTNER CODE -> SHOW REGISTRATION CLAIM */
-            <>
-              <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-3xl flex items-center justify-center mx-auto shadow-sm border border-emerald-200">
-                <UserPlus className="w-8 h-8" />
-              </div>
+                {/* BADGE & HEADLINE */}
+                <div className="space-y-3 relative z-10">
+                  <span className="text-[11px] font-mono font-extrabold uppercase tracking-widest text-amber-700 bg-amber-50 px-4 py-1.5 rounded-full border border-amber-200/80 inline-flex items-center gap-1.5 shadow-xs">
+                    <Lock className="w-3.5 h-3.5 text-amber-600" /> REGISTERED CREATOR OS WORKSPACE
+                  </span>
+                  
+                  <h1 className="font-display text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+                    Unlock Your Partner Workspace
+                  </h1>
 
-              <div className="space-y-2">
-                <span className="text-xs font-mono font-extrabold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-3.5 py-1 rounded-full border border-emerald-200">
-                  Available Partner Handle
-                </span>
-                <h1 className="font-display text-3xl font-black text-slate-900">
-                  Claim /partners/{slug} as Your Partner Handle!
-                </h1>
-                <p className="text-slate-600 text-sm max-w-md mx-auto leading-relaxed">
-                  The partner code <strong className="font-mono text-emerald-600 uppercase">{slug}</strong> is not registered yet. Apply to become an official Courage Partner and claim this referral link.
-                </p>
-              </div>
+                  {/* URL CHIP */}
+                  <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-2xl font-mono text-xs shadow-md border border-slate-800 my-2">
+                    <span className="text-slate-400">URL:</span>
+                    <span className="font-bold text-amber-300 truncate max-w-[240px] sm:max-w-none">{handleUrl}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://${handleUrl}`);
+                        setCopiedUrl(true);
+                        setTimeout(() => setCopiedUrl(false), 2000);
+                      }}
+                      className="ml-1 p-1 hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-white"
+                      title="Copy handle URL"
+                    >
+                      {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
 
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
-                <button
-                  onClick={() => router.push(`/partners/apply?slug=${encodeURIComponent(slug)}`)}
-                  className="w-full sm:w-auto px-8 py-3.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
-                >
-                  <UserPlus className="w-4 h-4" /> Apply & Claim /partners/{slug} <ArrowRight className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={() => router.push('/login?tab=partner')}
-                  className="w-full sm:w-auto px-7 py-3.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs rounded-2xl transition-all cursor-pointer"
-                >
-                  Partner Login
-                </button>
-              </div>
-            </>
-          )}
+                  <p className="text-slate-600 text-sm max-w-lg mx-auto leading-relaxed">
+                    This workspace belongs to verified Courage Partner <strong className="font-mono text-indigo-700 font-bold uppercase">{slug}</strong>. Log in via your registered account to manage referral counters, payout settlements, and AI media kits.
+                  </p>
+                </div>
+
+                {/* FEATURE HIGHLIGHT PILLS */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 relative z-10 text-left">
+                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex items-center gap-3">
+                    <TrendingUp className="w-5 h-5 text-indigo-600 shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Real-Time Analytics</h4>
+                      <p className="text-[10px] text-slate-500">Live referral conversions</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex items-center gap-3">
+                    <CreditCard className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Monday Settlements</h4>
+                      <p className="text-[10px] text-slate-500">Automated UPI payouts</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex items-center gap-3">
+                    <Zap className="w-5 h-5 text-amber-500 shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">AI Studio Copilot</h4>
+                      <p className="text-[10px] text-slate-500">Automated copy & banners</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ACTION BUTTONS */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4 relative z-10">
+                  <button
+                    onClick={() => router.push('/login?tab=partner')}
+                    className="w-full sm:w-auto px-9 py-4 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl shadow-indigo-200 transition-all cursor-pointer flex items-center justify-center gap-2.5 transform hover:-translate-y-0.5"
+                  >
+                    <Sparkles className="w-4 h-4 text-amber-300" /> Login to Partner Workspace <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => router.push('/partners/apply')}
+                    className="w-full sm:w-auto px-7 py-4 border-2 border-slate-200 bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-xs sm:text-sm rounded-2xl transition-all cursor-pointer shadow-xs"
+                  >
+                    Apply to Become a Partner
+                  </button>
+                </div>
+              </>
+            ) : (
+              /* CASE B: UNREGISTERED PARTNER CODE -> SHOW REGISTRATION CLAIM */
+              <>
+                {/* ICON EMBLEM */}
+                <div className="relative z-10">
+                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-teal-700 text-white rounded-3xl flex items-center justify-center mx-auto shadow-xl border border-emerald-400 ring-8 ring-emerald-50/80 transform hover:scale-105 transition-transform duration-300">
+                    <UserPlus className="w-10 h-10" />
+                  </div>
+                </div>
+
+                {/* BADGE & HEADLINE */}
+                <div className="space-y-3 relative z-10">
+                  <span className="text-[11px] font-mono font-extrabold uppercase tracking-widest text-emerald-800 bg-emerald-50 px-4 py-1.5 rounded-full border border-emerald-200 inline-flex items-center gap-1.5 shadow-xs">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" /> AVAILABLE CUSTOM PARTNER HANDLE
+                  </span>
+
+                  <h1 className="font-display text-3xl sm:text-4xl font-black text-slate-900 tracking-tight leading-tight">
+                    Claim <span className="text-emerald-600 font-mono">/partners/{slug}</span> as Your Unique Partner Link!
+                  </h1>
+
+                  {/* URL CHIP */}
+                  <div className="inline-flex items-center gap-2 bg-slate-900 text-white px-4 py-2 rounded-2xl font-mono text-xs shadow-md border border-slate-800 my-2">
+                    <span className="text-slate-400">Available Link:</span>
+                    <span className="font-bold text-emerald-400 truncate max-w-[240px] sm:max-w-none">{handleUrl}</span>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(`https://${handleUrl}`);
+                        setCopiedUrl(true);
+                        setTimeout(() => setCopiedUrl(false), 2000);
+                      }}
+                      className="ml-1 p-1 hover:bg-slate-800 rounded transition-colors text-slate-400 hover:text-white"
+                      title="Copy handle URL"
+                    >
+                      {copiedUrl ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                    </button>
+                  </div>
+
+                  <p className="text-slate-600 text-sm max-w-lg mx-auto leading-relaxed">
+                    The partner handle <strong className="font-mono text-emerald-700 font-bold uppercase">{slug}</strong> is open for registration. Apply now to claim this handle, mobilize Class 5-8 students, and earn ₹25–₹100 honorarium per candidate.
+                  </p>
+                </div>
+
+                {/* FEATURE HIGHLIGHT PILLS */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 relative z-10 text-left">
+                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex items-center gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">100% Merit Waiver</h4>
+                      <p className="text-[10px] text-slate-500">Mobilize Class 5-8 students</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex items-center gap-3">
+                    <Award className="w-5 h-5 text-indigo-600 shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Honorarium Rewards</h4>
+                      <p className="text-[10px] text-slate-500">₹25 - ₹100 per verification</p>
+                    </div>
+                  </div>
+
+                  <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex items-center gap-3">
+                    <ShieldCheck className="w-5 h-5 text-amber-500 shrink-0" />
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900">Official Certificate</h4>
+                      <p className="text-[10px] text-slate-500">Institutional Mobilizer badge</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* ACTION BUTTONS */}
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-4 relative z-10">
+                  <button
+                    onClick={() => router.push(`/partners/apply?slug=${encodeURIComponent(slug)}`)}
+                    className="w-full sm:w-auto px-9 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 font-black text-xs sm:text-sm rounded-2xl shadow-xl shadow-emerald-200 transition-all cursor-pointer flex items-center justify-center gap-2.5 transform hover:-translate-y-0.5"
+                  >
+                    <UserPlus className="w-4 h-4" /> Apply & Claim /partners/{slug} <ArrowRight className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => router.push('/login?tab=partner')}
+                    className="w-full sm:w-auto px-7 py-4 border-2 border-slate-200 bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-xs sm:text-sm rounded-2xl transition-all cursor-pointer shadow-xs"
+                  >
+                    Partner Login
+                  </button>
+                </div>
+              </>
+            )}
+
+          </div>
         </main>
 
         <Footer />
