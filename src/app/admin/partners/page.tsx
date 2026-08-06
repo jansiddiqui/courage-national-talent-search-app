@@ -817,7 +817,7 @@ export default function AdminPartnersPage() {
                 <input
                   type="text"
                   required
-                  placeholder="e.g. 🎉 CNTS 2026 Phase 2 Referral Bonus Unlocked!"
+                  placeholder="e.g. CNTS 2026 Phase 2 Referral Bonus Unlocked"
                   value={broadcastTitle}
                   onChange={e => setBroadcastTitle(e.target.value)}
                   className="w-full px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold"
