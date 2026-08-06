@@ -19,9 +19,9 @@ import {
   UserCheck,
   Building2,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  Users
 } from 'lucide-react';
-import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
 
 interface PartnerOverviewProps {
   partnerName?: string;
@@ -42,48 +42,53 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
     if (onNavigateTab) onNavigateTab(tabId);
     if (onNavigateToTab) onNavigateToTab(tabId);
   };
+
   const [copiedLink, setCopiedLink] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
+  
+  // REAL STATS STATE — DEFAULT ALL NUMBERS TO 0 (NO MOCK VALUES)
   const [stats, setStats] = useState({
-    totalRegistrations: 12,
-    totalEarnings: 1480,
-    maturedBalance: 420,
+    totalRegistrations: 0,
+    totalEarnings: 0,
+    maturedBalance: 0,
     effectiveRate: 25,
     ruleSource: 'Growth Tier (Bronze)',
     tierName: 'Bronze Mobilizer',
     nextTierName: 'Silver Mobilizer',
     nextTierTarget: 25,
-    progressPercent: 48,
-    recentEvents: [
-      { id: '1', title: 'Verified Student Registration', desc: 'Candidate from Patna enrolled via your link', time: '5m ago', icon: 'user', type: 'success' },
-      { id: '2', title: 'Honorarium Matured', desc: '₹420 moved to Available Payout Balance', time: '1h ago', icon: 'wallet', type: 'info' },
-      { id: '3', title: 'Badge Unlocked', desc: 'Unlocked Bronze Mobilizer reputation badge', time: '1d ago', icon: 'award', type: 'warning' },
-      { id: '4', title: 'Monday Batch Scheduled', desc: 'Next automated payout batch on Monday', time: '2d ago', icon: 'clock', type: 'neutral' }
-    ]
+    progressPercent: 0,
+    recentEvents: [] as any[]
   });
+
+  const [loadingStats, setLoadingStats] = useState(true);
 
   useEffect(() => {
     if (referralCode) {
+      setLoadingStats(true);
       fetch(`/api/partner/stats?referralCode=${encodeURIComponent(referralCode)}`)
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            setStats(prev => ({
-              ...prev,
-              totalRegistrations: data.totalRegistrations ?? prev.totalRegistrations,
-              totalEarnings: data.totalEarnings ?? prev.totalEarnings,
-              maturedBalance: data.maturedBalance ?? prev.maturedBalance,
-              effectiveRate: data.effectiveRate ?? prev.effectiveRate,
-              ruleSource: data.ruleSource ?? prev.ruleSource,
-              tierName: data.tierName ?? prev.tierName,
-              nextTierName: data.nextTierName ?? prev.nextTierName,
-              nextTierTarget: data.nextTierTarget ?? prev.nextTierTarget,
-              progressPercent: data.progressPercent ?? prev.progressPercent,
-              recentEvents: data.timelineFeed?.slice(0, 4) || prev.recentEvents
-            }));
+            const regs = Number(data.totalRegistrations || 0);
+            const rate = Number(data.honorariumRate || data.effectiveRate || 25);
+            const earnings = data.rawHonorariumEarned ?? (regs * rate);
+
+            setStats({
+              totalRegistrations: regs,
+              totalEarnings: earnings,
+              maturedBalance: earnings, // Matured balance matches earnings for verified candidates
+              effectiveRate: rate,
+              ruleSource: data.ruleResult?.winningRuleName || data.ruleSource || 'Growth Tier (Bronze)',
+              tierName: data.achievements?.unlockedBadges?.[0]?.title || 'Bronze Mobilizer',
+              nextTierName: regs >= 25 ? 'Gold Mobilizer' : 'Silver Mobilizer',
+              nextTierTarget: regs >= 25 ? 50 : 25,
+              progressPercent: Math.min(100, Math.round((regs / 25) * 100)),
+              recentEvents: data.timelineFeed || []
+            });
           }
         })
-        .catch(err => console.error('Failed to load partner stats:', err));
+        .catch(err => console.error('Failed to load partner stats:', err))
+        .finally(() => setLoadingStats(false));
     }
   }, [referralCode]);
 
@@ -102,16 +107,16 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
   };
 
   const downloadQR = () => {
-    if (onNavigateTab) onNavigateTab('referrals');
+    navigate('referral');
   };
 
   return (
     <div className="max-w-4xl mx-auto space-y-7 animate-fade-in pb-12 font-sans text-[#0F172A]">
 
-      {/* 1. HERO — WELCOME & CORE METRICS */}
+      {/* 1. HERO — WELCOME & REAL LIVE STATS */}
       <div className="bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#0F172A] text-white p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden space-y-6">
         
-        {/* Subtle Ambient Glow */}
+        {/* Ambient Glow Accent */}
         <div className="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
 
         {/* Top Header Row */}
@@ -128,7 +133,7 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
             </p>
           </div>
 
-          {/* Current Tier Badge & Progress Recap */}
+          {/* Current Tier Badge & Rate */}
           <div className="bg-slate-900/90 border border-slate-700/70 p-3.5 rounded-2xl shrink-0 space-y-1.5 text-right sm:text-right">
             <div className="flex items-center justify-end gap-1.5 text-xs font-bold text-amber-300">
               <Award className="w-4 h-4 text-amber-400" />
@@ -140,41 +145,41 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
           </div>
         </div>
 
-        {/* Core Metric Cards Grid (Answers "How am I doing?" & "How much have I earned?") */}
+        {/* Core Metrics Grid (Live Verified Data ONLY) */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 relative z-10">
-          {/* Card 1: Verified Registrations */}
-          <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+          {/* Card 1: Verified Students */}
+          <div className="bg-slate-900/70 border border-slate-800 p-4.5 rounded-2xl">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
               Verified Students
             </span>
-            <div className="font-mono text-3xl font-black text-white mt-1">
+            <div className="font-mono text-3.5xl font-black text-white mt-1">
               {stats.totalRegistrations}
             </div>
             <span className="text-[11px] text-slate-400 font-medium block mt-1">
-              Candidates mobilized
+              Candidates enrolled via code
             </span>
           </div>
 
           {/* Card 2: Total Earnings */}
-          <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+          <div className="bg-slate-900/70 border border-slate-800 p-4.5 rounded-2xl">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
               Total Earnings
             </span>
-            <div className="font-mono text-3xl font-black text-amber-300 mt-1">
-              ₹{stats.totalEarnings.toLocaleString()}
+            <div className="font-mono text-3.5xl font-black text-amber-300 mt-1">
+              ₹{stats.totalEarnings.toLocaleString('en-IN')}
             </div>
             <span className="text-[11px] text-emerald-400 font-medium block mt-1">
-              Cumulative honorarium
+              Honorarium earned (₹{stats.effectiveRate}/reg)
             </span>
           </div>
 
           {/* Card 3: Available Balance */}
-          <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+          <div className="bg-slate-900/70 border border-slate-800 p-4.5 rounded-2xl">
             <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
               Available Balance
             </span>
-            <div className="font-mono text-3xl font-black text-emerald-400 mt-1">
-              ₹{stats.maturedBalance.toLocaleString()}
+            <div className="font-mono text-3.5xl font-black text-emerald-400 mt-1">
+              ₹{stats.maturedBalance.toLocaleString('en-IN')}
             </div>
             <span className="text-[11px] text-slate-400 font-medium block mt-1">
               Ready for Monday payout
@@ -191,15 +196,15 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
           <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700">
             <div 
               className="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full transition-all duration-500" 
-              style={{ width: `${Math.min(100, Math.max(8, stats.progressPercent))}%` }} 
+              style={{ width: `${Math.min(100, Math.max(0, stats.progressPercent))}%` }} 
             />
           </div>
         </div>
 
       </div>
 
-      {/* 2. NEXT BEST ACTION (Answers "What should I do next?" with ONE clear action card) */}
-      <div className="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-300/60 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      {/* 2. NEXT BEST ACTION CARD */}
+      <div className="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-300/60 rounded-3xl p-5 sm:p-6 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md border border-amber-200">
             <Zap className="w-3.5 h-3.5 text-amber-600" /> Next Best Action
@@ -208,7 +213,7 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
             Share Today's Promotional WhatsApp Poster
           </h3>
           <p className="text-xs text-slate-600 leading-relaxed font-medium">
-            Generating promotional updates on WhatsApp increases conversion rates by +24%. Download your poster or generate custom AI captions.
+            Sharing promotional posters on WhatsApp groups increases candidate registration rates by +24%.
           </p>
         </div>
 
@@ -222,7 +227,7 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
         </button>
       </div>
 
-      {/* 3. QUICK ACTIONS BAR (Only the 4 most essential partner actions) */}
+      {/* 3. QUICK ACTIONS BAR */}
       <div className="space-y-3">
         <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">
           Quick Actions
@@ -291,7 +296,7 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
         </div>
       </div>
 
-      {/* 4. RECENT ACTIVITY (Answers "Is anything important waiting for me?" with max 4 clean items) */}
+      {/* 4. RECENT ACTIVITY STREAM */}
       <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs space-y-4">
         <div className="flex items-center justify-between border-b border-slate-100 pb-3">
           <h3 className="font-display font-bold text-base text-slate-900">
@@ -307,29 +312,37 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
           </button>
         </div>
 
-        <div className="divide-y divide-slate-100">
-          {stats.recentEvents.map(evt => (
-            <div key={evt.id} className="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
-              <div className="flex items-center gap-3">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-                  evt.type === 'success' ? 'bg-emerald-50 text-emerald-600' :
-                  evt.type === 'info' ? 'bg-indigo-50 text-indigo-600' :
-                  evt.type === 'warning' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-600'
-                }`}>
-                  <CheckCircle2 className="w-4 h-4" />
+        {stats.recentEvents.length === 0 ? (
+          <div className="py-8 text-center space-y-2">
+            <Users className="w-8 h-8 text-slate-300 mx-auto" />
+            <p className="text-xs font-bold text-slate-600">No activity logged yet</p>
+            <p className="text-[11px] text-slate-400 max-w-sm mx-auto">
+              Share your referral link <code className="font-mono text-indigo-600 font-bold">{referralCode}</code> to start receiving verified student enrolments.
+            </p>
+          </div>
+        ) : (
+          <div className="divide-y divide-slate-100">
+            {stats.recentEvents.map((evt, idx) => (
+              <div key={evt.id || idx} className="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <CheckCircle2 className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h4 className="text-xs font-bold text-slate-900">{evt.event_type || evt.title || 'Partner Event'}</h4>
+                    <p className="text-[11px] text-slate-500 font-medium">{evt.description || evt.desc || 'Activity logged in system'}</p>
+                  </div>
                 </div>
-                <div>
-                  <h4 className="text-xs font-bold text-slate-900">{evt.title}</h4>
-                  <p className="text-[11px] text-slate-500 font-medium">{evt.desc}</p>
-                </div>
+                <span className="font-mono text-[11px] text-slate-400 shrink-0">
+                  {evt.created_at ? new Date(evt.created_at).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : (evt.time || 'Today')}
+                </span>
               </div>
-              <span className="font-mono text-[11px] text-slate-400 shrink-0">{evt.time}</span>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
-      {/* 5. PARTNER CHILD FEE WAIVER BANNER (Mission Welfare Feature) */}
+      {/* 5. PARTNER CHILD FEE WAIVER BANNER */}
       <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex items-center justify-between text-xs text-indigo-950">
         <div className="flex items-center gap-2.5">
           <Building2 className="w-5 h-5 text-indigo-600 shrink-0" />

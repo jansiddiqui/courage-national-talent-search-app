@@ -203,7 +203,7 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
             </div>
 
             {/* NAV LINKS */}
-            <nav className="space-y-1">
+            <nav className="space-y-1.5">
               {navItems.map((item) => {
                 const IconComponent = item.icon;
                 const isActive = activeTab === item.id;
@@ -215,23 +215,23 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
                       setMobileMenuOpen(false);
                     }}
                     className={`
-                      w-full flex items-center justify-between px-3 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer text-left
+                      w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer text-left
                       ${isActive 
-                        ? 'bg-slate-900 text-white shadow-md' 
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/80'
+                        ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-600/20' 
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/90 font-semibold'
                       }
                     `}
                   >
                     <div className="flex items-center gap-3">
-                      <IconComponent className={`w-4 h-4 ${isActive ? 'text-amber-400' : 'text-slate-400'}`} />
+                      <IconComponent className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'text-slate-400'}`} />
                       <span>{item.label}</span>
                     </div>
 
                     {item.badge && (
-                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-bold ${
+                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-extrabold ${
                         isActive 
-                          ? 'bg-slate-800 text-amber-300 border border-slate-700' 
-                          : 'bg-slate-100 text-slate-600'
+                          ? 'bg-white/20 text-white' 
+                          : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
                       }`}>
                         {item.badge}
                       </span>
