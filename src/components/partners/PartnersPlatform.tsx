@@ -33,26 +33,7 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [isChildModalOpen, setIsChildModalOpen] = useState(false);
 
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const viewParam = params.get('view');
-      if (viewParam === 'workspace' || viewParam === 'dashboard') {
-        setViewMode('workspace');
-      } else if (viewParam === 'apply') {
-        setViewMode('apply');
-      }
-    }
-  }, []);
-
-  const [applicantData, setApplicantData] = useState<any>({
-    fullName: 'Jan Mohammad',
-    customSlug: 'cntsjn',
-    partnerId: 'CP-2026-000412',
-    referralCode: 'CNTSJN',
-    audienceScale: '10k - 50k',
-    primaryRole: 'Content Creator & Educator'
-  });
+  const [applicantData, setApplicantData] = useState<any>(null);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -107,7 +88,7 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
     const slug = data.customSlug || data.referralCode?.toLowerCase() || data.fullName.toLowerCase().replace(/\s+/g, '');
     const finalData = {
       ...data,
-      fullName: data.fullName || 'Jan Mohammad',
+      fullName: data.fullName || 'Partner Account',
       customSlug: slug,
       partnerId: `CP-2026-${Math.floor(100000 + Math.random() * 900000)}`,
       referralCode: data.referralCode || 'CNTSJN'
@@ -123,9 +104,9 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
   const handleLoginSuccess = (partnerData: any) => {
     const finalData = {
       ...partnerData,
-      fullName: partnerData.fullName || 'Jan Mohammad',
+      fullName: partnerData.fullName || 'Partner Account',
       referralCode: partnerData.referralCode || 'CNTSJN',
-      customSlug: partnerData.customSlug || 'cntsjn'
+      customSlug: partnerData.customSlug || 'partner'
     };
     setApplicantData(finalData);
     if (typeof window !== 'undefined') {
@@ -245,7 +226,7 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
           <Navbar />
           <div className="pt-24 pb-12">
             <PublicPartnerProfileView
-              slug={applicantData?.customSlug || 'rahul-sharma'}
+              slug={applicantData?.customSlug || 'partner'}
               onBackToWorkspace={() => setViewMode('workspace')}
             />
           </div>
@@ -264,9 +245,9 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
       {/* APPROVAL MOMENT REVEAL MODAL */}
       <ApprovalMomentModal
         isOpen={isApprovalModalOpen}
-        applicantName={applicantData?.fullName || 'Rahul'}
+        applicantName={applicantData?.fullName || 'Partner'}
         partnerId={applicantData?.partnerId || 'CP-2026-000384'}
-        partnerSlug={applicantData?.customSlug || 'rahuledu'}
+        partnerSlug={applicantData?.customSlug || 'partner'}
         referralCode={applicantData?.referralCode}
         audienceScale={applicantData?.audienceScale}
         onEnterWorkspace={handleEnterWorkspaceFromApproval}
