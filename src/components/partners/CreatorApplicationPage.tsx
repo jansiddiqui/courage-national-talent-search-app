@@ -59,6 +59,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [availabilityCheck, setAvailabilityCheck] = useState<{ available: boolean; message: string }>({ available: true, message: '' });
   const [codeSuggestions, setCodeSuggestions] = useState<string[]>([]);
+  const [showPolicyModal, setShowPolicyModal] = useState<boolean>(false);
 
   // ALL FORM FIELDS INITIALIZED EMPTY FOR REAL CREATOR INPUT
   const [formData, setFormData] = useState({
@@ -1054,7 +1055,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                 Customize Your Official Referral Code
               </h2>
               <p className="text-slate-500 text-sm">
-                Your referral link will use your production domain and custom 6-character referral code containing "CNTS".
+                Your referral link will use your production domain and custom referral code starting with "CNTS".
               </p>
             </div>
 
@@ -1064,8 +1065,8 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                 <ShieldCheck className="w-4 h-4 text-indigo-600" /> Official Courage Partner Referral Code Rules:
               </div>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 font-medium text-slate-700 text-[11px] pt-1">
-                <li className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> Must be <strong>4 to 6 characters</strong> long.</li>
-                <li className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> MUST contain <strong>"CNTS"</strong> (e.g. CNTSJN).</li>
+                <li className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> Must be <strong>4 to 8 characters</strong> long.</li>
+                <li className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> MUST start with <strong>"CNTS"</strong> (e.g. CNTSJN, CNTSA1B7X).</li>
                 <li className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> Only <strong>Letters (A-Z) & Numbers (0-9)</strong>.</li>
                 <li className="flex items-center gap-1.5"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> Must be <strong>100% Unique</strong> in database.</li>
               </ul>
@@ -1074,26 +1075,27 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
             {/* CODE INPUT & LIVE AVAILABILITY CHECK */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 mb-1">
-                Desired Referral Code * (Max 6 Chars)
+                Desired Referral Code * (Max 8 Chars)
               </label>
-              <div className="flex items-center rounded-xl border border-slate-200 overflow-hidden bg-slate-50">
-                <span className="px-3.5 py-3 text-xs text-slate-500 font-mono border-r border-slate-200 bg-slate-100 font-semibold shrink-0">
+              <div className="flex flex-col sm:flex-row sm:items-center rounded-2xl border border-slate-200 overflow-hidden bg-slate-900 shadow-sm focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
+                <span className="px-3.5 py-3 text-xs text-slate-400 font-mono border-b sm:border-b-0 sm:border-r border-slate-800 bg-slate-950 font-semibold shrink-0">
                   thecouragelibrary.com/register?ref=
                 </span>
                 <input
                   type="text"
-                  maxLength={6}
-                  placeholder={formData.fullName ? PartnerReferralEngine.generateReferralCode(formData.fullName) : 'CNTS01'}
+                  maxLength={8}
+                  placeholder={formData.fullName ? PartnerReferralEngine.generateReferralCode(formData.fullName) : 'CNTSJAN7'}
                   value={formData.referralCode}
                   onChange={e => {
+                    const clean = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8);
                     setFormData({ 
                       ...formData, 
-                      referralCode: e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6),
-                      customSlug: e.target.value.toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 6)
+                      referralCode: clean,
+                      customSlug: clean.toLowerCase()
                     });
                     if (errors.referralCode) setErrors(prev => ({ ...prev, referralCode: '' }));
                   }}
-                  className="w-full px-3 py-2.5 text-sm bg-white focus:outline-none font-mono text-indigo-900 font-bold tracking-wider"
+                  className="w-full px-4 py-3 text-base bg-slate-900 focus:outline-none font-mono text-amber-300 font-bold tracking-widest placeholder:text-slate-600"
                 />
               </div>
 
@@ -1113,7 +1115,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                 </div>
 
                 <span className="text-[11px] text-slate-400 font-mono">
-                  {formData.referralCode.length}/6 characters
+                  {formData.referralCode.length}/8 characters
                 </span>
               </div>
 
@@ -1139,13 +1141,13 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                         setFormData({ ...formData, referralCode: sugCode, customSlug: sugCode.toLowerCase() });
                         if (errors.referralCode) setErrors(prev => ({ ...prev, referralCode: '' }));
                       }}
-                      className={`px-3 py-1.5 rounded-xl font-mono text-xs font-bold border transition-all cursor-pointer flex items-center gap-1 ${
+                      className={`px-3.5 py-1.5 rounded-xl font-mono text-xs font-bold border transition-all cursor-pointer flex items-center gap-1.5 ${
                         formData.referralCode === sugCode
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-md scale-[1.02]'
                           : 'bg-slate-50 text-indigo-900 border-slate-200 hover:bg-slate-100'
                       }`}
                     >
-                      <Sparkles className="w-3 h-3 text-amber-400" />
+                      <Sparkles className="w-3.5 h-3.5 text-amber-400" />
                       {sugCode}
                     </button>
                   ))}
@@ -1199,29 +1201,40 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
             </div>
 
             {/* ASSIGNED RATE RECAP */}
-            <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-900 space-y-2">
+            <div className="p-5 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-300/80 text-amber-950 space-y-2.5 shadow-xs">
               <div className="flex items-center justify-between border-b border-amber-200/80 pb-2">
-                <span className="font-bold text-xs flex items-center gap-1.5 text-amber-900">
-                  <Zap className="w-4 h-4 text-amber-600" /> Assigned Creator Tier Result
+                <span className="font-bold text-xs flex items-center gap-1.5 text-amber-950">
+                  <Zap className="w-4 h-4 text-amber-600" /> Assigned Profile Tier Result
                 </span>
-                <span className="font-mono text-xs font-bold bg-amber-200/80 px-2 py-0.5 rounded text-amber-950">
+                <span className="font-mono text-xs font-black bg-amber-400 text-slate-950 px-2.5 py-0.5 rounded-full shadow-2xs">
                   {assignedTier.tierName}
                 </span>
               </div>
-              <p className="text-xs leading-relaxed text-amber-900">
-                Based on your total combined reach of <strong>{totalReach.toLocaleString()}</strong> across {platformDetails.length} platforms in <strong>{formData.niche}</strong> ({formData.contentLanguage}), you qualify for <strong>{assignedTier.sharePercent}% Revenue Share (₹{assignedTier.perRegistrationAmount} per verified CNTS registration)</strong> + ₹{assignedTier.milestoneBonus.toLocaleString()} milestone bonus.
+              <p className="text-xs leading-relaxed text-amber-950 font-medium">
+                Based on your reach of <strong>{totalReach.toLocaleString()}</strong> across active platforms in <strong>{formData.niche}</strong> ({formData.contentLanguage}), you qualify for <strong>{assignedTier.sharePercent}% Revenue Share (₹{assignedTier.perRegistrationAmount} per verified CNTS registration)</strong> + ₹{assignedTier.milestoneBonus.toLocaleString()} milestone bonus.
               </p>
             </div>
 
-            {/* INTEGRITY PLEDGE */}
-            <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200 text-xs text-slate-700 space-y-2">
-              <div className="flex items-center gap-2 font-bold text-slate-900">
-                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Courage Creator Code of Conduct
+            {/* INTEGRITY PLEDGE & CODE OF CONDUCT */}
+            <div className="p-5 rounded-3xl bg-slate-50 border border-slate-200/90 text-xs text-slate-700 space-y-3 shadow-xs">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 font-bold text-slate-900 text-sm">
+                  <ShieldCheck className="w-5 h-5 text-emerald-600" /> Courage Partner Integrity Code
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowPolicyModal(true)}
+                  className="text-xs font-bold text-indigo-700 hover:text-indigo-900 underline flex items-center gap-1 cursor-pointer"
+                >
+                  Read Full 6-Point Rules <Eye className="w-3.5 h-3.5" />
+                </button>
               </div>
-              <p className="text-slate-600 leading-relaxed">
-                "I commit to representing Courage Library with honesty, accuracy, and dignity. I will prioritize student benefit and educational access above commercial gains."
-              </p>
-              <label className="flex items-start gap-2.5 pt-2 cursor-pointer">
+
+              <blockquote className="text-slate-600 italic bg-white p-3 rounded-2xl border border-slate-200/80 text-xs leading-relaxed">
+                "I commit to representing Courage Library with honesty, accuracy, and dignity. I will prioritize student educational benefit above commercial gains."
+              </blockquote>
+
+              <label className="flex items-start gap-2.5 pt-1 cursor-pointer">
                 <input
                   type="checkbox"
                   required
@@ -1232,7 +1245,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                   }}
                   className="mt-0.5 w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500 cursor-pointer"
                 />
-                <span className="font-semibold text-slate-900">
+                <span className="font-bold text-slate-900 leading-snug">
                   I accept the Courage Partner Integrity Pledge & Code of Conduct.
                 </span>
               </label>
@@ -1406,6 +1419,89 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                 className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-1.5"
               >
                 <Scissors className="w-4 h-4 text-amber-300" /> Apply Crop & Save Image
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* CODE OF CONDUCT & INTEGRITY PLEDGE MODAL */}
+      {showPolicyModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-2xl w-full shadow-2xl border border-slate-200 overflow-hidden space-y-6 p-6 sm:p-8 animate-scale-up relative max-h-[90vh] overflow-y-auto">
+            <button
+              type="button"
+              onClick={() => setShowPolicyModal(false)}
+              className="absolute top-5 right-5 p-2 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-700 transition-all cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+              <div className="p-3 rounded-2xl bg-emerald-100 text-emerald-800">
+                <ShieldCheck className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-bold text-slate-900">
+                  Courage Partner Integrity Code & Rules
+                </h3>
+                <p className="text-xs text-slate-500 font-medium">
+                  Official 6-Point Governance Standards for all Courage Partners
+                </p>
+              </div>
+            </div>
+
+            <div className="space-y-4 text-xs text-slate-700">
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="font-extrabold text-indigo-900 block">1. Student-First Educational Mission</span>
+                <p className="text-slate-600 leading-relaxed">Represent CNTS 2026 accurately as a national merit talent search. Never make false scholarship promises or rank guarantees.</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="font-extrabold text-indigo-900 block">2. Transparent Registration Fee</span>
+                <p className="text-slate-600 leading-relaxed">Full disclosure of nominal ₹99–₹100 exam fee. Zero hidden surcharges or manual handling fees allowed.</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="font-extrabold text-indigo-900 block">3. Strict Zero Self-Referral Policy</span>
+                <p className="text-slate-600 leading-relaxed">Self-referral registrations or fake candidate entries result in immediate score deduction and account suspension.</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="font-extrabold text-indigo-900 block">4. Candidate Data Privacy</span>
+                <p className="text-slate-600 leading-relaxed">Student personal contact details are never exposed, sold, or shared with third parties.</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="font-extrabold text-indigo-900 block">5. Ethical Promotion & Brand Dignity</span>
+                <p className="text-slate-600 leading-relaxed">No aggressive spamming, misleading ads, or impersonation of official school examination boards.</p>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 space-y-1">
+                <span className="font-extrabold text-indigo-900 block">6. Financial Compliance & 7-Day Hold</span>
+                <p className="text-slate-600 leading-relaxed">Honorariums undergo 7-day payment verification hold before reaching maturity.</p>
+              </div>
+            </div>
+
+            <div className="pt-4 flex flex-col sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
+              <a
+                href="/partners/code-of-conduct"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-extrabold text-indigo-600 hover:text-indigo-800 underline flex items-center gap-1"
+              >
+                Open Full Policy Page <ArrowRight className="w-3.5 h-3.5" />
+              </a>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setFormData(prev => ({ ...prev, missionPledge: true }));
+                  setShowPolicyModal(false);
+                }}
+                className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <Check className="w-4 h-4 text-amber-300" /> I Understand & Accept Code of Conduct
               </button>
             </div>
           </div>
