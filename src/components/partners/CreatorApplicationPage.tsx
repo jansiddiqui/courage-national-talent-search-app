@@ -364,7 +364,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
   };
 
   return (
-    <div className="w-full bg-[#F8FAFF] min-h-screen pt-24 pb-20 text-[#0F172A]">
+    <div className="w-full bg-gradient-to-b from-indigo-50/70 via-[#F8FAFF] to-[#F8FAFF] min-h-screen pt-[140px] sm:pt-36 md:pt-40 pb-20 text-[#0F172A]">
       <div className="max-w-4xl mx-auto px-4 sm:px-6">
         
         {/* HEADER BRAND & PROGRESS BAR */}
