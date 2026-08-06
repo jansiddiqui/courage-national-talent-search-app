@@ -99,24 +99,24 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
   return (
     <div className="w-full bg-[#F8FAFF] min-h-screen text-[#0F172A] pb-24">
       
-      {/* HIGH-IMPACT AMBIENT HERO SECTION */}
-      <section className="relative px-4 pt-28 pb-20 md:pt-36 md:pb-32 overflow-hidden bg-gradient-to-b from-slate-950 via-indigo-950 via-slate-900 to-indigo-950 text-white">
+      {/* LIGHT MESH HERO SECTION */}
+      <section className="relative px-4 pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden bg-gradient-to-b from-indigo-50/60 via-[#F8FAFF] to-[#F8FAFF] text-slate-900">
         
         {/* Glow Orbs */}
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-500/15 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute bottom-10 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-20 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
 
         <div className="max-w-5xl mx-auto text-center relative z-10">
           
           {/* FOUNDING PARTNER PROGRAM URGENCY BADGE */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-2.5 bg-slate-900/90 backdrop-blur-md text-white px-4 py-2.5 rounded-full shadow-2xl border border-amber-400/30 mb-8 max-w-3xl mx-auto text-xs md:text-sm">
+          <div className="inline-flex flex-wrap items-center justify-center gap-2.5 bg-slate-900 text-white px-4 py-2 rounded-full shadow-lg border border-slate-800 mb-8 max-w-3xl mx-auto text-xs md:text-sm">
             <span className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-0.5 rounded-full font-extrabold text-xs">
               <Flame className="w-3.5 h-3.5 text-amber-400 animate-bounce" /> Founding Partner Cohort
             </span>
             <span className="text-slate-300 font-medium hidden sm:inline">
               First 1,000 partners receive lifetime profile recognition & priority payouts.
             </span>
-            <span className="font-mono text-emerald-400 font-extrabold bg-emerald-950/90 px-2.5 py-0.5 rounded-full text-xs border border-emerald-800">
+            <span className="font-mono text-emerald-400 font-extrabold bg-emerald-950 px-2.5 py-0.5 rounded-full text-xs border border-emerald-800">
               384 / 1,000 Claimed
             </span>
             <button 
@@ -130,22 +130,22 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
 
           {/* Institutional Sub-Badge */}
           <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/15 px-4 py-1.5 rounded-full text-slate-200 text-xs md:text-sm font-semibold">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md border border-slate-200 shadow-sm px-4 py-1.5 rounded-full text-slate-700 text-xs md:text-sm font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               Official Creator & Partner Ecosystem of Courage Library
             </div>
           </div>
 
           {/* Main Editorial Headline */}
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-white leading-[1.08] mb-6">
+          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-[1.08] mb-6">
             Mobilize Students for <br className="hidden sm:block" />
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-amber-300 via-indigo-300 to-emerald-300">
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 via-indigo-600 to-amber-600">
               Courage Talent Search 2026.
             </span>
           </h1>
 
           {/* Subtitle / Mission Statement */}
-          <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-slate-300 font-normal leading-relaxed mb-10">
+          <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-slate-600 font-normal leading-relaxed mb-10">
             The central ecosystem where creators, teachers, school leads, NGOs, and community leaders collaborate with Courage Library to connect 100,000+ Class 5–8 students to 100% Merit Scholarships through CNTS 2026.
           </p>
 
@@ -154,7 +154,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             <div className="flex items-center justify-center pt-2 mb-16">
               <button
                 onClick={onViewDemoWorkspace}
-                className="text-base sm:text-lg px-10 py-4.5 shadow-2xl flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white cursor-pointer font-extrabold rounded-2xl transition-all hover:scale-105"
+                className="text-base sm:text-lg px-10 py-4 shadow-2xl flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white cursor-pointer font-extrabold rounded-2xl transition-all hover:scale-105"
               >
                 <Sparkles className="w-5 h-5 text-amber-300" /> Go to Partner Workspace <ArrowRight className="w-5 h-5" />
               </button>
@@ -163,67 +163,67 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             <div className="flex flex-wrap items-center justify-center gap-4 pt-2 mb-16">
               <button
                 onClick={onOpenApply}
-                className="text-base px-8 py-4 shadow-xl hover:shadow-2xl flex items-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-400 hover:to-emerald-500 text-slate-950 font-black rounded-2xl transition-all hover:scale-105 cursor-pointer"
+                className="text-base px-8 py-4 shadow-xl hover:shadow-2xl flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-black rounded-2xl transition-all hover:scale-105 cursor-pointer"
               >
                 Apply to Become a Partner <ArrowRight className="w-5 h-5" />
               </button>
               
               <button
                 onClick={() => router.push('/login?tab=partner')}
-                className="text-base px-7 py-4 border border-white/20 bg-white/5 hover:bg-white/10 backdrop-blur-md text-white font-bold rounded-2xl flex items-center gap-2 cursor-pointer transition-all"
+                className="text-base px-7 py-4 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-2xl flex items-center gap-2 cursor-pointer transition-all shadow-xs"
               >
-                Login to Partner Portal <Sparkles className="w-4 h-4 text-amber-400" />
+                Login to Partner Portal <Sparkles className="w-4 h-4 text-amber-500" />
               </button>
               
               <button
                 onClick={onExploreMissions}
-                className="w-full sm:w-auto text-base px-8 py-4 border border-white/15 bg-white/5 hover:bg-white/10 backdrop-blur-md text-slate-300 font-semibold rounded-2xl flex items-center justify-center gap-2 cursor-pointer transition-all"
+                className="w-full sm:w-auto text-base px-8 py-4 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-2xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
               >
-                <Compass className="w-5 h-5 text-indigo-400" />
+                <Compass className="w-5 h-5 text-indigo-600" />
                 Explore Active Missions
               </button>
             </div>
           )}
 
           {/* Value Pillars Line */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left pt-6 border-t border-white/10">
-            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-              <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-300 shrink-0">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left pt-6 border-t border-slate-200">
+            <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+              <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700 shrink-0">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white">Mission First</h4>
-                <p className="text-xs text-slate-400">Educational impact priority</p>
+                <h4 className="font-bold text-sm text-slate-900">Mission First</h4>
+                <p className="text-xs text-slate-500">Educational impact priority</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-              <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 shrink-0">
                 <Users className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white">Community</h4>
-                <p className="text-xs text-slate-400">Trusted educator network</p>
+                <h4 className="font-bold text-sm text-slate-900">Community</h4>
+                <p className="text-xs text-slate-500">Trusted educator network</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-              <div className="p-2 rounded-xl bg-amber-500/20 text-amber-300 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+              <div className="p-2 rounded-xl bg-amber-50 text-amber-700 shrink-0">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white">Growth & Reach</h4>
-                <p className="text-xs text-slate-400">Skills & certifications</p>
+                <h4 className="font-bold text-sm text-slate-900">Growth & Reach</h4>
+                <p className="text-xs text-slate-500">Skills & certifications</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-md">
-              <div className="p-2 rounded-xl bg-blue-500/20 text-blue-300 shrink-0">
+            <div className="flex items-start gap-3 p-3.5 rounded-2xl bg-white border border-slate-200/80 shadow-xs">
+              <div className="p-2 rounded-xl bg-blue-50 text-blue-700 shrink-0">
                 <Award className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-white">Honorarium</h4>
-                <p className="text-xs text-slate-400">Weekly Monday settlements</p>
+                <h4 className="font-bold text-sm text-slate-900">Honorarium</h4>
+                <p className="text-xs text-slate-500">Weekly Monday settlements</p>
               </div>
             </div>
           </div>
