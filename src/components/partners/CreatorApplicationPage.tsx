@@ -397,24 +397,24 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
             {/* Profile Photo Uploader */}
             <div className="space-y-1">
-              <div className={`flex flex-col sm:flex-row items-center gap-6 p-4 rounded-2xl bg-slate-50 border ${errors.profileImage ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200/80'}`}>
-                <div className="relative w-24 h-24 rounded-2xl overflow-hidden bg-slate-200 border-2 border-indigo-600 shadow-md shrink-0 flex items-center justify-center">
+              <div className={`flex flex-row items-center gap-4 sm:gap-6 p-4 sm:p-5 rounded-2xl bg-slate-50/80 border ${errors.profileImage ? 'border-rose-400 bg-rose-50/30' : 'border-slate-200/90'}`}>
+                <div className="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden bg-slate-200 border-2 border-indigo-600 shadow-md shrink-0 flex items-center justify-center">
                   {profileImage ? (
                     <img src={profileImage} alt="Profile Preview" className="w-full h-full object-cover" />
                   ) : (
-                    <Camera className="w-8 h-8 text-slate-400" />
+                    <Camera className="w-7 h-7 sm:w-8 sm:h-8 text-slate-400" />
                   )}
                 </div>
-                <div className="space-y-2 text-center sm:text-left">
-                  <label className="block text-xs font-bold text-slate-900">Upload Creator Profile Photo *</label>
-                  <div className="flex items-center gap-3">
-                    <label className="btn-primary text-xs py-2 px-4 cursor-pointer bg-slate-900 hover:bg-slate-800 flex items-center gap-1.5">
-                      <Camera className="w-4 h-4" /> Upload Photo
+                <div className="space-y-1.5 text-left flex-1 min-w-0">
+                  <label className="block text-xs font-extrabold text-slate-900 truncate">Upload Creator Profile Photo *</label>
+                  <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                    <label className="text-xs py-2 px-3.5 sm:px-4 cursor-pointer bg-slate-900 hover:bg-slate-800 text-white font-extrabold rounded-xl flex items-center gap-1.5 transition-all shadow-xs shrink-0">
+                      <Camera className="w-3.5 h-3.5" /> Upload Photo
                       <input type="file" accept="image/*" onChange={handleImageUpload} className="hidden" />
                     </label>
-                    {profileImage && <span className="text-xs font-bold text-emerald-600 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Photo Added</span>}
+                    {profileImage && <span className="text-xs font-bold text-emerald-600 flex items-center gap-1 shrink-0"><Check className="w-3.5 h-3.5" /> Photo Added</span>}
                   </div>
-                  <p className="text-[11px] text-slate-400">JPG or PNG. Will be saved to Supabase Storage.</p>
+                  <p className="text-[10px] sm:text-[11px] text-slate-400 font-medium">JPG or PNG. Will be saved to Supabase Storage.</p>
                 </div>
               </div>
               {errors.profileImage && (
