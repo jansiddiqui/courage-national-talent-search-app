@@ -23,7 +23,10 @@ import {
   Award,
   Building,
   Heart,
-  Bell
+  Bell,
+  User,
+  ArrowRight,
+  ChevronRight
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -301,7 +304,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
       >
         <div className="max-w-7xl mx-auto px-4 md:px-6 flex items-center justify-between">
           
-          {/* Logo & Brand Identity — HIGH-END INSTITUTIONAL DESIGN */}
+          {/* Logo & Brand Identity */}
           <Link href="/" className="flex items-center gap-3 group">
             <div className="relative w-10 h-10 rounded-2xl bg-white border border-slate-200/90 shadow-sm p-1.5 flex items-center justify-center shrink-0 transition-all duration-300 group-hover:scale-105 group-hover:border-indigo-400 group-hover:shadow-md">
               <Image
@@ -454,15 +457,97 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
             )}
           </div>
 
-          {/* Mobile Hamburger Toggle */}
+          {/* Mobile Hamburger Toggle Button */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
-            className="lg:hidden p-2.5 text-slate-700 hover:bg-slate-100 rounded-xl cursor-pointer"
+            className="lg:hidden p-2 text-slate-800 hover:bg-slate-100 rounded-xl cursor-pointer transition-colors border border-slate-200/80 bg-white/90 shadow-xs"
+            aria-label="Toggle Navigation Menu"
           >
-            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            {menuOpen ? <X size={22} className="text-slate-900" /> : <Menu size={22} className="text-slate-900" />}
           </button>
         </div>
       </nav>
+
+      {/* MOBILE FULL-SCREEN SLIDE-OVER OVERLAY DRAWER */}
+      {menuOpen && (
+        <div className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden animate-fade-in" onClick={() => setMenuOpen(false)}>
+          <div 
+            onClick={e => e.stopPropagation()}
+            className="fixed inset-x-0 top-[70px] bg-white border-b border-slate-200 shadow-2xl p-6 z-50 space-y-6 max-h-[85vh] overflow-y-auto rounded-b-3xl animate-slide-down"
+          >
+            {/* Quick Mobile Action Buttons */}
+            <div className="flex items-center gap-2 pt-2 pb-4 border-b border-slate-100">
+              <RegisterCTA />
+              <Link
+                href="/login"
+                onClick={() => setMenuOpen(false)}
+                className="flex-1 py-3 text-center bg-slate-100 hover:bg-slate-200 font-bold text-xs text-slate-800 rounded-xl"
+              >
+                Login
+              </Link>
+            </div>
+
+            {/* Mobile Categories Accordion Navigation */}
+            <div className="space-y-4">
+              <Link
+                href="/"
+                onClick={() => setMenuOpen(false)}
+                className="font-extrabold text-sm text-slate-900 flex items-center justify-between p-2 rounded-xl hover:bg-slate-50"
+              >
+                <span>Home Overview</span>
+                <ChevronRight size={16} className="text-slate-400" />
+              </Link>
+
+              {navCategories.map((cat, idx) => {
+                const isOpen = mobileOpenCategory === idx;
+                return (
+                  <div key={cat.label} className="space-y-2 border-t border-slate-100 pt-3">
+                    <button
+                      onClick={() => setMobileOpenCategory(isOpen ? null : idx)}
+                      className="w-full flex items-center justify-between text-xs font-mono uppercase font-bold text-slate-400 tracking-wider cursor-pointer p-1"
+                    >
+                      <span>{cat.label}</span>
+                      <ChevronDown size={14} className={`transition-transform ${isOpen ? "rotate-180 text-indigo-600" : ""}`} />
+                    </button>
+
+                    {(isOpen || true) && (
+                      <div className="grid grid-cols-1 gap-1 pl-2">
+                        {cat.links.map(link => {
+                          const IconComp = link.icon;
+                          return (
+                            <Link
+                              key={link.href}
+                              href={link.href}
+                              onClick={() => setMenuOpen(false)}
+                              className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-indigo-50 text-xs font-semibold text-slate-800"
+                            >
+                              <div className={`p-1.5 rounded-lg ${link.iconBg} ${link.iconColor} shrink-0`}>
+                                <IconComp size={15} />
+                              </div>
+                              <span>{link.label}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Mobile Footer Partner Workspace Link */}
+            <div className="pt-4 border-t border-slate-100">
+              <Link
+                href="/partners"
+                onClick={() => setMenuOpen(false)}
+                className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow"
+              >
+                <Heart size={16} /> Courage Partner Platform <ArrowRight size={16} />
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }
