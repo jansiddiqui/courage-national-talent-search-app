@@ -29,12 +29,14 @@ import {
   Check,
   LayoutDashboard,
   Target,
-  Building
+  Building,
+  Video
 } from 'lucide-react';
 import { RegisterChildWidget } from './RegisterChildWidget';
 
 export type WorkspaceTab = 
   | 'overview'
+  | 'roadmap'
   | 'child'
   | 'tiers'
   | 'payouts'
@@ -90,6 +92,7 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
 
   const navItems: { id: WorkspaceTab; label: string; icon: any; badge?: string; unreadDot?: boolean }[] = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'roadmap', label: 'Video Campaign Roadmap', icon: Video, badge: 'Aug 30' },
     { id: 'inbox', label: 'Inbox', icon: Inbox },
     { id: 'missions', label: 'CNTS Missions', icon: Target },
     { id: 'referral', label: 'Referral & Media Kit', icon: Share2 },

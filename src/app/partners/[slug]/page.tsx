@@ -15,6 +15,7 @@ import { PaymentSetupAndRulesTab } from '@/components/partners/PaymentSetupAndRu
 import { GrowthCenter } from '@/components/partners/GrowthCenter';
 import { PartnerSupportCenter } from '@/components/partners/PartnerSupportCenter';
 import { PartnerInbox } from '@/components/partners/PartnerInbox';
+import { ContentRoadmapTab } from '@/components/partners/ContentRoadmapTab';
 import { 
   Lock, 
   Sparkles, 
@@ -335,6 +336,12 @@ export default function DedicatedPartnerWorkspacePage() {
           partnerName={currentPartnerName}
           referralCode={currentReferralCode}
           onNavigateToTab={(tab: any) => setActiveTab(tab)}
+        />
+      )}
+      {activeTab === 'roadmap' && (
+        <ContentRoadmapTab
+          referralCode={currentReferralCode}
+          partnerName={currentPartnerName}
         />
       )}
       {activeTab === 'child' && (
