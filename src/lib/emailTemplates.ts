@@ -61,6 +61,9 @@ function getTrustSection(): string {
 }
 
 function wrapLayout(content: string, preheader: string = ""): string {
+  // Padding spaces prevent Gmail/Apple Mail from pulling header body text into mobile notification previews
+  const preheaderPadding = "&nbsp;&zwnj;".repeat(30);
+
   return `
     <!DOCTYPE html>
     <html lang="en">
@@ -75,8 +78,9 @@ function wrapLayout(content: string, preheader: string = ""): string {
       </style>
     </head>
     <body style="margin: 0; padding: 12px 6px; background-color: #090D16; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-      <div style="display: none; max-height: 0px; overflow: hidden; mso-hide: all; font-size: 0; line-height: 0;">
-        ${preheader}
+      <!-- PREHEADER TEXT FOR CLEAN MOBILE PUSH NOTIFICATION PREVIEW -->
+      <div style="display: none; max-height: 0px; overflow: hidden; mso-hide: all; font-size: 1px; line-height: 1px; color: #090D16; opacity: 0;">
+        ${preheader} ${preheaderPadding}
       </div>
       <div style="max-width: 580px; width: 100%; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); box-sizing: border-box;">
         ${getHeader()}
@@ -631,7 +635,7 @@ export function getPartnerApplicationTemplate(data: {
       </p>
     </div>
   `;
-  return wrapLayout(content, `Courage Partner Application Received (${data.referralCode})`);
+  return wrapLayout(content, `Hi ${data.fullName}, your Courage Partner application (Code: ${data.referralCode}) has been received and logged for 24h review.`);
 }
 
 
