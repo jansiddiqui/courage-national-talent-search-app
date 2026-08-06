@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Award, 
   Sparkles, 
@@ -23,7 +23,17 @@ import {
   Image as ImageIcon,
   AlertCircle,
   HelpCircle,
-  RefreshCw
+  RefreshCw,
+  RotateCcw,
+  RotateCw,
+  ZoomIn,
+  ZoomOut,
+  Scissors,
+  Maximize2,
+  Sliders,
+  Eye,
+  Info,
+  X
 } from 'lucide-react';
 import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
 
@@ -178,20 +188,104 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
     }));
   };
 
+  // CROPPER & RESIZER MODAL STATES
+  const [cropperModalOpen, setCropperModalOpen] = useState(false);
+  const [cropTarget, setCropTarget] = useState<{ type: 'PROFILE' | 'PROOF'; platform?: string; src: string }>({ type: 'PROFILE', src: '' });
+  const [cropZoom, setCropZoom] = useState(1.0);
+  const [cropRotation, setCropRotation] = useState(0);
+
+  const openCropperForProfile = (rawSrc: string) => {
+    setCropTarget({ type: 'PROFILE', src: rawSrc });
+    setCropZoom(1.0);
+    setCropRotation(0);
+    setCropperModalOpen(true);
+  };
+
+  const openCropperForProof = (platformName: string, rawSrc: string) => {
+    setCropTarget({ type: 'PROOF', platform: platformName, src: rawSrc });
+    setCropZoom(1.0);
+    setCropRotation(0);
+    setCropperModalOpen(true);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        openCropperForProfile(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   const handleProofScreenshotUpload = (platformName: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        updatePlatformField(platformName, 'proofScreenshotUrl', reader.result as string);
-        setErrors(prev => {
-          const next = { ...prev };
-          delete next[`proof_${platformName}`];
-          return next;
-        });
+        openCropperForProof(platformName, reader.result as string);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleApplyCrop = () => {
+    if (!cropTarget.src) return;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      const isProfile = cropTarget.type === 'PROFILE';
+      const targetWidth = isProfile ? 600 : 1200;
+      const targetHeight = isProfile ? 600 : 750;
+
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      ctx.save();
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(0, 0, targetWidth, targetHeight);
+
+      ctx.translate(targetWidth / 2, targetHeight / 2);
+      ctx.rotate((cropRotation * Math.PI) / 180);
+      ctx.scale(cropZoom, cropZoom);
+
+      const aspect = img.width / img.height;
+      let drawW = targetWidth;
+      let drawH = targetWidth / aspect;
+
+      if (drawH < targetHeight) {
+        drawH = targetHeight;
+        drawW = targetHeight * aspect;
+      }
+
+      ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+      ctx.restore();
+
+      const croppedDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+      if (cropTarget.type === 'PROFILE') {
+        setProfileImage(croppedDataUrl);
+        setErrors(prev => ({ ...prev, profileImage: '' }));
+      } else if (cropTarget.type === 'PROOF' && cropTarget.platform) {
+        updatePlatformField(cropTarget.platform, 'proofScreenshotUrl', croppedDataUrl);
+        setErrors(prev => {
+          const next = { ...prev };
+          delete next[`proof_${cropTarget.platform}`];
+          return next;
+        });
+      }
+
+      setCropperModalOpen(false);
+      setCropZoom(1.0);
+      setCropRotation(0);
+    };
+    img.src = cropTarget.src;
   };
 
   // Calculate total combined reach
@@ -208,18 +302,6 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
   const currentScale = getReachScaleString(totalReach);
   const assignedTier = PartnerReferralEngine.calculateCreatorTier(currentScale);
-
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setProfileImage(reader.result as string);
-        setErrors(prev => ({ ...prev, profileImage: '' }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   // VALIDATION CHECKERS FOR STEP 1
   const validateStep1 = (): boolean => {
@@ -490,6 +572,36 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                   <AlertCircle className="w-3.5 h-3.5" /> {errors.profileImage}
                 </p>
               )}
+
+              {/* VISUAL PHOTO GUIDANCE CARD */}
+              <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-2 mt-3">
+                <div className="flex items-center gap-1.5 text-xs font-black text-slate-800">
+                  <Info className="w-4 h-4 text-indigo-600" /> Photo Upload Guidelines & Requirements:
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
+                  <div className="bg-white p-2.5 rounded-xl border border-slate-200 flex items-start gap-2">
+                    <Camera className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-extrabold block text-slate-900">Clear Headshot</span>
+                      <span className="text-slate-500 font-medium">Face clearly visible and well-lit</span>
+                    </div>
+                  </div>
+                  <div className="bg-white p-2.5 rounded-xl border border-slate-200 flex items-start gap-2">
+                    <Maximize2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-extrabold block text-slate-900">Square 1:1 Aspect</span>
+                      <span className="text-slate-500 font-medium">Recommended 400x400 px</span>
+                    </div>
+                  </div>
+                  <div className="bg-white p-2.5 rounded-xl border border-slate-200 flex items-start gap-2">
+                    <Scissors className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-extrabold block text-slate-900">Built-in Cropper</span>
+                      <span className="text-slate-500 font-medium">Interactive zoom & 90° rotation</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             {/* Basic Info Fields with Direct Inline Errors Below */}
@@ -716,6 +828,37 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
             {/* DETAILS & SCREENSHOT UPLOADER FOR EACH SELECTED PLATFORM */}
             <div className="space-y-4 pt-2">
+              {platformDetails.length > 0 && (
+                <div className="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-4 space-y-2">
+                  <div className="flex items-center gap-1.5 text-xs font-black text-indigo-950">
+                    <Info className="w-4 h-4 text-indigo-600" /> Studio Screenshot Guidelines:
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-1 text-[11px]">
+                    <div className="bg-white p-2.5 rounded-xl border border-indigo-100 flex items-start gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-extrabold block text-slate-900">Dashboard View</span>
+                        <span className="text-slate-500 font-medium">Show YouTube Studio / Instagram Insights</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-xl border border-indigo-100 flex items-start gap-2">
+                      <Eye className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-extrabold block text-slate-900">Legible Metrics</span>
+                        <span className="text-slate-500 font-medium">Handle name & subscriber count visible</span>
+                      </div>
+                    </div>
+                    <div className="bg-white p-2.5 rounded-xl border border-indigo-100 flex items-start gap-2">
+                      <Scissors className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                      <div>
+                        <span className="font-extrabold block text-slate-900">Cropping & Zoom</span>
+                        <span className="text-slate-500 font-medium">Use built-in cropper modal to crop</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {platformDetails.map((pltItem, idx) => {
                 const handleErr = errors[`handle_${pltItem.platform}`];
                 const followersErr = errors[`followers_${pltItem.platform}`];
@@ -1076,6 +1219,143 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
           </form>
         )}
       </div>
+
+      {/* INTERACTIVE IMAGE CROPPER & RESIZER MODAL */}
+      {cropperModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
+          <div className="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-slate-200 space-y-5 relative max-h-[90vh] overflow-y-auto">
+            {/* MODAL HEADER */}
+            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+              <div className="flex items-center gap-2">
+                <Scissors className="w-5 h-5 text-indigo-600" />
+                <h3 className="font-extrabold text-base text-slate-900">
+                  {cropTarget.type === 'PROFILE' ? 'Adjust & Crop Profile Photo' : `Crop Verification Screenshot (${cropTarget.platform || ''})`}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setCropperModalOpen(false)}
+                className="p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-700 transition-all cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* VISUAL INSTRUCTIONS HELPER INSIDE MODAL */}
+            <div className="bg-indigo-50/70 border border-indigo-200/80 rounded-2xl p-3 text-xs text-indigo-950 flex items-start gap-2">
+              <Info className="w-4 h-4 text-indigo-600 shrink-0 mt-0.5" />
+              <div>
+                <span className="font-extrabold block text-indigo-900 mb-0.5">
+                  {cropTarget.type === 'PROFILE' ? 'Profile Photo Guidelines:' : 'Verification Screenshot Guidelines:'}
+                </span>
+                <p className="text-[11px] text-slate-600 font-medium">
+                  {cropTarget.type === 'PROFILE'
+                    ? 'Center your face in the preview box. Use zoom slider and rotation buttons to frame your photo perfectly.'
+                    : 'Ensure your channel name, handle, and subscriber/follower count remain clear and legible in the screenshot.'}
+                </p>
+              </div>
+            </div>
+
+            {/* INTERACTIVE PREVIEW CANVAS CONTAINER */}
+            <div className="relative w-full h-64 sm:h-72 bg-slate-950 rounded-2xl overflow-hidden flex items-center justify-center border-2 border-dashed border-indigo-300/40 shadow-inner">
+              <div
+                className="relative flex items-center justify-center transition-transform duration-100 ease-out"
+                style={{
+                  transform: `scale(${cropZoom}) rotate(${cropRotation}deg)`
+                }}
+              >
+                <img
+                  src={cropTarget.src}
+                  alt="Crop Target"
+                  className="max-h-60 max-w-full object-contain pointer-events-none"
+                />
+              </div>
+
+              {/* OVERLAY ASPECT RATIO CROP GUIDE */}
+              <div
+                className={`absolute inset-4 pointer-events-none border-2 border-dashed border-amber-400/90 shadow-2xl flex items-center justify-center ${
+                  cropTarget.type === 'PROFILE' ? 'rounded-2xl max-w-[200px] max-h-[200px] mx-auto my-auto' : 'rounded-xl'
+                }`}
+              >
+                <span className="bg-amber-400 text-slate-950 font-black text-[10px] uppercase px-2 py-0.5 rounded-md shadow-xs">
+                  {cropTarget.type === 'PROFILE' ? 'Square 1:1 Frame' : 'Crop Boundary'}
+                </span>
+              </div>
+            </div>
+
+            {/* CONTROLS BAR: ZOOM SLIDER & ROTATION BUTTONS */}
+            <div className="space-y-4 pt-1">
+              <div className="space-y-1.5">
+                <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+                  <span className="flex items-center gap-1.5"><Sliders className="w-3.5 h-3.5 text-indigo-600" /> Zoom Level:</span>
+                  <span className="font-mono text-indigo-600">{Math.round(cropZoom * 100)}%</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <ZoomOut className="w-4 h-4 text-slate-400 shrink-0" />
+                  <input
+                    type="range"
+                    min="0.5"
+                    max="2.5"
+                    step="0.05"
+                    value={cropZoom}
+                    onChange={e => setCropZoom(parseFloat(e.target.value))}
+                    className="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
+                  />
+                  <ZoomIn className="w-4 h-4 text-slate-400 shrink-0" />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-between gap-2 pt-1">
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setCropRotation(prev => (prev - 90 + 360) % 360)}
+                    className="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-indigo-600" /> Rotate 90° ↺
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setCropRotation(prev => (prev + 90) % 360)}
+                    className="px-3 py-2 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all cursor-pointer flex items-center gap-1"
+                  >
+                    <RotateCw className="w-3.5 h-3.5 text-indigo-600" /> Rotate 90° ↻
+                  </button>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCropZoom(1.0);
+                    setCropRotation(0);
+                  }}
+                  className="px-3 py-2 text-xs font-semibold text-slate-500 hover:text-slate-800 transition-all cursor-pointer flex items-center gap-1"
+                >
+                  <RefreshCw className="w-3.5 h-3.5" /> Reset
+                </button>
+              </div>
+            </div>
+
+            {/* MODAL FOOTER */}
+            <div className="pt-4 flex items-center justify-end gap-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setCropperModalOpen(false)}
+                className="px-5 py-2.5 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleApplyCrop}
+                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-lg transition-all cursor-pointer flex items-center gap-1.5"
+              >
+                <Scissors className="w-4 h-4 text-amber-300" /> Apply Crop & Save Image
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
