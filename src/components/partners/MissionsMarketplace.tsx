@@ -31,7 +31,7 @@ interface MissionsMarketplaceProps {
 interface MissionItem {
   id: string;
   title: string;
-  category: 'CNTS' | 'Scholarship' | 'School Drive';
+  category: 'CNTS' | 'Merit Drive' | 'School Drive';
   missionText: string;
   targetAudience: string;
   duration: string;
@@ -72,7 +72,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       id: 'mission-cnts-2026-founding',
       title: 'CNTS 2026 Founding Edition Flagship Mission',
       category: 'CNTS',
-      missionText: 'Mobilize Class 5-8 students in your region to register for Courage National Talent Search 2026 and qualify for 100% merit scholarships.',
+      missionText: 'Mobilize Class 5-8 students in your region to register for Courage National Talent Search 2026 and qualify for national merit recognition & certificates.',
       targetAudience: 'Class 5-8 Students, Parents, Educators & School Networks',
       duration: 'Aug 1, 2026 - Sep 30, 2026',
       progressPercent: Math.min(100, Math.round((realRegistrations / 100) * 100)),
@@ -81,13 +81,13 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       rewardText: '₹50 honorarium per verified CNTS registration + Founding Partner Badge',
       badgeUnlocked: '🥈 CNTS Founding Mobilizer',
       status: 'Featured',
-      sampleCopy: `📢 Official Announcement! Courage Library has launched the Courage National Talent Search (CNTS) 2026. Top performers win 100% Merit Scholarships & verified cognitive profile reports. Register via my referral code: https://thecouragelibrary.com/register?ref=${referralCode}`
+      sampleCopy: `📢 Official Announcement! Courage Library has launched the Courage National Talent Search (CNTS) 2026. Top performers win National Merit Recognition & verified cognitive profile reports. Register via my referral code: https://thecouragelibrary.com/register?ref=${referralCode}`
     },
     {
       id: 'mission-cnts-scholarship-awareness',
-      title: 'CNTS 100% Merit Scholarship Awareness Drive',
-      category: 'Scholarship',
-      missionText: 'Identify & guide economically underprivileged students from rural and semi-urban districts to register for CNTS 2026 full scholarship waivers.',
+      title: 'CNTS National Merit & Talent Discovery Drive',
+      category: 'Merit Drive',
+      missionText: 'Identify & guide students from rural and semi-urban districts to register for CNTS 2026 national talent diagnostic assessment.',
       targetAudience: 'Rural Schools, NGO Students, Tier-2 & Tier-3 Communities',
       duration: 'Aug 10, 2026 - Sep 15, 2026',
       progressPercent: Math.min(100, Math.round((realRegistrations / 250) * 100)),
@@ -96,7 +96,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       rewardText: '₹75 per rural candidate + Community Champion Badge',
       badgeUnlocked: '🌟 CNTS Community Champion',
       status: 'Active',
-      sampleCopy: `🎓 Unlocking Talent in Every District! Courage National Talent Search (CNTS) 2026 is providing 1000+ full merit scholarships. Share this message with parents & teachers in your region: https://thecouragelibrary.com/register?ref=${referralCode}`
+      sampleCopy: `🎓 Unlocking Talent in Every District! Courage National Talent Search (CNTS) 2026 evaluates Critical Thinking, Science & Logic. Share this message with parents & teachers in your region: https://thecouragelibrary.com/register?ref=${referralCode}`
     },
     {
       id: 'mission-cnts-school-partnership',
@@ -150,7 +150,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
             Courage National Talent Search (CNTS) 2026
           </h1>
           <p className="text-sm text-slate-500 mt-1">
-            Our primary mission is mobilizing students for CNTS 2026 to unlock 100% merit scholarships across India.
+            Our primary mission is mobilizing students for CNTS 2026 to unlock national merit recognition & certificates across India.
           </p>
         </div>
 
@@ -164,7 +164,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
 
       {/* CATEGORY FILTER TABS */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2">
-        {['All', 'CNTS', 'Scholarship', 'School Drive'].map(cat => (
+        {['All', 'CNTS', 'Merit Drive', 'School Drive'].map(cat => (
           <button
             key={cat}
             onClick={() => setActiveCategory(cat)}

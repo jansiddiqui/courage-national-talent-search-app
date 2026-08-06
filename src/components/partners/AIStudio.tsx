@@ -51,9 +51,9 @@ Did you know that top national talent search exams disburse merit scholarships w
 Courage Library has officially launched the **Courage National Talent Search 2026 (CNTS)**.
 
 ✨ **Key Benefits:**
-• 100% Merit Scholarships
+• National Merit Recognition
 • Official Talent Certificate
-• Personal Skill Diagnostic Report
+• Personal Cognitive Skill Diagnostic Report
 
 Apply today using my official Courage Partner link:
 👉 ${referralUrl}

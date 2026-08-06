@@ -60,18 +60,18 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
   const timelinePhases: TimelinePhase[] = [
     {
       phaseNumber: 1,
-      phaseName: 'Phase 1: Scholarship & Awareness Drive',
+      phaseName: 'Phase 1: Talent Search & National Awareness Drive',
       dateRange: 'Aug 1 – Aug 15',
       status: 'Active',
       statusColor: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
-      goalText: 'Introduce CNTS 2026, 100% Merit Scholarships, and why Class 5–8 students must participate.',
+      goalText: 'Introduce CNTS 2026, National Merit Recognition, and why Class 5–8 students must participate.',
       videoConcepts: [
         {
           id: 'v1',
-          title: '🎬 Video #1: What is CNTS 2026? (100% Merit Scholarship Opportunity)',
+          title: '🎬 Video #1: What is CNTS 2026? (National Talent Search Opportunity)',
           type: 'Reel / Short',
           hookText: '“Parents of Class 5, 6, 7 & 8 students, don’t scroll past this! India’s biggest talent search exam is here…”',
-          scriptOutline: '1. Hook: Catch parents’ attention about Class 5-8 scholarships.\n2. Problem: School marks only test memory, not logic or critical thinking.\n3. Solution: Introduce CNTS 2026 (₹99 fee, 100% Merit Scholarship, National Profile Report).\n4. Call to Action: Click the link in bio/description to register before slots fill up!',
+          scriptOutline: '1. Hook: Catch parents’ attention about Class 5-8 national talent search.\n2. Problem: School marks only test memory, not logic or critical thinking.\n3. Solution: Introduce CNTS 2026 (₹99 fee, Merit Recognition & National Profile Report).\n4. Call to Action: Click the link in bio/description to register before slots fill up!',
           callToAction: `Register for CNTS 2026 now using referral code ${referralCode}: ${referralLink}`,
           recommendedPostingDays: 'Post between Aug 1 – Aug 7'
         },
