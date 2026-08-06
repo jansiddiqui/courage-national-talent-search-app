@@ -39,6 +39,10 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
     referralClicks: number;
     conversionRate: string;
     status: string;
+    profileType: string;
+    multiScores: { trustScore: number; performanceScore: number; growthScore: number; complianceScore: number };
+    achievements: any[];
+    timelineFeed: any[];
     conversionsRoster: any[];
   }>({
     totalRegistrations: 0,
@@ -47,6 +51,10 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
     referralClicks: 0,
     conversionRate: '0.0%',
     status: 'PENDING',
+    profileType: 'CREATOR',
+    multiScores: { trustScore: 100, performanceScore: 0, growthScore: 0, complianceScore: 100 },
+    achievements: [],
+    timelineFeed: [],
     conversionsRoster: []
   });
 
@@ -63,6 +71,10 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
               referralClicks: data.referralClicks || 0,
               conversionRate: data.conversionRate || '0.0%',
               status: data.status || 'PENDING',
+              profileType: data.profileType || 'CREATOR',
+              multiScores: data.multiScores || { trustScore: 100, performanceScore: 0, growthScore: 0, complianceScore: 100 },
+              achievements: data.achievements || [],
+              timelineFeed: data.timelineFeed || [],
               conversionsRoster: data.conversionsRoster || []
             });
           }
@@ -143,7 +155,85 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
         </div>
       </div>
 
-      {/* PARTNER CHILD FEE WAIVER CARD */}
+      {/* MULTI-DIMENSIONAL PARTNER SUB-SCORES CARD (TRUST, PERFORMANCE, GROWTH, COMPLIANCE) */}
+      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-5">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div>
+            <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-indigo-600" /> Multi-Dimensional Partner Scores
+            </h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              Live multi-signal rating across Trust, Performance, Growth, and Compliance (0–100 scale).
+            </p>
+          </div>
+          <span className="hidden sm:inline-block px-3 py-1 bg-indigo-50 text-indigo-700 font-mono font-extrabold text-xs rounded-full border border-indigo-200">
+            PROFILE: {stats.profileType}
+          </span>
+        </div>
+
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+              <span>Trust Score</span>
+              <span className="font-mono text-emerald-600">{stats.multiScores.trustScore}/100</span>
+            </div>
+            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${stats.multiScores.trustScore}%` }} />
+            </div>
+            <span className="text-[10px] text-slate-400 font-semibold block">Identity & Clean Regs</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+              <span>Performance</span>
+              <span className="font-mono text-indigo-600">{stats.multiScores.performanceScore}/100</span>
+            </div>
+            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${stats.multiScores.performanceScore}%` }} />
+            </div>
+            <span className="text-[10px] text-slate-400 font-semibold block">Candidate Volume</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+              <span>Growth Score</span>
+              <span className="font-mono text-purple-600">{stats.multiScores.growthScore}/100</span>
+            </div>
+            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div className="bg-purple-500 h-full rounded-full" style={{ width: `${stats.multiScores.growthScore}%` }} />
+            </div>
+            <span className="text-[10px] text-slate-400 font-semibold block">Exam Attendance Rate</span>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
+            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
+              <span>Compliance</span>
+              <span className="font-mono text-amber-600">{stats.multiScores.complianceScore}/100</span>
+            </div>
+            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
+              <div className="bg-amber-500 h-full rounded-full" style={{ width: `${stats.multiScores.complianceScore}%` }} />
+            </div>
+            <span className="text-[10px] text-slate-400 font-semibold block">Code of Conduct</span>
+          </div>
+        </div>
+      </div>
+
+      {/* GAMIFIED BADGES & TROPHY CASE */}
+      {stats.achievements.length > 0 && (
+        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-4">
+          <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-amber-500" /> Unlocked Reputation Badges & Trophies
+          </h3>
+          <div className="flex flex-wrap gap-3">
+            {stats.achievements.map((ach: any, idx: number) => (
+              <div key={idx} className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-extrabold shadow-2xs">
+                <Sparkles className="w-4 h-4 text-amber-600" />
+                <span>{ach.badgeTitle}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
       <div className="bg-amber-50/80 border border-amber-300/80 rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
         <div className="flex items-center gap-4">
           <div className="p-3.5 rounded-2xl bg-amber-400 text-slate-950 shrink-0">

@@ -4,22 +4,29 @@ import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 import { signSession } from '@/lib/sessionHelper';
 import { EmailService } from '@/services/emailService';
 import { getPartnerApplicationTemplate } from '@/lib/emailTemplates';
+import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
+import { EventDispatcher } from '@/application/dispatchers/EventDispatcher';
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
-
-function generateRandomCode(length = 4): string {
-  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
-}
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { fullName, email, phone, customSlug, referralCode, audienceScale, primaryRole, niche, contentLanguage, bio, city, state } = body;
+    const { 
+      fullName, 
+      email, 
+      phone, 
+      customSlug, 
+      referralCode, 
+      audienceScale, 
+      primaryRole, 
+      profileType = 'CREATOR',
+      niche, 
+      contentLanguage, 
+      bio, 
+      city, 
+      state 
+    } = body;
 
     if (!fullName || !email) {
       return NextResponse.json({ error: 'Full name and email are required.' }, { status: 400 });
@@ -27,15 +34,11 @@ export async function POST(request: Request) {
 
     const cleanEmail = email.trim().toLowerCase();
 
-    // Determine final customSlug & referralCode
+    // Determine final customSlug & collision-proof 7-8 char referralCode
     const rawSlug = customSlug || fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
     const cleanSlug = rawSlug.toLowerCase().trim() || `partner${Math.floor(100 + Math.random() * 900)}`;
 
-    const requestedRefCode = (referralCode || '').toUpperCase().trim();
-    const finalReferralCode = requestedRefCode && requestedRefCode.length >= 4
-      ? (requestedRefCode.startsWith('CNTS') ? requestedRefCode : `CNTS${requestedRefCode}`)
-      : `CNTS${generateRandomCode(4)}`;
-
+    const finalReferralCode = PartnerReferralEngine.generateReferralCode(fullName);
     const partnerId = `CP-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
     let newPartnerRecord: any = null;
@@ -60,6 +63,7 @@ export async function POST(request: Request) {
             referral_code: finalReferralCode,
             custom_slug: cleanSlug,
             partner_id: partnerId,
+            profile_type: profileType,
             primary_role: primaryRole || 'Content Creator & Educator',
             niche: niche || 'Education',
             content_language: contentLanguage || 'Hinglish',
@@ -67,17 +71,19 @@ export async function POST(request: Request) {
             audience_scale: audienceScale || '10k - 50k',
             city: city || '',
             state: state || '',
-            status: 'PENDING', // NEW APPLICATIONS REQUIRE ADMIN APPROVAL PER USER INSTRUCTION
-            tier: 'BRONZE',
-            honorarium_rate: 25.00, // DEFAULT ₹25 RATE, ADMIN CAN OVERRIDE
+            status: 'APPLIED',
+            trust_score: 100,
+            performance_score: 0,
+            growth_score: 0,
+            compliance_score: 100,
+            honorarium_rate: 25.00
           })
           .select()
           .single();
 
         if (insertErr) {
           console.error('[Partner Apply Insert Error]:', insertErr);
-          // If referral_code or slug collided, retry with random suffix
-          const fallbackRef = `CNTS${generateRandomCode(5)}`;
+          const fallbackRef = PartnerReferralEngine.generateReferralCode(fullName);
           const fallbackSlug = `${cleanSlug}-${Math.floor(100 + Math.random() * 900)}`;
 
           const { data: retryData } = await (supabaseAdmin as any)
@@ -89,11 +95,15 @@ export async function POST(request: Request) {
               referral_code: fallbackRef,
               custom_slug: fallbackSlug,
               partner_id: partnerId,
+              profile_type: profileType,
               primary_role: primaryRole || 'Content Creator & Educator',
               audience_scale: audienceScale || '10k - 50k',
-              status: 'PENDING',
-              tier: 'BRONZE',
-              honorarium_rate: 25.00,
+              status: 'APPLIED',
+              trust_score: 100,
+              performance_score: 0,
+              growth_score: 0,
+              compliance_score: 100,
+              honorarium_rate: 25.00
             })
             .select()
             .single();
@@ -102,6 +112,18 @@ export async function POST(request: Request) {
         } else {
           newPartnerRecord = inserted;
         }
+      }
+
+      // Dispatch PARTNER_APPLIED event via EventDispatcher
+      if (newPartnerRecord?.id) {
+        await EventDispatcher.dispatch({
+          eventId: `EVT_APPLY_${newPartnerRecord.id}`,
+          idempotencyKey: `IDEM_APPLY_${newPartnerRecord.id}`,
+          eventType: 'PARTNER_APPLIED',
+          partnerId: newPartnerRecord.id,
+          timestamp: new Date().toISOString(),
+          metadata: { fullName, email: cleanEmail, referralCode: newPartnerRecord.referral_code }
+        });
       }
 
       // Add welcome notification in inbox

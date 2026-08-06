@@ -33,6 +33,7 @@ import {
   Sliders,
   Eye,
   Info,
+  BookOpen,
   X
 } from 'lucide-react';
 import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
@@ -61,6 +62,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
   // ALL FORM FIELDS INITIALIZED EMPTY FOR REAL CREATOR INPUT
   const [formData, setFormData] = useState({
+    profileType: 'CREATOR' as 'CREATOR' | 'TEACHER' | 'SCHOOL' | 'NGO' | 'INSTITUTE' | 'CAMPUS_AMBASSADOR' | 'COMMUNITY',
     fullName: '',
     email: '',
     phone: '',
@@ -161,8 +163,11 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
   // Live availability check when referralCode changes
   useEffect(() => {
     if (formData.referralCode) {
-      const check = PartnerReferralEngine.checkCodeAvailability(formData.referralCode);
-      setAvailabilityCheck(check);
+      const isAvailable = PartnerReferralEngine.checkCodeAvailability(formData.referralCode);
+      setAvailabilityCheck({
+        available: isAvailable,
+        message: isAvailable ? '✓ Referral code available' : '⚠️ Code taken, try a suggested code below'
+      });
     } else {
       setAvailabilityCheck({ available: true, message: '' });
     }
@@ -605,6 +610,38 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                     </div>
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* UNIVERSAL PARTNER PROFILE TYPE SELECTOR */}
+            <div className="space-y-2">
+              <label className="block text-xs font-extrabold text-slate-800 uppercase tracking-wider">
+                Select Your Partner Profile Type *
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {[
+                  { code: 'CREATOR', title: 'Content Creator', icon: Sparkles },
+                  { code: 'TEACHER', title: 'Teacher / Educator', icon: BookOpen },
+                  { code: 'SCHOOL', title: 'School Institution', icon: Award },
+                  { code: 'NGO', title: 'NGO / Foundation', icon: ShieldCheck },
+                  { code: 'INSTITUTE', title: 'Coaching Institute', icon: Globe },
+                  { code: 'CAMPUS_AMBASSADOR', title: 'Campus Ambassador', icon: Zap },
+                  { code: 'COMMUNITY', title: 'Community Leader', icon: Info }
+                ].map((item) => (
+                  <button
+                    key={item.code}
+                    type="button"
+                    onClick={() => setFormData(prev => ({ ...prev, profileType: item.code as any }))}
+                    className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all cursor-pointer ${
+                      formData.profileType === item.code
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-md scale-[1.02]'
+                        : 'bg-slate-50 border-slate-200/90 text-slate-700 hover:bg-slate-100'
+                    }`}
+                  >
+                    <item.icon className={`w-4 h-4 shrink-0 ${formData.profileType === item.code ? 'text-amber-300' : 'text-indigo-600'}`} />
+                    <span className="font-extrabold text-xs leading-tight">{item.title}</span>
+                  </button>
+                ))}
               </div>
             </div>
 

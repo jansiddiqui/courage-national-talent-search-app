@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifySession } from '@/lib/sessionHelper';
 import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
+import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
+import { PartnerScoreService } from '@/domains/partner/PartnerScoreService';
+import { PartnerAchievementService } from '@/domains/partner/PartnerAchievementService';
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
 
@@ -30,9 +33,6 @@ export async function GET(request: Request) {
 
     const cleanRef = referralCode.toUpperCase().trim();
 
-    // Default rate
-    let honorariumRate = 25;
-
     if (hasSupabaseAdminConfig) {
       // Get partner settings from DB
       const { data: pRecord } = await (supabaseAdmin as any)
@@ -43,9 +43,6 @@ export async function GET(request: Request) {
 
       if (pRecord) {
         partnerDbRecord = pRecord;
-        if (pRecord.honorarium_rate) {
-          honorariumRate = Number(pRecord.honorarium_rate);
-        }
       }
     }
 
@@ -67,21 +64,64 @@ export async function GET(request: Request) {
           refId: r.registration_id || r.cnts_id || `CNTS-2026-${r.id.substring(0, 4)}`,
           region: r.district ? `${r.district}, ${r.state || 'India'}` : 'Region Unspecified',
           fee: `₹${r.registration_fee || 99} Paid`,
-          amount: `+₹${honorariumRate.toFixed(2)}`,
           date: new Date(r.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
           status: r.payment_status === 'PAID' ? 'Verified & Credited' : 'Pending Payment Verification',
         }));
       }
     }
 
+    // 1. Calculate Live Priority Rule Commission
+    const totalReach = Number(partnerDbRecord?.total_reach || 12500);
+    const adminOverrideRate = partnerDbRecord?.honorarium_rate ? Number(partnerDbRecord.honorarium_rate) : null;
+
+    const ruleResult = PartnerReferralEngine.calculateEffectiveCommission({
+      totalReach,
+      verifiedRegistrations: verifiedRegistrationsCount,
+      adminOverrideRate
+    });
+
+    const honorariumRate = ruleResult.effectiveRate;
     const totalHonorariumEarned = verifiedRegistrationsCount * honorariumRate;
+
+    // 2. Calculate Live Multi-Subscores (Trust, Performance, Growth, Compliance)
+    const multiScores = PartnerScoreService.calculateScores({
+      verifiedRegistrations: verifiedRegistrationsCount,
+      flaggedRegistrations: partnerDbRecord?.status === 'SUSPENDED' ? 1 : 0
+    });
+
+    // 3. Evaluate Unlocked Achievements & Badges
+    const achievements = PartnerAchievementService.evaluateAchievements({
+      verifiedRegistrations: verifiedRegistrationsCount,
+      trustScore: multiScores.trustScore,
+      profileType: partnerDbRecord?.profile_type || 'CREATOR'
+    });
+
+    // 4. Fetch Timeline Events Feed from partner_events
+    let timelineFeed: any[] = [];
+    if (hasSupabaseAdminConfig && partnerDbRecord?.id) {
+      const { data: eventsData } = await (supabaseAdmin as any)
+        .from('partner_events')
+        .select('*')
+        .eq('partner_id', partnerDbRecord.id)
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (eventsData) {
+        timelineFeed = eventsData;
+      }
+    }
 
     return NextResponse.json({
       success: true,
       referralCode: cleanRef,
       partnerName: partnerDbRecord?.full_name || 'Partner Account',
+      profileType: partnerDbRecord?.profile_type || 'CREATOR',
       status: (partnerDbRecord || cleanRef === 'CNTSJN' || cleanRef === 'JANMOHAMMAD') ? (partnerDbRecord?.status || 'APPROVED') : 'UNREGISTERED',
       honorariumRate,
+      ruleResult,
+      multiScores,
+      achievements,
+      timelineFeed,
       totalRegistrations: verifiedRegistrationsCount,
       totalHonorariumEarned: `₹${totalHonorariumEarned.toLocaleString('en-IN')}`,
       rawHonorariumEarned: totalHonorariumEarned,
