@@ -425,7 +425,7 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                     )}
                     {userRoles.includes('PARTNER') && (
                       <Link
-                        href="/partners?view=workspace"
+                        href="/partners/cntsjn"
                         onClick={() => setDashboardDropdownOpen(false)}
                         className="flex items-center gap-2.5 p-2.5 rounded-xl hover:bg-indigo-50 text-xs font-bold text-slate-800"
                       >
