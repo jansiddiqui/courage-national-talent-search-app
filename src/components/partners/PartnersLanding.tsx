@@ -27,7 +27,8 @@ import {
   ChevronDown,
   ChevronUp,
   Flame,
-  Check
+  Check,
+  Target
 } from 'lucide-react';
 
 interface PartnersLandingProps {
@@ -146,7 +147,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
 
           {/* Subtitle / Mission Statement */}
           <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-slate-600 font-normal leading-relaxed mb-10">
-            The central ecosystem where creators, teachers, school leads, NGOs, and community leaders collaborate with Courage Library to connect 100,000+ Class 5–8 students to 100% Merit Scholarships through CNTS 2026.
+            The central ecosystem where creators, teachers, school leads, NGOs, and community leaders collaborate with Courage Library to connect 100,000+ Class 5–8 students to 100% Merit Scholarships through CNTS 2026 Edition 1.
           </p>
 
           {/* Primary Action Buttons */}
@@ -363,32 +364,53 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
         </div>
       </section>
 
-      {/* NATIONAL IMPACT COUNTER */}
+      {/* CNTS 2026 EDITION 1 MISSION TARGET & COMMITMENT */}
       <section className="py-16 px-4 bg-[#0F172A] text-white">
-        <div className="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
-          <div className="p-4">
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-emerald-400 mb-2 font-mono">
-              250,000+
-            </div>
-            <p className="text-xs md:text-sm text-slate-400 font-semibold">Students Impacted</p>
+        <div className="max-w-6xl mx-auto space-y-8 text-center">
+          <div className="space-y-2">
+            <span className="inline-flex items-center gap-1.5 text-xs font-mono font-extrabold text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3.5 py-1 rounded-full uppercase tracking-wider">
+              🎯 Inaugural Edition 1 Commitment
+            </span>
+            <h2 className="font-display text-2xl md:text-3xl font-black text-white">
+              CNTS 2026 National Mission Targets
+            </h2>
+            <p className="text-xs md:text-sm text-slate-400 max-w-xl mx-auto font-medium">
+              Our inaugural edition targets to empower Class 5–8 scholars across India through 100% Merit Scholarships.
+            </p>
           </div>
-          <div className="p-4">
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-amber-400 mb-2 font-mono">
-              1,400+
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+              <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-emerald-400 font-mono">
+                100,000+
+              </div>
+              <span className="text-xs text-slate-300 font-bold block">Target Student Aspirants</span>
+              <span className="text-[10px] text-slate-500 font-semibold block">Class 5–8 PAN-India</span>
             </div>
-            <p className="text-xs md:text-sm text-slate-400 font-semibold">Schools Connected</p>
-          </div>
-          <div className="p-4">
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-blue-400 mb-2 font-mono">
-              ₹1.2 Cr+
+
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+              <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-amber-400 font-mono">
+                1,000
+              </div>
+              <span className="text-xs text-slate-300 font-bold block">Founding Partner Cap</span>
+              <span className="text-[10px] text-slate-500 font-semibold block">Inaugural Creator Cohort</span>
             </div>
-            <p className="text-xs md:text-sm text-slate-400 font-semibold">Scholarships Disbursed</p>
-          </div>
-          <div className="p-4">
-            <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-indigo-400 mb-2 font-mono">
-              3,840+
+
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+              <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-blue-400 font-mono">
+                ₹1.0 Cr+
+              </div>
+              <span className="text-xs text-slate-300 font-bold block">Scholarship Fund Pool</span>
+              <span className="text-[10px] text-slate-500 font-semibold block">100% Merit Rewards</span>
             </div>
-            <p className="text-xs md:text-sm text-slate-400 font-semibold">Active Courage Partners</p>
+
+            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+              <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-indigo-400 font-mono">
+                500+
+              </div>
+              <span className="text-xs text-slate-300 font-bold block">Target School Outreaches</span>
+              <span className="text-[10px] text-slate-500 font-semibold block">Institutional Alliance Goal</span>
+            </div>
           </div>
         </div>
       </section>
@@ -441,7 +463,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             Ready to Join the National Educational Movement?
           </h2>
           <p className="text-slate-300 text-base md:text-lg mb-8">
-            Applications are reviewed individually within 24 hours. Join 3,800+ educators, creators, and leaders creating real opportunities.
+            Applications are reviewed individually within 24 hours. Join our Founding Partner Cohort and shape the inaugural edition of CNTS 2026.
           </p>
           {isRegisteredPartner ? (
             <button
