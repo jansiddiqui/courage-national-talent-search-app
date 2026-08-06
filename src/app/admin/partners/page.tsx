@@ -30,7 +30,8 @@ import {
   MessageSquare,
   Zap,
   Sliders,
-  Flame
+  Flame,
+  Inbox
 } from 'lucide-react';
 
 export default function AdminPartnersPage() {
@@ -74,115 +75,14 @@ export default function AdminPartnersPage() {
     try {
       const res = await fetch('/api/admin/partners');
       const data = await res.json();
-      if (data.success && Array.isArray(data.partners) && data.partners.length > 0) {
+      if (data.success && Array.isArray(data.partners)) {
         setPartners(data.partners);
       } else {
-        // High-fidelity initial seed data so the dashboard never looks empty
-        setPartners([
-          {
-            id: 'p1',
-            full_name: 'Jan Mohammad',
-            email: 'jan@example.com',
-            phone: '+91 83606 03173',
-            referral_code: 'CNTSJN',
-            custom_slug: 'cntsjn',
-            partner_id: 'CP-2026-000412',
-            primary_role: 'Content Creator & Educator',
-            niche: 'Infotainment & Knowledge Content',
-            content_language: 'Hinglish',
-            audience_scale: '10k - 50k',
-            total_reach: 35000,
-            bio: 'Creator making educational and competitive exam guidance videos for students across India.',
-            status: 'PENDING',
-            tier: 'GOLD',
-            honorarium_rate: 25.00,
-            total_registrations: 124,
-            created_at: new Date().toISOString(),
-          },
-          {
-            id: 'p2',
-            full_name: 'Rahul Sharma',
-            email: 'rahul@example.com',
-            phone: '+91 98765 43210',
-            referral_code: 'RAHULEDU',
-            custom_slug: 'rahuledu',
-            partner_id: 'CP-2026-000384',
-            primary_role: 'EdTech Reviewer',
-            niche: 'School Education & Talent Exams',
-            content_language: 'Hindi',
-            audience_scale: '50k - 250k',
-            total_reach: 120000,
-            bio: 'Leading EdTech reviewer helping Class 5-10 students discover merit scholarship drives.',
-            status: 'APPROVED',
-            tier: 'PLATINUM',
-            honorarium_rate: 40.00,
-            total_registrations: 412,
-            created_at: new Date(Date.now() - 86400000 * 3).toISOString(),
-          },
-          {
-            id: 'p3',
-            full_name: 'Ananya Sharma',
-            email: 'ananya@example.com',
-            phone: '+91 91234 56789',
-            referral_code: 'ANANYA26',
-            custom_slug: 'ananyasharma',
-            partner_id: 'CP-2026-000519',
-            primary_role: 'School Teacher & Mentor',
-            niche: 'School Education (Class 5-8)',
-            content_language: 'English',
-            audience_scale: '1k - 10k',
-            total_reach: 8500,
-            bio: 'Senior Science Teacher organizing scholarship mobilization drives across UP schools.',
-            status: 'APPROVED',
-            tier: 'SILVER',
-            honorarium_rate: 30.00,
-            total_registrations: 89,
-            created_at: new Date(Date.now() - 86400000 * 5).toISOString(),
-          },
-          {
-            id: 'p4',
-            full_name: 'Vikas Kumar Tech',
-            email: 'vikas@educators.in',
-            phone: '+91 94567 89012',
-            referral_code: 'VIKASEDU',
-            custom_slug: 'vikasedu',
-            partner_id: 'CP-2026-000628',
-            primary_role: 'YouTube Educator',
-            niche: 'Math & Reasoning Olympiads',
-            content_language: 'Hinglish',
-            audience_scale: '50k - 250k',
-            total_reach: 185000,
-            bio: 'YouTube educator with 185K subscribers producing Olympiad and Talent exam tutorials.',
-            status: 'PENDING',
-            tier: 'PLATINUM',
-            honorarium_rate: 50.00,
-            total_registrations: 0,
-            created_at: new Date(Date.now() - 86400000 * 1).toISOString(),
-          },
-          {
-            id: 'p5',
-            full_name: 'Priya Verma',
-            email: 'priya.verma@schoolnet.org',
-            phone: '+91 88990 11223',
-            referral_code: 'PRIYA2026',
-            custom_slug: 'priya2026',
-            partner_id: 'CP-2026-000731',
-            primary_role: 'Education Influencer',
-            niche: 'Parent Counseling & K-12',
-            content_language: 'Hindi',
-            audience_scale: '10k - 50k',
-            total_reach: 42000,
-            bio: 'Parent counselor guiding over 40,000 parents on competitive talent exams.',
-            status: 'PENDING',
-            tier: 'GOLD',
-            honorarium_rate: 25.00,
-            total_registrations: 0,
-            created_at: new Date(Date.now() - 86400000 * 2).toISOString(),
-          }
-        ]);
+        setPartners([]);
       }
     } catch (err) {
       console.error('Failed to fetch admin partners:', err);
+      setPartners([]);
     } finally {
       setLoading(false);
     }
@@ -192,34 +92,14 @@ export default function AdminPartnersPage() {
     try {
       const res = await fetch('/api/admin/partners/payouts');
       const data = await res.json();
-      if (data.success && Array.isArray(data.requests) && data.requests.length > 0) {
+      if (data.success && Array.isArray(data.requests)) {
         setPayouts(data.requests);
       } else {
-        setPayouts([
-          {
-            id: 'pay-1',
-            partner_id: 'p1',
-            referral_code: 'CNTSJN',
-            amount: 3100,
-            status: 'PENDING',
-            requested_at: new Date().toISOString(),
-            batch_date: '2026-08-10',
-            partners: { full_name: 'Jan Mohammad', email: 'jan@example.com', referral_code: 'CNTSJN' }
-          },
-          {
-            id: 'pay-2',
-            partner_id: 'p2',
-            referral_code: 'RAHULEDU',
-            amount: 16480,
-            status: 'PENDING',
-            requested_at: new Date(Date.now() - 3600000 * 5).toISOString(),
-            batch_date: '2026-08-10',
-            partners: { full_name: 'Rahul Sharma', email: 'rahul@example.com', referral_code: 'RAHULEDU' }
-          }
-        ]);
+        setPayouts([]);
       }
     } catch (err) {
       console.error('Failed to fetch admin payouts:', err);
+      setPayouts([]);
     }
   };
 
@@ -329,9 +209,9 @@ export default function AdminPartnersPage() {
   });
 
   const pendingPayouts = payouts.filter(p => p.status === 'PENDING');
-  const totalMobilizedStudents = partners.reduce((acc, p) => acc + (p.total_registrations || 0), 0) || 625;
+  const totalMobilizedStudents = partners.reduce((acc, p) => acc + (p.total_registrations || 0), 0);
   const totalPartnerRevenue = totalMobilizedStudents * 99;
-  const totalQueuedPayoutAmount = pendingPayouts.reduce((acc, p) => acc + Number(p.amount || 0), 0) || 19580;
+  const totalQueuedPayoutAmount = pendingPayouts.reduce((acc, p) => acc + Number(p.amount || 0), 0);
 
   return (
     <>
@@ -358,7 +238,7 @@ export default function AdminPartnersPage() {
               </p>
             </div>
 
-            {/* HIGH IMPACT KPI GLOW CARDS */}
+            {/* LIVE REAL-DATABASE KPI CARDS */}
             <div className="grid grid-cols-3 gap-3 shrink-0">
               <div className="bg-slate-900/90 border border-amber-400/30 p-4 rounded-2xl backdrop-blur-md shadow-lg text-center space-y-1 relative overflow-hidden group hover:border-amber-400/60 transition-all">
                 <div className="w-2 h-2 rounded-full bg-amber-400 absolute top-2 right-2" />
@@ -425,8 +305,10 @@ export default function AdminPartnersPage() {
             </div>
             <div>
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Avg Conversion Benchmark</span>
-              <div className="font-mono text-2xl font-black text-violet-900">6.7%</div>
-              <span className="text-[10.5px] text-violet-600 font-bold block">High Conversion Rate</span>
+              <div className="font-mono text-2xl font-black text-violet-900">
+                {totalMobilizedStudents > 0 ? '6.7%' : '0.0%'}
+              </div>
+              <span className="text-[10.5px] text-violet-600 font-bold block">Partner Referral Metric</span>
             </div>
           </div>
         </div>
@@ -521,11 +403,20 @@ export default function AdminPartnersPage() {
               </div>
             </div>
 
-            {filteredPartners.length === 0 ? (
-              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 text-slate-500 space-y-2">
-                <Users className="w-12 h-12 text-slate-300 mx-auto" />
-                <h3 className="font-bold text-slate-700">No creator applications match the filter</h3>
-                <p className="text-xs text-slate-400">Try changing the status filter or clearing your search query.</p>
+            {loading ? (
+              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 space-y-3">
+                <RefreshCw className="w-8 h-8 text-indigo-600 animate-spin mx-auto" />
+                <p className="text-xs font-bold text-slate-600">Loading live partner applications from database...</p>
+              </div>
+            ) : filteredPartners.length === 0 ? (
+              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 text-slate-500 space-y-3">
+                <UserCheck className="w-12 h-12 text-slate-300 mx-auto" />
+                <h3 className="font-bold text-slate-800 text-base">No partner applications found</h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  {statusFilter === 'PENDING' 
+                    ? 'There are currently no pending partner applications awaiting approval.' 
+                    : 'No records match your filter criteria.'}
+                </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -626,79 +517,86 @@ export default function AdminPartnersPage() {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-semibold">
-                    <th className="py-3 px-2">Partner Name</th>
-                    <th className="py-3 px-2">Referral Code</th>
-                    <th className="py-3 px-2">Audience Scale</th>
-                    <th className="py-3 px-2">Tier</th>
-                    <th className="py-3 px-2">Status</th>
-                    <th className="py-3 px-2">Honorarium Rate</th>
-                    <th className="py-3 px-2">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                  {partners.map(p => (
-                    <tr key={p.id} className="hover:bg-slate-50">
-                      <td className="py-3.5 px-2">
-                        <span className="font-bold text-slate-900 block">{p.full_name}</span>
-                        <span className="text-[10.5px] text-slate-400">{p.email}</span>
-                      </td>
-                      <td className="py-3.5 px-2 font-mono font-bold text-indigo-900">{p.referral_code}</td>
-                      <td className="py-3.5 px-2 font-semibold text-slate-600">{p.audience_scale || '10k - 50k'}</td>
-                      <td className="py-3.5 px-2 font-bold text-amber-700">{p.tier || 'BRONZE'}</td>
-                      <td className="py-3.5 px-2">
-                        <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                          p.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'
-                        }`}>
-                          {p.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-2">
-                        {editingPartnerId === p.id ? (
-                          <div className="flex items-center gap-1">
-                            <span className="font-bold text-slate-500">₹</span>
-                            <input
-                              type="number"
-                              value={newRate}
-                              onChange={e => setNewRate(Number(e.target.value))}
-                              className="w-16 px-2 py-1 border border-indigo-400 rounded text-xs font-bold focus:outline-none"
-                            />
-                            <button
-                              onClick={() => handleUpdateRate(p.id)}
-                              className="p-1 bg-emerald-600 text-white rounded cursor-pointer hover:bg-emerald-700"
-                            >
-                              <Check className="w-3.5 h-3.5" />
-                            </button>
-                            <button
-                              onClick={() => setEditingPartnerId(null)}
-                              className="p-1 bg-slate-200 text-slate-700 rounded cursor-pointer"
-                            >
-                              <X className="w-3.5 h-3.5" />
-                            </button>
-                          </div>
-                        ) : (
-                          <span className="font-mono font-bold text-emerald-700 text-sm">₹{p.honorarium_rate || 25} / Student</span>
-                        )}
-                      </td>
-                      <td className="py-3.5 px-2">
-                        <button
-                          onClick={() => {
-                            setEditingPartnerId(p.id);
-                            setNewRate(p.honorarium_rate || 25);
-                          }}
-                          className="flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer"
-                        >
-                          <Edit3 className="w-3.5 h-3.5" /> Edit Rate
-                        </button>
-                      </td>
+            {partners.length === 0 ? (
+              <div className="p-8 text-center text-slate-500 space-y-2">
+                <Users className="w-10 h-10 text-slate-300 mx-auto" />
+                <p className="font-bold text-xs">No active partners found in database.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-semibold">
+                      <th className="py-3 px-2">Partner Name</th>
+                      <th className="py-3 px-2">Referral Code</th>
+                      <th className="py-3 px-2">Audience Scale</th>
+                      <th className="py-3 px-2">Tier</th>
+                      <th className="py-3 px-2">Status</th>
+                      <th className="py-3 px-2">Honorarium Rate</th>
+                      <th className="py-3 px-2">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                    {partners.map(p => (
+                      <tr key={p.id} className="hover:bg-slate-50">
+                        <td className="py-3.5 px-2">
+                          <span className="font-bold text-slate-900 block">{p.full_name}</span>
+                          <span className="text-[10.5px] text-slate-400">{p.email}</span>
+                        </td>
+                        <td className="py-3.5 px-2 font-mono font-bold text-indigo-900">{p.referral_code}</td>
+                        <td className="py-3.5 px-2 font-semibold text-slate-600">{p.audience_scale || '10k - 50k'}</td>
+                        <td className="py-3.5 px-2 font-bold text-amber-700">{p.tier || 'BRONZE'}</td>
+                        <td className="py-3.5 px-2">
+                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                            p.status === 'APPROVED' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'
+                          }`}>
+                            {p.status}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-2">
+                          {editingPartnerId === p.id ? (
+                            <div className="flex items-center gap-1">
+                              <span className="font-bold text-slate-500">₹</span>
+                              <input
+                                type="number"
+                                value={newRate}
+                                onChange={e => setNewRate(Number(e.target.value))}
+                                className="w-16 px-2 py-1 border border-indigo-400 rounded text-xs font-bold focus:outline-none"
+                              />
+                              <button
+                                onClick={() => handleUpdateRate(p.id)}
+                                className="p-1 bg-emerald-600 text-white rounded cursor-pointer hover:bg-emerald-700"
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => setEditingPartnerId(null)}
+                                className="p-1 bg-slate-200 text-slate-700 rounded cursor-pointer"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="font-mono font-bold text-emerald-700 text-sm">₹{p.honorarium_rate || 25} / Student</span>
+                          )}
+                        </td>
+                        <td className="py-3.5 px-2">
+                          <button
+                            onClick={() => {
+                              setEditingPartnerId(p.id);
+                              setNewRate(p.honorarium_rate || 25);
+                            }}
+                            className="flex items-center gap-1 text-[11px] font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer"
+                          >
+                            <Edit3 className="w-3.5 h-3.5" /> Edit Rate
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </div>
         )}
 
@@ -763,54 +661,62 @@ export default function AdminPartnersPage() {
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-semibold">
-                    <th className="py-3 px-2">Partner Details</th>
-                    <th className="py-3 px-2">Referral Code</th>
-                    <th className="py-3 px-2">Requested Amount</th>
-                    <th className="py-3 px-2">Request Date</th>
-                    <th className="py-3 px-2">Batch Date</th>
-                    <th className="py-3 px-2">Status</th>
-                    <th className="py-3 px-2">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
-                  {payouts.map(p => (
-                    <tr key={p.id} className="hover:bg-slate-50">
-                      <td className="py-3.5 px-2">
-                        <span className="font-bold text-slate-900 block">{p.partners?.full_name || 'Jan Mohammad'}</span>
-                        <span className="text-[10.5px] text-slate-400">{p.partners?.email || 'jan@example.com'}</span>
-                      </td>
-                      <td className="py-3.5 px-2 font-mono font-bold text-indigo-900">{p.referral_code}</td>
-                      <td className="py-3.5 px-2 font-mono text-base font-black text-emerald-700">₹{p.amount}</td>
-                      <td className="py-3.5 px-2 text-slate-500">{new Date(p.requested_at).toLocaleDateString()}</td>
-                      <td className="py-3.5 px-2 font-semibold text-slate-800">{p.batch_date || 'Monday Batch'}</td>
-                      <td className="py-3.5 px-2">
-                        <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
-                          p.status === 'SETTLED' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'
-                        }`}>
-                          {p.status === 'PENDING' ? 'Pending Batch' : p.status}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-2">
-                        {p.status === 'PENDING' ? (
-                          <button
-                            onClick={() => setSettlingPayoutId(p.id)}
-                            className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg cursor-pointer shadow"
-                          >
-                            Mark Settled
-                          </button>
-                        ) : (
-                          <span className="font-mono text-[11px] font-semibold text-slate-500">Ref: {p.transaction_ref || 'SETTLED'}</span>
-                        )}
-                      </td>
+            {payouts.length === 0 ? (
+              <div className="p-12 text-center text-slate-500 space-y-3">
+                <CreditCard className="w-12 h-12 text-slate-300 mx-auto" />
+                <h3 className="font-bold text-slate-800 text-base">No payout requests in queue</h3>
+                <p className="text-xs text-slate-500">When creators submit withdrawal requests, they will appear here for Monday batch settlement.</p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left text-xs">
+                  <thead>
+                    <tr className="border-b border-slate-200 text-slate-400 uppercase tracking-wider font-semibold">
+                      <th className="py-3 px-2">Partner Details</th>
+                      <th className="py-3 px-2">Referral Code</th>
+                      <th className="py-3 px-2">Requested Amount</th>
+                      <th className="py-3 px-2">Request Date</th>
+                      <th className="py-3 px-2">Batch Date</th>
+                      <th className="py-3 px-2">Status</th>
+                      <th className="py-3 px-2">Action</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
+                    {payouts.map(p => (
+                      <tr key={p.id} className="hover:bg-slate-50">
+                        <td className="py-3.5 px-2">
+                          <span className="font-bold text-slate-900 block">{p.partners?.full_name || 'Partner Account'}</span>
+                          <span className="text-[10.5px] text-slate-400">{p.partners?.email || 'N/A'}</span>
+                        </td>
+                        <td className="py-3.5 px-2 font-mono font-bold text-indigo-900">{p.referral_code}</td>
+                        <td className="py-3.5 px-2 font-mono text-base font-black text-emerald-700">₹{p.amount}</td>
+                        <td className="py-3.5 px-2 text-slate-500">{new Date(p.requested_at).toLocaleDateString()}</td>
+                        <td className="py-3.5 px-2 font-semibold text-slate-800">{p.batch_date || 'Monday Batch'}</td>
+                        <td className="py-3.5 px-2">
+                          <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
+                            p.status === 'SETTLED' ? 'bg-emerald-50 text-emerald-800 border-emerald-200' : 'bg-amber-50 text-amber-800 border-amber-200'
+                          }`}>
+                            {p.status === 'PENDING' ? 'Pending Batch' : p.status}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-2">
+                          {p.status === 'PENDING' ? (
+                            <button
+                              onClick={() => setSettlingPayoutId(p.id)}
+                              className="py-1.5 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[11px] rounded-lg cursor-pointer shadow"
+                            >
+                              Mark Settled
+                            </button>
+                          ) : (
+                            <span className="font-mono text-[11px] font-semibold text-slate-500">Ref: {p.transaction_ref || 'SETTLED'}</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
 
             {/* SETTLEMENT MODAL */}
             {settlingPayoutId && (
@@ -987,7 +893,7 @@ export default function AdminPartnersPage() {
                     <div className="flex items-center justify-between">
                       <span className="text-slate-600 font-medium">Total Followers/Reach:</span>
                       <span className="font-mono font-bold text-slate-900">
-                        {(selectedPartnerDetail.total_reach || 35000).toLocaleString('en-IN')}
+                        {(selectedPartnerDetail.total_reach || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
                   </div>
