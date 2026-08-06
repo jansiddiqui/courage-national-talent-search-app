@@ -444,11 +444,11 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
     const codeToTest = formData.referralCode || (formData.fullName ? PartnerReferralEngine.generateReferralCode(formData.fullName) : '');
     if (!codeToTest || codeToTest.length < 4) {
-      newErrors.referralCode = 'Referral Code must be at least 4 characters (e.g. CNTS01).';
-    } else if (codeToTest.length > 6) {
-      newErrors.referralCode = 'Referral Code MUST be maximum 6 characters long (e.g. CNTS01 or CNTSJN).';
-    } else if (!codeToTest.toUpperCase().includes('CNTS')) {
-      newErrors.referralCode = 'Referral Code MUST contain "CNTS" (e.g. CNTS01 or CNTSJN).';
+      newErrors.referralCode = 'Referral Code must be at least 4 characters (e.g. CNTSJN).';
+    } else if (codeToTest.length > 8) {
+      newErrors.referralCode = 'Referral Code MUST be maximum 8 characters long (e.g. CNTSJN or CNTSA1B7X).';
+    } else if (!codeToTest.toUpperCase().startsWith('CNTS')) {
+      newErrors.referralCode = 'Referral Code MUST start with "CNTS" (e.g. CNTSJN or CNTSA1B7X).';
     } else if (!availabilityCheck.available) {
       newErrors.referralCode = availabilityCheck.message;
     }
