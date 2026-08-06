@@ -18,6 +18,7 @@ import { PaymentSetupAndRulesTab } from './PaymentSetupAndRulesTab';
 import { GrowthCenter } from './GrowthCenter';
 import { PartnerSupportCenter } from './PartnerSupportCenter';
 import { PublicPartnerProfileView } from './PublicPartnerProfileView';
+import { PartnerInbox } from './PartnerInbox';
 
 interface PartnersPlatformProps {
   initialView?: 'landing' | 'apply' | 'workspace' | 'publicProfile';
@@ -30,6 +31,7 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('overview');
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
   const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isChildModalOpen, setIsChildModalOpen] = useState(false);
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -162,6 +164,7 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
               partnerName={applicantData?.fullName}
               referralCode={applicantData?.referralCode}
               onNavigateToTab={(tab: any) => setActiveTab(tab)}
+              onOpenChildModal={() => setIsChildModalOpen(true)}
             />
           )}
           {activeTab === 'child' && (
@@ -170,18 +173,44 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
               partnerCode={applicantData?.referralCode}
             />
           )}
-          {activeTab === 'tiers' && <PartnerReputationAndAnalytics />}
-          {activeTab === 'missions' && <MissionsMarketplace />}
+          {activeTab === 'tiers' && (
+            <PartnerReputationAndAnalytics
+              partnerName={applicantData?.fullName}
+              referralCode={applicantData?.referralCode}
+            />
+          )}
+          {activeTab === 'inbox' && (
+            <PartnerInbox
+              partnerName={applicantData?.fullName}
+            />
+          )}
+          {activeTab === 'missions' && (
+            <MissionsMarketplace
+              partnerName={applicantData?.fullName}
+              referralCode={applicantData?.referralCode}
+            />
+          )}
           {activeTab === 'referral' && (
             <ReferralCenter
               partnerName={applicantData?.fullName}
               referralCode={applicantData?.referralCode}
             />
           )}
-          {activeTab === 'payouts' && <PayoutCenter />}
+          {activeTab === 'payouts' && (
+            <PayoutCenter
+              partnerName={applicantData?.fullName}
+              referralCode={applicantData?.referralCode}
+              onNavigateToPaymentSetup={() => setActiveTab('payment-setup')}
+            />
+          )}
           {activeTab === 'payment-setup' && <PaymentSetupAndRulesTab />}
-          {activeTab === 'growth' && <GrowthCenter audienceScale={applicantData?.audienceScale} />}
-          {activeTab === 'support' && <PartnerSupportCenter />}
+          {activeTab === 'growth' && <GrowthCenter audienceScale={applicantData?.audienceScale} referralCode={applicantData?.referralCode} partnerName={applicantData?.fullName} />}
+          {activeTab === 'support' && (
+            <PartnerSupportCenter
+              partnerName={applicantData?.fullName}
+              referralCode={applicantData?.referralCode}
+            />
+          )}
         </PartnerWorkspaceLayout>
       )}
 

@@ -23,6 +23,11 @@ import {
 } from 'lucide-react';
 import { PayoutAccountModal } from './PayoutAccountModal';
 
+interface MissionsMarketplaceProps {
+  partnerName?: string;
+  referralCode?: string;
+}
+
 interface MissionItem {
   id: string;
   title: string;
@@ -39,7 +44,10 @@ interface MissionItem {
   sampleCopy: string;
 }
 
-export const MissionsMarketplace: React.FC = () => {
+export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
+  partnerName = 'Jan Mohammad',
+  referralCode = 'CNTSJN',
+}) => {
   const [activeCategory, setActiveCategory] = useState<string>('All');
   const [selectedMission, setSelectedMission] = useState<MissionItem | null>(null);
   const [copiedLink, setCopiedLink] = useState(false);
@@ -59,7 +67,7 @@ export const MissionsMarketplace: React.FC = () => {
       rewardText: '₹50 honorarium per verified CNTS registration + Founding Partner Badge',
       badgeUnlocked: '🥈 CNTS Founding Mobilizer',
       status: 'Featured',
-      sampleCopy: '📢 Official Announcement! Courage Library has launched the Courage National Talent Search (CNTS) 2026. Top performers win 100% Merit Scholarships & verified cognitive profile reports. Register via my referral code: https://thecouragelibrary.com/register?ref=RAHUL2026'
+      sampleCopy: `📢 Official Announcement! Courage Library has launched the Courage National Talent Search (CNTS) 2026. Top performers win 100% Merit Scholarships & verified cognitive profile reports. Register via my referral code: https://thecouragelibrary.com/register?ref=${referralCode}`
     },
     {
       id: 'mission-cnts-scholarship-awareness',
@@ -74,7 +82,7 @@ export const MissionsMarketplace: React.FC = () => {
       rewardText: '₹75 per rural candidate + Community Champion Badge',
       badgeUnlocked: '🌟 CNTS Community Champion',
       status: 'Active',
-      sampleCopy: '🎓 Unlocking Talent in Every District! Courage National Talent Search (CNTS) 2026 is providing 1000+ full merit scholarships. Share this message with parents & teachers in your region: https://thecouragelibrary.com/register?ref=RAHUL2026'
+      sampleCopy: `🎓 Unlocking Talent in Every District! Courage National Talent Search (CNTS) 2026 is providing 1000+ full merit scholarships. Share this message with parents & teachers in your region: https://thecouragelibrary.com/register?ref=${referralCode}`
     },
     {
       id: 'mission-cnts-school-partnership',
@@ -89,7 +97,7 @@ export const MissionsMarketplace: React.FC = () => {
       rewardText: '₹5,000 institutional grant per connected school + Verified School Partner Badge',
       badgeUnlocked: '🏫 Verified School Partner',
       status: 'Active',
-      sampleCopy: 'Respected Principal, Courage Library offers the Courage National Talent Search (CNTS 2026) for your school students. Access institutional registration details here: https://thecouragelibrary.com/for-schools?ref=RAHUL2026'
+      sampleCopy: `Respected Principal, Courage Library offers the Courage National Talent Search (CNTS 2026) for your school students. Access institutional registration details here: https://thecouragelibrary.com/for-schools?ref=${referralCode}`
     }
   ];
 
@@ -263,7 +271,7 @@ export const MissionsMarketplace: React.FC = () => {
                 View CNTS Media Kit & Link
               </button>
               <button
-                onClick={() => copyMissionLink('RAHUL2026')}
+                onClick={() => copyMissionLink(referralCode)}
                 className="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors cursor-pointer"
                 title="Copy CNTS Referral Link"
               >
@@ -325,7 +333,7 @@ export const MissionsMarketplace: React.FC = () => {
               </div>
 
               <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                <span className="text-xs text-slate-500">CNTS Referral Link: <code className="text-indigo-700 font-bold">thecouragelibrary.com/register?ref=CNTSJN</code></span>
+                <span className="text-xs text-slate-500">CNTS Referral Link: <code className="text-indigo-700 font-bold">thecouragelibrary.com/register?ref={referralCode}</code></span>
                 <button
                   onClick={() => setSelectedMission(null)}
                   className="btn-primary text-xs py-2 px-6 cursor-pointer"

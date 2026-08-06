@@ -52,7 +52,7 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
           </div>
 
           <button
-            onClick={() => onNavigateToTab?.('payouts')}
+            onClick={() => setShowPayoutModal(true)}
             className="btn-primary text-xs py-3 px-5 bg-emerald-500 hover:bg-emerald-600 font-bold text-slate-950 flex items-center justify-center gap-2 shadow-lg cursor-pointer rounded-2xl transition-all hover:scale-105"
           >
             <CreditCard className="w-4 h-4" /> Setup Payout UPI / Upload QR

@@ -324,10 +324,6 @@ export class WhatsAppService {
         status: mappedStatus
       };
 
-      if (timestamp) {
-        updateData.created_at = timestamp;
-      }
-
       if (errors && errors.length > 0) {
         updateData.error_details = JSON.stringify(errors);
       }

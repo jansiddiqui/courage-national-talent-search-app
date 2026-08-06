@@ -1,77 +1,83 @@
 'use client';
 
 import React, { useState } from 'react';
-import { 
-  TrendingUp, 
-  Zap, 
-  ShieldCheck, 
-  Award, 
-  Sparkles, 
-  Target 
-} from 'lucide-react';
-import { PartnerReputationAndAnalytics } from './PartnerReputationAndAnalytics';
+import { Zap, ShieldCheck } from 'lucide-react';
 import { AIStudio } from './AIStudio';
 import { PaymentRulesTab } from './PaymentRulesTab';
 
 interface GrowthCenterProps {
   audienceScale?: string;
+  referralCode?: string;
+  partnerName?: string;
 }
 
-export const GrowthCenter: React.FC<GrowthCenterProps> = ({ audienceScale }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'tiers' | 'aistudio' | 'rules'>('tiers');
+export const GrowthCenter: React.FC<GrowthCenterProps> = ({
+  audienceScale,
+  referralCode = 'CNTSJN',
+  partnerName = 'Jan Mohammad',
+}) => {
+  const [activeSubTab, setActiveSubTab] = useState<'aistudio' | 'rules'>('aistudio');
 
   return (
     <div className="space-y-8 animate-fade-in">
-      {/* SUB-NAVBAR HEADER */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full mb-2 border border-indigo-100">
-            <Zap className="w-3.5 h-3.5" /> Partner Growth & Tools Suite
+
+      {/* HEADER */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div>
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-300 bg-indigo-900/50 border border-indigo-700/50 px-3 py-1 rounded-full mb-2">
+              <Zap className="w-3.5 h-3.5" /> Growth & Tools Suite
+            </div>
+            <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+              AI Viral Studio & Payment Rules
+            </h1>
+            <p className="text-slate-400 text-sm mt-1">
+              Generate AI-powered promotional content and review your honorarium policy details.
+            </p>
           </div>
-          <h1 className="font-display text-2xl md:text-3xl font-bold text-slate-900">
-            Growth, Tiers & AI Viral Studio
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Track your mobilization tier badge, generate AI promotional copy, and review honorarium policies.
-          </p>
-        </div>
 
-        {/* SUB TAB SELECTOR */}
-        <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-1 font-bold text-xs">
-          <button
-            onClick={() => setActiveSubTab('tiers')}
-            className={`py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeSubTab === 'tiers' ? 'bg-white text-indigo-950 shadow-sm font-extrabold' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <TrendingUp className="w-4 h-4 text-amber-500" /> Tiers & Badges
-          </button>
-          
-          <button
-            onClick={() => setActiveSubTab('aistudio')}
-            className={`py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeSubTab === 'aistudio' ? 'bg-white text-indigo-950 shadow-sm font-extrabold' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <Zap className="w-4 h-4 text-indigo-600" /> AI Studio
-          </button>
+          {/* SUB TAB SWITCHER */}
+          <div className="flex bg-slate-800/80 border border-slate-700 p-1.5 rounded-2xl gap-1 font-bold text-xs shrink-0">
+            <button
+              onClick={() => setActiveSubTab('aistudio')}
+              className={`py-2.5 px-5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeSubTab === 'aistudio'
+                  ? 'bg-indigo-600 text-white shadow-lg font-extrabold'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+              }`}
+            >
+              <Zap className="w-4 h-4" /> AI Studio
+              <span className={`text-[9px] px-1.5 py-0.5 rounded font-extrabold ${
+                activeSubTab === 'aistudio' ? 'bg-white/20 text-white' : 'bg-amber-400/20 text-amber-300'
+              }`}>AI</span>
+            </button>
 
-          <button
-            onClick={() => setActiveSubTab('rules')}
-            className={`py-2.5 px-4 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
-              activeSubTab === 'rules' ? 'bg-white text-indigo-950 shadow-sm font-extrabold' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <ShieldCheck className="w-4 h-4 text-emerald-600" /> Payment Rules
-          </button>
+            <button
+              onClick={() => setActiveSubTab('rules')}
+              className={`py-2.5 px-5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+                activeSubTab === 'rules'
+                  ? 'bg-emerald-600 text-white shadow-lg font-extrabold'
+                  : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+              }`}
+            >
+              <ShieldCheck className="w-4 h-4" /> Payment Rules
+            </button>
+          </div>
         </div>
       </div>
 
       {/* SUB-TAB CONTENTS */}
       <div>
-        {activeSubTab === 'tiers' && <PartnerReputationAndAnalytics />}
-        {activeSubTab === 'aistudio' && <AIStudio />}
-        {activeSubTab === 'rules' && <PaymentRulesTab audienceScale={audienceScale} />}
+        {activeSubTab === 'aistudio' && (
+          <AIStudio
+            referralCode={referralCode}
+            partnerName={partnerName}
+            audienceScale={audienceScale}
+          />
+        )}
+        {activeSubTab === 'rules' && (
+          <PaymentRulesTab audienceScale={audienceScale} />
+        )}
       </div>
     </div>
   );

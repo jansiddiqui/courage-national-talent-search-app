@@ -1,30 +1,50 @@
 'use client';
 
-import React, { useState } from 'react';
-import { 
-  Zap, 
-  Sparkles, 
-  Copy, 
-  Check, 
-  MessageSquare, 
-  Share2, 
-  Video, 
-  FileText, 
-  Mail, 
-  Mic, 
-  RefreshCw,
-  Send,
-  Layers
+import React, { useState, useRef } from 'react';
+import {
+  Zap, Sparkles, Copy, Check, MessageSquare, Share2,
+  Video, Mail, Mic, RefreshCw, Send, Layers,
+  AlertTriangle, Loader2
 } from 'lucide-react';
 
-export const AIStudio: React.FC = () => {
-  const [selectedFormat, setSelectedFormat] = useState<string>('WhatsApp Broadcast');
-  const [selectedTone, setSelectedTone] = useState<string>('Inspirational');
-  const [selectedLanguage, setSelectedLanguage] = useState<string>('Hinglish');
-  const [targetAudience, setTargetAudience] = useState<string>('Students & Parents');
-  const [isGenerating, setIsGenerating] = useState<boolean>(false);
-  const [generatedOutput, setGeneratedOutput] = useState<string>(
-    `📢 *BIG OPPORTUNITY FOR STUDENTS IN CLASS 5-12!*
+interface AIStudioProps {
+  referralCode?: string;
+  partnerName?: string;
+  audienceScale?: string;
+}
+
+const formats = [
+  { name: 'WhatsApp Broadcast', icon: MessageSquare, badge: 'High Conversion', badgeColor: 'bg-emerald-100 text-emerald-700' },
+  { name: 'Telegram Post', icon: Send, badge: 'Community', badgeColor: 'bg-blue-100 text-blue-700' },
+  { name: 'LinkedIn Editorial', icon: Share2, badge: 'Professional', badgeColor: 'bg-indigo-100 text-indigo-700' },
+  { name: 'X (Twitter) Thread', icon: Share2, badge: 'Viral', badgeColor: 'bg-slate-100 text-slate-700' },
+  { name: 'Instagram Reel Script', icon: Video, badge: 'Video', badgeColor: 'bg-pink-100 text-pink-700' },
+  { name: 'Carousel 6-Slide Outline', icon: Layers, badge: 'Graphics', badgeColor: 'bg-violet-100 text-violet-700' },
+  { name: 'Email Newsletter', icon: Mail, badge: 'Longform', badgeColor: 'bg-amber-100 text-amber-700' },
+  { name: 'Seminar Speech Notes', icon: Mic, badge: 'Institutional', badgeColor: 'bg-rose-100 text-rose-700' },
+];
+
+const tones = ['Inspirational', 'Urgent', 'Friendly & Casual', 'Professional', 'Storytelling', 'Data-Driven'];
+const languages = ['Hinglish', 'Hindi', 'English', 'Urdu', 'Bengali'];
+const audiences = ['Students & Parents', 'School Teachers', 'College Networks', 'WhatsApp Parent Groups', 'LinkedIn Educators'];
+
+export const AIStudio: React.FC<AIStudioProps> = ({
+  referralCode = 'CNTSJN',
+  partnerName = 'Jan Mohammad',
+  audienceScale,
+}) => {
+  const [selectedFormat, setSelectedFormat] = useState('WhatsApp Broadcast');
+  const [selectedTone, setSelectedTone] = useState('Inspirational');
+  const [selectedLanguage, setSelectedLanguage] = useState('Hinglish');
+  const [targetAudience, setTargetAudience] = useState('Students & Parents');
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [generationCount, setGenerationCount] = useState(0);
+
+  const referralUrl = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+
+  const defaultOutput = `📢 *BIG OPPORTUNITY FOR STUDENTS IN CLASS 5-8!*
 
 Did you know that top national talent search exams disburse merit scholarships worth lakhs every year, but over 70% of students miss out simply because they didn't know the dates?
 
@@ -36,244 +56,227 @@ Courage Library has officially launched the **Courage National Talent Search 202
 • Personal Skill Diagnostic Report
 
 Apply today using my official Courage Partner link:
-👉 https://thecouragelibrary.com/register?ref=RAHUL2026
+👉 ${referralUrl}
 
-Let's ensure no deserving student stays behind!`
-  );
-  const [copied, setCopied] = useState<boolean>(false);
+Let's ensure no deserving student stays behind!`;
 
-  const formats = [
-    { name: 'WhatsApp Broadcast', icon: MessageSquare, badge: 'High Conversion' },
-    { name: 'Telegram Post', icon: Send, badge: 'Community' },
-    { name: 'LinkedIn Editorial', icon: Share2, badge: 'Professional' },
-    { name: 'X (Twitter) Thread', icon: Share2, badge: 'Viral' },
-    { name: 'Instagram Reel Script', icon: Video, badge: 'Video' },
-    { name: 'Carousel 6-Slide Outline', icon: Layers, badge: 'Graphics' },
-    { name: 'Email Newsletter', icon: Mail, badge: 'Longform' },
-    { name: 'Seminar Speech Notes', icon: Mic, badge: 'Institutional' },
-  ];
+  const [generatedOutput, setGeneratedOutput] = useState(defaultOutput);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     setIsGenerating(true);
-    setTimeout(() => {
-      if (selectedFormat === 'Instagram Reel Script') {
-        setGeneratedOutput(
-          `🎬 **REEL SCRIPT: 3 Secrets to Unlock National Scholarships**
+    setError(null);
 
-[0:00 - 0:03] HOOK (Show text on screen):
-"Stop scrolling if you have a brother, sister, or student in Class 5 to 12!"
+    try {
+      const res = await fetch('/api/partner/generate-content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          format: selectedFormat,
+          tone: selectedTone,
+          language: selectedLanguage,
+          audience: targetAudience,
+          referralCode,
+          partnerName,
+        }),
+      });
 
-[0:03 - 0:15] BODY:
-"Every year, thousands of students lose out on merit scholarships not because they aren't smart—but because they miss the deadline for national talent search exams."
+      const data = await res.json();
 
-[0:15 - 0:30] SOLUTION:
-"Courage Library's CNTS 2026 is officially open! It tests core problem-solving and offers 100% tuition waivers plus official national ranking."
-
-[0:30 - 0:45] CALL TO ACTION:
-"Click the link in my bio to register through my Courage Partner link or comment 'SCHOLARSHIP' below and I'll send you the direct form!"`
-        );
-      } else if (selectedFormat === 'LinkedIn Editorial') {
-        setGeneratedOutput(
-          `As educators and mentors, we often discuss bridge gaps in Indian secondary education.
-
-One of the most persistent issues isn't aptitude—it's access to structured scholarship diagnostic tests in Tier-2 & Tier-3 cities.
-
-I am proud to collaborate as an official Courage Partner with Courage Library for the Courage National Talent Search 2026 (CNTS).
-
-Why this matters for your school or network:
-1. Standardized merit assessment mapped to national standards.
-2. 100% tuition waivers for top performers.
-3. Institutional analytics for participating schools.
-
-If you are a school principal, teacher, or parent network leader, let's connect students to this opportunity.
-
-Official Link: https://thecouragelibrary.com/register?ref=RAHUL2026
-
-#Education #CouragePartner #ScholarshipsIndia #Pedagogy`
-        );
-      } else if (selectedFormat === 'Carousel 6-Slide Outline') {
-        setGeneratedOutput(
-          `🖼️ **CAROUSEL OUTLINE: How CNTS 2026 Unlocks Student Potential**
-
-Slide 1: [Title] 5 Things Every Parent Should Know About CNTS 2026 🎓
-Slide 2: [Problem] Standard school marks don't always reveal deep analytical talent.
-Slide 3: [Solution] CNTS tests critical thinking, logic, and core subject mastery.
-Slide 4: [Reward] Top scorers win 100% Merit Scholarships & National Mentorship.
-Slide 5: [Proof] Over 250,000+ students already impacted across 1,400+ schools.
-Slide 6: [CTA] Swipe up or link in bio to register via Courage Partner Code: RAHULEDU`
-        );
-      } else {
-        setGeneratedOutput(
-          `📢 *${selectedFormat.toUpperCase()} GENERATED CONTENT* (${selectedLanguage})
-
-Theme: Educational Opportunity & CNTS 2026
-Tone: ${selectedTone}
-
-Every student deserves a fair chance to shine nationally. Through Courage Library, Class 5-12 students can now take the Courage National Talent Search 2026.
-
-👉 Register here: https://courage.org/p/rahuledu`
-        );
+      if (!res.ok || data.error) {
+        throw new Error(data.error || 'Generation failed');
       }
+
+      setGeneratedOutput(data.content);
+      setGenerationCount(c => c + 1);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Failed to generate content. Please try again.');
+    } finally {
       setIsGenerating(false);
-    }, 600);
+    }
   };
 
-  const copyToClipboard = () => {
+  const handleCopy = () => {
     navigator.clipboard.writeText(generatedOutput);
     setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    setTimeout(() => setCopied(false), 2500);
   };
 
-  return (
-    <div className="space-y-8 animate-fade-in">
-      {/* HEADER */}
-      <div className="bg-[#0F172A] text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-1.5 bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-bold mb-3 border border-amber-400/30">
-              <Zap className="w-3.5 h-3.5" /> AI Partner Copilot Studio
-            </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
-              Multi-Format AI Content Generator
-            </h1>
-            <p className="text-slate-300 text-sm mt-1 max-w-xl">
-              Generate high-converting educational broadcasts, scripts, carousel outlines, and articles customized for Indian students & parents.
-            </p>
-          </div>
+  const whatsappShare = `https://api.whatsapp.com/send?text=${encodeURIComponent(generatedOutput)}`;
 
-          <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center font-bold">
-              AI
-            </div>
-            <div>
-              <span className="text-xs text-slate-400 block font-medium">Model Status</span>
-              <span className="text-emerald-400 font-mono text-xs font-bold flex items-center gap-1">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Ready (100% Free)
-              </span>
-            </div>
+  return (
+    <div className="space-y-6 animate-fade-in">
+
+      {/* CONFIG PANEL */}
+      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+              <Zap className="w-5 h-5 text-indigo-600" /> Configure Your Content
+            </h2>
+            <p className="text-xs text-slate-500 mt-0.5">Select format, tone, language, and audience — then generate.</p>
           </div>
+          {generationCount > 0 && (
+            <span className="text-[10px] font-mono bg-indigo-50 text-indigo-700 border border-indigo-200 px-2 py-1 rounded-full font-bold">
+              {generationCount} generated this session
+            </span>
+          )}
+        </div>
+
+        {/* Format Grid */}
+        <div>
+          <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-2">Content Format</label>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {formats.map(({ name, icon: Icon, badge, badgeColor }) => (
+              <button
+                key={name}
+                onClick={() => setSelectedFormat(name)}
+                className={`p-3 rounded-xl border text-left transition-all cursor-pointer group ${
+                  selectedFormat === name
+                    ? 'border-indigo-500 bg-indigo-50 shadow-sm ring-1 ring-indigo-400'
+                    : 'border-slate-200 bg-white hover:border-indigo-200 hover:bg-indigo-50/40'
+                }`}
+              >
+                <div className="flex items-center gap-1.5 mb-1">
+                  <Icon className={`w-3.5 h-3.5 ${selectedFormat === name ? 'text-indigo-600' : 'text-slate-500'}`} />
+                  <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${badgeColor}`}>{badge}</span>
+                </div>
+                <span className={`text-xs font-bold leading-tight block ${selectedFormat === name ? 'text-indigo-900' : 'text-slate-700'}`}>
+                  {name}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tone / Language / Audience selects */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Tone</label>
+            <select
+              value={selectedTone}
+              onChange={e => setSelectedTone(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-300 text-slate-800"
+            >
+              {tones.map(t => <option key={t}>{t}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Language</label>
+            <select
+              value={selectedLanguage}
+              onChange={e => setSelectedLanguage(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-300 text-slate-800"
+            >
+              {languages.map(l => <option key={l}>{l}</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-slate-600 uppercase tracking-wider mb-1.5">Target Audience</label>
+            <select
+              value={targetAudience}
+              onChange={e => setTargetAudience(e.target.value)}
+              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-300 text-slate-800"
+            >
+              {audiences.map(a => <option key={a}>{a}</option>)}
+            </select>
+          </div>
+        </div>
+
+        {/* Generate Button */}
+        <button
+          onClick={handleGenerate}
+          disabled={isGenerating}
+          className={`w-full py-4 px-6 rounded-2xl font-extrabold text-sm flex items-center justify-center gap-2.5 transition-all shadow-lg cursor-pointer ${
+            isGenerating
+              ? 'bg-indigo-400 text-white cursor-not-allowed'
+              : 'bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white hover:shadow-indigo-200 hover:shadow-xl hover:scale-[1.01]'
+          }`}
+        >
+          {isGenerating ? (
+            <><Loader2 className="w-5 h-5 animate-spin" /> Generating with Gemini AI...</>
+          ) : (
+            <><Sparkles className="w-5 h-5" /> Generate {selectedFormat} with AI</>
+          )}
+        </button>
+      </div>
+
+      {/* Error Banner */}
+      {error && (
+        <div className="flex items-center gap-3 bg-rose-50 border border-rose-200 rounded-2xl p-4 animate-fade-in">
+          <AlertTriangle className="w-5 h-5 text-rose-500 shrink-0" />
+          <div>
+            <p className="text-xs font-bold text-rose-800">Generation Failed</p>
+            <p className="text-xs text-rose-600 mt-0.5">{error}</p>
+          </div>
+          <button onClick={() => setError(null)} className="ml-auto text-rose-400 hover:text-rose-700 cursor-pointer text-xs font-bold">
+            Dismiss
+          </button>
+        </div>
+      )}
+
+      {/* OUTPUT PANEL */}
+      <div className="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+        {/* Output Header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+          <div className="flex items-center gap-2">
+            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
+            <span className="text-xs font-bold text-slate-300 font-mono">Generated Output — {selectedFormat}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-[10px] text-slate-500 font-mono">ref: {referralCode}</span>
+          </div>
+        </div>
+
+        {/* Content Area */}
+        <div className="p-6 min-h-[220px] relative">
+          {isGenerating ? (
+            <div className="flex flex-col items-center justify-center py-12 gap-3">
+              <div className="relative">
+                <div className="w-12 h-12 rounded-full border-2 border-indigo-500/30 border-t-indigo-400 animate-spin" />
+                <Sparkles className="w-5 h-5 text-indigo-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
+              </div>
+              <p className="text-sm text-slate-400 font-medium">Gemini AI is crafting your {selectedLanguage} content...</p>
+              <p className="text-xs text-slate-500">Tailored for {targetAudience} • {selectedTone} tone</p>
+            </div>
+          ) : (
+            <pre className="whitespace-pre-wrap font-mono text-xs text-slate-200 leading-relaxed">
+              {generatedOutput}
+            </pre>
+          )}
+        </div>
+
+        {/* Action Bar */}
+        <div className="px-6 py-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex items-center gap-2">
+            <a
+              href={whatsappShare}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer transition-all shadow"
+            >
+              <MessageSquare className="w-3.5 h-3.5" /> Open in WhatsApp
+            </a>
+            <button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-4 py-2 rounded-xl cursor-pointer transition-all border border-slate-700"
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} /> Regenerate
+            </button>
+          </div>
+          <button
+            onClick={handleCopy}
+            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer transition-all shadow"
+          >
+            {copied ? <><Check className="w-3.5 h-3.5 text-emerald-300" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy Content</>}
+          </button>
         </div>
       </div>
 
-      {/* STUDIO LAYOUT */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* LEFT CONFIGURATION PANEL */}
-        <div className="lg:col-span-5 space-y-6 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-500 mb-3">
-              1. Select Content Format
-            </label>
-            <div className="grid grid-cols-2 gap-2">
-              {formats.map(fmt => {
-                const Icon = fmt.icon;
-                const active = selectedFormat === fmt.name;
-                return (
-                  <button
-                    key={fmt.name}
-                    onClick={() => setSelectedFormat(fmt.name)}
-                    className={`p-3 rounded-xl border text-left flex flex-col justify-between transition-all cursor-pointer ${
-                      active 
-                        ? 'border-indigo-600 bg-indigo-50/80 text-indigo-900 shadow-sm font-semibold' 
-                        : 'border-slate-200 hover:border-slate-300 text-slate-700 bg-white'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <Icon className={`w-4 h-4 ${active ? 'text-indigo-600' : 'text-slate-400'}`} />
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold ${
-                        active ? 'bg-indigo-600 text-white' : 'bg-slate-100 text-slate-500'
-                      }`}>
-                        {fmt.badge}
-                      </span>
-                    </div>
-                    <span className="text-xs">{fmt.name}</span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Tone</label>
-              <select
-                value={selectedTone}
-                onChange={e => setSelectedTone(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white font-medium focus:ring-2 focus:ring-indigo-600"
-              >
-                <option>Inspirational</option>
-                <option>Institutional & Formal</option>
-                <option>Urgent & Direct</option>
-                <option>Storytelling</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 mb-1">Language</label>
-              <select
-                value={selectedLanguage}
-                onChange={e => setSelectedLanguage(e.target.value)}
-                className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs bg-white font-medium focus:ring-2 focus:ring-indigo-600"
-              >
-                <option>Hinglish</option>
-                <option>English</option>
-                <option>Hindi</option>
-              </select>
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-xs font-bold text-slate-700 mb-1">Target Audience</label>
-            <input
-              type="text"
-              value={targetAudience}
-              onChange={e => setTargetAudience(e.target.value)}
-              className="w-full px-3 py-2.5 rounded-xl border border-slate-200 text-xs focus:ring-2 focus:ring-indigo-600"
-            />
-          </div>
-
-          <button
-            onClick={handleGenerate}
-            disabled={isGenerating}
-            className="w-full btn-primary text-sm py-3.5 shadow-lg bg-indigo-600 hover:bg-indigo-700 flex items-center justify-center gap-2 cursor-pointer"
-          >
-            {isGenerating ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
-            {isGenerating ? 'Generating Content...' : `Generate ${selectedFormat}`}
-          </button>
-        </div>
-
-        {/* RIGHT GENERATED OUTPUT PANEL */}
-        <div className="lg:col-span-7 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3 mb-4">
-              <div className="flex items-center gap-2">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <h3 className="font-bold text-sm text-slate-900">
-                  AI Output: <span className="text-indigo-600">{selectedFormat}</span>
-                </h3>
-              </div>
-              <span className="text-xs text-slate-400 font-mono">
-                {selectedLanguage} • {selectedTone}
-              </span>
-            </div>
-
-            <div className="bg-slate-900 text-slate-100 p-5 rounded-2xl font-mono text-xs md:text-sm leading-relaxed whitespace-pre-wrap min-h-[320px] shadow-inner border border-slate-800">
-              {generatedOutput}
-            </div>
-          </div>
-
-          <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-            <span className="text-xs text-slate-400">
-              Partner Code: <code className="text-amber-600 font-bold">RAHULEDU</code> included
-            </span>
-            <button
-              onClick={copyToClipboard}
-              className="btn-primary text-xs py-2 px-5 bg-emerald-600 hover:bg-emerald-700 flex items-center gap-1.5 cursor-pointer"
-            >
-              {copied ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-              {copied ? 'Copied to Clipboard' : 'Copy Generated Text'}
-            </button>
-          </div>
-        </div>
+      {/* Partner Code Footer */}
+      <div className="text-center text-xs text-slate-400 font-mono bg-slate-50 border border-slate-200 rounded-2xl py-3 px-4">
+        Your content always includes: <strong className="text-indigo-700">{referralCode}</strong> →{' '}
+        <code className="text-slate-600">{referralUrl}</code>
       </div>
     </div>
   );

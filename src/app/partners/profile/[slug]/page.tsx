@@ -10,11 +10,20 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.slug;
-  const name = slug === 'ananya-sharma' ? 'Ananya Sharma' : 'Rahul Sharma';
+  // Convert slug like 'jan-mohammad' → 'Jan Mohammad'
+  const name = slug
+    .split('-')
+    .map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
 
   return {
     title: `${name} — Verified Courage Partner Profile`,
     description: `Official Courage Library Partner Profile of ${name}. View educational impact, connected schools, badges, and verified credentials.`,
+    openGraph: {
+      title: `${name} — Courage Partner`,
+      description: `View ${name}'s official Courage Partner profile, badges, and student mobilization impact.`,
+      type: 'profile',
+    },
   };
 }
 

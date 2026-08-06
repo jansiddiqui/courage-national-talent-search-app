@@ -14,7 +14,28 @@ import {
   CheckCircle2
 } from 'lucide-react';
 
-export const PartnerReputationAndAnalytics: React.FC = () => {
+interface PartnerReputationAndAnalyticsProps {
+  partnerName?: string;
+  referralCode?: string;
+}
+
+export const PartnerReputationAndAnalytics: React.FC<PartnerReputationAndAnalyticsProps> = ({
+  partnerName = 'Jan Mohammad',
+  referralCode = 'CNTSJN',
+}) => {
+  // Simulated verified registrations — in production this comes from API
+  const verifiedRegistrations = 124;
+
+  const tiers = [
+    { tier: 'Bronze',   min: 1,   max: 25,  rate: '₹25 / Student', bonus: 'Base Tier',        badge: '🥉 Bronze Mobilizer', color: 'border-slate-200 bg-slate-50 text-slate-800',               perks: ['Standard Referral Link', 'WhatsApp Templates', 'Digital Certificate'] },
+    { tier: 'Silver',   min: 26,  max: 50,  rate: '₹25 / Student', bonus: '+ ₹500 Bonus',     badge: '🥈 Silver Mobilizer', color: 'border-slate-300 bg-slate-100 text-slate-900',              perks: ['Custom Referral Code', 'Printable QR Poster', 'Priority Payouts'] },
+    { tier: 'Gold',     min: 51,  max: 100, rate: '₹25 / Student', bonus: '+ ₹1,500 Bonus',   badge: '🥇 Gold Mobilizer',   color: 'border-amber-300 bg-amber-50 text-amber-950',              perks: ['Verified Badge', 'Instant UPI Settlement', 'Featured Profile'] },
+    { tier: 'Platinum', min: 101, max: 250, rate: '₹25 / Student', bonus: '+ ₹5,000 Bonus',   badge: '💎 Platinum Partner', color: 'border-indigo-200 bg-indigo-50 text-indigo-950',           perks: ['School Drive Grants', 'Account Manager', 'Child Fee Waiver'] },
+    { tier: 'Founding', min: 251, max: Infinity, rate: '₹25 / Student', bonus: '+ ₹15,000 Bonus', badge: '🌟 Founding Partner', color: 'border-emerald-300 bg-emerald-50 text-emerald-950', perks: ['Hall of Fame Listing', 'Physical Trophy', 'Lifetime Revenue Share'] },
+  ];
+
+  const currentTierObj = tiers.find(t => verifiedRegistrations >= t.min && verifiedRegistrations <= t.max) || tiers[0];
+
   return (
     <div className="space-y-8 animate-fade-in">
       {/* HEADER & REPUTATION BANNER */}
@@ -28,7 +49,7 @@ export const PartnerReputationAndAnalytics: React.FC = () => {
               Partner Reputation & Impact Analytics
             </h1>
             <p className="text-slate-300 text-sm mt-1">
-              We measure educational impact, community trust, and authenticity rather than vanity metrics alone.
+              {partnerName} • Code: <span className="font-mono text-amber-300">{referralCode}</span> • Top 3% National Partners
             </p>
           </div>
 
@@ -179,77 +200,42 @@ export const PartnerReputationAndAnalytics: React.FC = () => {
           <div className="bg-amber-50 border border-amber-200 px-4 py-2.5 rounded-2xl shrink-0 text-right">
             <span className="text-[10px] uppercase font-bold text-amber-700 tracking-wider block">Your Current Tier</span>
             <span className="font-mono text-base font-extrabold text-amber-950 flex items-center justify-end gap-1">
-              🏆 Gold Mobilizer (124 Verified)
+              {currentTierObj.badge} ({verifiedRegistrations} Verified)
             </span>
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-          {[
-            {
-              tier: "Bronze",
-              range: "1 - 25 Students",
-              rate: "₹25 / Student",
-              bonus: "Base Tier",
-              badge: "🥉 Bronze Mobilizer",
-              color: "border-slate-200 bg-slate-50 text-slate-800",
-              perks: ["Standard Referral Link", "WhatsApp Templates", "Digital Certificate"]
-            },
-            {
-              tier: "Silver",
-              range: "26 - 50 Students",
-              rate: "₹25 / Student",
-              bonus: "+ ₹500 Bonus",
-              badge: "🥈 Silver Mobilizer",
-              color: "border-slate-300 bg-slate-100 text-slate-900",
-              perks: ["Custom Referral Code", "Printable QR Poster", "Priority Payouts"]
-            },
-            {
-              tier: "Gold",
-              range: "51 - 100 Students",
-              rate: "₹25 / Student",
-              bonus: "+ ₹1,500 Bonus",
-              badge: "🥇 Gold Mobilizer",
-              color: "border-amber-300 bg-amber-50 text-amber-950 ring-2 ring-amber-400",
-              perks: ["Verified Badge", "Instant UPI Settlement", "Featured Profile"]
-            },
-            {
-              tier: "Platinum",
-              range: "101 - 250 Students",
-              rate: "₹25 / Student",
-              bonus: "+ ₹5,000 Bonus",
-              badge: "💎 Platinum Partner",
-              color: "border-indigo-200 bg-indigo-50 text-indigo-950",
-              perks: ["School Drive Grants", "Account Manager", "Child Fee Waiver"]
-            },
-            {
-              tier: "Founding",
-              range: "251+ Students",
-              rate: "₹25 / Student",
-              bonus: "+ ₹15,000 Bonus",
-              badge: "🌟 Founding Partner",
-              color: "border-emerald-300 bg-emerald-50 text-emerald-950",
-              perks: ["Hall of Fame Listing", "Physical Trophy", "Lifetime Revenue Share"]
-            }
-          ].map((item, idx) => (
-            <div key={idx} className={`p-4 rounded-2xl border ${item.color} space-y-3 relative flex flex-col justify-between`}>
-              <div className="space-y-1">
-                <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">{item.range}</span>
-                <h4 className="font-display font-black text-lg">{item.tier}</h4>
-                <div className="font-mono text-xs font-bold text-emerald-700">{item.rate}</div>
-                <div className="text-[11px] font-extrabold text-indigo-700">{item.bonus}</div>
+          {tiers.map((item, idx) => {
+            const isActive = item.tier === currentTierObj.tier;
+            return (
+              <div key={idx} className={`p-4 rounded-2xl border space-y-3 relative flex flex-col justify-between transition-all ${
+                isActive
+                  ? `${item.color} ring-2 ring-amber-400 shadow-lg`
+                  : item.color
+              }`}>
+                {isActive && (
+                  <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 text-[9px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+                    ✓ Your Tier
+                  </span>
+                )}
+                <div className="space-y-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider block opacity-75">{item.min}–{item.max === Infinity ? '251+' : item.max} Students</span>
+                  <h4 className="font-display font-black text-lg">{item.tier}</h4>
+                  <div className="font-mono text-xs font-bold text-emerald-700">{item.rate}</div>
+                  <div className="text-[11px] font-extrabold text-indigo-700">{item.bonus}</div>
+                </div>
+                <div className="pt-2 border-t border-slate-200/60 space-y-1 text-[11px] font-medium">
+                  {item.perks.map((perk, i) => (
+                    <div key={i} className="flex items-center gap-1">
+                      <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
+                      <span>{perk}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
-
-              <div className="pt-2 border-t border-slate-200/60 space-y-1 text-[11px] font-medium">
-                {item.perks.map((perk, i) => (
-                  <div key={i} className="flex items-center gap-1">
-                    <CheckCircle2 className="w-3 h-3 text-emerald-600 shrink-0" />
-                    <span>{perk}</span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </div>
     </div>

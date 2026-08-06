@@ -42,6 +42,7 @@ export type WorkspaceTab =
   | 'missions'
   | 'referral'
   | 'growth'
+  | 'inbox'
   | 'support';
 
 interface PartnerWorkspaceLayoutProps {
@@ -71,8 +72,9 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
   const partnerId = applicantData?.partnerId || 'CP-2026-000412';
   const referralCode = applicantData?.referralCode || 'CNTSJN';
 
-  const navItems: { id: WorkspaceTab; label: string; icon: any; badge?: string }[] = [
+  const navItems: { id: WorkspaceTab; label: string; icon: any; badge?: string; unreadDot?: boolean }[] = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+    { id: 'inbox', label: 'Inbox', icon: Inbox, badge: '3', unreadDot: true },
     { id: 'child', label: 'Register My Child', icon: GraduationCap, badge: '₹0 Waiver' },
     { id: 'tiers', label: 'Partner Tiers', icon: TrendingUp, badge: 'Gold' },
     { id: 'payouts', label: 'Payouts & Requests', icon: CreditCard, badge: '₹3,100' },
@@ -137,7 +139,7 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
 
             {/* Notifications Trigger */}
             <button
-              onClick={() => onTabChange('support')}
+              onClick={() => onTabChange('inbox')}
               className="relative p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
             >
               <Bell className="w-4 h-4" />
@@ -183,23 +185,37 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
           {navItems.map(item => {
             const Icon = item.icon;
             const active = activeTab === item.id;
+            const handleNavClick = () => {
+              if (item.id === 'child') {
+                setShowChildModal(true);
+              } else {
+                onTabChange(item.id);
+              }
+            };
             return (
               <button
                 key={item.id}
-                onClick={() => onTabChange(item.id)}
+                onClick={handleNavClick}
                 className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                   active 
                     ? 'bg-slate-900 text-white shadow-sm' 
                     : 'text-slate-700 hover:bg-slate-100 hover:text-slate-900'
                 }`}
               >
-                <div className="flex items-center gap-2.5">
+                <div className="flex items-center gap-2.5 relative">
                   <Icon className={`w-4 h-4 ${active ? 'text-amber-400' : 'text-slate-500'}`} />
+                  {item.unreadDot && activeTab !== item.id && (
+                    <span className="absolute -top-1 -left-1 w-2 h-2 rounded-full bg-rose-500 border border-white" />
+                  )}
                   <span>{item.label}</span>
                 </div>
                 {item.badge && (
                   <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                    active ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30' : 'bg-slate-100 text-slate-600'
+                    item.unreadDot && !active
+                      ? 'bg-rose-100 text-rose-600 border border-rose-200'
+                      : active
+                      ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30'
+                      : 'bg-slate-100 text-slate-600'
                   }`}>
                     {item.badge}
                   </span>

@@ -6,15 +6,32 @@ import {
   ArrowUpRight, 
   CheckCircle2, 
   Clock, 
-  Check
+  Check,
+  AlertTriangle,
+  X
 } from 'lucide-react';
 
-export const PayoutCenter: React.FC = () => {
+interface PayoutCenterProps {
+  partnerName?: string;
+  referralCode?: string;
+  onNavigateToPaymentSetup?: () => void;
+}
+
+export const PayoutCenter: React.FC<PayoutCenterProps> = ({
+  partnerName = 'Jan Mohammad',
+  referralCode = 'CNTSJN',
+  onNavigateToPaymentSetup,
+}) => {
   const [withdrawAmount, setWithdrawAmount] = useState('3100');
   const [requestSubmitted, setRequestSubmitted] = useState(false);
   const [requestsList, setRequestsList] = useState([
     { id: 'REQ-1042', amount: '₹3,100', date: 'Aug 3, 2026', batchDate: 'Monday, Aug 10, 2026', status: 'Pending Weekly Batch', method: 'Registered Payout Account' }
   ]);
+
+  // settled txns total = 1500 + 1000 + 600 = 3100
+  const lifetimeDisbursed = '₹3,100';
+  const lifetimeDisbursedSubtext = '3 settled payouts: Jul 15, Jul 28, Aug 2';
+  const hasPrimaryPayoutAccount = true; // set false to show warning
 
   const transactions = [
     { id: 'TXN-9021', date: 'Aug 2, 2026', campaign: 'CNTS 2026 Referral Honorarium', amount: '₹1,500', status: 'Settled', method: 'UPI Instant' },
@@ -77,10 +94,27 @@ export const PayoutCenter: React.FC = () => {
 
         <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-2">
           <span className="text-slate-500 text-xs font-bold uppercase tracking-wider block">Lifetime Disbursed</span>
-          <div className="font-mono text-3xl font-black text-indigo-950">₹3,100</div>
-          <span className="text-[11px] text-slate-500 block">Total settled payouts to date</span>
+          <div className="font-mono text-3xl font-black text-indigo-950">{lifetimeDisbursed}</div>
+          <span className="text-[11px] text-slate-500 block">{lifetimeDisbursedSubtext}</span>
         </div>
       </div>
+
+      {/* NO PAYOUT ACCOUNT WARNING */}
+      {!hasPrimaryPayoutAccount && (
+        <div className="flex items-center gap-3 bg-amber-50 border border-amber-300 rounded-2xl p-4">
+          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+          <div className="flex-1">
+            <p className="text-xs font-bold text-amber-900">No payout account configured</p>
+            <p className="text-xs text-amber-700 mt-0.5">You must add a UPI or bank account before submitting withdrawal requests.</p>
+          </div>
+          <button
+            onClick={onNavigateToPaymentSetup}
+            className="text-xs font-bold text-white bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-xl cursor-pointer shrink-0"
+          >
+            Set Up Now
+          </button>
+        </div>
+      )}
 
       {/* SUBMIT WEEKLY PAYOUT WITHDRAWAL REQUEST CARD */}
       <div className="bg-gradient-to-r from-emerald-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 md:p-8 border border-emerald-800 shadow-xl space-y-6">
@@ -163,6 +197,7 @@ export const PayoutCenter: React.FC = () => {
                   <th className="py-3 px-2">Scheduled Batch Date</th>
                   <th className="py-3 px-2">Target Account</th>
                   <th className="py-3 px-2">Status</th>
+                  <th className="py-3 px-2">Action</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 font-medium text-slate-700">
@@ -177,6 +212,15 @@ export const PayoutCenter: React.FC = () => {
                       <span className="bg-amber-50 text-amber-900 font-bold px-2.5 py-0.5 rounded-full text-[10px] border border-amber-200 inline-flex items-center gap-1">
                         <Clock className="w-3 h-3 text-amber-600" /> {req.status}
                       </span>
+                    </td>
+                    <td className="py-3.5 px-2">
+                      <button
+                        onClick={() => setRequestsList(prev => prev.filter((_, j) => j !== i))}
+                        className="flex items-center gap-1 text-[10px] font-bold text-rose-600 hover:text-rose-800 cursor-pointer"
+                        title="Cancel this request"
+                      >
+                        <X className="w-3.5 h-3.5" /> Cancel
+                      </button>
                     </td>
                   </tr>
                 ))}
