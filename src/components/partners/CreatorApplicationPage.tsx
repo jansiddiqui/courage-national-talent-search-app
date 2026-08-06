@@ -146,7 +146,8 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
   // INITIALIZED AS EMPTY ARRAY — NO PRE-FILLED DUMMY DATA
   const [platformDetails, setPlatformDetails] = useState<PlatformDetail[]>([]);
 
-  // Update suggestions whenever name changes
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   useEffect(() => {
     if (formData.fullName) {
       const suggestions = PartnerReferralEngine.generateCodeSuggestions(formData.fullName);
@@ -481,6 +482,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validateStep3()) {
+      setIsSubmitting(true);
       const finalRefCode = formData.referralCode || (formData.fullName ? PartnerReferralEngine.generateReferralCode(formData.fullName) : 'CNTS01');
       const finalSlug = formData.customSlug || (formData.fullName ? formData.fullName.toLowerCase().replace(/\s+/g, '') : 'creator');
 
@@ -509,6 +511,8 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
       } catch (err) {
         console.error('Error submitting application:', err);
         onSubmitted(payload);
+      } finally {
+        setIsSubmitting(false);
       }
     }
   };
@@ -741,9 +745,10 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
               <button
                 type="submit"
-                className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="group relative w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg shadow-indigo-600/20 hover:shadow-xl hover:shadow-indigo-600/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 overflow-hidden"
               >
-                Next: Channels & Verification <ArrowRight className="w-4 h-4" />
+                <span>Next: Channels & Verification</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
             </div>
           </form>
@@ -992,9 +997,10 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
               <button
                 type="submit"
-                className="w-full sm:w-auto px-8 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="group relative w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-indigo-600 via-purple-600 to-indigo-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg shadow-indigo-600/20 hover:shadow-xl hover:shadow-indigo-600/35 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2 overflow-hidden"
               >
-                Next: Custom Referral Code <ArrowRight className="w-4 h-4" />
+                <span>Next: Custom Referral Code</span>
+                <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
               </button>
             </div>
           </form>
@@ -1211,9 +1217,21 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
               <button
                 type="submit"
-                className="w-full sm:w-auto px-8 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-black text-xs sm:text-sm rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+                disabled={isSubmitting}
+                className="group relative w-full sm:w-auto px-9 py-4 bg-gradient-to-r from-emerald-600 via-teal-500 to-emerald-600 bg-[length:200%_auto] hover:bg-[position:right_center] text-white font-black text-xs sm:text-sm rounded-2xl shadow-xl shadow-emerald-600/25 hover:shadow-2xl hover:shadow-emerald-600/40 hover:scale-[1.03] active:scale-[0.97] transition-all duration-300 cursor-pointer flex items-center justify-center gap-2.5 overflow-hidden"
               >
-                Submit Application <Sparkles className="w-4 h-4 text-amber-300" />
+                <span className="absolute inset-0 bg-white/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-2xl" />
+                {isSubmitting ? (
+                  <>
+                    <RefreshCw className="w-4 h-4 animate-spin text-amber-300" />
+                    <span>Submitting Application...</span>
+                  </>
+                ) : (
+                  <>
+                    <span>Submit Official Application</span>
+                    <Sparkles className="w-4 h-4 text-amber-300 transition-transform duration-300 group-hover:rotate-45 group-hover:scale-125 animate-pulse" />
+                  </>
+                )}
               </button>
             </div>
           </form>

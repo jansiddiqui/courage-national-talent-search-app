@@ -16,38 +16,31 @@ export function generateCNTSButton(text: string, url: string): string {
 
 function getHeader(): string {
   return `
-    <div style="background-color: #1e40af; height: 6px; width: 100%;"></div>
-    <div style="padding: 30px 40px; background-color: #f8fafc; border-bottom: 1px solid #e2e8f0; text-align: center;">
-      <img src="${LOGO_URL}" alt="CNTS Logo" style="height: 60px; margin-bottom: 15px;" />
-      <h1 style="margin: 0; color: #0f172a; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">CNTS</h1>
-      <h2 style="margin: 5px 0 0; color: #334155; font-size: 16px; font-weight: 600;">Courage National Talent Search</h2>
-      <p style="margin: 5px 0 15px; color: #64748b; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">Talent Discovery Auditing</p>
-      <span style="display: inline-block; background-color: #dbeafe; color: #1e40af; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold;">Founding Edition 2026</span>
+    <div style="background: linear-gradient(90deg, #1E40AF 0%, #4F46E5 100%); height: 5px; width: 100%;"></div>
+    <div style="padding: 24px 20px; background-color: #0F172A; text-align: center; border-bottom: 1px solid #1E293B;">
+      <div style="display: inline-block; background-color: #1E1B4B; color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 18px; font-weight: 900; padding: 8px 18px; border-radius: 8px; letter-spacing: 1px; border: 1px solid #312E81;">
+        COURAGE LIBRARY • CNTS 2026
+      </div>
+      <h2 style="margin: 8px 0 0; color: #94A3B8; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">Courage National Talent Search</h2>
     </div>
   `;
 }
 
 function getFooter(): string {
   return `
-    <div style="padding: 30px 40px; background-color: #f8fafc; border-top: 1px solid #e2e8f0; text-align: center;">
-      <h3 style="margin: 0 0 5px; color: #0f172a; font-size: 16px; font-weight: 700;">Courage National Talent Search (CNTS)</h3>
-      <p style="margin: 0 0 20px; color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Talent Discovery Auditing</p>
+    <div style="padding: 24px 20px; background-color: #0F172A; border-top: 1px solid #1E293B; text-align: center; color: #94A3B8;">
+      <h3 style="margin: 0 0 4px; color: #F8FAFC; font-size: 14px; font-weight: 800;">Courage National Talent Search (CNTS)</h3>
+      <p style="margin: 0 0 16px; color: #64748B; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Talent Discovery Auditing Desk</p>
       
-      <div style="margin-bottom: 20px; font-size: 14px; line-height: 1.8;">
-        <span style="display: inline-block; white-space: nowrap;">
-          <a href="${PORTAL_URL}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Candidate Portal</a>
-        </span>
-        <span style="color: #cbd5e1; margin: 0 4px; display: inline-block; vertical-align: middle;">&bull;</span>
-        <span style="display: inline-block; white-space: nowrap;">
-          <a href="${WEBSITE_URL}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Website</a>
-        </span>
-        <span style="color: #cbd5e1; margin: 0 4px; display: inline-block; vertical-align: middle;">&bull;</span>
-        <span style="display: inline-block; white-space: nowrap;">
-          <a href="mailto:support@thecouragelibrary.com" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Support</a>
-        </span>
+      <div style="margin-bottom: 16px; font-size: 13px; line-height: 1.8;">
+        <a href="${PORTAL_URL}" style="color: #60A5FA; text-decoration: none; font-weight: 600; margin: 0 8px;">Candidate Portal</a>
+        <span style="color: #334155;">&bull;</span>
+        <a href="${WEBSITE_URL}" style="color: #60A5FA; text-decoration: none; font-weight: 600; margin: 0 8px;">Website</a>
+        <span style="color: #334155;">&bull;</span>
+        <a href="mailto:support@thecouragelibrary.com" style="color: #60A5FA; text-decoration: none; font-weight: 600; margin: 0 8px;">Support</a>
       </div>
       
-      <p style="margin: 0; color: #94a3b8; font-size: 12px; line-height: 1.5;">You are receiving this email because a CNTS activity was performed using this email address.</p>
+      <p style="margin: 0; color: #64748B; font-size: 11px; line-height: 1.5;">You are receiving this email because an official partner activity was performed using this address.</p>
     </div>
   `;
 }
@@ -75,14 +68,19 @@ function wrapLayout(content: string, preheader: string = ""): string {
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>CNTS Notification</title>
+      <style>
+        body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+      </style>
     </head>
-    <body style="margin: 0; padding: 20px; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <body style="margin: 0; padding: 12px 6px; background-color: #090D16; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
       <div style="display: none; max-height: 0px; overflow: hidden; mso-hide: all; font-size: 0; line-height: 0;">
         ${preheader}
       </div>
-      <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+      <div style="max-width: 580px; width: 100%; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); box-sizing: border-box;">
         ${getHeader()}
-        <div style="padding: 40px;">
+        <div style="padding: 24px 16px; box-sizing: border-box; width: 100%;">
           ${content}
         </div>
         ${getFooter()}
@@ -536,104 +534,99 @@ export function getPartnerApplicationTemplate(data: {
   const referralUrl = `https://thecouragelibrary.com/register?ref=${data.referralCode}`;
 
   const content = `
-    <div style="padding: 32px 24px; bg-color: #ffffff; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-border-box;">
       
       <!-- HERO HEADER CARD -->
-      <div style="background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); padding: 32px 28px; border-radius: 16px; text-align: center; color: #ffffff; margin-bottom: 28px; border: 1px solid #312E81; box-shadow: 0 10px 25px -5px rgba(15, 23, 42, 0.3);">
-        <span style="display: inline-block; background-color: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 14px; border-radius: 20px; font-size: 11px; font-weight: 800; font-family: monospace; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 12px;">
+      <div style="background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #312E81;">
+        <div style="display: inline-block; background-color: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
           FOUNDING CREATOR COHORT • CNTS 2026
-        </span>
-        <h2 style="margin: 0 0 8px; font-size: 24px; font-weight: 900; letter-spacing: -0.5px; color: #ffffff;">
+        </div>
+        <h1 style="margin: 0 0 6px; font-size: 19px; font-weight: 900; line-height: 1.3; color: #ffffff; word-break: normal; white-space: normal; overflow-wrap: normal;">
           Application Received & Registered!
-        </h2>
-        <p style="margin: 0; color: #C7D2FE; font-size: 14px; font-weight: 500;">
+        </h1>
+        <p style="margin: 0; color: #C7D2FE; font-size: 13px; font-weight: 500; line-height: 1.4;">
           Welcome to the Official Courage Partner Creator Ecosystem.
         </p>
       </div>
 
       <!-- PERSONALIZED SALUTATION -->
-      <p style="font-size: 16px; line-height: 1.6; color: #0F172A; margin-top: 0;">Dear <strong>${data.fullName}</strong>,</p>
-      <p style="font-size: 14px; line-height: 1.6; color: #334155;">
-        Thank you for applying to join the <strong>Courage Partner Program</strong> for the Courage National Talent Search (CNTS) 2026. Your application has been successfully logged and queued for 24-hour verification by our Courage Admin team.
+      <p style="font-size: 15px; line-height: 1.5; color: #0F172A; margin: 0 0 10px;">Dear <strong>${data.fullName}</strong>,</p>
+      <p style="font-size: 13.5px; line-height: 1.55; color: #334155; margin: 0 0 20px;">
+        Thank you for applying to join the <strong>Courage Partner Program</strong> for the Courage National Talent Search (CNTS) 2026. Your application has been logged and queued for 24-hour verification by our Courage Admin team.
       </p>
 
-      <!-- VIP CREATOR PASS CARD -->
-      <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 16px; padding: 24px; margin: 28px 0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
-        <div style="border-bottom: 2px solid #CBD5E1; padding-bottom: 12px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 13px; font-weight: 900; color: #0F172A; letter-spacing: 0.5px; text-transform: uppercase;">
-            🛡️ OFFICIAL CREATOR CREDENTIAL PASS
-          </span>
+      <!-- STACKED CREDENTIAL PASS ITEMS FOR 100% PERFECT MOBILE RENDERING -->
+      <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 14px; padding: 18px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+        <div style="font-size: 12px; font-weight: 900; color: #0F172A; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 14px;">
+          🛡️ OFFICIAL CREATOR CREDENTIAL PASS
         </div>
 
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 10px 0; color: #64748b; font-size: 13px; font-weight: 600; width: 38%;">Creator Name:</td>
-            <td style="padding: 10px 0; color: #0f172a; font-size: 14px; font-weight: bold;">${data.fullName}</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px 0; color: #64748b; font-size: 13px; font-weight: 600;">Partner ID:</td>
-            <td style="padding: 10px 0; color: #0f172a; font-size: 14px; font-weight: bold; font-family: monospace;">${data.partnerId}</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px 0; color: #64748b; font-size: 13px; font-weight: 600;">Referral Code:</td>
-            <td style="padding: 10px 0; color: #1D4ED8; font-size: 16px; font-weight: 900; font-family: monospace;">${data.referralCode}</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px 0; color: #64748b; font-size: 13px; font-weight: 600;">Dedicated Workspace URL:</td>
-            <td style="padding: 10px 0; color: #0f172a; font-size: 13px; font-family: monospace;"><a href="${workspaceUrl}" style="color: #2563EB; font-weight: bold; text-decoration: underline;">${workspaceUrl}</a></td>
-          </tr>
-          <tr>
-            <td style="padding: 10px 0; color: #64748b; font-size: 13px; font-weight: 600;">Assigned Honorarium Rate:</td>
-            <td style="padding: 10px 0; color: #15803D; font-size: 15px; font-weight: 900;">₹${data.honorariumRate || 25} per verified candidate</td>
-          </tr>
-          <tr>
-            <td style="padding: 10px 0; color: #64748b; font-size: 13px; font-weight: 600;">Verification Status:</td>
-            <td style="padding: 10px 0;">
-              <span style="display: inline-block; background-color: #FEF3C7; color: #B45309; border: 1px solid #FCD34D; padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 800;">
-                PENDING ADMIN REVIEW (24-Hour Verification)
-              </span>
-            </td>
-          </tr>
-        </table>
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Creator Name</div>
+          <div style="font-size: 14px; font-weight: 800; color: #0F172A; margin-top: 2px;">${data.fullName}</div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Partner ID</div>
+          <div style="font-size: 14px; font-weight: 800; color: #0F172A; font-family: monospace; margin-top: 2px;">${data.partnerId}</div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Referral Code</div>
+          <div style="font-size: 17px; font-weight: 900; color: #4F46E5; font-family: monospace; letter-spacing: 1px; margin-top: 2px;">${data.referralCode}</div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Dedicated Workspace URL</div>
+          <div style="font-size: 12px; font-weight: 700; color: #2563EB; word-break: break-all; margin-top: 2px;">
+            <a href="${workspaceUrl}" style="color: #2563EB; text-decoration: underline;">${workspaceUrl}</a>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Assigned Honorarium Rate</div>
+          <div style="font-size: 14px; font-weight: 900; color: #15803D; margin-top: 2px;">₹${data.honorariumRate || 25} per verified candidate</div>
+        </div>
+
+        <div>
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Verification Status</div>
+          <span style="display: inline-block; background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800;">
+            PENDING ADMIN REVIEW (24-Hour Verification)
+          </span>
+        </div>
       </div>
 
       <!-- MAIN CTA BUTTON -->
-      <div style="text-align: center; margin: 32px 0;">
-        <a href="${workspaceUrl}" style="display: inline-block; background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); color: #ffffff; padding: 16px 36px; text-decoration: none; border-radius: 14px; font-weight: 900; font-size: 15px; letter-spacing: 0.5px; box-shadow: 0 10px 20px -5px rgba(15, 23, 42, 0.3);">
-          OPEN CREATOR OS WORKSPACE →
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${workspaceUrl}" style="display: block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); color: #ffffff; padding: 14px 20px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-align: center;">
+          OPEN CREATOR OS WORKSPACE &rarr;
         </a>
       </div>
 
       <!-- 3-STEP MOBILIZATION GUIDE CARDS -->
-      <div style="background-color: #EFF6FF; border: 1px solid #BFDBFE; border-left: 5px solid #2563EB; border-radius: 12px; padding: 20px 24px; margin: 28px 0;">
-        <h4 style="margin: 0 0 12px; color: #1E40AF; font-size: 15px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">
+      <div style="background-color: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #2563EB; border-radius: 12px; padding: 16px; margin: 24px 0;">
+        <h4 style="margin: 0 0 10px; color: #1E40AF; font-size: 13.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">
           🚀 Quick-Start Creator Mobilization Guide:
         </h4>
         
-        <table style="width: 100%; border-collapse: collapse;">
-          <tr>
-            <td style="padding: 8px 0; vertical-align: top; width: 28px; font-weight: bold; color: #2563EB;">1.</td>
-            <td style="padding: 8px 0; color: #1E3A8A; font-size: 13.5px; line-height: 1.5;">
-              <strong>Share Your Referral Link:</strong> Direct Class 5-8 students and parents to register via <a href="${referralUrl}" style="color: #2563EB; font-weight: bold;">${referralUrl}</a>.
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; vertical-align: top; width: 28px; font-weight: bold; color: #2563EB;">2.</td>
-            <td style="padding: 8px 0; color: #1E3A8A; font-size: 13.5px; line-height: 1.5;">
-              <strong>Real-Time Analytics Tracking:</strong> View live candidate registrations, conversion rates, and accrued honorarium balances inside your workspace.
-            </td>
-          </tr>
-          <tr>
-            <td style="padding: 8px 0; vertical-align: top; width: 28px; font-weight: bold; color: #2563EB;">3.</td>
-            <td style="padding: 8px 0; color: #1E3A8A; font-size: 13.5px; line-height: 1.5;">
-              <strong>Weekly Monday Settlements:</strong> Accumulated honorarium payouts are automatically disbursed every Monday directly to your registered UPI ID.
-            </td>
-          </tr>
-        </table>
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
+          <strong>1. Share Your Referral Link:</strong><br />
+          Direct Class 5-8 students to register via <a href="${referralUrl}" style="color: #2563EB; font-weight: bold; word-break: break-all;">${referralUrl}</a>.
+        </div>
+
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
+          <strong>2. Real-Time Analytics Tracking:</strong><br />
+          View live candidate registrations and accrued honorarium balances inside your workspace.
+        </div>
+
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55;">
+          <strong>3. Weekly Monday Settlements:</strong><br />
+          Accumulated honorarium payouts are automatically disbursed every Monday directly to your registered UPI ID.
+        </div>
       </div>
 
       <!-- SUPPORT FOOTER -->
-      <p style="font-size: 13px; color: #64748B; margin-top: 28px; line-height: 1.6; text-align: center;">
+      <p style="font-size: 12.5px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
         Have questions or need custom promo banners? Reach out to our Partner Desk at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
       </p>
     </div>
