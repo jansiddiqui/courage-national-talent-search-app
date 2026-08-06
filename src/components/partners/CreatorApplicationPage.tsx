@@ -766,22 +766,13 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
             </div>
 
             <div className="pt-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="w-1/2 sm:w-auto px-5 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-all cursor-pointer text-center"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep(1)}
-                  className="w-1/2 sm:w-auto px-5 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1"
-                >
-                  <ArrowLeft className="w-4 h-4" /> Back
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="w-full sm:w-auto px-6 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </button>
 
               <button
                 type="submit"
@@ -994,22 +985,13 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
             </div>
 
             <div className="pt-6 flex flex-col-reverse sm:flex-row items-center justify-between gap-3 border-t border-slate-100">
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <button
-                  type="button"
-                  onClick={onCancel}
-                  className="w-1/2 sm:w-auto px-5 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-600 font-bold text-xs transition-all cursor-pointer text-center"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setStep(2)}
-                  className="w-1/2 sm:w-auto px-5 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1"
-                >
-                  <ArrowLeft className="w-4 h-4" /> Back
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-full sm:w-auto px-6 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-800 font-bold text-xs transition-all cursor-pointer flex items-center justify-center gap-1.5"
+              >
+                <ArrowLeft className="w-4 h-4" /> Back
+              </button>
 
               <button
                 type="submit"
