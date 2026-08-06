@@ -110,47 +110,47 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
   ];
 
   return (
-    <div className="w-full bg-[#F8FAFF] min-h-screen text-[#0F172A] pb-24 font-sans antialiased">
+    <div className="w-full bg-[#F8FAFF] min-h-screen text-[#0F172A] pb-24 font-sans antialiased overflow-x-hidden">
       
-      {/* 1. LIGHT MESH HERO SECTION */}
-      <section className="relative px-4 pt-28 pb-20 md:pt-36 md:pb-28 overflow-hidden bg-gradient-to-b from-indigo-50/70 via-[#F8FAFF] to-[#F8FAFF] text-slate-900">
+      {/* 1. LIGHT MESH HERO SECTION - MOBILE PERFECT */}
+      <section className="relative px-4 pt-24 pb-16 md:pt-36 md:pb-28 overflow-hidden bg-gradient-to-b from-indigo-50/70 via-[#F8FAFF] to-[#F8FAFF] text-slate-900">
         
         {/* Glow Orbs */}
-        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
-        <div className="absolute top-20 right-10 w-96 h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
+        <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute top-20 right-5 w-64 sm:w-96 h-64 sm:h-96 bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
 
-        <div className="max-w-5xl mx-auto text-center relative z-10">
+        <div className="max-w-5xl mx-auto text-center relative z-10 space-y-6">
           
-          {/* FOUNDING PARTNER PROGRAM URGENCY BADGE */}
-          <div className="inline-flex flex-wrap items-center justify-center gap-2.5 bg-slate-900 text-white px-4 py-2 rounded-full shadow-xl border border-slate-800 mb-8 max-w-3xl mx-auto text-xs md:text-sm">
-            <span className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-0.5 rounded-full font-extrabold text-xs">
-              <Flame className="w-3.5 h-3.5 text-amber-400 animate-bounce" /> Founding Partner Cohort
+          {/* FOUNDING PARTNER PILL - SLEEK LIGHT THEME & MOBILE RESPONSIVE */}
+          <div className="inline-flex items-center justify-between sm:justify-center gap-2 bg-white/90 backdrop-blur-md border border-amber-300/80 shadow-sm px-3.5 py-1.5 rounded-full text-slate-800 text-xs sm:text-sm font-semibold max-w-full overflow-hidden mx-auto">
+            <span className="inline-flex items-center gap-1 text-amber-800 bg-amber-100/90 font-mono font-extrabold px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs shrink-0">
+              <Flame className="w-3.5 h-3.5 text-amber-600 animate-pulse" /> Founding Partner
             </span>
-            <span className="text-slate-300 font-medium hidden sm:inline">
-              First 1,000 partners receive lifetime profile recognition & priority payouts.
+            <span className="text-slate-600 font-medium truncate hidden md:inline text-xs">
+              First 1,000 partners receive lifetime profile recognition
             </span>
-            <span className="font-mono text-emerald-400 font-extrabold bg-emerald-950 px-2.5 py-0.5 rounded-full text-xs border border-emerald-800">
+            <span className="font-mono text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-full text-[10px] sm:text-xs border border-emerald-200 shrink-0">
               384 / 1,000 Claimed
             </span>
             <button 
               onClick={onOpenApply}
               aria-label="Claim Founding Partner status"
-              className="text-amber-300 hover:text-white underline font-bold flex items-center gap-1 ml-1 cursor-pointer"
+              className="text-indigo-600 hover:text-indigo-800 font-extrabold flex items-center gap-0.5 shrink-0 text-xs cursor-pointer ml-1"
             >
-              Claim Status <ArrowRight className="w-3.5 h-3.5 inline" />
+              Claim <ArrowRight className="w-3.5 h-3.5 inline" />
             </button>
           </div>
 
           {/* Institutional Sub-Badge */}
-          <div className="flex items-center justify-center gap-2 mb-6">
-            <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-xs px-4 py-1.5 rounded-full text-slate-700 text-xs md:text-sm font-semibold">
+          <div className="flex items-center justify-center">
+            <div className="inline-flex items-center gap-2 bg-white/90 backdrop-blur-md border border-slate-200/80 shadow-xs px-3.5 py-1.5 rounded-full text-slate-700 text-xs font-semibold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
               Official Creator & Partner Ecosystem of Courage Library
             </div>
           </div>
 
           {/* Main Editorial Headline */}
-          <h1 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-[1.08] mb-6">
+          <h1 className="font-display text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-slate-900 leading-[1.12]">
             Mobilize Students for <br className="hidden sm:block" />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 via-indigo-600 to-amber-600">
               Courage Talent Search 2026.
@@ -158,85 +158,85 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
           </h1>
 
           {/* Subtitle / Mission Statement */}
-          <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-slate-600 font-normal leading-relaxed mb-10">
+          <p className="max-w-3xl mx-auto text-sm sm:text-lg md:text-xl text-slate-600 font-normal leading-relaxed px-2">
             The central ecosystem where creators, teachers, school leads, NGOs, and community leaders collaborate with Courage Library to identify, benchmark, and empower 100,000+ Class 5–8 young talents through national recognition in CNTS 2026.
           </p>
 
-          {/* Primary Action Buttons */}
+          {/* Primary Action Buttons - Full Width on Mobile */}
           {isRegisteredPartner ? (
-            <div className="flex items-center justify-center pt-2 mb-16">
+            <div className="flex items-center justify-center pt-2 pb-6">
               <button
                 onClick={onViewDemoWorkspace}
-                className="text-base sm:text-lg px-10 py-4.5 shadow-2xl flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white cursor-pointer font-extrabold rounded-2xl transition-all hover:scale-105"
+                className="w-full sm:w-auto text-base sm:text-lg px-8 py-4 shadow-xl flex items-center justify-center gap-3 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white cursor-pointer font-extrabold rounded-2xl transition-all hover:scale-105"
               >
                 <Sparkles className="w-5 h-5 text-amber-300" /> Go to Partner Workspace <ArrowRight className="w-5 h-5" />
               </button>
             </div>
           ) : (
-            <div className="flex flex-wrap items-center justify-center gap-4 pt-2 mb-16">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 pb-6">
               <button
                 onClick={onOpenApply}
-                className="text-base px-8 py-4 shadow-xl hover:shadow-2xl flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-extrabold rounded-2xl transition-all hover:scale-105 cursor-pointer"
+                className="w-full sm:w-auto text-base px-7 py-3.5 shadow-lg hover:shadow-xl flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white font-extrabold rounded-2xl transition-all hover:scale-105 cursor-pointer"
               >
                 Apply to Become a Partner <ArrowRight className="w-5 h-5" />
               </button>
               
               <button
                 onClick={() => router.push('/login?tab=partner')}
-                className="text-base px-7 py-4 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-2xl flex items-center gap-2 cursor-pointer transition-all shadow-xs"
+                className="w-full sm:w-auto text-base px-6 py-3.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-bold rounded-2xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
               >
                 Partner Login <Sparkles className="w-4 h-4 text-amber-500" />
               </button>
               
               <button
                 onClick={onExploreMissions}
-                className="w-full sm:w-auto text-base px-8 py-4 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-2xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
+                className="w-full sm:w-auto text-base px-6 py-3.5 border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 font-semibold rounded-2xl flex items-center justify-center gap-2 cursor-pointer transition-all shadow-xs"
               >
                 <Compass className="w-5 h-5 text-indigo-600" />
-                Explore Active Missions
+                Explore Missions
               </button>
             </div>
           )}
 
-          {/* Value Pillars Line */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto text-left pt-6 border-t border-slate-200">
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
-              <div className="p-2.5 rounded-xl bg-indigo-50 text-indigo-700 shrink-0">
-                <ShieldCheck className="w-5 h-5" />
+          {/* Value Pillars Grid - Responsive 2x2 on Mobile */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 max-w-4xl mx-auto text-left pt-6 border-t border-slate-200">
+            <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
+              <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700 shrink-0">
+                <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-slate-900">Mission First</h4>
-                <p className="text-xs text-slate-500">Educational impact priority</p>
+                <h4 className="font-bold text-xs sm:text-sm text-slate-900">Mission First</h4>
+                <p className="text-[10.5px] sm:text-xs text-slate-500">Educational impact priority</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
-              <div className="p-2.5 rounded-xl bg-emerald-50 text-emerald-700 shrink-0">
-                <Users className="w-5 h-5" />
+            <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
+              <div className="p-2 rounded-xl bg-emerald-50 text-emerald-700 shrink-0">
+                <Users className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-slate-900">Community</h4>
-                <p className="text-xs text-slate-500">Trusted educator network</p>
+                <h4 className="font-bold text-xs sm:text-sm text-slate-900">Community</h4>
+                <p className="text-[10.5px] sm:text-xs text-slate-500">Trusted educator network</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
-              <div className="p-2.5 rounded-xl bg-amber-50 text-amber-700 shrink-0">
-                <TrendingUp className="w-5 h-5" />
+            <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
+              <div className="p-2 rounded-xl bg-amber-50 text-amber-700 shrink-0">
+                <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-slate-900">Growth & Reach</h4>
-                <p className="text-xs text-slate-500">Skills & certifications</p>
+                <h4 className="font-bold text-xs sm:text-sm text-slate-900">Growth & Reach</h4>
+                <p className="text-[10.5px] sm:text-xs text-slate-500">Skills & certifications</p>
               </div>
             </div>
 
-            <div className="flex items-start gap-3 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
-              <div className="p-2.5 rounded-xl bg-blue-50 text-blue-700 shrink-0">
-                <Award className="w-5 h-5" />
+            <div className="flex items-start gap-2.5 p-3 rounded-2xl bg-white border border-slate-200/80 shadow-xs hover:shadow-md transition-all">
+              <div className="p-2 rounded-xl bg-blue-50 text-blue-700 shrink-0">
+                <Award className="w-4 h-4 sm:w-5 sm:h-5" />
               </div>
               <div>
-                <h4 className="font-bold text-sm text-slate-900">Honorarium</h4>
-                <p className="text-xs text-slate-500">Weekly Monday settlements</p>
+                <h4 className="font-bold text-xs sm:text-sm text-slate-900">Honorarium</h4>
+                <p className="text-[10.5px] sm:text-xs text-slate-500">Weekly Monday settlements</p>
               </div>
             </div>
           </div>
@@ -244,22 +244,22 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
       </section>
 
       {/* 2. INTERACTIVE SAAS TOOLING PREVIEW SHOWCASE */}
-      <section className="py-20 px-4 bg-white border-b border-slate-200">
-        <div className="max-w-6xl mx-auto space-y-12">
-          <div className="text-center max-w-3xl mx-auto space-y-3">
+      <section className="py-16 sm:py-20 px-4 bg-white border-b border-slate-200">
+        <div className="max-w-6xl mx-auto space-y-10">
+          <div className="text-center max-w-3xl mx-auto space-y-2.5">
             <span className="text-indigo-700 font-extrabold text-xs uppercase tracking-widest bg-indigo-50 px-3.5 py-1 rounded-full font-mono">
               Full SaaS Platform Infrastructure
             </span>
-            <h2 className="font-display text-3xl md:text-4xl font-black text-slate-900">
+            <h2 className="font-display text-2xl sm:text-4xl font-black text-slate-900">
               Everything You Need to Scale Educational Reach
             </h2>
-            <p className="text-slate-600 text-base md:text-lg">
+            <p className="text-slate-600 text-sm sm:text-base md:text-lg">
               Courage Partner provides dedicated enterprise tooling designed for educators, creators, and leaders.
             </p>
           </div>
 
           {/* Interactive SaaS Tooling Tabs */}
-          <div className="flex flex-wrap justify-center gap-2 max-w-3xl mx-auto bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
+          <div className="flex flex-wrap justify-center gap-1.5 max-w-3xl mx-auto bg-slate-100 p-1.5 rounded-2xl border border-slate-200">
             {[
               { id: 'copilot', label: 'AI Content Copilot', icon: Wand2 },
               { id: 'marketplace', label: 'Active Missions', icon: Compass },
@@ -271,13 +271,13 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
                 <button
                   key={tab.id}
                   onClick={() => setPreviewTab(tab.id as any)}
-                  className={`py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 ${
+                  className={`py-2 px-3 sm:py-2.5 sm:px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
                     previewTab === tab.id
                       ? 'bg-white text-indigo-700 shadow-md font-extrabold'
                       : 'text-slate-600 hover:text-slate-900 hover:bg-slate-200/60'
                   }`}
                 >
-                  <TabIcon size={15} />
+                  <TabIcon size={14} />
                   <span>{tab.label}</span>
                 </button>
               );
@@ -285,15 +285,15 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
           </div>
 
           {/* SaaS Interface Live Interactive Mockup Card */}
-          <div className="max-w-4xl mx-auto bg-slate-950 rounded-3xl p-6 sm:p-8 text-white shadow-2xl border border-slate-800 space-y-6 relative overflow-hidden">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+          <div className="max-w-4xl mx-auto bg-slate-950 rounded-3xl p-5 sm:p-8 text-white shadow-2xl border border-slate-800 space-y-5 relative overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-500" />
-                <div className="w-3 h-3 rounded-full bg-amber-500" />
-                <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span className="text-xs font-mono font-bold text-slate-400 ml-2">courage-partner-os.app / {previewTab}</span>
+                <div className="w-2.5 h-2.5 rounded-full bg-rose-500" />
+                <div className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500" />
+                <span className="text-[11px] font-mono font-bold text-slate-400 ml-1 hidden sm:inline">courage-partner-os.app / {previewTab}</span>
               </div>
-              <span className="text-[10.5px] font-mono font-extrabold text-emerald-400 bg-emerald-950 px-2.5 py-0.5 rounded-full border border-emerald-800">
+              <span className="text-[10px] font-mono font-extrabold text-emerald-400 bg-emerald-950 px-2 py-0.5 rounded-full border border-emerald-800">
                 LIVE DEMO WORKSPACE
               </span>
             </div>
@@ -303,23 +303,23 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
               <div className="space-y-4 animate-fade-in">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Bot className="w-5 h-5 text-indigo-400" />
-                    <h3 className="font-bold text-sm text-slate-200">AI Broadcast Copilot (Multilingual Indian English/Hindi)</h3>
+                    <Bot className="w-4 h-4 text-indigo-400" />
+                    <h3 className="font-bold text-xs sm:text-sm text-slate-200">AI Broadcast Copilot</h3>
                   </div>
-                  <span className="text-xs text-indigo-400 font-mono font-semibold">Generating Post...</span>
+                  <span className="text-[10px] sm:text-xs text-indigo-400 font-mono font-semibold">Generating Post...</span>
                 </div>
-                <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-3 font-sans text-xs">
-                  <p className="text-slate-300 leading-relaxed">
+                <div className="bg-slate-900 p-3.5 sm:p-4 rounded-2xl border border-slate-800 space-y-3 font-sans text-xs">
+                  <p className="text-slate-300 leading-relaxed text-[11px] sm:text-xs">
                     "📢 <strong className="text-white">Attention Class 5 to 8 Parents & Teachers!</strong> Courage National Talent Search (CNTS) 2026 registrations are now open. Empower your child with national percentile benchmarking & merit certificates."
                   </p>
-                  <div className="pt-2 flex items-center justify-between border-t border-slate-800 text-[11px] font-mono text-slate-400">
-                    <span>Referral Link Embedded: cnts.in/r/CNTSJN</span>
+                  <div className="pt-2 flex items-center justify-between border-t border-slate-800 text-[10px] sm:text-[11px] font-mono text-slate-400">
+                    <span className="truncate max-w-[180px] sm:max-w-none">Ref: cnts.in/r/CNTSJN</span>
                     <button
                       onClick={() => {
                         setCopiedLink(true);
                         setTimeout(() => setCopiedLink(false), 2000);
                       }}
-                      className="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg cursor-pointer flex items-center gap-1"
+                      className="px-2.5 py-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-lg cursor-pointer flex items-center gap-1 shrink-0"
                     >
                       {copiedLink ? <Check size={12} /> : <Copy size={12} />}
                       {copiedLink ? 'Copied' : 'Copy Broadcast'}
@@ -333,21 +333,21 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             {previewTab === 'marketplace' && (
               <div className="space-y-4 animate-fade-in">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-slate-200 flex items-center gap-2">
-                    <Compass className="w-4 h-4 text-emerald-400" /> Active National Campaign Missions
+                  <h3 className="font-bold text-xs sm:text-sm text-slate-200 flex items-center gap-2">
+                    <Compass className="w-4 h-4 text-emerald-400" /> Active Campaign Missions
                   </h3>
-                  <span className="text-xs text-emerald-400 font-mono font-bold">2 Active Missions</span>
+                  <span className="text-[10px] text-emerald-400 font-mono font-bold">2 Active Missions</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
-                    <span className="text-[10px] uppercase font-mono font-bold text-amber-400 block">Mission #1 • CNTS 2026 Mobilization</span>
-                    <h4 className="font-bold text-xs text-white">Class 5–8 Student Onboarding Drive</h4>
-                    <p className="text-[11px] text-slate-400">Earn ₹25–₹65 per verified student registration.</p>
+                  <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 space-y-1.5">
+                    <span className="text-[9.5px] uppercase font-mono font-bold text-amber-400 block">Mission #1 • CNTS 2026</span>
+                    <h4 className="font-bold text-xs text-white">Class 5–8 Mobilization Drive</h4>
+                    <p className="text-[10.5px] text-slate-400">Earn ₹25–₹65 per verified student registration.</p>
                   </div>
-                  <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 space-y-2">
-                    <span className="text-[10px] uppercase font-mono font-bold text-indigo-400 block">Mission #2 • School Alliances</span>
-                    <h4 className="font-bold text-xs text-white">Institutional School Partnership Campaign</h4>
-                    <p className="text-[11px] text-slate-400">Connect schools for school-wide assessment drives.</p>
+                  <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 space-y-1.5">
+                    <span className="text-[9.5px] uppercase font-mono font-bold text-indigo-400 block">Mission #2 • School Alliances</span>
+                    <h4 className="font-bold text-xs text-white">School Partnership Campaign</h4>
+                    <p className="text-[10.5px] text-slate-400">Connect schools for school-wide assessment drives.</p>
                   </div>
                 </div>
               </div>
@@ -357,22 +357,22 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             {previewTab === 'analytics' && (
               <div className="space-y-4 animate-fade-in">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-slate-200 flex items-center gap-2">
-                    <BarChart3 className="w-4 h-4 text-indigo-400" /> Real-Time Referral Analytics Dashboard
+                  <h3 className="font-bold text-xs sm:text-sm text-slate-200 flex items-center gap-2">
+                    <BarChart3 className="w-4 h-4 text-indigo-400" /> Real-Time Analytics Dashboard
                   </h3>
                 </div>
-                <div className="grid grid-cols-3 gap-3 text-center">
-                  <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Referral Code</span>
-                    <span className="font-mono text-lg font-black text-indigo-400 block">CNTSJN</span>
+                <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
+                  <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                    <span className="text-[9.5px] text-slate-400 uppercase font-bold block">Referral Code</span>
+                    <span className="font-mono text-sm sm:text-lg font-black text-indigo-400 block">CNTSJN</span>
                   </div>
-                  <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Mobilized Students</span>
-                    <span className="font-mono text-lg font-black text-emerald-400 block">124</span>
+                  <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                    <span className="text-[9.5px] text-slate-400 uppercase font-bold block">Mobilized</span>
+                    <span className="font-mono text-sm sm:text-lg font-black text-emerald-400 block">124</span>
                   </div>
-                  <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800">
-                    <span className="text-[10px] text-slate-400 uppercase font-bold block">Calculated Honorarium</span>
-                    <span className="font-mono text-lg font-black text-amber-400 block">₹4,960</span>
+                  <div className="bg-slate-900 p-3 rounded-2xl border border-slate-800">
+                    <span className="text-[9.5px] text-slate-400 uppercase font-bold block">Honorarium</span>
+                    <span className="font-mono text-sm sm:text-lg font-black text-amber-400 block">₹4,960</span>
                   </div>
                 </div>
               </div>
@@ -382,18 +382,18 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             {previewTab === 'settlements' && (
               <div className="space-y-4 animate-fade-in">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-bold text-sm text-slate-200 flex items-center gap-2">
-                    <CreditCard className="w-4 h-4 text-emerald-400" /> Weekly Payout Settlement Log
+                  <h3 className="font-bold text-xs sm:text-sm text-slate-200 flex items-center gap-2">
+                    <CreditCard className="w-4 h-4 text-emerald-400" /> Weekly Settlement Log
                   </h3>
                 </div>
-                <div className="bg-slate-900 p-4 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
+                <div className="bg-slate-900 p-3.5 rounded-2xl border border-slate-800 flex items-center justify-between text-xs">
                   <div>
                     <span className="font-bold text-white block">UPI Settlement • rahul@upi</span>
-                    <span className="text-[11px] text-slate-400 font-mono">UTR: UTR-9876543210</span>
+                    <span className="text-[10px] text-slate-400 font-mono">UTR: UTR-9876543210</span>
                   </div>
                   <div className="text-right">
-                    <span className="font-mono font-black text-emerald-400 text-sm block">₹4,960 SETTLED</span>
-                    <span className="text-[10px] text-slate-500 font-semibold">Monday Settlement Batch</span>
+                    <span className="font-mono font-black text-emerald-400 text-xs sm:text-sm block">₹4,960 SETTLED</span>
+                    <span className="text-[9.5px] text-slate-500 font-semibold">Monday Batch</span>
                   </div>
                 </div>
               </div>
@@ -404,11 +404,11 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
 
       {/* 3. INTERACTIVE HONORARIUM & EARNINGS CALCULATOR WIDGET */}
       <section className="py-16 px-4 bg-white border-b border-slate-200">
-        <div className="max-w-4xl mx-auto bg-gradient-to-br from-slate-900 to-indigo-950 rounded-3xl p-6 sm:p-10 text-white shadow-2xl border border-slate-800 relative overflow-hidden">
+        <div className="max-w-4xl mx-auto bg-gradient-to-br from-slate-900 to-indigo-950 rounded-3xl p-5 sm:p-10 text-white shadow-2xl border border-slate-800 relative overflow-hidden">
           
           <div className="absolute -right-10 -bottom-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
-          <div className="text-center space-y-3 mb-8">
+          <div className="text-center space-y-2.5 mb-8">
             <span className="inline-flex items-center gap-1.5 text-xs font-mono font-extrabold text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full uppercase tracking-wider">
               <Zap className="w-3.5 h-3.5 text-amber-400" /> Interactive Partner Calculator
             </span>
@@ -420,10 +420,10 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             </p>
           </div>
 
-          <div className="space-y-6 max-w-2xl mx-auto bg-slate-900/90 p-6 rounded-2xl border border-slate-800">
+          <div className="space-y-5 max-w-2xl mx-auto bg-slate-900/90 p-5 sm:p-6 rounded-2xl border border-slate-800">
             <div className="flex items-center justify-between">
               <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Mobilized Students:</span>
-              <span className="font-mono text-2xl font-black text-amber-300">{calcStudents} Candidates</span>
+              <span className="font-mono text-xl sm:text-2xl font-black text-amber-300">{calcStudents} Candidates</span>
             </div>
 
             {/* Slider */}
@@ -437,7 +437,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
               className="w-full h-3 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-emerald-400"
             />
 
-            <div className="flex items-center justify-between text-[11px] font-mono text-slate-400 font-bold">
+            <div className="flex items-center justify-between text-[10px] sm:text-[11px] font-mono text-slate-400 font-bold">
               <span>10 Candidates</span>
               <span>100 Candidates</span>
               <span>250 Candidates</span>
@@ -446,28 +446,28 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
 
             {/* Calculator Result Box */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2">
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Current Tier</span>
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
+                <span className="text-[9.5px] text-slate-400 uppercase font-bold block">Current Tier</span>
                 <span className={`text-xs font-black font-mono px-2 py-0.5 rounded border inline-block ${currentTierInfo.color}`}>
                   {currentTierInfo.tier}
                 </span>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Honorarium Rate</span>
-                <span className="font-mono text-xl font-black text-emerald-400 block">₹{currentTierInfo.rate} / Student</span>
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-center space-y-1">
+                <span className="text-[9.5px] text-slate-400 uppercase font-bold block">Honorarium Rate</span>
+                <span className="font-mono text-lg sm:text-xl font-black text-emerald-400 block">₹{currentTierInfo.rate} / Student</span>
               </div>
 
-              <div className="p-4 rounded-xl bg-slate-950 border border-emerald-500/30 text-center space-y-1 bg-emerald-950/20">
-                <span className="text-[10px] text-emerald-400 uppercase font-bold block">Est. Payout</span>
-                <span className="font-mono text-2xl font-black text-emerald-300 block">₹{estimatedEarnings.toLocaleString('en-IN')}</span>
+              <div className="p-3.5 rounded-xl bg-slate-950 border border-emerald-500/30 text-center space-y-1 bg-emerald-950/20">
+                <span className="text-[9.5px] text-emerald-400 uppercase font-bold block">Est. Payout</span>
+                <span className="font-mono text-xl sm:text-2xl font-black text-emerald-300 block">₹{estimatedEarnings.toLocaleString('en-IN')}</span>
               </div>
             </div>
 
             <div className="text-center pt-2">
               <button
                 onClick={onOpenApply}
-                className="py-3 px-8 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl shadow-lg cursor-pointer transition-all hover:scale-105 inline-flex items-center gap-2"
+                className="w-full sm:w-auto py-3 px-8 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl shadow-lg cursor-pointer transition-all hover:scale-105 inline-flex items-center justify-center gap-2"
               >
                 Claim Your Referral Code <ArrowRight className="w-4 h-4" />
               </button>
@@ -477,21 +477,21 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
       </section>
 
       {/* 4. WHO IS A COURAGE PARTNER (PERSONA GRID) */}
-      <section className="py-20 px-4 bg-[#F8FAFF]">
-        <div className="max-w-6xl mx-auto space-y-12">
-          <div className="text-center max-w-3xl mx-auto space-y-3">
+      <section className="py-16 sm:py-20 px-4 bg-[#F8FAFF]">
+        <div className="max-w-6xl mx-auto space-y-10">
+          <div className="text-center max-w-3xl mx-auto space-y-2.5">
             <span className="text-emerald-700 font-bold text-xs uppercase tracking-widest bg-emerald-50 px-3.5 py-1 rounded-full font-mono">
               Universal Ecosystem
             </span>
-            <h2 className="font-display text-3xl md:text-4xl font-black text-slate-900">
+            <h2 className="font-display text-2xl sm:text-4xl font-black text-slate-900">
               Who is a Courage Partner?
             </h2>
-            <p className="text-slate-600 text-base md:text-lg">
+            <p className="text-slate-600 text-sm sm:text-base md:text-lg">
               Designed for every educator, creator, or leader dedicated to empowering young talent across India.
             </p>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
             {[
               { title: 'YouTube Creators', icon: Video, color: 'text-red-600 bg-red-50' },
               { title: 'LinkedIn Voices', icon: Share2, color: 'text-blue-600 bg-blue-50' },
@@ -500,11 +500,11 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
               { title: 'Telegram Admins', icon: MessageSquare, color: 'text-sky-600 bg-sky-50' },
               { title: 'WhatsApp Leads', icon: MessageSquare, color: 'text-emerald-600 bg-emerald-50' },
               { title: 'Educational NGOs', icon: HeartHandshake, color: 'text-pink-600 bg-pink-50' },
-              { title: 'Campus Ambassadors', icon: Users, color: 'text-amber-600 bg-amber-50' },
+              { title: 'Campus Leads', icon: Users, color: 'text-amber-600 bg-amber-50' },
               { title: 'Instagram Creators', icon: Video, color: 'text-fuchsia-600 bg-fuchsia-50' },
-              { title: 'Bloggers & Newsletters', icon: FileText, color: 'text-slate-600 bg-slate-100' },
+              { title: 'Bloggers & Editors', icon: FileText, color: 'text-slate-600 bg-slate-100' },
               { title: 'Discord Leaders', icon: MessageSquare, color: 'text-indigo-600 bg-indigo-50' },
-              { title: 'Coaching Institutes', icon: BookOpen, color: 'text-teal-600 bg-teal-50' },
+              { title: 'Coaching Leads', icon: BookOpen, color: 'text-teal-600 bg-teal-50' },
               { title: 'Career Mentors', icon: Award, color: 'text-amber-600 bg-amber-50' },
               { title: 'Parent Communities', icon: Users, color: 'text-rose-600 bg-rose-50' },
               { title: 'Public Speakers', icon: Globe, color: 'text-violet-600 bg-violet-50' },
@@ -513,12 +513,12 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
               return (
                 <div 
                   key={idx}
-                  className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center text-center group"
+                  className="bg-white p-3.5 sm:p-4 rounded-2xl border border-slate-200/80 shadow-xs hover:shadow-md hover:-translate-y-0.5 transition-all flex flex-col items-center text-center group"
                 >
-                  <div className={`w-10 h-10 rounded-xl ${persona.color} flex items-center justify-center mb-3 group-hover:scale-110 transition-transform`}>
-                    <IconComp className="w-5 h-5" />
+                  <div className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${persona.color} flex items-center justify-center mb-2.5 group-hover:scale-110 transition-transform`}>
+                    <IconComp className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
-                  <span className="font-bold text-xs text-slate-800">
+                  <span className="font-bold text-[11px] sm:text-xs text-slate-800">
                     {persona.title}
                   </span>
                 </div>
@@ -543,50 +543,50 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-              <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-emerald-400 font-mono">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+              <div className="font-display text-2xl sm:text-4xl lg:text-5xl font-black text-emerald-400 font-mono">
                 100,000+
               </div>
-              <span className="text-xs text-slate-300 font-bold block">Target Student Aspirants</span>
-              <span className="text-[10px] text-slate-500 font-semibold block">Class 5–8 PAN-India</span>
+              <span className="text-[11px] sm:text-xs text-slate-300 font-bold block">Target Student Aspirants</span>
+              <span className="text-[9.5px] sm:text-[10px] text-slate-500 font-semibold block">Class 5–8 PAN-India</span>
             </div>
 
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-              <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-amber-400 font-mono">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+              <div className="font-display text-2xl sm:text-4xl lg:text-5xl font-black text-amber-400 font-mono">
                 1,000
               </div>
-              <span className="text-xs text-slate-300 font-bold block">Founding Partner Cap</span>
-              <span className="text-[10px] text-slate-500 font-semibold block">Inaugural Creator Cohort</span>
+              <span className="text-[11px] sm:text-xs text-slate-300 font-bold block">Founding Partner Cap</span>
+              <span className="text-[9.5px] sm:text-[10px] text-slate-500 font-semibold block">Inaugural Creator Cohort</span>
             </div>
 
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-              <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-blue-400 font-mono">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+              <div className="font-display text-2xl sm:text-4xl lg:text-5xl font-black text-blue-400 font-mono">
                 100%
               </div>
-              <span className="text-xs text-slate-300 font-bold block">Merit & Aptitude Reports</span>
-              <span className="text-[10px] text-slate-500 font-semibold block">National Percentile Benchmarks</span>
+              <span className="text-[11px] sm:text-xs text-slate-300 font-bold block">Merit & Aptitude Reports</span>
+              <span className="text-[9.5px] sm:text-[10px] text-slate-500 font-semibold block">National Percentile Benchmarks</span>
             </div>
 
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-              <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-indigo-400 font-mono">
+            <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
+              <div className="font-display text-2xl sm:text-4xl lg:text-5xl font-black text-indigo-400 font-mono">
                 500+
               </div>
-              <span className="text-xs text-slate-300 font-bold block">Target School Outreaches</span>
-              <span className="text-[10px] text-slate-500 font-semibold block">Institutional Alliance Goal</span>
+              <span className="text-[11px] sm:text-xs text-slate-300 font-bold block">Target School Outreaches</span>
+              <span className="text-[9.5px] sm:text-[10px] text-slate-500 font-semibold block">Institutional Alliance Goal</span>
             </div>
           </div>
         </div>
       </section>
 
       {/* 6. FREQUENTLY ASKED QUESTIONS (FAQ ACCORDION) */}
-      <section className="py-20 px-4 bg-white">
+      <section className="py-16 sm:py-20 px-4 bg-white">
         <div className="max-w-4xl mx-auto space-y-8">
           <div className="text-center space-y-2">
             <span className="text-indigo-700 font-bold text-xs uppercase tracking-widest bg-indigo-50 px-3.5 py-1 rounded-full font-mono">
               Partner FAQs
             </span>
-            <h2 className="font-display text-3xl font-black text-slate-900">
+            <h2 className="font-display text-2xl sm:text-3xl font-black text-slate-900">
               Frequently Asked Questions
             </h2>
           </div>
@@ -601,7 +601,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
                 >
                   <button
                     onClick={() => setOpenFaqIndex(isOpen ? null : idx)}
-                    className="w-full p-5 text-left font-bold text-sm text-slate-900 flex items-center justify-between gap-4 cursor-pointer hover:bg-slate-100/80 transition-colors"
+                    className="w-full p-4 sm:p-5 text-left font-bold text-xs sm:text-sm text-slate-900 flex items-center justify-between gap-3 cursor-pointer hover:bg-slate-100/80 transition-colors"
                   >
                     <span>{faq.q}</span>
                     <span className="p-1 rounded-lg bg-white border border-slate-200 text-slate-500 shrink-0">
@@ -609,7 +609,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
                     </span>
                   </button>
                   {isOpen && (
-                    <div className="p-5 pt-0 text-xs text-slate-600 leading-relaxed border-t border-slate-200/60 bg-white">
+                    <div className="p-4 sm:p-5 pt-0 text-xs text-slate-600 leading-relaxed border-t border-slate-200/60 bg-white">
                       {faq.a}
                     </div>
                   )}
@@ -621,35 +621,35 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
       </section>
 
       {/* 7. CALL TO ACTION FOOTER */}
-      <section className="py-20 px-4 text-center">
-        <div className="max-w-3xl mx-auto bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-8 sm:p-12 rounded-3xl text-white shadow-2xl border border-slate-800">
-          <h2 className="font-display text-3xl md:text-4xl font-black mb-4">
+      <section className="py-16 sm:py-20 px-4 text-center">
+        <div className="max-w-3xl mx-auto bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 p-6 sm:p-12 rounded-3xl text-white shadow-2xl border border-slate-800">
+          <h2 className="font-display text-2xl sm:text-4xl font-black mb-3">
             Ready to Join the National Educational Movement?
           </h2>
-          <p className="text-slate-300 text-base md:text-lg mb-8">
+          <p className="text-slate-300 text-xs sm:text-base md:text-lg mb-6">
             Applications are reviewed individually within 24 hours. Join our Founding Partner Cohort and shape the inaugural edition of CNTS 2026.
           </p>
           {isRegisteredPartner ? (
             <button
               onClick={onViewDemoWorkspace}
-              className="text-base px-9 py-4 shadow-xl flex items-center gap-2.5 bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer font-extrabold rounded-2xl mx-auto"
+              className="text-sm sm:text-base px-8 py-3.5 shadow-xl flex items-center gap-2.5 bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer font-extrabold rounded-2xl mx-auto"
             >
               <Sparkles className="w-5 h-5 text-amber-300" /> Go to Partner Workspace <ArrowRight className="w-5 h-5" />
             </button>
           ) : (
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
               <button
                 onClick={onOpenApply}
-                className="w-full sm:w-auto text-base px-8 py-4 shadow-lg hover:shadow-xl cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2"
+                className="w-full sm:w-auto text-sm sm:text-base px-7 py-3.5 shadow-lg hover:shadow-xl cursor-pointer bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2"
               >
                 <HeartHandshake className="w-5 h-5" />
                 Apply to Become a Courage Partner
               </button>
               <button
                 onClick={() => router.push('/login?tab=partner')}
-                className="w-full sm:w-auto text-base px-8 py-4 cursor-pointer font-bold text-white border border-white/20 bg-white/10 hover:bg-white/20 rounded-2xl"
+                className="w-full sm:w-auto text-sm sm:text-base px-7 py-3.5 cursor-pointer font-bold text-white border border-white/20 bg-white/10 hover:bg-white/20 rounded-2xl"
               >
-                Login to Account
+                Partner Login
               </button>
             </div>
           )}
