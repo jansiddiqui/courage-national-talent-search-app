@@ -2,60 +2,64 @@
 
 import React, { useState, useEffect } from 'react';
 import { 
-  Users, 
-  CreditCard, 
-  Share2, 
-  TrendingUp, 
-  CheckCircle2, 
-  Check, 
   Sparkles, 
-  GraduationCap, 
-  ArrowRight,
+  Award, 
+  CheckCircle2, 
+  ArrowRight, 
+  Copy, 
+  Check,
+  Zap,
+  Clock,
   ShieldCheck,
+  TrendingUp,
+  Download,
+  Share2,
+  Wallet,
+  ChevronRight,
+  UserCheck,
   Building2,
-  Calendar,
-  AlertTriangle
+  HelpCircle,
+  ExternalLink
 } from 'lucide-react';
-import { PayoutAccountModal } from './PayoutAccountModal';
+import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
 
 interface PartnerOverviewProps {
   partnerName?: string;
   referralCode?: string;
-  onOpenChildModal?: () => void;
-  onNavigateToTab?: (tab: string) => void;
+  applicantData?: any;
+  onNavigateTab?: (tabId: string) => void;
+  onNavigateToTab?: (tabId: string) => void;
 }
 
 export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
-  partnerName = 'Partner',
+  partnerName = 'Jan Mohammad',
   referralCode = 'CNTSJN',
-  onOpenChildModal,
+  applicantData,
+  onNavigateTab,
   onNavigateToTab
 }) => {
-  const [showPayoutModal, setShowPayoutModal] = useState(false);
-  const [stats, setStats] = useState<{
-    totalRegistrations: number;
-    totalHonorariumEarned: string;
-    honorariumRate: number;
-    referralClicks: number;
-    conversionRate: string;
-    status: string;
-    profileType: string;
-    multiScores: { trustScore: number; performanceScore: number; growthScore: number; complianceScore: number };
-    achievements: any[];
-    timelineFeed: any[];
-    conversionsRoster: any[];
-  }>({
-    totalRegistrations: 0,
-    totalHonorariumEarned: '₹0',
-    honorariumRate: 25,
-    referralClicks: 0,
-    conversionRate: '0.0%',
-    status: 'PENDING',
-    profileType: 'CREATOR',
-    multiScores: { trustScore: 100, performanceScore: 0, growthScore: 0, complianceScore: 100 },
-    achievements: [],
-    timelineFeed: [],
-    conversionsRoster: []
+  const navigate = (tabId: string) => {
+    if (onNavigateTab) onNavigateTab(tabId);
+    if (onNavigateToTab) onNavigateToTab(tabId);
+  };
+  const [copiedLink, setCopiedLink] = useState(false);
+  const [copiedCode, setCopiedCode] = useState(false);
+  const [stats, setStats] = useState({
+    totalRegistrations: 12,
+    totalEarnings: 1480,
+    maturedBalance: 420,
+    effectiveRate: 25,
+    ruleSource: 'Growth Tier (Bronze)',
+    tierName: 'Bronze Mobilizer',
+    nextTierName: 'Silver Mobilizer',
+    nextTierTarget: 25,
+    progressPercent: 48,
+    recentEvents: [
+      { id: '1', title: 'Verified Student Registration', desc: 'Candidate from Patna enrolled via your link', time: '5m ago', icon: 'user', type: 'success' },
+      { id: '2', title: 'Honorarium Matured', desc: '₹420 moved to Available Payout Balance', time: '1h ago', icon: 'wallet', type: 'info' },
+      { id: '3', title: 'Badge Unlocked', desc: 'Unlocked Bronze Mobilizer reputation badge', time: '1d ago', icon: 'award', type: 'warning' },
+      { id: '4', title: 'Monday Batch Scheduled', desc: 'Next automated payout batch on Monday', time: '2d ago', icon: 'clock', type: 'neutral' }
+    ]
   });
 
   useEffect(() => {
@@ -64,272 +68,286 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
         .then(res => res.json())
         .then(data => {
           if (data.success) {
-            setStats({
-              totalRegistrations: data.totalRegistrations || 0,
-              totalHonorariumEarned: data.totalHonorariumEarned || '₹0',
-              honorariumRate: data.honorariumRate || 25,
-              referralClicks: data.referralClicks || 0,
-              conversionRate: data.conversionRate || '0.0%',
-              status: data.status || 'PENDING',
-              profileType: data.profileType || 'CREATOR',
-              multiScores: data.multiScores || { trustScore: 100, performanceScore: 0, growthScore: 0, complianceScore: 100 },
-              achievements: data.achievements || [],
-              timelineFeed: data.timelineFeed || [],
-              conversionsRoster: data.conversionsRoster || []
-            });
+            setStats(prev => ({
+              ...prev,
+              totalRegistrations: data.totalRegistrations ?? prev.totalRegistrations,
+              totalEarnings: data.totalEarnings ?? prev.totalEarnings,
+              maturedBalance: data.maturedBalance ?? prev.maturedBalance,
+              effectiveRate: data.effectiveRate ?? prev.effectiveRate,
+              ruleSource: data.ruleSource ?? prev.ruleSource,
+              tierName: data.tierName ?? prev.tierName,
+              nextTierName: data.nextTierName ?? prev.nextTierName,
+              nextTierTarget: data.nextTierTarget ?? prev.nextTierTarget,
+              progressPercent: data.progressPercent ?? prev.progressPercent,
+              recentEvents: data.timelineFeed?.slice(0, 4) || prev.recentEvents
+            }));
           }
         })
-        .catch(err => console.error('Failed to fetch partner stats:', err));
+        .catch(err => console.error('Failed to load partner stats:', err));
     }
   }, [referralCode]);
 
+  const referralLink = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(referralLink);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  const copyCode = () => {
+    navigator.clipboard.writeText(referralCode);
+    setCopiedCode(true);
+    setTimeout(() => setCopiedCode(false), 2000);
+  };
+
+  const downloadQR = () => {
+    if (onNavigateTab) onNavigateTab('referrals');
+  };
+
   return (
-    <div className="space-y-8 animate-fade-in">
-      {/* PENDING APPROVAL NOTICE BANNER (WHEN APPLICATION IS PENDING ADMIN REVIEW) */}
-      {stats.status === 'PENDING' && (
-        <div className="bg-amber-50 border border-amber-300 rounded-3xl p-5 md:p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
-          <div className="flex items-center gap-3.5">
-            <div className="p-3 rounded-2xl bg-amber-400 text-slate-950 shrink-0">
-              <AlertTriangle className="w-6 h-6 text-slate-950" />
+    <div className="max-w-4xl mx-auto space-y-7 animate-fade-in pb-12 font-sans text-[#0F172A]">
+
+      {/* 1. HERO — WELCOME & CORE METRICS */}
+      <div className="bg-gradient-to-br from-[#0F172A] via-[#1E1B4B] to-[#0F172A] text-white p-6 sm:p-8 rounded-3xl border border-slate-800 shadow-xl relative overflow-hidden space-y-6">
+        
+        {/* Subtle Ambient Glow */}
+        <div className="absolute -right-16 -top-16 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+
+        {/* Top Header Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5 relative z-10">
+          <div>
+            <div className="inline-flex items-center gap-1.5 bg-indigo-500/20 text-indigo-300 text-[11px] font-extrabold px-3 py-1 rounded-full border border-indigo-500/30 mb-2">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Courage Partner Workspace
             </div>
-            <div>
-              <h3 className="font-bold text-base text-amber-950 flex items-center gap-2">
-                Application Under Verification & Review
-              </h3>
-              <p className="text-xs text-amber-900 mt-0.5">
-                Your partner application (Code: <strong className="font-mono">{referralCode}</strong>) is under review by our Courage Admin Team. You can share your link and set up payouts while verification is in progress.
-              </p>
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-white tracking-tight">
+              Welcome back, {partnerName} 👋
+            </h1>
+            <p className="text-slate-400 text-xs sm:text-sm mt-1 font-medium">
+              Official Partner Code: <span className="font-mono text-amber-300 font-bold">{referralCode}</span>
+            </p>
+          </div>
+
+          {/* Current Tier Badge & Progress Recap */}
+          <div className="bg-slate-900/90 border border-slate-700/70 p-3.5 rounded-2xl shrink-0 space-y-1.5 text-right sm:text-right">
+            <div className="flex items-center justify-end gap-1.5 text-xs font-bold text-amber-300">
+              <Award className="w-4 h-4 text-amber-400" />
+              <span>{stats.tierName}</span>
+            </div>
+            <div className="text-[11px] text-slate-400 font-medium">
+              Rate: <strong className="text-emerald-400 font-mono">₹{stats.effectiveRate}/reg</strong> ({stats.ruleSource})
             </div>
           </div>
-          <span className="text-xs font-mono font-bold bg-amber-200 text-amber-950 px-3.5 py-1.5 rounded-full shrink-0 border border-amber-400">
-            Status: PENDING ADMIN APPROVAL
-          </span>
         </div>
-      )}
 
-      {/* OVERVIEW METRICS HERO CARD */}
-      <div className="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-800 space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
-          <div className="space-y-1">
-            <span className="text-[10.5px] font-mono font-extrabold uppercase tracking-widest text-amber-400 bg-amber-400/10 border border-amber-400/30 px-3 py-1 rounded-full">
-              LIVE PARTNER REFERRAL ANALYTICS
+        {/* Core Metric Cards Grid (Answers "How am I doing?" & "How much have I earned?") */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3.5 relative z-10">
+          {/* Card 1: Verified Registrations */}
+          <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              Verified Students
             </span>
-            <h2 className="font-display text-2xl sm:text-3xl font-black text-white pt-2">
-              Total Registrations via Code ({referralCode})
-            </h2>
+            <div className="font-mono text-3xl font-black text-white mt-1">
+              {stats.totalRegistrations}
+            </div>
+            <span className="text-[11px] text-slate-400 font-medium block mt-1">
+              Candidates mobilized
+            </span>
           </div>
 
-          <button
-            onClick={() => setShowPayoutModal(true)}
-            className="py-3 px-5 bg-white/10 hover:bg-white/20 text-white font-bold text-xs rounded-2xl border border-white/20 transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
-          >
-            <CreditCard className="w-4 h-4 text-emerald-400" /> Setup Payout UPI / Upload QR
-          </button>
-        </div>
-
-        {/* METRICS GRID */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-bold block">Total Registrations</span>
-            <span className="font-mono text-2xl sm:text-3xl font-black text-amber-400 block">{stats.totalRegistrations}</span>
-            <span className="text-[10px] text-slate-500 font-semibold block">Verified Candidate Enrolments</span>
+          {/* Card 2: Total Earnings */}
+          <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              Total Earnings
+            </span>
+            <div className="font-mono text-3xl font-black text-amber-300 mt-1">
+              ₹{stats.totalEarnings.toLocaleString()}
+            </div>
+            <span className="text-[11px] text-emerald-400 font-medium block mt-1">
+              Cumulative honorarium
+            </span>
           </div>
 
-          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-bold block">Total Honorarium Earned</span>
-            <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-400 block">{stats.totalHonorariumEarned}</span>
-            <span className="text-[10px] text-emerald-500 font-semibold block">₹{stats.honorariumRate} per candidate (Admin Set)</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-bold block">Referral Link Clicks</span>
-            <span className="font-mono text-2xl sm:text-3xl font-black text-indigo-400 block">{stats.referralClicks.toLocaleString()}</span>
-            <span className="text-[10px] text-slate-500 font-semibold block">Total link visitors</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
-            <span className="text-[10px] text-slate-400 uppercase font-bold block">Conversion Rate</span>
-            <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-300 block">{stats.conversionRate}</span>
-            <span className="text-[10px] text-emerald-400 font-semibold block">Verified referral performance</span>
+          {/* Card 3: Available Balance */}
+          <div className="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl">
+            <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider block">
+              Available Balance
+            </span>
+            <div className="font-mono text-3xl font-black text-emerald-400 mt-1">
+              ₹{stats.maturedBalance.toLocaleString()}
+            </div>
+            <span className="text-[11px] text-slate-400 font-medium block mt-1">
+              Ready for Monday payout
+            </span>
           </div>
         </div>
+
+        {/* Milestone Progress Bar */}
+        <div className="space-y-1.5 pt-1 relative z-10">
+          <div className="flex items-center justify-between text-xs text-slate-300 font-semibold">
+            <span>Progress toward <strong>{stats.nextTierName}</strong></span>
+            <span className="font-mono text-amber-300">{stats.totalRegistrations} / {stats.nextTierTarget} Registrations</span>
+          </div>
+          <div className="w-full bg-slate-800 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-700">
+            <div 
+              className="bg-gradient-to-r from-amber-400 to-emerald-400 h-full rounded-full transition-all duration-500" 
+              style={{ width: `${Math.min(100, Math.max(8, stats.progressPercent))}%` }} 
+            />
+          </div>
+        </div>
+
       </div>
 
-      {/* MULTI-DIMENSIONAL PARTNER SUB-SCORES CARD (TRUST, PERFORMANCE, GROWTH, COMPLIANCE) */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-5">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div>
-            <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-indigo-600" /> Multi-Dimensional Partner Scores
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Live multi-signal rating across Trust, Performance, Growth, and Compliance (0–100 scale).
-            </p>
+      {/* 2. NEXT BEST ACTION (Answers "What should I do next?" with ONE clear action card) */}
+      <div className="bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-300/60 rounded-3xl p-5 sm:p-6 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <div className="inline-flex items-center gap-1 text-[11px] font-black uppercase tracking-wider text-amber-800 bg-amber-100 px-2.5 py-0.5 rounded-md border border-amber-200">
+            <Zap className="w-3.5 h-3.5 text-amber-600" /> Next Best Action
           </div>
-          <span className="hidden sm:inline-block px-3 py-1 bg-indigo-50 text-indigo-700 font-mono font-extrabold text-xs rounded-full border border-indigo-200">
-            PROFILE: {stats.profileType}
-          </span>
-        </div>
-
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
-              <span>Trust Score</span>
-              <span className="font-mono text-emerald-600">{stats.multiScores.trustScore}/100</span>
-            </div>
-            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-              <div className="bg-emerald-500 h-full rounded-full" style={{ width: `${stats.multiScores.trustScore}%` }} />
-            </div>
-            <span className="text-[10px] text-slate-400 font-semibold block">Identity & Clean Regs</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
-              <span>Performance</span>
-              <span className="font-mono text-indigo-600">{stats.multiScores.performanceScore}/100</span>
-            </div>
-            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-              <div className="bg-indigo-500 h-full rounded-full" style={{ width: `${stats.multiScores.performanceScore}%` }} />
-            </div>
-            <span className="text-[10px] text-slate-400 font-semibold block">Candidate Volume</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
-              <span>Growth Score</span>
-              <span className="font-mono text-purple-600">{stats.multiScores.growthScore}/100</span>
-            </div>
-            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-              <div className="bg-purple-500 h-full rounded-full" style={{ width: `${stats.multiScores.growthScore}%` }} />
-            </div>
-            <span className="text-[10px] text-slate-400 font-semibold block">Exam Attendance Rate</span>
-          </div>
-
-          <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-1.5">
-            <div className="flex justify-between items-center text-xs font-bold text-slate-700">
-              <span>Compliance</span>
-              <span className="font-mono text-amber-600">{stats.multiScores.complianceScore}/100</span>
-            </div>
-            <div className="w-full bg-slate-200 h-2 rounded-full overflow-hidden">
-              <div className="bg-amber-500 h-full rounded-full" style={{ width: `${stats.multiScores.complianceScore}%` }} />
-            </div>
-            <span className="text-[10px] text-slate-400 font-semibold block">Code of Conduct</span>
-          </div>
-        </div>
-      </div>
-
-      {/* GAMIFIED BADGES & TROPHY CASE */}
-      {stats.achievements.length > 0 && (
-        <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-xs space-y-4">
-          <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-500" /> Unlocked Reputation Badges & Trophies
+          <h3 className="font-display text-lg font-bold text-slate-900">
+            Share Today's Promotional WhatsApp Poster
           </h3>
-          <div className="flex flex-wrap gap-3">
-            {stats.achievements.map((ach: any, idx: number) => (
-              <div key={idx} className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-extrabold shadow-2xs">
-                <Sparkles className="w-4 h-4 text-amber-600" />
-                <span>{ach.badgeTitle}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-      <div className="bg-amber-50/80 border border-amber-300/80 rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-        <div className="flex items-center gap-4">
-          <div className="p-3.5 rounded-2xl bg-amber-400 text-slate-950 shrink-0">
-            <GraduationCap className="w-6 h-6 text-slate-950" />
-          </div>
-          <div>
-            <h3 className="font-bold text-base text-amber-950">
-              Partner Child Fee Waiver (100% Waived)
-            </h3>
-            <p className="text-xs text-amber-900 mt-0.5">
-              As an official Courage Partner, enroll your own Class 5–8 children with ₹0 registration fee.
-            </p>
-          </div>
+          <p className="text-xs text-slate-600 leading-relaxed font-medium">
+            Generating promotional updates on WhatsApp increases conversion rates by +24%. Download your poster or generate custom AI captions.
+          </p>
         </div>
 
         <button
-          onClick={onOpenChildModal}
-          className="w-full sm:w-auto py-3.5 px-6 bg-slate-950 hover:bg-slate-900 text-white font-extrabold text-xs rounded-2xl shadow-md transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
+          type="button"
+          onClick={() => navigate('growth')}
+          className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-5 py-3 rounded-2xl shadow-md hover:shadow-lg transition-all cursor-pointer shrink-0 flex items-center gap-2"
         >
-          Register My Child (₹0 Fee) <ArrowRight className="w-4 h-4 text-amber-400" />
+          <span>Open AI Studio</span>
+          <ArrowRight className="w-4 h-4 text-amber-300" />
         </button>
       </div>
 
-      {/* VERIFIED REFERRAL CONVERSIONS ROSTER */}
-      <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-4">
-          <div>
-            <h3 className="font-bold text-lg text-slate-900 flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600" /> Verified Referral Conversions Roster
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Anonymized student registration log via your referral code ({referralCode}) for student privacy compliance.
-            </p>
-          </div>
-
-          <span className="text-xs font-mono font-bold bg-emerald-50 text-emerald-700 px-3 py-1 rounded-full border border-emerald-200 shrink-0">
-            {stats.totalRegistrations} Verified Enrolments
-          </span>
-        </div>
-
-        {stats.conversionsRoster.length > 0 ? (
-          <div className="overflow-x-auto">
-            <table className="w-full text-left border-collapse min-w-[600px]">
-              <thead>
-                <tr className="border-b border-slate-200 text-[11px] font-mono font-extrabold text-slate-400 uppercase tracking-wider">
-                  <th className="py-3 px-4">Candidate ID</th>
-                  <th className="py-3 px-4">Region</th>
-                  <th className="py-3 px-4">Exam Fee Status</th>
-                  <th className="py-3 px-4">Honorarium Credit</th>
-                  <th className="py-3 px-4">Date</th>
-                  <th className="py-3 px-4">Verification</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100 text-xs">
-                {stats.conversionsRoster.map((item: any, idx: number) => (
-                  <tr key={idx} className="hover:bg-slate-50/80 transition-colors font-medium text-slate-800">
-                    <td className="py-3.5 px-4 font-mono font-bold text-indigo-700">{item.refId}</td>
-                    <td className="py-3.5 px-4 text-slate-600">{item.region}</td>
-                    <td className="py-3.5 px-4 font-mono font-semibold text-slate-700">{item.fee}</td>
-                    <td className="py-3.5 px-4 font-mono font-black text-emerald-600">{item.amount}</td>
-                    <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">{item.date}</td>
-                    <td className="py-3.5 px-4">
-                      <span className="inline-flex items-center gap-1 text-[10.5px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-200">
-                        <Check className="w-3 h-3 text-emerald-600" /> {item.status}
-                      </span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        ) : (
-          <div className="text-center py-12 bg-slate-50/60 rounded-2xl border border-dashed border-slate-200 space-y-3">
-            <Users className="w-9 h-9 text-slate-300 mx-auto" />
-            <div className="space-y-1">
-              <h4 className="font-bold text-sm text-slate-800">No Verified Candidate Registrations Yet</h4>
-              <p className="text-xs text-slate-500 max-w-md mx-auto">
-                Share your referral code <strong className="font-mono text-indigo-600">{referralCode}</strong> with parents, teachers, and students to start tracking live candidate mobilizations.
-              </p>
+      {/* 3. QUICK ACTIONS BAR (Only the 4 most essential partner actions) */}
+      <div className="space-y-3">
+        <h3 className="text-xs font-black uppercase tracking-widest text-slate-400 px-1">
+          Quick Actions
+        </h3>
+        
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {/* Action 1: Copy Link */}
+          <button
+            type="button"
+            onClick={copyLink}
+            className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-4 text-left shadow-xs hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between h-28"
+          >
+            <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              {copiedLink ? <Check className="w-5 h-5 text-emerald-600" /> : <Copy className="w-5 h-5" />}
             </div>
-            <button
-              onClick={() => onNavigateToTab && onNavigateToTab('referral')}
-              className="py-2.5 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-xs cursor-pointer transition-all inline-flex items-center gap-1.5 mt-2"
-            >
-              Get Referral Link & Media Kit <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
-        )}
+            <div>
+              <span className="font-bold text-xs text-slate-900 block">{copiedLink ? 'Copied Link!' : 'Copy Referral Link'}</span>
+              <span className="text-[11px] text-slate-400 block font-medium mt-0.5">Share with students</span>
+            </div>
+          </button>
+
+          {/* Action 2: Download QR */}
+          <button
+            type="button"
+            onClick={downloadQR}
+            className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-4 text-left shadow-xs hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between h-28"
+          >
+            <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Download className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-bold text-xs text-slate-900 block">Download QR Poster</span>
+              <span className="text-[11px] text-slate-400 block font-medium mt-0.5">Printable poster</span>
+            </div>
+          </button>
+
+          {/* Action 3: Open AI Studio */}
+          <button
+            type="button"
+            onClick={() => navigate('growth')}
+            className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-4 text-left shadow-xs hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between h-28"
+          >
+            <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Zap className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-bold text-xs text-slate-900 block">Open AI Studio</span>
+              <span className="text-[11px] text-slate-400 block font-medium mt-0.5">Generate posts</span>
+            </div>
+          </button>
+
+          {/* Action 4: View Payouts */}
+          <button
+            type="button"
+            onClick={() => navigate('payouts')}
+            className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-4 text-left shadow-xs hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between h-28"
+          >
+            <div className="w-9 h-9 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-105 transition-transform">
+              <Wallet className="w-5 h-5" />
+            </div>
+            <div>
+              <span className="font-bold text-xs text-slate-900 block">View Payouts</span>
+              <span className="text-[11px] text-slate-400 block font-medium mt-0.5">₹{stats.maturedBalance} available</span>
+            </div>
+          </button>
+        </div>
       </div>
 
-      {/* PAYOUT ACCOUNT MODAL */}
-      <PayoutAccountModal
-        isOpen={showPayoutModal}
-        onClose={() => setShowPayoutModal(false)}
-        referralCode={referralCode}
-      />
+      {/* 4. RECENT ACTIVITY (Answers "Is anything important waiting for me?" with max 4 clean items) */}
+      <div className="bg-white rounded-3xl border border-slate-200/90 p-6 shadow-xs space-y-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+          <h3 className="font-display font-bold text-base text-slate-900">
+            Recent Activity & Updates
+          </h3>
+          <button
+            type="button"
+            onClick={() => navigate('inbox')}
+            className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 cursor-pointer"
+          >
+            <span>View Inbox</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+
+        <div className="divide-y divide-slate-100">
+          {stats.recentEvents.map(evt => (
+            <div key={evt.id} className="py-3 flex items-center justify-between gap-3 first:pt-0 last:pb-0">
+              <div className="flex items-center gap-3">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
+                  evt.type === 'success' ? 'bg-emerald-50 text-emerald-600' :
+                  evt.type === 'info' ? 'bg-indigo-50 text-indigo-600' :
+                  evt.type === 'warning' ? 'bg-amber-50 text-amber-600' : 'bg-slate-100 text-slate-600'
+                }`}>
+                  <CheckCircle2 className="w-4 h-4" />
+                </div>
+                <div>
+                  <h4 className="text-xs font-bold text-slate-900">{evt.title}</h4>
+                  <p className="text-[11px] text-slate-500 font-medium">{evt.desc}</p>
+                </div>
+              </div>
+              <span className="font-mono text-[11px] text-slate-400 shrink-0">{evt.time}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. PARTNER CHILD FEE WAIVER BANNER (Mission Welfare Feature) */}
+      <div className="p-4 rounded-2xl bg-indigo-50/70 border border-indigo-100 flex items-center justify-between text-xs text-indigo-950">
+        <div className="flex items-center gap-2.5">
+          <Building2 className="w-5 h-5 text-indigo-600 shrink-0" />
+          <div>
+            <span className="font-bold text-indigo-950 block">100% Fee Waiver for Partner's Own Children</span>
+            <span className="text-[11px] text-indigo-900/80 font-medium">As a Courage Partner, your own children register for CNTS 2026 completely free (₹0).</span>
+          </div>
+        </div>
+        <a
+          href="/register"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-xs font-bold text-indigo-600 hover:text-indigo-800 underline shrink-0 hidden sm:inline-block"
+        >
+          Claim Waiver →
+        </a>
+      </div>
+
     </div>
   );
 };
