@@ -384,7 +384,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
         {step === 1 && (
           <form onSubmit={handleNextStep1} className="bg-white rounded-3xl p-6 md:p-10 border border-slate-200 shadow-sm space-y-6 animate-fade-in">
             <div className="border-b border-slate-100 pb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded">
+              <span className="inline-block text-[11px] sm:text-xs font-mono font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
                 Step 1 of 3 • Identity & Photo
               </span>
               <h2 className="font-display text-2xl font-bold text-slate-900 mt-2">
@@ -571,10 +571,10 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
 
         {/* STEP 2: MULTI-PLATFORM HANDLES, FOLLOWER COUNTS & PROOF SCREENSHOTS */}
         {step === 2 && (
-          <form onSubmit={handleNextStep2} className="bg-white rounded-3xl p-6 md:p-10 border border-slate-200 shadow-sm space-y-6 animate-fade-in">
+          <form onSubmit={handleNextStep2} className="bg-white rounded-3xl p-5 sm:p-8 md:p-10 border border-slate-200 shadow-sm space-y-6 animate-fade-in">
             <div className="border-b border-slate-100 pb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded">
-                Step 2 of 3 • Channels & Proof Screenshots
+              <span className="inline-block text-[11px] sm:text-xs font-mono font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
+                Step 2 of 3 • Channels & Verification
               </span>
               <h2 className="font-display text-2xl font-bold text-slate-900 mt-2">
                 Add Your Channels & Verification Screenshots
@@ -585,18 +585,18 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
             </div>
 
             {/* LIVE COMBINED REACH SUMMARY BOX */}
-            <div className="bg-[#0F172A] text-white p-5 rounded-2xl border border-slate-800 flex items-center justify-between">
+            <div className="bg-[#0F172A] text-white p-4 sm:p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
               <div>
-                <span className="text-xs text-slate-400 uppercase font-bold tracking-wider block">Combined Creator Reach</span>
-                <span className="font-mono text-2xl md:text-3xl font-bold text-emerald-400">
+                <span className="text-[10px] sm:text-xs text-slate-400 uppercase font-mono font-extrabold tracking-wider block">Combined Creator Reach</span>
+                <span className="font-mono text-2xl sm:text-3xl font-black text-emerald-400">
                   {totalReach.toLocaleString()} Total Reach
                 </span>
                 <span className="text-xs text-slate-400 block mt-0.5">Across {platformDetails.length} active platforms</span>
               </div>
 
-              <div className="bg-slate-900 border border-slate-700 px-4 py-2 rounded-xl text-right">
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Assigned Creator Rate</span>
-                <span className="font-mono text-sm font-bold text-amber-300">
+              <div className="bg-slate-900 border border-slate-700/80 px-4 py-2.5 rounded-xl text-left sm:text-right shrink-0">
+                <span className="text-[10px] text-slate-400 uppercase font-mono font-bold block">Assigned Creator Rate</span>
+                <span className="font-mono text-xs sm:text-sm font-black text-amber-300">
                   {assignedTier.sharePercent}% Share (₹{assignedTier.perRegistrationAmount}/reg)
                 </span>
               </div>
@@ -605,7 +605,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
             {/* PLATFORM SELECT CHIPS */}
             <div>
               <label className="block text-xs font-bold text-slate-700 mb-2">Select All Platforms You Use *</label>
-              <div className="flex flex-wrap gap-2">
+              <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-2">
                 {availablePlatforms.map(plt => {
                   const selected = platformDetails.some(p => p.platform === plt);
                   return (
@@ -616,14 +616,14 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                         togglePlatformSelect(plt);
                         if (errors.platforms) setErrors(prev => ({ ...prev, platforms: '' }));
                       }}
-                      className={`px-3.5 py-2 rounded-xl text-xs font-semibold border transition-all cursor-pointer flex items-center gap-1.5 ${
+                      className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer flex items-center justify-center sm:justify-start gap-1.5 truncate ${
                         selected 
                           ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
                           : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
                       }`}
                     >
-                      {selected ? <Check className="w-3.5 h-3.5 text-amber-400" /> : <Plus className="w-3.5 h-3.5 text-slate-400" />}
-                      {plt}
+                      {selected ? <Check className="w-3.5 h-3.5 text-amber-400 shrink-0" /> : <Plus className="w-3.5 h-3.5 text-slate-400 shrink-0" />}
+                      <span className="truncate">{plt}</span>
                     </button>
                   );
                 })}
@@ -723,28 +723,28 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                       <label className="block text-xs font-bold text-slate-800 mb-1.5">
                         Upload Channel / Studio Verification Screenshot *
                       </label>
-                      <div className={`flex items-center gap-4 bg-white p-3 rounded-xl border ${proofErr ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'}`}>
+                      <div className={`flex flex-row items-center gap-3 bg-white p-3.5 rounded-2xl border ${proofErr ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'}`}>
                         {pltItem.proofScreenshotUrl ? (
-                          <div className="relative w-16 h-12 rounded-lg overflow-hidden border border-emerald-500 shadow-sm shrink-0">
+                          <div className="relative w-14 h-12 rounded-xl overflow-hidden border-2 border-emerald-500 shadow-xs shrink-0">
                             <img src={pltItem.proofScreenshotUrl} alt="Proof Screenshot" className="w-full h-full object-cover" />
                           </div>
                         ) : (
-                          <div className="w-16 h-12 rounded-lg bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 shrink-0">
-                            <ImageIcon className="w-5 h-5" />
+                          <div className="w-14 h-12 rounded-xl bg-slate-100 border border-dashed border-slate-300 flex items-center justify-center text-slate-400 shrink-0">
+                            <ImageIcon className="w-5 h-5 text-slate-400" />
                           </div>
                         )}
 
-                        <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                          <div>
-                            <span className={`text-xs font-semibold block ${pltItem.proofScreenshotUrl ? 'text-emerald-700 font-bold' : 'text-slate-700'}`}>
-                              {pltItem.proofScreenshotUrl ? '✓ Screenshot Verification Attached' : 'Attach Studio/Analytics Screenshot'}
+                        <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2 min-w-0">
+                          <div className="min-w-0">
+                            <span className={`text-xs font-extrabold block truncate ${pltItem.proofScreenshotUrl ? 'text-emerald-700' : 'text-slate-800'}`}>
+                              {pltItem.proofScreenshotUrl ? '✓ Screenshot Attached' : 'Attach Studio Screenshot'}
                             </span>
-                            <span className="text-[10px] text-slate-400 block">Shows subscribers & channel studio dashboard</span>
+                            <span className="text-[10px] text-slate-400 font-medium block truncate">Shows studio analytics</span>
                           </div>
 
-                          <label className="btn-outline text-[11px] py-1.5 px-3 cursor-pointer bg-slate-50 hover:bg-slate-100 flex items-center gap-1 w-fit">
-                            <Upload className="w-3.5 h-3.5 text-indigo-600" />
-                            {pltItem.proofScreenshotUrl ? 'Change Screenshot' : 'Upload Screenshot'}
+                          <label className="text-[11px] font-extrabold py-1.5 px-3 cursor-pointer bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center gap-1.5 shrink-0 w-fit transition-all shadow-xs">
+                            <Upload className="w-3.5 h-3.5 text-amber-300" />
+                            {pltItem.proofScreenshotUrl ? 'Change' : 'Upload'}
                             <input 
                               type="file" 
                               accept="image/*" 
@@ -797,7 +797,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
         {step === 3 && (
           <form onSubmit={handleSubmit} className="bg-white rounded-3xl p-6 md:p-10 border border-slate-200 shadow-sm space-y-6 animate-fade-in">
             <div className="border-b border-slate-100 pb-4">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-600 bg-indigo-50 px-2.5 py-1 rounded">
+              <span className="inline-block text-[11px] sm:text-xs font-mono font-extrabold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-200">
                 Step 3 of 3 • Referral Code & Pledge
               </span>
               <h2 className="font-display text-2xl font-bold text-slate-900 mt-2">
