@@ -147,7 +147,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
 
           {/* Subtitle / Mission Statement */}
           <p className="max-w-3xl mx-auto text-base sm:text-lg md:text-xl text-slate-600 font-normal leading-relaxed mb-10">
-            The central ecosystem where creators, teachers, school leads, NGOs, and community leaders collaborate with Courage Library to connect 100,000+ Class 5–8 students to 100% Merit Scholarships through CNTS 2026 Edition 1.
+            The central ecosystem where creators, teachers, school leads, NGOs, and community leaders collaborate with Courage Library to identify, benchmark, and empower 100,000+ Class 5–8 young talents through national recognition in CNTS 2026.
           </p>
 
           {/* Primary Action Buttons */}
@@ -347,7 +347,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
               </div>
               <h3 className="font-bold text-lg text-slate-900 mb-2">Educational Impact</h3>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Direct contribution toward connecting deserving students with national scholarships.
+                Direct contribution toward identifying and benchmarking young talents on a national stage.
               </p>
             </div>
 
@@ -369,13 +369,13 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
         <div className="max-w-6xl mx-auto space-y-8 text-center">
           <div className="space-y-2">
             <span className="inline-flex items-center gap-1.5 text-xs font-mono font-extrabold text-amber-300 bg-amber-400/10 border border-amber-400/30 px-3.5 py-1 rounded-full uppercase tracking-wider">
-              🎯 Inaugural Edition 1 Commitment
+              🎯 Inaugural Edition 1 Mission
             </span>
             <h2 className="font-display text-2xl md:text-3xl font-black text-white">
-              CNTS 2026 National Mission Targets
+              CNTS 2026 National Talent Identification Goals
             </h2>
             <p className="text-xs md:text-sm text-slate-400 max-w-xl mx-auto font-medium">
-              Our inaugural edition targets to empower Class 5–8 scholars across India through 100% Merit Scholarships.
+              Our inaugural edition mission to identify, benchmark, and empower Class 5–8 young talents across India.
             </p>
           </div>
 
@@ -398,10 +398,10 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
 
             <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
               <div className="font-display text-3xl md:text-4xl lg:text-5xl font-black text-blue-400 font-mono">
-                ₹1.0 Cr+
+                100%
               </div>
-              <span className="text-xs text-slate-300 font-bold block">Scholarship Fund Pool</span>
-              <span className="text-[10px] text-slate-500 font-semibold block">100% Merit Rewards</span>
+              <span className="text-xs text-slate-300 font-bold block">Merit & Aptitude Reports</span>
+              <span className="text-[10px] text-slate-500 font-semibold block">National Percentile Benchmarks</span>
             </div>
 
             <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-1">
