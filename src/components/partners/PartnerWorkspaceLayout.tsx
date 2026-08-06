@@ -91,13 +91,13 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
   const navItems: { id: WorkspaceTab; label: string; icon: any; badge?: string; unreadDot?: boolean }[] = [
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'inbox', label: 'Inbox', icon: Inbox },
-    { id: 'child', label: 'Register My Child', icon: GraduationCap, badge: '₹0 Waiver' },
-    { id: 'tiers', label: 'Partner Tiers', icon: TrendingUp, badge: 'Bronze' },
-    { id: 'payouts', label: 'Payouts & Requests', icon: CreditCard, badge: liveHonorarium },
+    { id: 'missions', label: 'CNTS Missions', icon: Target },
+    { id: 'referral', label: 'Referral & Media Kit', icon: Share2 },
+    { id: 'growth', label: 'AI Studio', icon: Zap },
+    { id: 'payouts', label: 'Payouts & Requests', icon: CreditCard },
     { id: 'payment-setup', label: 'Payment Setup & Rules', icon: ShieldCheck },
-    { id: 'missions', label: 'CNTS Missions', icon: Target, badge: 'Active' },
-    { id: 'referral', label: 'Referral & Media Kit', icon: Share2, badge: referralCode },
-    { id: 'growth', label: 'AI Studio', icon: Zap, badge: 'AI' },
+    { id: 'tiers', label: 'Partner Tiers', icon: TrendingUp },
+    { id: 'child', label: 'Register My Child', icon: GraduationCap, badge: '₹0 Waiver' },
     { id: 'support', label: 'Support', icon: HelpCircle },
   ];
 
