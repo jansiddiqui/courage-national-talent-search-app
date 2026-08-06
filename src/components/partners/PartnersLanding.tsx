@@ -113,7 +113,7 @@ export const PartnersLanding: React.FC<PartnersLandingProps> = ({
     <div className="w-full bg-[#F8FAFF] min-h-screen text-[#0F172A] pb-24 font-sans antialiased overflow-x-hidden">
       
       {/* 1. LIGHT MESH HERO SECTION - MOBILE PERFECT */}
-      <section className="relative px-4 pt-24 pb-16 md:pt-36 md:pb-28 overflow-hidden bg-gradient-to-b from-indigo-50/70 via-[#F8FAFF] to-[#F8FAFF] text-slate-900">
+      <section className="relative px-4 pt-[140px] sm:pt-36 md:pt-40 pb-16 md:pb-28 overflow-hidden bg-gradient-to-b from-indigo-50/70 via-[#F8FAFF] to-[#F8FAFF] text-slate-900">
         
         {/* Glow Orbs */}
         <div className="absolute top-10 left-1/2 -translate-x-1/2 w-[350px] sm:w-[600px] h-[350px] sm:h-[600px] bg-indigo-500/10 rounded-full blur-[140px] pointer-events-none" />
