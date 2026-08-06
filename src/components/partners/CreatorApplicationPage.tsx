@@ -255,6 +255,70 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
+  // INTELLIGENT PLATFORM URL VALIDATOR
+  const validatePlatformUrl = (platform: string, inputUrl: string): { isValid: boolean; errorMessage?: string } => {
+    const cleanUrl = inputUrl.trim().toLowerCase();
+
+    if (!cleanUrl || cleanUrl.length < 3) {
+      return { isValid: false, errorMessage: `Please enter your ${platform} profile or channel link.` };
+    }
+
+    switch (platform) {
+      case 'LinkedIn Network': {
+        if (!cleanUrl.includes('linkedin.com')) {
+          return { isValid: false, errorMessage: `Invalid LinkedIn URL. Must be a valid linkedin.com profile or page link (e.g. linkedin.com/in/yourname).` };
+        }
+        break;
+      }
+      case 'YouTube Channel': {
+        if (!cleanUrl.includes('youtube.com') && !cleanUrl.includes('youtu.be')) {
+          return { isValid: false, errorMessage: `Invalid YouTube URL. Must be a valid youtube.com or youtu.be channel link (e.g. youtube.com/@channel).` };
+        }
+        break;
+      }
+      case 'Instagram Profile': {
+        if (!cleanUrl.includes('instagram.com') && !cleanUrl.includes('instagr.am')) {
+          return { isValid: false, errorMessage: `Invalid Instagram URL. Must be a valid instagram.com profile link (e.g. instagram.com/yourhandle).` };
+        }
+        break;
+      }
+      case 'Telegram Channel': {
+        if (!cleanUrl.includes('t.me') && !cleanUrl.includes('telegram.me') && !cleanUrl.includes('telegram.org')) {
+          return { isValid: false, errorMessage: `Invalid Telegram URL. Must be a valid t.me channel link (e.g. t.me/channelname).` };
+        }
+        break;
+      }
+      case 'X (Twitter)': {
+        if (!cleanUrl.includes('twitter.com') && !cleanUrl.includes('x.com')) {
+          return { isValid: false, errorMessage: `Invalid X (Twitter) URL. Must be a valid x.com or twitter.com profile link.` };
+        }
+        break;
+      }
+      case 'Facebook Page/Group': {
+        if (!cleanUrl.includes('facebook.com') && !cleanUrl.includes('fb.com') && !cleanUrl.includes('fb.watch')) {
+          return { isValid: false, errorMessage: `Invalid Facebook URL. Must be a valid facebook.com page or group link.` };
+        }
+        break;
+      }
+      case 'WhatsApp Community': {
+        if (!cleanUrl.includes('whatsapp.com') && !cleanUrl.includes('wa.me') && !cleanUrl.includes('chat.whatsapp.com')) {
+          return { isValid: false, errorMessage: `Invalid WhatsApp link. Must be a valid chat.whatsapp.com or wa.me invite link.` };
+        }
+        break;
+      }
+      case 'Website / Blog': {
+        if (!cleanUrl.includes('.') || cleanUrl.length < 5) {
+          return { isValid: false, errorMessage: `Invalid Website URL. Please enter a valid website domain or link (e.g. myblog.com).` };
+        }
+        break;
+      }
+      default:
+        break;
+    }
+
+    return { isValid: true };
+  };
+
   // VALIDATION CHECKERS FOR STEP 2
   const validateStep2 = (): boolean => {
     const newErrors: { [key: string]: string } = {};
@@ -266,14 +330,18 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
     }
 
     platformDetails.forEach(p => {
-      if (!p.handleOrUrl || p.handleOrUrl.trim().length < 3) {
-        newErrors[`handle_${p.platform}`] = 'Please enter your profile / channel link.';
+      // Intelligent platform URL check
+      const urlCheck = validatePlatformUrl(p.platform, p.handleOrUrl || '');
+      if (!urlCheck.isValid) {
+        newErrors[`handle_${p.platform}`] = urlCheck.errorMessage || `Please enter a valid link for ${p.platform}.`;
       }
-      if (!p.followerCount || p.followerCount <= 0) {
-        newErrors[`followers_${p.platform}`] = 'Please enter your follower / subscriber count.';
+
+      if (!p.followerCount || Number(p.followerCount) <= 0 || isNaN(Number(p.followerCount))) {
+        newErrors[`followers_${p.platform}`] = 'Please enter a valid follower / subscriber count (e.g. 5000).';
       }
+
       if (!p.proofScreenshotUrl) {
-        newErrors[`proof_${p.platform}`] = 'Please upload a verification screenshot for this channel.';
+        newErrors[`proof_${p.platform}`] = `Please upload a verification screenshot for ${p.platform}.`;
       }
     });
 
@@ -678,9 +746,14 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                         <input
                           type="text"
                           placeholder={
+                            pltItem.platform.includes('LinkedIn') ? 'e.g. linkedin.com/in/yourname' :
                             pltItem.platform.includes('YouTube') ? 'e.g. youtube.com/@yourchannel' :
                             pltItem.platform.includes('Instagram') ? 'e.g. instagram.com/yourhandle' :
                             pltItem.platform.includes('Telegram') ? 'e.g. t.me/yourchannel' :
+                            pltItem.platform.includes('X') ? 'e.g. x.com/yourhandle' :
+                            pltItem.platform.includes('Facebook') ? 'e.g. facebook.com/yourpage' :
+                            pltItem.platform.includes('WhatsApp') ? 'e.g. chat.whatsapp.com/invite' :
+                            pltItem.platform.includes('Website') ? 'e.g. https://yourblog.com' :
                             'e.g. yourprofilelink.com'
                           }
                           value={pltItem.handleOrUrl}
