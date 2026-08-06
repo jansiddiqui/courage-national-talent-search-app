@@ -468,15 +468,45 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
         </div>
       </nav>
 
-      {/* MOBILE FULL-SCREEN SLIDE-OVER OVERLAY DRAWER */}
+      {/* NATIVE FULL-SCREEN MOBILE OVERLAY MENU DRAWER */}
       {menuOpen && (
-        <div className="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm lg:hidden animate-fade-in" onClick={() => setMenuOpen(false)}>
-          <div 
-            onClick={e => e.stopPropagation()}
-            className={`fixed inset-x-0 ${scrolled ? 'top-[60px]' : 'top-[78px]'} bg-white border-b border-slate-200 shadow-2xl p-5 z-50 space-y-5 max-h-[82vh] overflow-y-auto rounded-b-3xl animate-slide-down`}
-          >
-            {/* Quick Mobile Action Buttons */}
-            <div className="flex items-center gap-2 pt-1 pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-[100] bg-white flex flex-col justify-between overflow-y-auto lg:hidden animate-fade-in">
+          
+          {/* Header inside drawer */}
+          <div className="sticky top-0 z-10 bg-white/95 backdrop-blur-md px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+            <Link href="/" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5">
+              <div className="w-9 h-9 rounded-xl bg-white border border-slate-200 p-1 flex items-center justify-center shadow-xs">
+                <Image
+                  src="/images/logo.png"
+                  alt="CNTS Logo"
+                  width={28}
+                  height={28}
+                  className="w-full h-full object-contain"
+                  priority
+                />
+              </div>
+              <div>
+                <div className="flex items-center gap-1.5">
+                  <span className="font-display font-black text-base leading-none text-slate-900">CNTS</span>
+                  <span className="font-mono text-[9px] font-bold text-amber-600 bg-amber-50 px-1 py-0.2 rounded border border-amber-200">2026</span>
+                </div>
+                <span className="text-[8.5px] font-mono font-extrabold text-indigo-700 tracking-wider uppercase block mt-0.5">POWERED BY COURAGE LIBRARY</span>
+              </div>
+            </Link>
+
+            <button
+              onClick={() => setMenuOpen(false)}
+              className="p-2 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 cursor-pointer transition-colors"
+              aria-label="Close navigation menu"
+            >
+              <X size={20} />
+            </button>
+          </div>
+
+          {/* Drawer Body Content */}
+          <div className="p-5 space-y-5 flex-1">
+            {/* Quick Action Buttons */}
+            <div className="flex items-center gap-2 pb-4 border-b border-slate-100">
               <RegisterCTA />
               <Link
                 href="/login"
@@ -534,18 +564,19 @@ export default function Navbar({ theme = "light" }: NavbarProps) {
                 );
               })}
             </div>
-
-            {/* Mobile Footer Partner Workspace Link */}
-            <div className="pt-3 border-t border-slate-100">
-              <Link
-                href="/partners"
-                onClick={() => setMenuOpen(false)}
-                className="w-full py-3 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow"
-              >
-                <Heart size={15} /> Courage Partner Platform <ArrowRight size={15} />
-              </Link>
-            </div>
           </div>
+
+          {/* Drawer Sticky Footer */}
+          <div className="p-5 border-t border-slate-100 bg-slate-50/50 sticky bottom-0">
+            <Link
+              href="/partners"
+              onClick={() => setMenuOpen(false)}
+              className="w-full py-3.5 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-extrabold text-xs rounded-xl flex items-center justify-center gap-2 shadow-md"
+            >
+              <Heart size={15} /> Courage Partner Platform <ArrowRight size={15} />
+            </Link>
+          </div>
+
         </div>
       )}
     </>
