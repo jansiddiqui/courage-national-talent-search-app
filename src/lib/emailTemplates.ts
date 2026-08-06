@@ -523,3 +523,68 @@ export function getSupportSLAEscalatedTemplate(
   return wrapLayout(content, `[SLA BREACH ALERT] Ticket ${ticketRef} Escalated`);
 }
 
+export function getPartnerApplicationTemplate(data: {
+  fullName: string;
+  email: string;
+  referralCode: string;
+  partnerId: string;
+  customSlug: string;
+  audienceScale?: string;
+  honorariumRate?: number;
+}): string {
+  const workspaceUrl = `https://thecouragelibrary.com/partners/${data.customSlug}`;
+  const content = `
+    <div style="padding: 30px 40px; background-color: #ffffff;">
+      <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-left: 5px solid #16a34a; padding: 18px 24px; border-radius: 8px; margin-bottom: 25px;">
+        <h3 style="margin: 0 0 6px; color: #15803d; font-size: 18px; font-weight: 800;">🎉 Application Received & Registered!</h3>
+        <p style="margin: 0; color: #166534; font-size: 14px;">Welcome to the Courage Partner Creator Ecosystem (CNTS 2026).</p>
+      </div>
+
+      <p style="font-size: 16px; line-height: 1.6; color: #334155; margin-top: 0;">Dear <strong>${data.fullName}</strong>,</p>
+      <p style="font-size: 15px; line-height: 1.6; color: #334155;">Thank you for applying to become an official <strong>Courage Partner</strong> for the Courage National Talent Search (CNTS) 2026. Your creator application has been logged and is under verification by our Courage Admin team.</p>
+
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; margin: 25px 0;">
+        <h4 style="margin: 0 0 15px; color: #0f172a; font-size: 15px; font-weight: 800; border-bottom: 1px solid #cbd5e1; padding-bottom: 10px;">Your Official Partner Credentials</h4>
+        
+        <table style="width: 100%; border-collapse: collapse;">
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 13px; font-weight: 600; width: 40%;">Partner ID:</td>
+            <td style="padding: 8px 0; color: #0f172a; font-size: 14px; font-weight: bold; font-family: monospace;">${data.partnerId}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 13px; font-weight: 600;">Referral Code:</td>
+            <td style="padding: 8px 0; color: #1d4ed8; font-size: 15px; font-weight: 900; font-family: monospace;">${data.referralCode}</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 13px; font-weight: 600;">Dedicated Workspace:</td>
+            <td style="padding: 8px 0; color: #0f172a; font-size: 13px; font-family: monospace;"><a href="${workspaceUrl}" style="color: #2563eb; font-weight: bold;">${workspaceUrl}</a></td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 13px; font-weight: 600;">Honorarium Rate:</td>
+            <td style="padding: 8px 0; color: #15803d; font-size: 14px; font-weight: 900;">₹${data.honorariumRate || 25} per verified candidate</td>
+          </tr>
+          <tr>
+            <td style="padding: 8px 0; color: #64748b; font-size: 13px; font-weight: 600;">Verification Status:</td>
+            <td style="padding: 8px 0; color: #b45309; font-size: 13px; font-weight: bold;">PENDING ADMIN REVIEW (Within 24 Hours)</td>
+          </tr>
+        </table>
+      </div>
+
+      ${generateCNTSButton("Open My Partner Workspace →", workspaceUrl)}
+
+      <div style="background-color: #e0f2fe; border-left: 4px solid #0284c7; padding: 15px 20px; border-radius: 6px; margin: 25px 0;">
+        <h4 style="margin: 0 0 5px; color: #0369a1; font-size: 14px; font-weight: 800;">Next Steps for Partner Mobilization:</h4>
+        <ol style="margin: 10px 0 0; padding-left: 20px; color: #0c4a6e; font-size: 13px; line-height: 1.7;">
+          <li>Share your unique referral link (<strong>https://thecouragelibrary.com/register?ref=${data.referralCode}</strong>) with Class 5-8 students and parents.</li>
+          <li>Track real-time student enrolments and conversion rates inside your workspace dashboard.</li>
+          <li>Receive automatic Monday settlements directly to your linked UPI ID.</li>
+        </ol>
+      </div>
+
+      <p style="font-size: 14px; color: #475569; margin-top: 25px; line-height: 1.6;">If you have any questions or need marketing assets, contact our Partner Onboarding Team at <a href="mailto:support@thecouragelibrary.com" style="color: #2563eb;">support@thecouragelibrary.com</a>.</p>
+    </div>
+  `;
+  return wrapLayout(content, `Courage Partner Application Received (${data.referralCode})`);
+}
+
+

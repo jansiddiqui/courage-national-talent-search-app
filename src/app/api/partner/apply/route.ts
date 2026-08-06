@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 import { signSession } from '@/lib/sessionHelper';
+import { EmailService } from '@/services/emailService';
+import { getPartnerApplicationTemplate } from '@/lib/emailTemplates';
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
 
@@ -133,6 +135,28 @@ export async function POST(request: Request) {
       tier: newPartnerRecord?.tier || 'BRONZE',
       honorariumRate: newPartnerRecord?.honorarium_rate || 25,
     };
+
+    // Dispatch automatic instant email directly to the creator's registered email address
+    try {
+      const emailService = new EmailService();
+      const emailHtml = getPartnerApplicationTemplate({
+        fullName: partnerResponseData.fullName,
+        email: partnerResponseData.email,
+        referralCode: partnerResponseData.referralCode,
+        partnerId: partnerResponseData.partnerId,
+        customSlug: partnerResponseData.customSlug,
+        audienceScale: partnerResponseData.audienceScale,
+        honorariumRate: partnerResponseData.honorariumRate,
+      });
+
+      await emailService.sendEmail(
+        partnerResponseData.email,
+        `🎉 Courage Partner Application Received (${partnerResponseData.referralCode})`,
+        emailHtml
+      );
+    } catch (emailErr) {
+      console.error('[Partner Email Notification Error]:', emailErr);
+    }
 
     // Sign session cookie
     const token = await signSession(
