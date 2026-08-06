@@ -30,7 +30,10 @@ import {
   ChevronDown,
   Zap,
   Folder,
-  Layers
+  Search,
+  Command,
+  Activity,
+  Circle
 } from "lucide-react";
 
 interface NavLink {
@@ -45,7 +48,7 @@ interface NavLink {
 interface NavGroup {
   id: string;
   title: string;
-  icon?: any;
+  icon: any;
   links: NavLink[];
 }
 
@@ -84,9 +87,9 @@ const linkGroups: NavGroup[] = [
   {
     id: "campaigns",
     title: "Campaigns & Marketing",
-    icon: Users,
+    icon: Sparkles,
     links: [
-      { href: "/admin/partners", label: "Partners & Creators", icon: Users, badge: "LIVE", badgeColor: "bg-emerald-500 text-white" },
+      { href: "/admin/partners", label: "Partners & Creators", icon: Users, badge: "NEW", badgeColor: "bg-emerald-500 text-white" },
       { href: "/admin/notifications", label: "Broadcasts", icon: MessageSquare },
       { href: "/admin?tab=whatsapp", label: "Notification Logs", icon: MessageSquare },
       { href: "/admin?tab=coupons", label: "Promo & Coupon Mgr", icon: Percent },
@@ -113,6 +116,7 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
   const searchParams = useSearchParams();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [searchFilter, setSearchFilter] = useState("");
 
   // Accordion state for collapsible SaaS sidebar hierarchy
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
@@ -165,10 +169,10 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
       {/* Sidebar Navigation - Left Side (Supports 64px Collapsed Icon-Only Mode) */}
       <aside className={`w-full ${isSidebarCollapsed ? "md:w-16" : "md:w-64"} bg-white border-b md:border-b-0 md:border-r border-slate-200/80 flex flex-col shrink-0 md:sticky md:top-0 md:h-screen z-30 shadow-sm transition-all duration-300 ease-in-out`}>
         
-        {/* Brand Section & Mobile Toggle Header — RESTORED ORIGINAL CLEAN LOGO */}
+        {/* Brand Section & Mobile Toggle Header — CLEAN ORIGINAL LOGO */}
         <div className={`p-3 md:p-4 border-b border-slate-100 flex items-center ${isSidebarCollapsed ? "md:flex-col md:justify-center" : "justify-between"} gap-2`}>
           <div className="flex items-center gap-2.5">
-            {/* Courage Library Official Logo - CLEAN ORIGINAL STYLING */}
+            {/* Courage Library Official Logo */}
             <div className="w-9 h-9 rounded-xl bg-slate-50 border border-slate-200/80 p-1 flex items-center justify-center shadow-xs shrink-0" title="Courage Library CNTS Admin">
               <img src="/images/logo.png" alt="Courage Library Logo" className="w-7 h-7 object-contain" />
             </div>
@@ -176,9 +180,11 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
             {!isSidebarCollapsed && (
               <div>
                 <h2 className="font-extrabold text-sm text-slate-800 leading-tight">CNTS Admin</h2>
-                <span className="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md mt-0.5 inline-block uppercase tracking-wider">
-                  V2.0 Console
-                </span>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <span className="text-[9px] font-bold text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md inline-block uppercase tracking-wider">
+                    V2.0 Console
+                  </span>
+                </div>
               </div>
             )}
           </div>
@@ -201,41 +207,81 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
           </button>
         </div>
 
-        {/* SAAS COLLAPSIBLE ACCORDION NAVIGATION (ZERO SCROLL NEEDED) */}
+        {/* QUICK SEARCH INPUT (SAAS DESK STYLE) */}
+        {!isSidebarCollapsed && (
+          <div className="p-3 border-b border-slate-100">
+            <div className="relative">
+              <Search className="w-3.5 h-3.5 text-slate-400 absolute left-2.5 top-1/2 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search navigation..."
+                value={searchFilter}
+                onChange={e => setSearchFilter(e.target.value)}
+                className="w-full pl-8 pr-7 py-1.5 bg-slate-50 border border-slate-200/80 rounded-xl text-[11px] font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              />
+              {searchFilter ? (
+                <button onClick={() => setSearchFilter('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700">
+                  <X size={12} />
+                </button>
+              ) : (
+                <kbd className="absolute right-2 top-1/2 -translate-y-1/2 text-[9px] font-mono font-semibold text-slate-400 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                  ⌘K
+                </kbd>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* ENTERPRISE ACCORDION NAVIGATION TREE */}
         <nav className={`flex-1 py-3 ${isSidebarCollapsed ? "px-1.5" : "px-3"} overflow-y-auto [&::-webkit-scrollbar]:hidden space-y-2 pb-16 md:block ${
           isMobileMenuOpen ? "block" : "hidden"
         }`}>
           {linkGroups.map((group) => {
-            const isGroupOpen = !!openGroups[group.id];
+            const GroupIcon = group.icon;
+            const isGroupOpen = !!openGroups[group.id] || !!searchFilter;
             const hasActiveLink = group.links.some(l => isActive(l.href, l.exact));
+
+            // Filter links if search query entered
+            const visibleLinks = searchFilter
+              ? group.links.filter(l => l.label.toLowerCase().includes(searchFilter.toLowerCase()))
+              : group.links;
+
+            if (searchFilter && visibleLinks.length === 0) return null;
 
             return (
               <div key={group.id} className="space-y-1">
-                {/* Accordion Group Header Button */}
+                {/* Accordion Group Header Button with Icon */}
                 {!isSidebarCollapsed ? (
                   <button
                     onClick={() => toggleGroup(group.id)}
-                    className={`w-full flex items-center justify-between px-3 py-2 text-[10px] font-extrabold uppercase tracking-wider transition-all rounded-xl cursor-pointer ${
+                    className={`w-full flex items-center justify-between px-3 py-2 text-[10.5px] font-extrabold uppercase tracking-wider transition-all rounded-xl cursor-pointer group ${
                       hasActiveLink
-                        ? "text-indigo-700 bg-indigo-50/50 font-mono"
-                        : "text-slate-400 hover:text-slate-700 hover:bg-slate-50 font-mono"
+                        ? "text-indigo-800 bg-indigo-50/70 font-mono"
+                        : "text-slate-500 hover:text-slate-900 hover:bg-slate-50 font-mono"
                     }`}
                   >
-                    <span className="flex items-center gap-1.5">
-                      {group.title}
-                    </span>
-                    {group.links.length > 1 && (
-                      <span className="p-0.5 rounded text-slate-400 hover:text-slate-700">
+                    <div className="flex items-center gap-2">
+                      <GroupIcon size={14} className={hasActiveLink ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-700"} />
+                      <span>{group.title}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      {group.links.length > 1 && (
+                        <span className="text-[9px] font-mono font-bold text-slate-400 bg-slate-100 px-1.5 py-0.5 rounded">
+                          {group.links.length}
+                        </span>
+                      )}
+                      <span className="text-slate-400 group-hover:text-slate-700">
                         {isGroupOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
                       </span>
-                    )}
+                    </div>
                   </button>
                 ) : null}
 
-                {/* Group Nav Links (Collapsible) */}
+                {/* Group Nav Links (Tree View with Guide Line) */}
                 {(isGroupOpen || isSidebarCollapsed) && (
-                  <div className="space-y-[2px] transition-all animate-fade-in">
-                    {group.links.map((link) => {
+                  <div className={`${!isSidebarCollapsed ? "border-l-2 border-slate-100 ml-3.5 pl-2 space-y-1" : "space-y-1"} transition-all animate-fade-in`}>
+                    {visibleLinks.map((link) => {
                       const Icon = link.icon;
                       const active = isActive(link.href, link.exact);
                       return (
@@ -256,12 +302,12 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
                               : `py-2 px-3 rounded-xl ${
                                   active
                                     ? "bg-gradient-to-r from-indigo-600 to-indigo-700 text-white font-bold shadow-sm shadow-indigo-500/20 scale-[1.01]"
-                                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/80"
+                                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100/90"
                                 }`
                           }`}
                         >
                           <div className="flex items-center gap-2.5">
-                            <Icon size={16} className={isSidebarCollapsed ? (active ? "text-white" : "text-slate-500 group-hover:text-indigo-600") : (active ? "text-white" : "text-slate-400 group-hover:text-indigo-600 transition-colors")} />
+                            <Icon size={15} className={isSidebarCollapsed ? (active ? "text-white" : "text-slate-500 group-hover:text-indigo-600") : (active ? "text-white" : "text-slate-400 group-hover:text-indigo-600 transition-colors")} />
                             {!isSidebarCollapsed && <span>{link.label}</span>}
                           </div>
 
@@ -281,6 +327,17 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
             );
           })}
         </nav>
+
+        {/* SYSTEM STATUS FOOTER WIDGET */}
+        {!isSidebarCollapsed && (
+          <div className="p-3 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="text-[10px] font-mono font-bold text-slate-600">DB Live & Connected</span>
+            </div>
+            <span className="text-[9.5px] font-mono text-slate-400">v2.4.0</span>
+          </div>
+        )}
       </aside>
 
       {/* Main Content Area */}
