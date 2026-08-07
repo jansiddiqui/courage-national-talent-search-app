@@ -51,32 +51,32 @@ export const PartnerReputationAndAnalytics: React.FC<PartnerReputationAndAnalyti
   return (
     <div className="space-y-8 animate-fade-in">
       {/* HEADER & REPUTATION BANNER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div>
-            <div className="inline-flex items-center gap-1.5 bg-amber-400/20 text-amber-300 px-3 py-1 rounded-full text-xs font-bold mb-3 border border-amber-400/30">
-              <ShieldCheck className="w-3.5 h-3.5" /> Institutional Reputation Index
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 px-3 py-1 rounded-full text-xs font-extrabold border border-amber-200">
+              <ShieldCheck className="w-3.5 h-3.5 text-amber-600" /> Institutional Reputation Index
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Partner Reputation & Impact Analytics
             </h1>
-            <p className="text-slate-300 text-sm mt-1">
-              {partnerName} • Code: <span className="font-mono text-amber-300">{referralCode}</span> • Top 3% National Partners
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">
+              {partnerName} • Code: <span className="font-mono font-bold text-indigo-700">{referralCode}</span> • Top 3% National Partners
             </p>
           </div>
 
-          <div className="bg-slate-900/90 border border-slate-700/80 p-5 rounded-2xl flex items-center gap-4 shadow-inner">
-            <div className="w-14 h-14 rounded-2xl bg-amber-400 text-slate-900 flex items-center justify-center font-bold font-display text-2xl shadow-lg">
+          <div className="bg-slate-50 border border-slate-200/90 p-4 rounded-2xl flex items-center gap-4 shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-amber-400 text-slate-950 flex items-center justify-center font-black font-display text-xl shadow-xs">
               98
             </div>
             <div>
-              <div className="flex items-center gap-1 text-amber-300">
+              <div className="flex items-center gap-1 text-amber-500">
                 {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-300" />
+                  <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
                 ))}
               </div>
-              <span className="text-sm font-bold text-white block mt-0.5">Excellent Standing</span>
-              <span className="text-[11px] text-slate-400 font-mono">Rank: Top 3% National Partners</span>
+              <span className="text-xs font-black text-slate-900 block mt-0.5">Excellent Standing</span>
+              <span className="text-[10px] text-slate-500 font-mono font-bold">Rank: Top 3% National Partners</span>
             </div>
           </div>
         </div>

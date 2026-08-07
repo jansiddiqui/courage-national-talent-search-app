@@ -235,7 +235,7 @@ export const PaymentSetupAndRulesTab: React.FC = () => {
               <button
                 type="submit"
                 disabled={isSaved}
-                className="py-3.5 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+                className="py-3.5 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
               >
                 {isSaved ? (
                   <>

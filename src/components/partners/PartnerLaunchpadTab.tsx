@@ -89,54 +89,51 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
     <div className="max-w-4xl mx-auto space-y-7 animate-fade-in pb-12 font-sans text-[#0F172A]">
 
       {/* 1. HERO WELCOME LAUNCHPAD BANNER */}
-      <div className="bg-gradient-to-br from-indigo-900 via-[#1E1B4B] to-slate-900 text-white p-6 sm:p-8 rounded-3xl border border-indigo-800 shadow-xl relative overflow-hidden space-y-5">
-        <div className="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-700/60 pb-5 relative z-10">
-          <div>
-            <div className="inline-flex items-center gap-1.5 bg-amber-400/20 text-amber-300 text-xs font-black px-3.5 py-1 rounded-full border border-amber-400/30 mb-2">
-              <Rocket className="w-3.5 h-3.5 text-amber-300" /> Start Here • Partner Launchpad
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-black px-3.5 py-1 rounded-full border border-indigo-100">
+              <Rocket className="w-3.5 h-3.5 text-indigo-600" /> Start Here • Partner Launchpad
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-black text-white tracking-tight">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Welcome to Courage Partner Platform, {partnerName}! 🚀
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed">
+            <p className="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
               This is your step-by-step launchpad to start mobilizing students, earning honorarium, and expanding your educational reach.
             </p>
           </div>
 
-          <div className="bg-slate-900/90 border border-slate-700/80 p-4 rounded-2xl shrink-0 text-right space-y-1">
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Official Partner Code</span>
-            <span className="font-mono text-xl font-black text-amber-300 block">{referralCode}</span>
+          <div className="bg-indigo-50/70 border border-indigo-100 p-3.5 rounded-2xl shrink-0 text-right space-y-0.5">
+            <span className="text-[10px] uppercase font-black text-indigo-500 tracking-wider block font-mono">Official Partner Code</span>
+            <span className="font-mono text-xl font-black text-indigo-700 block">{referralCode}</span>
           </div>
         </div>
 
         {/* QUICK LINK BAR */}
-        <div className="p-4 rounded-2xl bg-white/10 backdrop-blur-md border border-white/10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-200">
-          <div className="flex items-center gap-2 min-w-0">
-            <Globe className="w-4 h-4 text-indigo-300 shrink-0" />
-            <span className="font-mono truncate font-semibold">{referralLink}</span>
+        <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+            <Globe className="w-4 h-4 text-indigo-600 shrink-0" />
+            <span className="font-mono truncate font-bold text-indigo-700 text-xs">{referralLink}</span>
           </div>
 
           <button
             type="button"
             onClick={copyLink}
-            className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shrink-0 flex items-center gap-1.5 shadow-md"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shrink-0 flex items-center justify-center gap-1.5 shadow-xs"
           >
-            {copiedLink ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+            {copiedLink ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
             <span>{copiedLink ? 'Link Copied!' : 'Copy Referral Link'}</span>
           </button>
         </div>
-
       </div>
 
       {/* 2. STEP-BY-STEP ONBOARDING FLOW */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-xl font-bold text-slate-900">
+          <h2 className="font-display text-xl font-black text-slate-900 tracking-tight">
             Your 4-Step Orientation Checklist
           </h2>
-          <span className="text-xs font-mono font-extrabold text-indigo-600 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+          <span className="text-xs font-mono font-extrabold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
             Step 1 of 4 Completed
           </span>
         </div>
@@ -147,19 +144,19 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
             return (
               <div 
                 key={step.stepNumber}
-                className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs hover:shadow-md transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-2xs hover:shadow-sm transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4"
               >
                 <div className="flex items-start gap-3.5">
                   <div className={`w-9 h-9 rounded-2xl flex items-center justify-center font-black text-sm shrink-0 ${
                     step.completed 
-                      ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' 
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
                       : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
                   }`}>
-                    {step.completed ? <CheckCircle2 className="w-5 h-5" /> : step.stepNumber}
+                    {step.completed ? <CheckCircle2 className="w-5 h-5 text-emerald-600" /> : step.stepNumber}
                   </div>
 
                   <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-2 flex-wrap">
                       <h3 className="font-display font-bold text-base text-slate-900">{step.title}</h3>
                       <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-md border ${
                         step.completed 
@@ -178,9 +175,9 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
                 <button
                   type="button"
                   onClick={step.onClick}
-                  className="bg-slate-900 hover:bg-indigo-600 text-white font-bold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer shrink-0 flex items-center justify-center gap-2 self-end sm:self-center"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-xs transition-all cursor-pointer shrink-0 flex items-center justify-center gap-2 self-stretch sm:self-center"
                 >
-                  <IconComp className="w-4 h-4 text-amber-300" />
+                  <IconComp className="w-4 h-4 text-indigo-100" />
                   <span>{step.actionLabel}</span>
                 </button>
               </div>
