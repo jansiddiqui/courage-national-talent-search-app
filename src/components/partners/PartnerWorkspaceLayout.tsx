@@ -157,17 +157,18 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
             {/* Profile Section with Real Avatar & Inline Twitter/Instagram Style Verified Badge */}
             <div className="flex items-center gap-2.5 border-l border-slate-200 pl-3">
               <div className="relative shrink-0">
-                {applicantData?.passportPhoto || applicantData?.profilePhoto || applicantData?.profileImage || applicantData?.photoUrl || applicantData?.photo ? (
-                  <img
-                    src={applicantData?.passportPhoto || applicantData?.profilePhoto || applicantData?.profileImage || applicantData?.photoUrl || applicantData?.photo}
-                    alt={partnerName}
-                    className="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 shadow-xs"
-                  />
-                ) : (
-                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 text-white font-black text-xs flex items-center justify-center border-2 border-indigo-100 shadow-xs">
-                    {partnerName.slice(0, 2).toUpperCase()}
-                  </div>
-                )}
+                <img
+                  src={
+                    applicantData?.passportPhoto || 
+                    applicantData?.profilePhoto || 
+                    applicantData?.profileImage || 
+                    applicantData?.photoUrl || 
+                    applicantData?.photo || 
+                    `https://ui-avatars.com/api/?name=${encodeURIComponent(partnerName)}&background=4F46E5&color=fff&bold=true`
+                  }
+                  alt={partnerName}
+                  className="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 shadow-xs"
+                />
               </div>
 
               <div className="hidden sm:block text-left leading-tight">
@@ -190,14 +191,6 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
                   {referralCode}
                 </span>
               </div>
-
-              <button
-                onClick={onExitWorkspace}
-                title="Exit Partner Workspace"
-                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 ml-1 transition-colors cursor-pointer"
-              >
-                <LogOut className="w-4 h-4" />
-              </button>
             </div>
           </div>
         </div>
@@ -211,49 +204,132 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
           ${mobileMenuOpen ? 'translate-x-0 top-[61px]' : '-translate-x-full lg:translate-x-0'}
         `}>
           <div className="space-y-6">
-            <div className="px-2 pt-2">
-              <span className="text-[10px] font-mono uppercase tracking-widest font-extrabold text-slate-400 block">
-                CREATOR OS WORKSPACE
-              </span>
-            </div>
+            <nav className="space-y-1">
+              {/* 1. SECTION 1: CORE OS */}
+              <div className="space-y-1">
+                <span className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block pb-1">
+                  Core Workspace
+                </span>
+                {navItems.slice(0, 3).map((item) => {
+                  const IconComponent = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        onTabChange(item.id);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`
+                        w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer text-left border
+                        ${isActive 
+                          ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-600 shadow-md shadow-indigo-600/20 font-extrabold' 
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/90 border-transparent font-bold'
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-3">
+                        <IconComponent className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'text-indigo-600'}`} />
+                        <span>{item.label}</span>
+                      </div>
 
-            {/* NAV LINKS */}
-            <nav className="space-y-1.5">
-              {navItems.map((item) => {
-                const IconComponent = item.icon;
-                const isActive = activeTab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => {
-                      onTabChange(item.id);
-                      setMobileMenuOpen(false);
-                    }}
-                    className={`
-                      w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer text-left
-                      ${isActive 
-                        ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-600/20' 
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100/90 font-semibold'
-                      }
-                    `}
-                  >
-                    <div className="flex items-center gap-3">
-                      <IconComponent className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'text-slate-400'}`} />
-                      <span>{item.label}</span>
-                    </div>
+                      {item.badge && (
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-extrabold ${
+                          isActive 
+                            ? 'bg-white/20 text-white' 
+                            : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
+                        }`}>
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
 
-                    {item.badge && (
-                      <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-extrabold ${
-                        isActive 
-                          ? 'bg-white/20 text-white' 
-                          : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
-                      }`}>
-                        {item.badge}
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+              {/* 2. SECTION 2: CREATOR STUDIO & MISSIONS */}
+              <div className="space-y-1 pt-2">
+                <span className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block pb-1">
+                  Creator & Missions
+                </span>
+                {navItems.slice(3, 7).map((item) => {
+                  const IconComponent = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        onTabChange(item.id);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`
+                        w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer text-left border
+                        ${isActive 
+                          ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-600 shadow-md shadow-indigo-600/20 font-extrabold' 
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/90 border-transparent font-bold'
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-3">
+                        <IconComponent className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'text-slate-500'}`} />
+                        <span>{item.label}</span>
+                      </div>
+
+                      {item.badge && (
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-extrabold ${
+                          isActive 
+                            ? 'bg-white/20 text-white' 
+                            : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
+                        }`}>
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* 3. SECTION 3: FINANCE & SETTINGS */}
+              <div className="space-y-1 pt-2">
+                <span className="px-3 text-[10px] font-extrabold uppercase tracking-widest text-slate-400 block pb-1">
+                  Finance & Welfare
+                </span>
+                {navItems.slice(7).map((item) => {
+                  const IconComponent = item.icon;
+                  const isActive = activeTab === item.id;
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => {
+                        onTabChange(item.id);
+                        setMobileMenuOpen(false);
+                      }}
+                      className={`
+                        w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs transition-all cursor-pointer text-left border
+                        ${isActive 
+                          ? 'bg-gradient-to-r from-indigo-600 to-indigo-700 text-white border-indigo-600 shadow-md shadow-indigo-600/20 font-extrabold' 
+                          : 'text-slate-700 hover:text-slate-900 hover:bg-slate-100/90 border-transparent font-bold'
+                        }
+                      `}
+                    >
+                      <div className="flex items-center gap-3">
+                        <IconComponent className={`w-4 h-4 ${isActive ? 'text-amber-300' : 'text-slate-500'}`} />
+                        <span>{item.label}</span>
+                      </div>
+
+                      {item.badge && (
+                        <span className={`text-[10px] font-mono px-2 py-0.5 rounded-md font-extrabold ${
+                          isActive 
+                            ? 'bg-white/20 text-white' 
+                            : 'bg-indigo-50 text-indigo-700 border border-indigo-100'
+                        }`}>
+                          {item.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
             </nav>
           </div>
 

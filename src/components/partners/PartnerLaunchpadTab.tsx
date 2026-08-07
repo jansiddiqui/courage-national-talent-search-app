@@ -189,7 +189,114 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
         </div>
       </div>
 
-      {/* 3. PARTNER BENEFITS RECAP */}
+      {/* 3. VISUAL VIDEO CREATION WORKFLOW INFOGRAPHIC */}
+      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl border border-indigo-800 shadow-xl space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-black text-amber-300 bg-amber-400/20 px-3 py-0.5 rounded-full border border-amber-400/30">
+              <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Complete Creator Production System
+            </div>
+            <h3 className="font-display text-xl sm:text-2xl font-black text-white">
+              How to Create & Publish Viral Videos in 5 Easy Steps
+            </h3>
+          </div>
+          <button
+            type="button"
+            onClick={() => onNavigateTab && onNavigateTab('roadmap')}
+            className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 shadow-md"
+          >
+            <span>Open Video Roadmap</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* 5-STEP VISUAL PIPELINE PIPES */}
+        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
+          
+          {/* Stage 1 */}
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-xl bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center">
+                01
+              </div>
+              <h4 className="font-bold text-xs text-white">1. Pick Concept</h4>
+              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                Select from 8 video concepts in the <strong>Video Roadmap</strong> tab.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-amber-300 font-extrabold bg-amber-400/10 p-1.5 rounded-lg border border-amber-400/20">
+              Select Concept 🎬
+            </div>
+          </div>
+
+          {/* Stage 2 */}
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-xl bg-indigo-500 text-white font-black text-xs flex items-center justify-center">
+                02
+              </div>
+              <h4 className="font-bold text-xs text-white">2. Get Master Prompt</h4>
+              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                Click <code className="text-amber-300 font-bold">[Generate Master Prompt]</code> in Hinglish or Hindi.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-indigo-300 font-extrabold bg-indigo-500/10 p-1.5 rounded-lg border border-indigo-400/20">
+              Copy AI Prompt ✨
+            </div>
+          </div>
+
+          {/* Stage 3 */}
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white font-black text-xs flex items-center justify-center">
+                03
+              </div>
+              <h4 className="font-bold text-xs text-white">3. Generate Script & Voice</h4>
+              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                Paste into <strong>ChatGPT/Claude</strong> & use <strong>ElevenLabs</strong> for AI voiceover.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-emerald-300 font-extrabold bg-emerald-500/10 p-1.5 rounded-lg border border-emerald-400/20">
+              Run AI Tools 🤖
+            </div>
+          </div>
+
+          {/* Stage 4 */}
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-xl bg-violet-500 text-white font-black text-xs flex items-center justify-center">
+                04
+              </div>
+              <h4 className="font-bold text-xs text-white">4. Edit & Publish</h4>
+              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                Edit in <strong>CapCut</strong>, add your referral link (<code className="text-amber-300 font-bold">{referralCode}</code>) & post to Reels/Shorts.
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-violet-300 font-extrabold bg-violet-500/10 p-1.5 rounded-lg border border-violet-400/20">
+              Post to Reels 📲
+            </div>
+          </div>
+
+          {/* Stage 5 */}
+          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
+            <div className="space-y-2">
+              <div className="w-8 h-8 rounded-xl bg-sky-500 text-white font-black text-xs flex items-center justify-center">
+                05
+              </div>
+              <h4 className="font-bold text-xs text-white">5. Track & Earn</h4>
+              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
+                Click <code className="text-amber-300 font-bold">[Submit Video Link]</code> so admin verifies views & awards points!
+              </p>
+            </div>
+            <div className="text-[10px] font-mono text-sky-300 font-extrabold bg-sky-500/10 p-1.5 rounded-lg border border-sky-400/20">
+              Submit Link 🏆
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 4. PARTNER BENEFITS RECAP */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="bg-white p-5 rounded-3xl border border-slate-200/90 shadow-xs space-y-2">
           <Award className="w-6 h-6 text-amber-500" />

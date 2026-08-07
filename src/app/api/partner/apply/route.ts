@@ -81,6 +81,23 @@ export async function POST(request: Request) {
           .select()
           .single();
 
+        // Also insert into courage_partners for double safety across DB table schemas
+        try {
+          await (supabaseAdmin as any)
+            .from('courage_partners')
+            .insert({
+              full_name: fullName,
+              email: cleanEmail,
+              phone: phone || null,
+              referral_code: finalReferralCode,
+              custom_slug: cleanSlug,
+              status: 'APPLIED',
+              honorarium_rate: 25.00
+            });
+        } catch (cpErr) {
+          console.warn('courage_partners dual insert notice:', cpErr);
+        }
+
         if (insertErr) {
           console.error('[Partner Apply Insert Error]:', insertErr);
           const fallbackRef = PartnerReferralEngine.generateReferralCode(fullName);
