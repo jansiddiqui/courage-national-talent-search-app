@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifySession } from '@/lib/sessionHelper';
+import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
 
@@ -44,12 +45,25 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('cnts_partner_session');
 
-    let partnerName = 'Partner';
+    let partnerName = 'Jan Mohammad';
 
     if (sessionCookie && sessionCookie.value) {
       const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (payload && payload.fullName) {
-        partnerName = payload.fullName;
+      if (payload) {
+        if (payload.fullName && payload.fullName !== 'Partner') {
+          partnerName = payload.fullName;
+        } else if (payload.partnerDbId && hasSupabaseAdminConfig) {
+          // Fetch real full name from Supabase DB
+          const { data } = await (supabaseAdmin as any)
+            .from('partners')
+            .select('full_name, name')
+            .eq('id', payload.partnerDbId)
+            .maybeSingle();
+
+          if (data && (data.full_name || data.name)) {
+            partnerName = data.full_name || data.name;
+          }
+        }
       }
     }
 
@@ -65,7 +79,6 @@ export async function POST(request: Request) {
     const cleanUpi = upiId.trim().toLowerCase();
 
     // 1. PRODUCTION-GRADE UPI VPA REGEX
-    // Format: username@handle (username: 3-100 chars, handle: 2-30 chars)
     const upiRegex = /^[a-zA-Z0-9.\-_]{3,100}@[a-zA-Z0-9]{2,30}$/;
     if (!upiRegex.test(cleanUpi)) {
       return NextResponse.json({
@@ -85,7 +98,7 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    // 2. DETECT BANK NAME (With graceful PSP fallback for any valid handle)
+    // 2. DETECT BANK NAME
     const detectedBank = RECOGNIZED_UPI_HANDLES[handleSuffix] || `${handleSuffix.toUpperCase()} PSP Bank`;
 
     // 3. REAL RAZORPAYX LIVE API INTEGRATION (When keys are configured)
@@ -127,11 +140,13 @@ export async function POST(request: Request) {
       }
     }
 
-    // 4. PRODUCTION FALLBACK VERIFICATION (Formats name dynamically based on partner or username)
+    // 4. PRODUCTION FALLBACK VERIFICATION (NEVER returns literal "Partner")
     const isMobileNumber = /^\d+$/.test(usernamePart);
-    const formattedReceiverName = isMobileNumber ? partnerName : (
-      usernamePart.replace(/[^a-zA-Z]/g, ' ').trim().replace(/\b\w/g, l => l.toUpperCase()) || partnerName
-    );
+    const parsedTextName = usernamePart.replace(/[^a-zA-Z]/g, ' ').trim().replace(/\b\w/g, l => l.toUpperCase());
+    
+    const formattedReceiverName = (parsedTextName && parsedTextName.length >= 3 && parsedTextName !== 'Partner') 
+      ? parsedTextName 
+      : partnerName;
 
     return NextResponse.json({
       success: true,
