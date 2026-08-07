@@ -41,16 +41,6 @@ const RECOGNIZED_UPI_HANDLES: Record<string, string> = {
   'mobikwik': 'MobiKwik (HDFC Bank)',
 };
 
-// Deterministic Realistic Account Holder Names for Testing
-const DEMO_PHONE_VPA_NAMES: Record<string, string> = {
-  '8318744873': 'Anil Kumar',
-  '8102524543': 'Sanjay Gupta',
-  '8707884735': 'Sunil Verma',
-  '9876543210': 'Pooja Sharma',
-  '9123456789': 'Rahul Singh',
-  '9988776655': 'Vikas Mishra',
-};
-
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies();
@@ -111,7 +101,7 @@ export async function POST(request: Request) {
     // 2. DETECT BANK NAME
     const detectedBank = RECOGNIZED_UPI_HANDLES[handleSuffix] || `${handleSuffix.toUpperCase()} PSP Bank`;
 
-    // 3. REAL RAZORPAYX LIVE API INTEGRATION (Only if RAZORPAYX_KEY_ID is explicitly set)
+    // 3. REAL RAZORPAYX LIVE API INTEGRATION (When keys are configured)
     const razorpayxKeyId = process.env.RAZORPAYX_KEY_ID;
     const razorpayxKeySecret = process.env.RAZORPAYX_KEY_SECRET;
 
@@ -154,11 +144,11 @@ export async function POST(request: Request) {
     const isMobileNumber = /^\d+$/.test(usernamePart);
     let resolvedReceiverName = partnerName;
 
-    if (isMobileNumber) {
-      resolvedReceiverName = DEMO_PHONE_VPA_NAMES[usernamePart] || `Beneficiary (${usernamePart.slice(-4)})`;
-    } else {
+    if (!isMobileNumber) {
       const parsedTextName = usernamePart.replace(/[^a-zA-Z]/g, ' ').trim().replace(/\b\w/g, l => l.toUpperCase());
-      resolvedReceiverName = (parsedTextName && parsedTextName.length >= 3) ? parsedTextName : partnerName;
+      if (parsedTextName && parsedTextName.length >= 3) {
+        resolvedReceiverName = parsedTextName;
+      }
     }
 
     return NextResponse.json({
