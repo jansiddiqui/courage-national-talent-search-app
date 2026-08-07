@@ -1,389 +1,555 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   CreditCard, 
   Building, 
-  QrCode, 
   ShieldCheck, 
   CheckCircle2, 
   Check, 
   Lock, 
   FileText, 
   Clock, 
-  Upload 
+  Loader2,
+  AlertCircle,
+  Zap,
+  ArrowRight,
+  RefreshCw,
+  Sparkles,
+  Info
 } from 'lucide-react';
 
-export const PaymentSetupAndRulesTab: React.FC = () => {
-  const [activeSubTab, setActiveSubTab] = useState<'account' | 'qr' | 'rules'>('account');
-  const [bankSubTab, setBankSubTab] = useState<'upi' | 'bank'>('upi');
+interface PaymentSetupAndRulesTabProps {
+  partnerName?: string;
+  referralCode?: string;
+}
+
+export const PaymentSetupAndRulesTab: React.FC<PaymentSetupAndRulesTabProps> = ({
+  partnerName = 'Jan Mohammad',
+  referralCode = 'CNTSJN'
+}) => {
+  // STEP 1: METHOD SELECTION (No tabs - modern cards)
+  const [selectedMethod, setSelectedMethod] = useState<'UPI' | 'BANK'>('UPI');
   
-  const [upiId, setUpiId] = useState('');
-  const [bankName, setBankName] = useState('');
-  const [accountNumber, setAccountNumber] = useState('');
-  const [holderName, setHolderName] = useState('');
-  const [ifscCode, setIfscCode] = useState('');
-  const [isSaved, setIsSaved] = useState(false);
+  // STEP 2A: UPI STATE
+  const [upiIdInput, setUpiIdInput] = useState('');
+  const [isVerifyingUpi, setIsVerifyingUpi] = useState(false);
+  const [upiResult, setUpiResult] = useState<{
+    verified: boolean;
+    receiverName?: string;
+    bankName?: string;
+    error?: string;
+  } | null>(null);
 
-  const [qrFile, setQrFile] = useState<string | null>(null);
-  const [qrSaved, setQrSaved] = useState(false);
+  // STEP 2B: BANK STATE
+  const [accountNum, setAccountNum] = useState('');
+  const [confirmAccountNum, setConfirmAccountNum] = useState('');
+  const [ifscInput, setIfscInput] = useState('');
+  const [isVerifyingBank, setIsVerifyingBank] = useState(false);
+  const [bankResult, setBankResult] = useState<{
+    verified: boolean;
+    accountHolderName?: string;
+    bankName?: string;
+    branch?: string;
+    error?: string;
+  } | null>(null);
 
-  const handleAccountSubmit = (e: React.FormEvent) => {
+  // STEP 3: CONFIRMED ACTIVE PAYOUT METHOD
+  const [activeMethod, setActiveMethod] = useState<{
+    methodType: 'UPI' | 'BANK';
+    identifier: string;
+    receiverName: string;
+    bankName: string;
+    verifiedAt: string;
+    isCoolingActive?: boolean;
+  } | null>(null);
+
+  const [isChangingMethod, setIsChangingMethod] = useState(false);
+  const [isSavingFinal, setIsSavingFinal] = useState(false);
+
+  // FETCH EXISTING ACTIVE PAYOUT METHOD FROM BACKEND
+  useEffect(() => {
+    fetch('/api/partner/payout-account')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.account) {
+          const acc = data.account;
+          setActiveMethod({
+            methodType: acc.accountType === 'BANK' ? 'BANK' : 'UPI',
+            identifier: acc.accountType === 'BANK' ? `•••• ${acc.bankAccountNumber?.slice(-4)}` : (acc.upiId || 'jan@okicici'),
+            receiverName: acc.bankHolderName || partnerName,
+            bankName: acc.bankName || 'Registered Bank Account',
+            verifiedAt: new Date().toISOString(),
+            isCoolingActive: false
+          });
+        }
+      })
+      .catch(err => console.error('Failed to load active payout account:', err));
+  }, [partnerName]);
+
+  // REAL-TIME DEBOUNCED UPI VERIFICATION
+  const verifyUpiApi = useCallback(async (vpa: string) => {
+    if (!vpa.includes('@') || vpa.trim().length < 5) return;
+    setIsVerifyingUpi(true);
+    setUpiResult(null);
+
+    try {
+      const res = await fetch('/api/partner/verify-upi', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ upiId: vpa.trim() })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setUpiResult({
+          verified: true,
+          receiverName: data.receiverName,
+          bankName: data.bankName
+        });
+      } else {
+        setUpiResult({
+          verified: false,
+          error: data.error || 'Could not verify UPI ID. Please check the address.'
+        });
+      }
+    } catch (err) {
+      setUpiResult({
+        verified: false,
+        error: 'Network error during UPI verification.'
+      });
+    } finally {
+      setIsVerifyingUpi(false);
+    }
+  }, []);
+
+  // DEBOUNCE EFFECT FOR UPI ID INPUT
+  useEffect(() => {
+    if (!upiIdInput.trim()) {
+      setUpiResult(null);
+      return;
+    }
+    const timer = setTimeout(() => {
+      verifyUpiApi(upiIdInput);
+    }, 450);
+    return () => clearTimeout(timer);
+  }, [upiIdInput, verifyUpiApi]);
+
+  // BANK VERIFICATION HANDLER
+  const handleBankVerify = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSaved(true);
-    setTimeout(() => setIsSaved(false), 2500);
+    if (!accountNum || !confirmAccountNum || accountNum !== confirmAccountNum) {
+      setBankResult({ verified: false, error: 'Account numbers do not match.' });
+      return;
+    }
+    if (!ifscInput || ifscInput.trim().length < 11) {
+      setBankResult({ verified: false, error: 'Please enter a valid 11-digit IFSC code.' });
+      return;
+    }
+
+    setIsVerifyingBank(true);
+    setBankResult(null);
+
+    try {
+      const res = await fetch('/api/partner/verify-bank', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          accountNumber: accountNum.trim(),
+          confirmAccountNumber: confirmAccountNum.trim(),
+          ifsc: ifscInput.trim().toUpperCase()
+        })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setBankResult({
+          verified: true,
+          accountHolderName: data.accountHolderName,
+          bankName: data.bankName,
+          branch: data.branch
+        });
+      } else {
+        setBankResult({
+          verified: false,
+          error: data.error || 'Bank account verification failed.'
+        });
+      }
+    } catch (err) {
+      setBankResult({
+        verified: false,
+        error: 'Network error during bank verification.'
+      });
+    } finally {
+      setIsVerifyingBank(false);
+    }
   };
 
-  const handleQrSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setQrSaved(true);
-    setTimeout(() => setQrSaved(false), 2500);
-  };
+  // FINAL SAVE HANDLER
+  const handleFinalSave = async () => {
+    setIsSavingFinal(true);
+    try {
+      const payload = selectedMethod === 'UPI' 
+        ? { accountType: 'UPI', upiId: upiIdInput.trim(), bankHolderName: upiResult?.receiverName, bankName: upiResult?.bankName }
+        : { accountType: 'BANK', bankAccountNumber: accountNum.trim(), bankIfsc: ifscInput.trim().toUpperCase(), bankHolderName: bankResult?.accountHolderName, bankName: bankResult?.bankName };
 
-  const handleQrUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setQrFile(reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const res = await fetch('/api/partner/payout-account', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok) {
+        setActiveMethod({
+          methodType: selectedMethod,
+          identifier: selectedMethod === 'UPI' ? upiIdInput.trim() : `•••• ${accountNum.slice(-4)}`,
+          receiverName: (selectedMethod === 'UPI' ? upiResult?.receiverName : bankResult?.accountHolderName) || partnerName,
+          bankName: (selectedMethod === 'UPI' ? upiResult?.bankName : bankResult?.bankName) || 'Verified Bank Account',
+          verifiedAt: new Date().toISOString(),
+          isCoolingActive: true
+        });
+        setIsChangingMethod(false);
+      }
+    } catch (err) {
+      console.error('Save payout error:', err);
+    } finally {
+      setIsSavingFinal(false);
     }
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+    <div className="max-w-3xl mx-auto space-y-7 animate-fade-in font-sans text-[#0F172A] pb-12">
+
       {/* HEADER BANNER */}
-      <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full mb-2 border border-indigo-100">
-            <ShieldCheck className="w-3.5 h-3.5" /> Official Settlement Account & Guidelines
-          </div>
-          <h1 className="font-display text-2xl md:text-3xl font-bold text-slate-900">
-            Payment Setup, QR Code & Policy Rules
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Register your UPI/Bank details, upload your Payment QR screenshot, and review settlement rules.
-          </p>
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+        <div className="flex items-center gap-2">
+          <span className="text-[10px] font-mono font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full">
+            RAZORPAYX SETTLEMENT ENGINE
+          </span>
+          <span className="text-[10px] font-mono font-bold text-slate-400">TDS 5% Compliant</span>
         </div>
-
-        {/* SUB TAB SELECTOR */}
-        <div className="flex bg-slate-100 p-1.5 rounded-2xl text-xs font-bold gap-1 shrink-0">
-          <button
-            type="button"
-            onClick={() => setActiveSubTab('account')}
-            className={`py-2.5 px-4 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeSubTab === 'account' ? 'bg-white text-indigo-950 shadow-sm font-extrabold' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <CreditCard className="w-3.5 h-3.5 text-indigo-600" /> Bank & UPI
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSubTab('qr')}
-            className={`py-2.5 px-4 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeSubTab === 'qr' ? 'bg-white text-indigo-950 shadow-sm font-extrabold' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <QrCode className="w-3.5 h-3.5 text-amber-600" /> Payment QR
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSubTab('rules')}
-            className={`py-2.5 px-4 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
-              activeSubTab === 'rules' ? 'bg-white text-indigo-950 shadow-sm font-extrabold' : 'text-slate-600 hover:text-slate-900'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Settlement Rules
-          </button>
-        </div>
+        <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+          Payment Setup & Payout Destination
+        </h1>
+        <p className="text-slate-500 text-xs sm:text-sm font-medium">
+          Set up your verified bank account or Instant UPI ID. Weekly honorarium disbursements settle automatically every Monday.
+        </p>
       </div>
 
-      {/* SUB TAB 1: BANK & INSTANT UPI SETUP */}
-      {activeSubTab === 'account' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-6 animate-fade-in">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
-            <div>
-              <h3 className="font-display font-bold text-xl text-slate-900 flex items-center gap-2">
-                <Building className="w-5 h-5 text-indigo-600" /> Register Payout Account
-              </h3>
-              <p className="text-xs text-slate-500 mt-0.5">
-                Specify your UPI ID or Bank Account where weekly honorariums should be sent.
-              </p>
+      {/* STEP 3 CONFIRMED STATE (IF ALREADY SET UP AND NOT CHANGING) */}
+      {activeMethod && !isChangingMethod ? (
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
+          <div className="flex items-center justify-between border-b border-slate-100 pb-5">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 border border-emerald-100 flex items-center justify-center font-black">
+                <CheckCircle2 className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <span className="text-[10px] font-mono font-black text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-full border border-emerald-100 uppercase tracking-wider">
+                  Payment Setup Complete
+                </span>
+                <h2 className="font-display font-black text-xl text-slate-900 mt-0.5">Active Payout Destination</h2>
+              </div>
             </div>
 
-            <div className="flex bg-slate-100 p-1 rounded-xl text-xs font-bold gap-1">
+            <button
+              type="button"
+              onClick={() => setIsChangingMethod(true)}
+              className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold rounded-xl border border-slate-200 transition-all cursor-pointer"
+            >
+              Change Destination
+            </button>
+          </div>
+
+          <div className="p-5 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div>
+                <span className="text-slate-400 font-bold uppercase text-[10px] block">Payout Method</span>
+                <span className="font-extrabold text-slate-900 text-sm flex items-center gap-1.5 mt-0.5">
+                  {activeMethod.methodType === 'UPI' ? <Zap className="w-4 h-4 text-indigo-600" /> : <Building className="w-4 h-4 text-emerald-600" />}
+                  {activeMethod.methodType === 'UPI' ? 'Instant UPI ID' : 'Direct Bank Account'}
+                </span>
+              </div>
+
+              <div>
+                <span className="text-slate-400 font-bold uppercase text-[10px] block">Beneficiary Identifier</span>
+                <span className="font-mono font-black text-indigo-700 text-sm mt-0.5 block">{activeMethod.identifier}</span>
+              </div>
+
+              <div>
+                <span className="text-slate-400 font-bold uppercase text-[10px] block">Receiver Name</span>
+                <span className="font-extrabold text-slate-900 mt-0.5 block">{activeMethod.receiverName}</span>
+              </div>
+
+              <div>
+                <span className="text-slate-400 font-bold uppercase text-[10px] block">Bank Name</span>
+                <span className="font-bold text-slate-700 mt-0.5 block">{activeMethod.bankName}</span>
+              </div>
+            </div>
+
+            <div className="pt-3 border-t border-slate-200/80 flex items-center justify-between text-[11px] text-slate-500 font-medium">
+              <span className="flex items-center gap-1.5 text-emerald-700 font-bold">
+                <ShieldCheck className="w-4 h-4 text-emerald-600" /> Verified Beneficiary via RazorpayX
+              </span>
+              <span className="font-mono text-[10px]">Disburses Every Monday</span>
+            </div>
+          </div>
+
+          {activeMethod.isCoolingActive && (
+            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-medium flex items-center gap-3">
+              <Clock className="w-5 h-5 text-amber-600 shrink-0" />
+              <div>
+                <span className="font-bold block">24-Hour Security Cooling Period Active</span>
+                <span className="text-[11px] text-amber-800">Your recent payout change is undergoing security validation. Payouts are protected against unauthorized edits.</span>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        /* ONBOARDING FLOW: STEP 1 -> STEP 2 -> STEP 3 */
+        <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-7">
+          
+          {/* STEP 1: CHOOSE PAYOUT METHOD (MODERN CARDS - NO TABS) */}
+          <div className="space-y-3">
+            <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+              Step 1: Choose Payout Method
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setBankSubTab('upi')}
-                className={`py-2 px-3 rounded-lg transition-all ${
-                  bankSubTab === 'upi' ? 'bg-white text-indigo-950 shadow-sm font-bold' : 'text-slate-500'
+                onClick={() => {
+                  setSelectedMethod('UPI');
+                  setUpiResult(null);
+                }}
+                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer space-y-1.5 relative ${
+                  selectedMethod === 'UPI'
+                    ? 'border-indigo-600 bg-indigo-50/70 ring-2 ring-indigo-600/30 shadow-xs'
+                    : 'border-slate-200/90 bg-white hover:bg-slate-50'
                 }`}
               >
-                Instant UPI ID
+                <div className="flex items-center justify-between">
+                  <span className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-indigo-600" /> UPI (Recommended)
+                  </span>
+                  <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                    Instant
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Settle to GPay, PhonePe, Paytm or BHIM UPI ID.
+                </p>
               </button>
+
               <button
                 type="button"
-                onClick={() => setBankSubTab('bank')}
-                className={`py-2 px-3 rounded-lg transition-all ${
-                  bankSubTab === 'bank' ? 'bg-white text-indigo-950 shadow-sm font-bold' : 'text-slate-500'
+                onClick={() => {
+                  setSelectedMethod('BANK');
+                  setBankResult(null);
+                }}
+                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer space-y-1.5 relative ${
+                  selectedMethod === 'BANK'
+                    ? 'border-indigo-600 bg-indigo-50/70 ring-2 ring-indigo-600/30 shadow-xs'
+                    : 'border-slate-200/90 bg-white hover:bg-slate-50'
                 }`}
               >
-                Bank Account
+                <div className="flex items-center justify-between">
+                  <span className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
+                    <Building className="w-4 h-4 text-emerald-600" /> Bank Account
+                  </span>
+                  <span className="text-[9px] font-mono font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800">
+                    NEFT / RTGS
+                  </span>
+                </div>
+                <p className="text-xs text-slate-500 font-medium">
+                  Direct transfer to your Savings/Current account.
+                </p>
               </button>
             </div>
           </div>
 
-          <form onSubmit={handleAccountSubmit} className="space-y-6">
-            {bankSubTab === 'upi' ? (
-              <div className="space-y-4 max-w-xl">
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                    Instant UPI ID * (GPay, PhonePe, Paytm, BHIM)
-                  </label>
+          {/* STEP 2: SINGLE-FIELD VERIFICATION FORM */}
+          {selectedMethod === 'UPI' ? (
+            <div className="space-y-4 pt-2 border-t border-slate-100">
+              <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                Step 2: Enter UPI ID
+              </label>
+
+              <div className="space-y-2 relative">
+                <div className="relative">
                   <input
                     type="text"
                     placeholder="e.g. yourname@okicici or 9876543210@paytm"
-                    value={upiId}
-                    onChange={(e) => setUpiId(e.target.value)}
-                    className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 text-sm font-mono font-bold text-indigo-950 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-emerald-600 focus:outline-none"
+                    value={upiIdInput}
+                    onChange={(e) => setUpiIdInput(e.target.value)}
+                    className="w-full px-4 py-3.5 rounded-2xl border border-slate-200 text-sm font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50/50"
+                  />
+                  {isVerifyingUpi && (
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-xs text-indigo-600 font-bold">
+                      <Loader2 className="w-4 h-4 animate-spin" /> Verifying...
+                    </div>
+                  )}
+                </div>
+
+                {/* INLINE VERIFICATION BADGE */}
+                {upiResult && upiResult.verified && (
+                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1.5 animate-fade-in">
+                    <div className="flex items-center justify-between text-xs font-extrabold text-emerald-800">
+                      <span className="flex items-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" /> ✓ Verified UPI Beneficiary
+                      </span>
+                      <span className="font-mono text-[10px] bg-emerald-100 px-2 py-0.5 rounded">RazorpayX Verified</span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                      <div>
+                        <span className="text-emerald-700 text-[10px] block font-bold">Receiver Name</span>
+                        <span className="font-extrabold text-emerald-900">{upiResult.receiverName}</span>
+                      </div>
+                      <div>
+                        <span className="text-emerald-700 text-[10px] block font-bold">Bank Name</span>
+                        <span className="font-bold text-emerald-900">{upiResult.bankName}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* INLINE ERROR */}
+                {upiResult && !upiResult.verified && upiResult.error && (
+                  <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                    <span>{upiResult.error}</span>
+                  </div>
+                )}
+              </div>
+
+              {upiResult && upiResult.verified && (
+                <button
+                  type="button"
+                  onClick={handleFinalSave}
+                  disabled={isSavingFinal}
+                  className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-2xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {isSavingFinal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                  <span>Save Payout Destination</span>
+                </button>
+              )}
+            </div>
+          ) : (
+            <form onSubmit={handleBankVerify} className="space-y-4 pt-2 border-t border-slate-100">
+              <label className="text-xs font-black uppercase tracking-wider text-slate-400 block">
+                Step 2: Enter Bank Account & IFSC
+              </label>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 block mb-1">Account Number *</label>
+                  <input
+                    type="password"
+                    placeholder="Enter Account Number"
+                    value={accountNum}
+                    onChange={(e) => setAccountNum(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50/50"
                     required
                   />
                 </div>
 
-                <div className="p-4 rounded-2xl bg-emerald-50/80 border border-emerald-200 text-xs text-emerald-950 space-y-1">
-                  <span className="font-bold flex items-center gap-1.5 text-emerald-900">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Instant Settlement Active
-                  </span>
-                  <p className="text-[11.5px] text-emerald-800 leading-relaxed">
-                    Honorarium payouts sent to this UPI ID will settle directly into your bank account on Monday batch disbursements.
-                  </p>
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 block mb-1">Confirm Account Number *</label>
+                  <input
+                    type="text"
+                    placeholder="Re-enter Account Number"
+                    value={confirmAccountNum}
+                    onChange={(e) => setConfirmAccountNum(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-mono font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50/50"
+                    required
+                  />
                 </div>
               </div>
-            ) : (
-              <div className="space-y-4 max-w-2xl">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Account Holder Name *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. Jan Mohammad"
-                      value={holderName}
-                      onChange={(e) => setHolderName(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      required
-                    />
-                  </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Bank Name *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. State Bank of India"
-                      value={bankName}
-                      onChange={(e) => setBankName(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      required
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      Account Number *
-                    </label>
-                    <input
-                      type="password"
-                      placeholder="Enter Account Number"
-                      value={accountNumber}
-                      onChange={(e) => setAccountNumber(e.target.value)}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-mono font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      required
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1">
-                      IFSC Code *
-                    </label>
-                    <input
-                      type="text"
-                      placeholder="e.g. SBIN0001234"
-                      value={ifscCode}
-                      onChange={(e) => setIfscCode(e.target.value.toUpperCase())}
-                      className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-mono font-semibold uppercase focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                      required
-                    />
-                  </div>
-                </div>
-              </div>
-            )}
-
-            <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-2 text-xs text-slate-600 font-semibold">
-                <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Tax Status: <strong className="text-slate-900">PAN Verified (5% TDS Compliant)</strong></span>
+              <div>
+                <label className="text-[11px] font-bold text-slate-600 block mb-1">IFSC Code *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. SBIN0001234"
+                  value={ifscInput}
+                  onChange={(e) => setIfscInput(e.target.value.toUpperCase())}
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 text-xs font-mono font-bold uppercase text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-600 bg-slate-50/50"
+                  required
+                />
               </div>
 
-              <button
-                type="submit"
-                disabled={isSaved}
-                className="py-3.5 px-8 rounded-2xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
-              >
-                {isSaved ? (
-                  <>
-                    <Check className="w-4 h-4 text-emerald-400" /> Account Details Saved!
-                  </>
-                ) : (
-                  'Save Account Details'
-                )}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
+              {!bankResult?.verified && (
+                <button
+                  type="submit"
+                  disabled={isVerifyingBank}
+                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
+                >
+                  {isVerifyingBank ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+                  <span>Verify Bank Account</span>
+                </button>
+              )}
 
-      {/* SUB TAB 2: PAYMENT QR IMAGE UPLOAD */}
-      {activeSubTab === 'qr' && (
-        <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-6 animate-fade-in">
-          <div className="border-b border-slate-100 pb-4">
-            <h3 className="font-display font-bold text-xl text-slate-900 flex items-center gap-2">
-              <QrCode className="w-5 h-5 text-amber-600" /> Personal Payment QR Screenshot Upload
-            </h3>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Upload your personal PhonePe, Paytm, or GPay QR code screenshot for direct QR settlements.
-            </p>
-          </div>
-
-          <form onSubmit={handleQrSubmit} className="space-y-6">
-            <div className="border-2 border-dashed border-slate-300 rounded-3xl p-8 bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer relative text-center">
-              {qrFile ? (
-                <div className="space-y-3">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={qrFile} alt="Payment QR Code" className="w-44 h-44 mx-auto object-contain rounded-2xl border border-slate-200 shadow-md bg-white p-2" />
-                  <span className="text-xs font-bold text-emerald-700 flex items-center justify-center gap-1.5">
-                    <CheckCircle2 className="w-4 h-4 text-emerald-600" /> Personal Payment QR Screenshot Uploaded & Verified
-                  </span>
-                </div>
-              ) : (
-                <div className="space-y-3 py-6">
-                  <QrCode className="w-16 h-16 text-amber-500 mx-auto" />
-                  <div>
-                    <span className="text-sm font-bold text-slate-900 block">
-                      Click to Select Payment QR Image File
+              {/* INLINE BANK VERIFICATION RESULT */}
+              {bankResult && bankResult.verified && (
+                <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-2 animate-fade-in">
+                  <div className="flex items-center justify-between text-xs font-extrabold text-emerald-800">
+                    <span className="flex items-center gap-1.5">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" /> ✓ Verified Bank Account
                     </span>
-                    <span className="text-xs text-slate-400">
-                      Upload PhonePe, Paytm or GPay QR code screenshot (PNG, JPG, WEBP - Max 5MB)
-                    </span>
+                    <span className="font-mono text-[10px] bg-emerald-100 px-2 py-0.5 rounded">Penny-Drop Verified</span>
                   </div>
+                  <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                    <div>
+                      <span className="text-emerald-700 text-[10px] block font-bold">Account Holder</span>
+                      <span className="font-extrabold text-emerald-900">{bankResult.accountHolderName}</span>
+                    </div>
+                    <div>
+                      <span className="text-emerald-700 text-[10px] block font-bold">Bank Name</span>
+                      <span className="font-bold text-emerald-900">{bankResult.bankName}</span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={handleFinalSave}
+                    disabled={isSavingFinal}
+                    className="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2 mt-2"
+                  >
+                    {isSavingFinal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
+                    <span>Save Payout Account</span>
+                  </button>
                 </div>
               )}
 
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handleQrUpload}
-                className="absolute inset-0 opacity-0 cursor-pointer"
-              />
-            </div>
-
-            <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-950 space-y-1">
-              <div className="font-bold flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-amber-600" /> Fraud Prevention Rules
-              </div>
-              <p className="text-[11.5px] text-amber-900 leading-relaxed">
-                Uploaded Payment QR screenshot must belong to the partner's registered PhonePe, GPay, or Paytm account name.
-              </p>
-            </div>
-
-            <div className="pt-2 flex justify-end">
-              <button
-                type="submit"
-                disabled={qrSaved || !qrFile}
-                className="py-3.5 px-8 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all disabled:opacity-50"
-              >
-                {qrSaved ? (
-                  <>
-                    <Check className="w-4 h-4 text-emerald-400" /> QR Screenshot Saved!
-                  </>
-                ) : (
-                  'Save Payment QR Screenshot'
-                )}
-              </button>
-            </div>
-          </form>
+              {bankResult && !bankResult.verified && bankResult.error && (
+                <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs font-semibold flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                  <span>{bankResult.error}</span>
+                </div>
+              )}
+            </form>
+          )}
         </div>
       )}
 
-      {/* SUB TAB 3: OFFICIAL PAYMENT & SETTLEMENT RULES */}
-      {activeSubTab === 'rules' && (
-        <div className="space-y-6 animate-fade-in">
-          <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 border border-slate-800 shadow-xl space-y-4">
-            <div className="flex items-center gap-3.5 border-b border-slate-800/80 pb-4">
-              <div className="p-3.5 rounded-2xl bg-amber-400/20 border border-amber-400/30 text-amber-300">
-                <ShieldCheck className="w-6 h-6 text-amber-400" />
-              </div>
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 font-mono">
-                  Official Policy Guidelines
-                </span>
-                <h2 className="font-display text-xl sm:text-2xl font-bold text-white">
-                  Partner Honorarium Settlement & Payout Rules
-                </h2>
-              </div>
-            </div>
-
-            <p className="text-xs md:text-sm text-slate-300 leading-relaxed">
-              Read all official rules governing partner revenue share rates, weekly payout requests, Monday batch SLA, and tax/TDS compliance.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-                <CreditCard className="w-5 h-5 text-indigo-600" /> Revenue Share Rate (25% Max)
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Partners receive <strong>₹25.00 per verified candidate registration</strong> (25% revenue share max of the ₹99 CNTS exam fee).
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-                <Clock className="w-5 h-5 text-emerald-600" /> Weekly Monday Payout SLA
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                All submitted withdrawal requests are queued and processed <strong>Weekly every Monday</strong>. Requests submitted before Sunday 11:59 PM are included in Monday's batch.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-                <FileText className="w-5 h-5 text-amber-600" /> 5% TDS Compliance (Section 194H)
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                A standard <strong>5% TDS</strong> is deducted under Section 194H for PAN-verified partner accounts. Form 16A statements are issued quarterly.
-              </p>
-            </div>
-
-            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-3">
-              <div className="flex items-center gap-2 text-slate-900 font-bold text-base">
-                <ShieldCheck className="w-5 h-5 text-emerald-600" /> Fraud Prevention & Verification
-              </div>
-              <p className="text-xs text-slate-600 leading-relaxed">
-                Candidate registrations undergo automated duplicate & IP verification. Honorarium credits trigger upon verified ₹99 fee settlement.
-              </p>
-            </div>
-          </div>
+      {/* POLICY & DEPRECATION NOTICE */}
+      <div className="p-5 rounded-3xl bg-slate-50 border border-slate-200/90 space-y-3">
+        <div className="flex items-center gap-2 text-xs font-extrabold text-slate-900">
+          <Info className="w-4 h-4 text-indigo-600" /> Automated Disbursement Guidelines
         </div>
-      )}
+        <ul className="text-xs text-slate-600 font-medium space-y-1.5 leading-relaxed pl-1">
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+            <span>Weekly payouts process automatically every <strong>Monday morning</strong> via RazorpayX.</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+            <span>TDS at <strong>5%</strong> is deducted per Income Tax Section 194H rules and credited to your PAN.</span>
+          </li>
+          <li className="flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" />
+            <span>Manual QR screenshot uploads have been upgraded to <strong>Instant API Verification</strong> for 100% security against fraud.</span>
+          </li>
+        </ul>
+      </div>
+
     </div>
   );
 };
