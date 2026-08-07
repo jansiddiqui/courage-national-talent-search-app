@@ -100,7 +100,7 @@ export async function POST(request: Request) {
 
     const detectedBank = RECOGNIZED_UPI_HANDLES[handleSuffix] || `${handleSuffix.toUpperCase()} PSP Bank`;
 
-    // 2. LIVE RAZORPAY / RAZORPAYX LOOKUP (Attempting official Razorpay VPA endpoints)
+    // 2. OFFICIAL DOCUMENTED RAZORPAY / RAZORPAYX VPA VALIDATION
     const keyId = process.env.RAZORPAYX_KEY_ID || process.env.RAZORPAY_KEY_ID;
     const keySecret = process.env.RAZORPAYX_KEY_SECRET || process.env.RAZORPAY_KEY_SECRET;
 
@@ -113,8 +113,8 @@ export async function POST(request: Request) {
       try {
         const authHeader = 'Basic ' + Buffer.from(`${keyId}:${keySecret}`).toString('base64');
         
-        // Try Endpoint 1: Razorpay VPA Validation (POST /v1/payments/validate_vpa)
-        let rzpRes = await fetch('https://api.razorpay.com/v1/payments/validate_vpa', {
+        // Official Documented Endpoint: POST /v1/payments/validate/vpa
+        const rzpRes = await fetch('https://api.razorpay.com/v1/payments/validate/vpa', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -123,49 +123,26 @@ export async function POST(request: Request) {
           body: JSON.stringify({ vpa: cleanUpi })
         });
 
-        // Try Endpoint 2: If 404, fallback to Razorpay Fund Accounts Validation
-        if (rzpRes.status === 404) {
-          rzpRes = await fetch('https://api.razorpay.com/v1/fund_accounts/validations', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': authHeader
-            },
-            body: JSON.stringify({
-              account_number: process.env.RAZORPAY_ACCOUNT_NUMBER || '233445566778899',
-              fund_account: {
-                account_type: 'vpa',
-                vpa: { address: cleanUpi },
-                contact: { name: 'Beneficiary', type: 'self' }
-              },
-              amount: 100,
-              currency: 'INR'
-            })
+        const rzpData = await rzpRes.json();
+
+        if (rzpRes.ok && rzpData.vpa && rzpData.customer_name) {
+          return NextResponse.json({
+            success: true,
+            verified: true,
+            upiId: cleanUpi,
+            receiverName: rzpData.customer_name,
+            bankName: detectedBank,
+            source: 'RAZORPAYX_NPCI',
+            verificationBadge: 'RAZORPAYX_VERIFIED',
+            verifiedAt: new Date().toISOString()
           });
         }
-
-        if (rzpRes.ok) {
-          const rzpData = await rzpRes.json();
-          const liveCustomerName = rzpData.customer_name || rzpData.results?.registered_name || rzpData.fund_account?.vpa?.username;
-          if (liveCustomerName) {
-            return NextResponse.json({
-              success: true,
-              verified: true,
-              upiId: cleanUpi,
-              receiverName: liveCustomerName,
-              bankName: detectedBank,
-              source: 'RAZORPAYX_NPCI',
-              verificationBadge: 'RAZORPAYX_VERIFIED',
-              verifiedAt: new Date().toISOString()
-            });
-          }
-        }
       } catch (apiErr) {
-        console.error('[RazorpayX Live Verification Exception]:', apiErr);
+        console.error('[Razorpay Live Verification Exception]:', apiErr);
       }
     }
 
-    // 3. ENTERPRISE VERIFIED BENEFICIARY RESOLUTION
+    // 3. BENEFICIARY RESOLUTION FALLBACK
     const isMobileNumber = /^\d+$/.test(usernamePart);
     let resolvedReceiverName = partnerName;
 
