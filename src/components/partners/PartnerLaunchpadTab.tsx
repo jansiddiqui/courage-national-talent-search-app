@@ -189,111 +189,177 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
         </div>
       </div>
 
-      {/* 3. VISUAL VIDEO CREATION WORKFLOW INFOGRAPHIC */}
-      <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white p-6 sm:p-8 rounded-3xl border border-indigo-800 shadow-xl space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-800 pb-4">
+      {/* 3. VISUAL VIDEO CREATION WORKFLOW (HUMAN DESIGNS - CLEAN LIGHT THEME & MOBILE TIMELINE) */}
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-7">
+        
+        {/* Header Row */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-black text-amber-300 bg-amber-400/20 px-3 py-0.5 rounded-full border border-amber-400/30">
-              <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Complete Creator Production System
+            <div className="inline-flex items-center gap-1.5 text-[11px] font-black text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+              <Sparkles className="w-3.5 h-3.5 text-indigo-600" /> 5-Step Creator Production Playbook
             </div>
-            <h3 className="font-display text-xl sm:text-2xl font-black text-white">
-              How to Create & Publish Viral Videos in 5 Easy Steps
+            <h3 className="font-display text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+              How to Create & Publish Viral Videos
             </h3>
+            <p className="text-xs text-slate-500 font-medium">
+              Follow this 5-step sequence to produce high-converting short-form reels for CNTS 2026.
+            </p>
           </div>
+
           <button
             type="button"
             onClick={() => onNavigateTab && onNavigateTab('roadmap')}
-            className="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs px-4 py-2 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 shrink-0 shadow-md"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0 shadow-sm shadow-indigo-600/20"
           >
             <span>Open Video Roadmap</span>
-            <ArrowRight className="w-4 h-4" />
+            <ArrowRight className="w-4 h-4 text-indigo-200" />
           </button>
         </div>
 
-        {/* 5-STEP VISUAL PIPELINE PIPES */}
-        <div className="grid grid-cols-1 sm:grid-cols-5 gap-3">
-          
-          {/* Stage 1 */}
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-amber-400 text-slate-950 font-black text-xs flex items-center justify-center">
-                01
-              </div>
-              <h4 className="font-bold text-xs text-white">1. Pick Concept</h4>
-              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
-                Select from 8 video concepts in the <strong>Video Roadmap</strong> tab.
-              </p>
-            </div>
-            <div className="text-[10px] font-mono text-amber-300 font-extrabold bg-amber-400/10 p-1.5 rounded-lg border border-amber-400/20">
-              Select Concept 🎬
-            </div>
-          </div>
+        {/* DESKTOP STEPPER PIPELINE (Hidden on Mobile, Visible on md+) */}
+        <div className="hidden md:grid md:grid-cols-5 gap-3 relative">
+          {[
+            {
+              num: '01',
+              title: 'Pick Concept',
+              desc: 'Select 1 of 8 topics from the Video Roadmap tab.',
+              btnText: 'Roadmap',
+              action: () => onNavigateTab && onNavigateTab('roadmap'),
+              color: 'border-amber-200 bg-amber-50/50 text-amber-900',
+              badgeColor: 'bg-amber-100 text-amber-800'
+            },
+            {
+              num: '02',
+              title: 'AI Prompt',
+              desc: 'Generate Hinglish prompt with 1 click.',
+              btnText: 'AI Prompt',
+              action: () => onNavigateTab && onNavigateTab('roadmap'),
+              color: 'border-indigo-200 bg-indigo-50/50 text-indigo-900',
+              badgeColor: 'bg-indigo-100 text-indigo-800'
+            },
+            {
+              num: '03',
+              title: 'Script & Voice',
+              desc: 'Run ChatGPT & ElevenLabs voiceover.',
+              btnText: 'AI Studio',
+              action: () => onNavigateTab && onNavigateTab('growth'),
+              color: 'border-emerald-200 bg-emerald-50/50 text-emerald-900',
+              badgeColor: 'bg-emerald-100 text-emerald-800'
+            },
+            {
+              num: '04',
+              title: 'Edit & Post',
+              desc: 'Edit CapCut, attach ref code & post Reel.',
+              btnText: 'Publish',
+              action: () => onNavigateTab && onNavigateTab('referral'),
+              color: 'border-violet-200 bg-violet-50/50 text-violet-900',
+              badgeColor: 'bg-violet-100 text-violet-800'
+            },
+            {
+              num: '05',
+              title: 'Submit & Earn',
+              desc: 'Submit video link for admin verification.',
+              btnText: 'Submit URL',
+              action: () => onNavigateTab && onNavigateTab('roadmap'),
+              color: 'border-sky-200 bg-sky-50/50 text-sky-900',
+              badgeColor: 'bg-sky-100 text-sky-800'
+            }
+          ].map((s, idx) => (
+            <div 
+              key={s.num} 
+              className={`p-4 rounded-2xl border ${s.color} space-y-3 flex flex-col justify-between hover:shadow-md transition-all relative`}
+            >
+              <div className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="font-mono font-black text-xs px-2 py-0.5 rounded-md bg-white border border-slate-200 text-slate-900">
+                    {s.num}
+                  </span>
+                  <span className={`text-[9px] font-mono font-bold px-2 py-0.5 rounded-full ${s.badgeColor}`}>
+                    Step {idx + 1}
+                  </span>
+                </div>
 
-          {/* Stage 2 */}
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-indigo-500 text-white font-black text-xs flex items-center justify-center">
-                02
+                <h4 className="font-display font-extrabold text-sm text-slate-900">{s.title}</h4>
+                <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                  {s.desc}
+                </p>
               </div>
-              <h4 className="font-bold text-xs text-white">2. Get Master Prompt</h4>
-              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
-                Click <code className="text-amber-300 font-bold">[Generate Master Prompt]</code> in Hinglish or Hindi.
-              </p>
-            </div>
-            <div className="text-[10px] font-mono text-indigo-300 font-extrabold bg-indigo-500/10 p-1.5 rounded-lg border border-indigo-400/20">
-              Copy AI Prompt ✨
-            </div>
-          </div>
 
-          {/* Stage 3 */}
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-emerald-500 text-white font-black text-xs flex items-center justify-center">
-                03
-              </div>
-              <h4 className="font-bold text-xs text-white">3. Generate Script & Voice</h4>
-              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
-                Paste into <strong>ChatGPT/Claude</strong> & use <strong>ElevenLabs</strong> for AI voiceover.
-              </p>
+              <button
+                type="button"
+                onClick={s.action}
+                className="w-full py-1.5 px-2 bg-white hover:bg-slate-100 text-slate-900 font-extrabold text-[11px] rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer text-center"
+              >
+                {s.btnText} →
+              </button>
             </div>
-            <div className="text-[10px] font-mono text-emerald-300 font-extrabold bg-emerald-500/10 p-1.5 rounded-lg border border-emerald-400/20">
-              Run AI Tools 🤖
-            </div>
-          </div>
-
-          {/* Stage 4 */}
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-violet-500 text-white font-black text-xs flex items-center justify-center">
-                04
-              </div>
-              <h4 className="font-bold text-xs text-white">4. Edit & Publish</h4>
-              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
-                Edit in <strong>CapCut</strong>, add your referral link (<code className="text-amber-300 font-bold">{referralCode}</code>) & post to Reels/Shorts.
-              </p>
-            </div>
-            <div className="text-[10px] font-mono text-violet-300 font-extrabold bg-violet-500/10 p-1.5 rounded-lg border border-violet-400/20">
-              Post to Reels 📲
-            </div>
-          </div>
-
-          {/* Stage 5 */}
-          <div className="bg-white/10 backdrop-blur-md p-4 rounded-2xl border border-white/10 space-y-2.5 flex flex-col justify-between">
-            <div className="space-y-2">
-              <div className="w-8 h-8 rounded-xl bg-sky-500 text-white font-black text-xs flex items-center justify-center">
-                05
-              </div>
-              <h4 className="font-bold text-xs text-white">5. Track & Earn</h4>
-              <p className="text-[11px] text-slate-300 leading-relaxed font-medium">
-                Click <code className="text-amber-300 font-bold">[Submit Video Link]</code> so admin verifies views & awards points!
-              </p>
-            </div>
-            <div className="text-[10px] font-mono text-sky-300 font-extrabold bg-sky-500/10 p-1.5 rounded-lg border border-sky-400/20">
-              Submit Link 🏆
-            </div>
-          </div>
-
+          ))}
         </div>
+
+        {/* NATIVE MOBILE TIMELINE ROADMAP (Visible on Mobile < md) */}
+        <div className="md:hidden space-y-4 relative border-l-2 border-indigo-100 pl-4 ml-2">
+          {[
+            {
+              num: '01',
+              stepTitle: 'Step 1: Choose Video Concept',
+              desc: 'Browse our 8 pre-crafted video topics organized into 5 phases leading up to Aug 30 Exam.',
+              btnText: 'Open Roadmap',
+              action: () => onNavigateTab && onNavigateTab('roadmap')
+            },
+            {
+              num: '02',
+              stepTitle: 'Step 2: Generate Master AI Prompt',
+              desc: 'Click [Generate Master Prompt] on your chosen topic. Select Hinglish or Hindi language.',
+              btnText: 'Copy Prompt',
+              action: () => onNavigateTab && onNavigateTab('roadmap')
+            },
+            {
+              num: '03',
+              stepTitle: 'Step 3: Run AI Tools (ChatGPT & ElevenLabs)',
+              desc: 'Paste prompt into ChatGPT for script & ElevenLabs for realistic AI audio voiceover.',
+              btnText: 'AI Studio',
+              action: () => onNavigateTab && onNavigateTab('growth')
+            },
+            {
+              num: '04',
+              stepTitle: 'Step 4: Edit CapCut & Publish Reel',
+              desc: 'Add voiceover in CapCut, paste your referral link (CNTSJN) in the caption, and share.',
+              btnText: 'Media Kit',
+              action: () => onNavigateTab && onNavigateTab('referral')
+            },
+            {
+              num: '05',
+              stepTitle: 'Step 5: Submit Video URL for Points',
+              desc: 'Click [Submit Video Link] on the topic card. Admin verifies views and awards bonus points.',
+              btnText: 'Submit Link',
+              action: () => onNavigateTab && onNavigateTab('roadmap')
+            }
+          ].map((item) => (
+            <div key={item.num} className="bg-slate-50 p-4 rounded-2xl border border-slate-200/90 space-y-2.5 relative">
+              <div className="absolute -left-[25px] top-4 w-4 h-4 rounded-full bg-indigo-600 border-2 border-white shadow-xs" />
+              
+              <div className="flex items-center justify-between">
+                <span className="font-display font-extrabold text-sm text-slate-900">{item.stepTitle}</span>
+                <span className="font-mono font-black text-[10px] bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full">
+                  {item.num}
+                </span>
+              </div>
+
+              <p className="text-xs text-slate-600 font-medium leading-relaxed">
+                {item.desc}
+              </p>
+
+              <button
+                type="button"
+                onClick={item.action}
+                className="w-full py-2 bg-white hover:bg-slate-100 text-indigo-700 font-extrabold text-xs rounded-xl border border-slate-200 shadow-2xs transition-colors cursor-pointer text-center"
+              >
+                {item.btnText} →
+              </button>
+            </div>
+          ))}
+        </div>
+
       </div>
 
       {/* 4. PARTNER BENEFITS RECAP */}
