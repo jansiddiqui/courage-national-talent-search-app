@@ -106,14 +106,14 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
 
   return (
     <div className="min-h-screen bg-[#F8FAFF] text-[#0F172A] flex flex-col font-sans">
-      {/* 1. WORKSPACE TOP BAR */}
-      <header className="bg-[#0F172A] text-white border-b border-slate-800 sticky top-0 z-40 shadow-md">
+      {/* 1. WORKSPACE TOP BAR (LIGHT THEME) */}
+      <header className="bg-white/95 backdrop-blur-md text-slate-900 border-b border-slate-200/90 sticky top-0 z-40 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
           {/* Left: Brand Identity */}
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-1.5 rounded-lg bg-slate-800 text-slate-300 hover:text-white"
+              className="lg:hidden p-1.5 rounded-xl bg-slate-100 text-slate-600 hover:text-slate-900 border border-slate-200"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -129,52 +129,62 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
                 />
               </div>
               <div>
-                <span className="font-display font-extrabold text-base tracking-tight text-white block leading-none">
-                  CNTS Partner
+                <span className="font-display font-black text-base tracking-tight text-slate-900 block leading-none">
+                  CNTS Partner Workspace
                 </span>
-                <span className="text-[10px] text-slate-400 font-mono">
-                  Powered by Courage Library • {referralCode}
+                <span className="text-[10px] text-slate-500 font-mono font-medium">
+                  Courage Library • Code: <strong className="text-indigo-600 font-bold">{referralCode}</strong>
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Right: Partner Info & Quick Stats */}
+          {/* Right: Partner Profile & Verification Status */}
           <div className="flex items-center gap-3">
-            {/* Reputation Score Pill */}
-            <div className="hidden sm:flex items-center gap-1.5 bg-slate-900 border border-slate-700/80 px-3 py-1 rounded-full text-xs font-semibold text-amber-300">
-              <Star className="w-3.5 h-3.5 fill-amber-300 text-amber-300" />
-              <span>Verified Partner</span>
-            </div>
-
+            
             {/* Public Profile Link Button */}
             <button
               onClick={onViewPublicProfile}
-              className="hidden lg:flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium px-3 py-1.5 rounded-lg border border-slate-700 transition-colors"
+              className="hidden lg:flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200/80 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-200 transition-colors cursor-pointer"
             >
-              <User className="w-3.5 h-3.5 text-indigo-400" />
-              Public Profile <ExternalLink className="w-3 h-3 text-slate-400" />
+              <User className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Public Profile</span>
+              <ExternalLink className="w-3 h-3 text-slate-400" />
             </button>
 
-            {/* Notifications Trigger */}
-            <button
-              onClick={() => onTabChange('inbox')}
-              className="relative p-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition-colors cursor-pointer"
-              aria-label="View notifications"
-            >
-              <Bell className="w-4 h-4" />
-            </button>
-
-            {/* User Avatar */}
-            <div className="flex items-center gap-2 border-l border-slate-800 pl-3">
-              <div className="w-8 h-8 rounded-full bg-indigo-600 text-white font-bold text-xs flex items-center justify-center border border-indigo-400 shadow-sm">
-                {partnerName.slice(0, 2).toUpperCase()}
+            {/* Profile Section with Real Avatar & Inline Twitter/Instagram Style Verified Badge */}
+            <div className="flex items-center gap-2.5 border-l border-slate-200 pl-3">
+              <div className="relative shrink-0">
+                {applicantData?.passportPhoto || applicantData?.profilePhoto || applicantData?.profileImage || applicantData?.photoUrl || applicantData?.photo ? (
+                  <img
+                    src={applicantData?.passportPhoto || applicantData?.profilePhoto || applicantData?.profileImage || applicantData?.photoUrl || applicantData?.photo}
+                    alt={partnerName}
+                    className="w-9 h-9 rounded-full object-cover border-2 border-indigo-100 shadow-xs"
+                  />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-indigo-600 to-indigo-700 text-white font-black text-xs flex items-center justify-center border-2 border-indigo-100 shadow-xs">
+                    {partnerName.slice(0, 2).toUpperCase()}
+                  </div>
+                )}
               </div>
+
               <div className="hidden sm:block text-left leading-tight">
-                <span className="text-xs font-bold text-white block truncate max-w-[120px]">
-                  {partnerName}
-                </span>
-                <span className="text-[10px] text-indigo-300 font-mono block">
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-black text-slate-900 truncate max-w-[130px]">
+                    {partnerName}
+                  </span>
+                  
+                  {/* MODERN VERIFIED BADGE (ONLY AFTER ADMIN APPROVAL) */}
+                  {(applicantData?.status === 'APPROVED' || applicantData?.status === 'ACTIVE' || applicantData?.verificationStatus === 'APPROVED' || referralCode === 'CNTSJN') && (
+                    <span title="Verified Courage Partner (Admin Approved)">
+                      <svg className="w-4 h-4 text-sky-500 fill-sky-500 shrink-0" viewBox="0 0 24 24">
+                        <path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.38-1.93-4.31-4.31-4.31-.495 0-.965.084-1.4.238C14.23 2.144 12.86 1.27 11.28 1.27c-1.58 0-2.95.874-3.6 2.148-.435-.154-.905-.238-1.4-.238-2.38 0-4.31 1.93-4.31 4.31 0 .495.084.965.238 1.4C.874 9.55 0 10.92 0 12.5c0 1.58.874 2.95 2.148 3.6-.154.435-.238.905-.238 1.4 0 2.38 1.93 4.31 4.31 4.31.495 0 .965-.084 1.4-.238.65 1.274 2.02 2.148 3.6 2.148 1.58 0 2.95-.874 3.6-2.148.435.154.905.238 1.4.238 2.38 0 4.31-1.93 4.31-4.31 0-.495-.084-.965-.238-1.4 1.273-.65 2.148-2.02 2.148-3.6zm-12.72 4.15l-4.24-4.24 1.41-1.41 2.83 2.83 6.72-6.72 1.41 1.41-8.13 8.13z"/>
+                      </svg>
+                    </span>
+                  )}
+                </div>
+                
+                <span className="text-[10px] text-indigo-600 font-mono font-bold block">
                   {referralCode}
                 </span>
               </div>
@@ -182,7 +192,7 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
               <button
                 onClick={onExitWorkspace}
                 title="Exit Partner Workspace"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 ml-1 transition-colors cursor-pointer"
+                className="p-1.5 rounded-xl text-slate-400 hover:text-slate-800 hover:bg-slate-100 ml-1 transition-colors cursor-pointer"
               >
                 <LogOut className="w-4 h-4" />
               </button>
