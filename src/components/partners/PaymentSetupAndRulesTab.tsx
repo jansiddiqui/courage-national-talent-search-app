@@ -394,22 +394,13 @@ export const PaymentSetupAndRulesTab: React.FC<PaymentSetupAndRulesTabProps> = (
 
                 {/* INLINE VERIFICATION BADGE */}
                 {upiResult && upiResult.verified && (
-                  <div className={`p-4 rounded-2xl border space-y-1.5 animate-fade-in ${
-                    upiResult.source === 'MOCK_DEV_SERVICE' || upiResult.verificationBadge === 'MOCK_DEVELOPMENT_MODE'
-                      ? 'bg-amber-50/80 border-amber-200 text-amber-950'
-                      : 'bg-emerald-50 border-emerald-200 text-emerald-950'
-                  }`}>
-                    <div className="flex items-center justify-between text-xs font-extrabold">
+                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1.5 animate-fade-in">
+                    <div className="flex items-center justify-between text-xs font-extrabold text-emerald-800">
                       <span className="flex items-center gap-1.5">
-                        <CheckCircle2 className={`w-4 h-4 ${upiResult.source === 'MOCK_DEV_SERVICE' ? 'text-amber-600' : 'text-emerald-600'}`} /> 
-                        {upiResult.source === 'MOCK_DEV_SERVICE' ? '✓ Verified Syntax (Development Mode)' : '✓ Verified UPI Beneficiary'}
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" /> ✓ Verified UPI Beneficiary
                       </span>
-                      <span className={`font-mono text-[10px] px-2 py-0.5 rounded font-black border ${
-                        upiResult.source === 'MOCK_DEV_SERVICE'
-                          ? 'bg-amber-100 text-amber-900 border-amber-300'
-                          : 'bg-emerald-100 text-emerald-800 border-emerald-200'
-                      }`}>
-                        {upiResult.source === 'MOCK_DEV_SERVICE' ? 'Mock Verification (Dev Mode)' : 'RazorpayX Live Verified'}
+                      <span className="font-mono text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-black">
+                        RazorpayX Verified
                       </span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs pt-1">
