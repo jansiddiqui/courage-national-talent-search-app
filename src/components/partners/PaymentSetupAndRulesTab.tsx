@@ -38,6 +38,8 @@ export const PaymentSetupAndRulesTab: React.FC<PaymentSetupAndRulesTabProps> = (
     verified: boolean;
     receiverName?: string;
     bankName?: string;
+    source?: string;
+    verificationBadge?: string;
     error?: string;
   } | null>(null);
 
@@ -104,7 +106,9 @@ export const PaymentSetupAndRulesTab: React.FC<PaymentSetupAndRulesTabProps> = (
         setUpiResult({
           verified: true,
           receiverName: data.receiverName,
-          bankName: data.bankName
+          bankName: data.bankName,
+          source: data.source,
+          verificationBadge: data.verificationBadge
         });
       } else {
         setUpiResult({
@@ -390,21 +394,32 @@ export const PaymentSetupAndRulesTab: React.FC<PaymentSetupAndRulesTabProps> = (
 
                 {/* INLINE VERIFICATION BADGE */}
                 {upiResult && upiResult.verified && (
-                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1.5 animate-fade-in">
-                    <div className="flex items-center justify-between text-xs font-extrabold text-emerald-800">
+                  <div className={`p-4 rounded-2xl border space-y-1.5 animate-fade-in ${
+                    upiResult.source === 'MOCK_DEV_SERVICE' || upiResult.verificationBadge === 'MOCK_DEVELOPMENT_MODE'
+                      ? 'bg-amber-50/80 border-amber-200 text-amber-950'
+                      : 'bg-emerald-50 border-emerald-200 text-emerald-950'
+                  }`}>
+                    <div className="flex items-center justify-between text-xs font-extrabold">
                       <span className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" /> ✓ Verified UPI Beneficiary
+                        <CheckCircle2 className={`w-4 h-4 ${upiResult.source === 'MOCK_DEV_SERVICE' ? 'text-amber-600' : 'text-emerald-600'}`} /> 
+                        {upiResult.source === 'MOCK_DEV_SERVICE' ? '✓ Verified Syntax (Development Mode)' : '✓ Verified UPI Beneficiary'}
                       </span>
-                      <span className="font-mono text-[10px] bg-emerald-100 px-2 py-0.5 rounded">RazorpayX Verified</span>
+                      <span className={`font-mono text-[10px] px-2 py-0.5 rounded font-black border ${
+                        upiResult.source === 'MOCK_DEV_SERVICE'
+                          ? 'bg-amber-100 text-amber-900 border-amber-300'
+                          : 'bg-emerald-100 text-emerald-800 border-emerald-200'
+                      }`}>
+                        {upiResult.source === 'MOCK_DEV_SERVICE' ? 'Mock Verification (Dev Mode)' : 'RazorpayX Live Verified'}
+                      </span>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-xs pt-1">
                       <div>
-                        <span className="text-emerald-700 text-[10px] block font-bold">Receiver Name</span>
-                        <span className="font-extrabold text-emerald-900">{upiResult.receiverName}</span>
+                        <span className="text-slate-500 text-[10px] block font-bold">Account Holder Name</span>
+                        <span className="font-extrabold text-slate-900">{upiResult.receiverName}</span>
                       </div>
                       <div>
-                        <span className="text-emerald-700 text-[10px] block font-bold">Bank Name</span>
-                        <span className="font-bold text-emerald-900">{upiResult.bankName}</span>
+                        <span className="text-slate-500 text-[10px] block font-bold">Bank Name</span>
+                        <span className="font-bold text-slate-900">{upiResult.bankName}</span>
                       </div>
                     </div>
                   </div>

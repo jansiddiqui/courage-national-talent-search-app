@@ -1,11 +1,6 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { verifySession } from '@/lib/sessionHelper';
-import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
-
-// Comprehensive Indian UPI PSP Handles Directory
+// Comprehensive Indian UPI PSP Handles Directory for Bank Name Mapping
 const RECOGNIZED_UPI_HANDLES: Record<string, string> = {
   'upi': 'BHIM / Unified Payments Interface (NPCI)',
   'okicici': 'ICICI Bank (Google Pay)',
@@ -43,30 +38,6 @@ const RECOGNIZED_UPI_HANDLES: Record<string, string> = {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies();
-    const sessionCookie = cookieStore.get('cnts_partner_session');
-
-    let partnerName = 'Jan Mohammad';
-
-    if (sessionCookie && sessionCookie.value) {
-      const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (payload) {
-        if (payload.fullName && payload.fullName !== 'Partner') {
-          partnerName = payload.fullName;
-        } else if (payload.partnerDbId && hasSupabaseAdminConfig) {
-          const { data } = await (supabaseAdmin as any)
-            .from('partners')
-            .select('full_name, name')
-            .eq('id', payload.partnerDbId)
-            .maybeSingle();
-
-          if (data && (data.full_name || data.name)) {
-            partnerName = data.full_name || data.name;
-          }
-        }
-      }
-    }
-
     const { upiId } = await request.json();
 
     if (!upiId || typeof upiId !== 'string') {
@@ -78,17 +49,16 @@ export async function POST(request: Request) {
 
     const cleanUpi = upiId.trim().toLowerCase();
 
-    // 1. STRICT REGEX FORMAT VALIDATION
+    // 1. STRICT VPA REGEX SYNTAX CHECK
     const upiRegex = /^[a-zA-Z0-9.\-_]{3,100}@[a-zA-Z0-9]{2,30}$/;
     if (!upiRegex.test(cleanUpi)) {
       return NextResponse.json({
         success: false,
-        error: 'Invalid UPI format. Enter full address with handle (e.g. 8318744873@axl, name@okicici, mobile@ybl).'
+        error: 'Invalid UPI address syntax. Enter a full VPA with bank handle (e.g. 8318744873@axl, user@okicici, mobile@ybl).'
       }, { status: 400 });
     }
 
     const handleParts = cleanUpi.split('@');
-    const usernamePart = handleParts[0];
     const handleSuffix = handleParts[1];
 
     if (!handleSuffix || handleSuffix.length < 2) {
@@ -98,19 +68,21 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    // 2. DETECT BANK NAME
     const detectedBank = RECOGNIZED_UPI_HANDLES[handleSuffix] || `${handleSuffix.toUpperCase()} PSP Bank`;
 
-    // 3. REAL RAZORPAYX LIVE API INTEGRATION (When keys are configured)
+    // 2. CHECK ENVIRONMENT & RAZORPAYX CREDENTIALS
     const razorpayxKeyId = process.env.RAZORPAYX_KEY_ID;
     const razorpayxKeySecret = process.env.RAZORPAYX_KEY_SECRET;
 
-    const isRealRazorpayXKey = razorpayxKeyId && razorpayxKeySecret && 
+    const isProductionMode = process.env.NODE_ENV === 'production' || (
+      razorpayxKeyId && razorpayxKeySecret && 
       !razorpayxKeyId.includes('your_key') && 
       !razorpayxKeySecret.includes('your_key') && 
-      !razorpayxKeyId.includes('mock');
+      !razorpayxKeyId.includes('mock')
+    );
 
-    if (isRealRazorpayXKey && razorpayxKeyId && razorpayxKeySecret) {
+    // 3. PRODUCTION MODE: LIVE RAZORPAYX NPCI BENFICIARY LOOKUP
+    if (isProductionMode && razorpayxKeyId && razorpayxKeySecret) {
       try {
         const authHeader = 'Basic ' + Buffer.from(`${razorpayxKeyId}:${razorpayxKeySecret}`).toString('base64');
         const rzpRes = await fetch('https://api.razorpay.com/v1/payments/validate/vpa', {
@@ -121,51 +93,52 @@ export async function POST(request: Request) {
           },
           body: JSON.stringify({ vpa: cleanUpi })
         });
+
         const rzpData = await rzpRes.json();
 
-        if (rzpRes.ok && rzpData.vpa && rzpData.customer_name) {
+        if (!rzpRes.ok || !rzpData.vpa || rzpData.success === false || !rzpData.customer_name) {
           return NextResponse.json({
-            success: true,
-            verified: true,
-            upiId: cleanUpi,
-            receiverName: rzpData.customer_name,
-            bankName: detectedBank,
-            nameMatchScore: 100.0,
-            verificationBadge: 'RAZORPAYX_LIVE_VERIFIED',
-            verifiedAt: new Date().toISOString()
-          });
+            success: false,
+            error: 'UPI ID could not be verified on bank servers. Please verify the address.'
+          }, { status: 400 });
         }
+
+        return NextResponse.json({
+          success: true,
+          verified: true,
+          upiId: cleanUpi,
+          receiverName: rzpData.customer_name,
+          bankName: detectedBank,
+          source: 'RAZORPAYX_LIVE_NPCI',
+          verificationBadge: 'RAZORPAYX_LIVE_VERIFIED',
+          verifiedAt: new Date().toISOString()
+        });
       } catch (apiErr) {
-        console.error('[RazorpayX API Exception]:', apiErr);
+        console.error('[RazorpayX Live Verification Error]:', apiErr);
+        return NextResponse.json({
+          success: false,
+          error: 'RazorpayX live verification service unavailable. Please try again shortly.'
+        }, { status: 502 });
       }
     }
 
-    // 4. VERIFIED MOCK & DEVELOPMENT ENGINE
-    const isMobileNumber = /^\d+$/.test(usernamePart);
-    let resolvedReceiverName = partnerName;
-
-    if (!isMobileNumber) {
-      const parsedTextName = usernamePart.replace(/[^a-zA-Z]/g, ' ').trim().replace(/\b\w/g, l => l.toUpperCase());
-      if (parsedTextName && parsedTextName.length >= 3) {
-        resolvedReceiverName = parsedTextName;
-      }
-    }
-
+    // 4. DEVELOPMENT MODE: DEDICATED EXPLICIT MOCK VERIFICATION SERVICE
+    // Never infers or guesses names locally from partner session or VPA string.
     return NextResponse.json({
       success: true,
       verified: true,
       upiId: cleanUpi,
-      receiverName: resolvedReceiverName,
-      bankName: detectedBank,
-      nameMatchScore: 98.5,
-      verificationBadge: 'RAZORPAYX_VERIFIED',
+      receiverName: 'Mock Account Holder (Dev Mode)',
+      bankName: `${detectedBank} [Mock]`,
+      source: 'MOCK_DEV_SERVICE',
+      verificationBadge: 'MOCK_DEVELOPMENT_MODE',
       verifiedAt: new Date().toISOString()
     });
   } catch (error) {
     console.error('[Verify UPI POST Error]:', error);
     return NextResponse.json({
       success: false,
-      error: 'Failed to verify UPI ID. Please check the address and try again.'
+      error: 'Failed to process UPI verification request.'
     }, { status: 500 });
   }
 }
