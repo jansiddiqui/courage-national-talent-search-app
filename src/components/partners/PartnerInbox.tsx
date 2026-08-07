@@ -85,24 +85,25 @@ export const PartnerInbox: React.FC<PartnerInboxProps> = ({
     <div className="space-y-6 animate-fade-in max-w-4xl mx-auto">
 
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 rounded-3xl border border-slate-800 shadow-xl">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-300 bg-indigo-900/50 border border-indigo-700/50 px-3 py-1 rounded-full mb-2">
-              <Inbox className="w-3.5 h-3.5" /> Partner Inbox
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+              <Inbox className="w-3.5 h-3.5 text-indigo-600" /> Partner Inbox
             </div>
-            <h1 className="font-display text-2xl font-bold text-white">Notifications & Updates</h1>
-            <p className="text-slate-400 text-sm mt-1">Welcome back, {partnerName}. You have {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}.</p>
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Notifications & Updates</h1>
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">Welcome back, {partnerName}. You have {unreadCount} unread message{unreadCount !== 1 ? 's' : ''}.</p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2.5 shrink-0">
             {unreadCount > 0 && (
-              <span className="flex items-center gap-1.5 bg-rose-500/20 border border-rose-500/40 text-rose-300 text-xs font-bold px-3 py-1.5 rounded-full">
-                <Bell className="w-3.5 h-3.5" /> {unreadCount} Unread
+              <span className="flex items-center gap-1.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-extrabold px-3 py-1.5 rounded-full">
+                <Bell className="w-3.5 h-3.5 text-rose-600" /> {unreadCount} Unread
               </span>
             )}
             <button
+              type="button"
               onClick={markAllRead}
-              className="text-xs font-bold text-amber-300 hover:text-amber-200 border border-amber-400/30 bg-amber-400/10 px-3 py-1.5 rounded-full transition-colors cursor-pointer"
+              className="text-xs font-extrabold text-amber-900 bg-amber-100 hover:bg-amber-200 border border-amber-200 px-3.5 py-2 rounded-xl transition-colors cursor-pointer shadow-2xs"
             >
               Mark all as read
             </button>

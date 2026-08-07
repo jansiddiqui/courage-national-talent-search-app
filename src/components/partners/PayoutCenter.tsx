@@ -85,25 +85,26 @@ export const PayoutCenter: React.FC<PayoutCenterProps> = ({
   return (
     <div className="space-y-8 animate-fade-in">
       {/* HEADER BANNER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <span className="text-[10px] font-mono uppercase tracking-widest font-extrabold text-emerald-400 bg-emerald-950 border border-emerald-800 px-3 py-1 rounded-full inline-block mb-2">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <span className="text-[10px] font-mono uppercase tracking-wider font-extrabold text-emerald-700 bg-emerald-50 border border-emerald-100 px-3 py-1 rounded-full inline-block">
               MONDAY SETTLEMENT SYSTEM
             </span>
-            <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Payouts & Settlement Center
             </h1>
-            <p className="text-slate-300 text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">
               Weekly honorarium settlements are dispatched every Monday directly to your registered UPI / Bank account.
             </p>
           </div>
 
           <button
+            type="button"
             onClick={onNavigateToPaymentSetup}
-            className="py-3 px-5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-2xl shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
+            className="py-3 px-5 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs rounded-2xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2 shrink-0"
           >
-            <CreditCard className="w-4 h-4" /> Manage Payment Details & Rules
+            <CreditCard className="w-4 h-4 fill-white" /> Manage Payment Details & Rules
           </button>
         </div>
       </div>

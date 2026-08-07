@@ -22,45 +22,47 @@ export const GrowthCenter: React.FC<GrowthCenterProps> = ({
     <div className="space-y-8 animate-fade-in">
 
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-300 bg-indigo-900/50 border border-indigo-700/50 px-3 py-1 rounded-full mb-2">
-              <Zap className="w-3.5 h-3.5" /> Growth & Tools Suite
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+              <Zap className="w-3.5 h-3.5 text-indigo-600" /> Growth & Tools Suite
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               AI Viral Studio & Payment Rules
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">
               Generate AI-powered promotional content and review your honorarium policy details.
             </p>
           </div>
 
           {/* SUB TAB SWITCHER */}
-          <div className="flex bg-slate-800/80 border border-slate-700 p-1.5 rounded-2xl gap-1 font-bold text-xs shrink-0">
+          <div className="flex bg-slate-100 p-1.5 rounded-2xl gap-1 font-bold text-xs shrink-0 border border-slate-200/80">
             <button
+              type="button"
               onClick={() => setActiveSubTab('aistudio')}
-              className={`py-2.5 px-5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`py-2 px-4 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeSubTab === 'aistudio'
-                  ? 'bg-indigo-600 text-white shadow-lg font-extrabold'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                  ? 'bg-indigo-600 text-white shadow-xs font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
               }`}
             >
-              <Zap className="w-4 h-4" /> AI Studio
+              <Zap className="w-3.5 h-3.5" /> AI Studio
               <span className={`text-[9px] px-1.5 py-0.5 rounded font-extrabold ${
-                activeSubTab === 'aistudio' ? 'bg-white/20 text-white' : 'bg-amber-400/20 text-amber-300'
+                activeSubTab === 'aistudio' ? 'bg-white/20 text-white' : 'bg-amber-100 text-amber-800'
               }`}>AI</span>
             </button>
 
             <button
+              type="button"
               onClick={() => setActiveSubTab('rules')}
-              className={`py-2.5 px-5 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`py-2 px-4 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 ${
                 activeSubTab === 'rules'
-                  ? 'bg-emerald-600 text-white shadow-lg font-extrabold'
-                  : 'text-slate-300 hover:text-white hover:bg-slate-700/60'
+                  ? 'bg-emerald-600 text-white shadow-xs font-extrabold'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-white/80'
               }`}
             >
-              <ShieldCheck className="w-4 h-4" /> Payment Rules
+              <ShieldCheck className="w-3.5 h-3.5" /> Payment Rules
             </button>
           </div>
         </div>

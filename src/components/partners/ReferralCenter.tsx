@@ -65,50 +65,52 @@ export const ReferralCenter: React.FC<ReferralCenterProps> = ({
     <div className="space-y-8 animate-fade-in">
 
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-300 bg-indigo-900/50 border border-indigo-700/50 px-3 py-1 rounded-full mb-2">
-              <Share2 className="w-3.5 h-3.5" /> Partner Referral & Growth Hub
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+              <Share2 className="w-3.5 h-3.5 text-indigo-600" /> Partner Referral & Growth Hub
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Referral Link & Sharing Media Kit
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">
               Official referral code, multi-platform broadcast templates, and printable QR posters.
             </p>
           </div>
+
           <button
+            type="button"
             onClick={() => setShowQRModal(true)}
-            className="flex items-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs px-6 py-3.5 rounded-2xl transition-all shadow-md cursor-pointer"
+            className="flex items-center justify-center gap-2 bg-amber-400 hover:bg-amber-300 text-slate-950 font-black text-xs px-5 py-3 rounded-2xl transition-all shadow-xs cursor-pointer shrink-0"
           >
-            <QrCode className="w-4 h-4" /> Download Printable QR Poster
+            <QrCode className="w-4 h-4 text-slate-950" /> Download Printable QR Poster
           </button>
         </div>
       </div>
 
       {/* REFERRAL CODE CARD */}
-      <div className="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-6 relative overflow-hidden">
-        {/* Decorative glow */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-slate-800 pb-6 relative">
-          <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-amber-400 font-mono">
+      <div className="bg-indigo-50/70 p-6 sm:p-8 rounded-3xl border border-indigo-100/90 shadow-2xs space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 border-b border-indigo-100 pb-5">
+          <div className="space-y-1">
+            <span className="text-[11px] font-black uppercase tracking-wider text-indigo-600 font-mono">
               Your Official Courage Partner Code
             </span>
-            <div className="font-mono text-3xl sm:text-4xl font-black text-amber-300 tracking-wider mt-1">
-              {referralCode}
+            <div className="flex items-center gap-3">
+              <div className="font-mono text-3xl sm:text-4xl font-black text-indigo-700 tracking-wider bg-white px-4 py-1.5 rounded-2xl border border-indigo-100 shadow-2xs">
+                {referralCode}
+              </div>
+              <span className="text-xs text-slate-500 font-medium">
+                Registered to: <strong className="text-slate-900 font-bold">{partnerName}</strong>
+              </span>
             </div>
-            <span className="text-xs text-slate-400 mt-1 block">
-              Registered to: <strong className="text-white">{partnerName}</strong>
-            </span>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+          <div className="flex flex-col sm:flex-row gap-2.5 w-full sm:w-auto">
             <button
+              type="button"
               onClick={copyLink}
-              className="py-3 px-6 rounded-2xl bg-white text-slate-950 font-bold text-xs shadow-lg hover:bg-slate-100 flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="py-2.5 px-5 rounded-xl bg-white hover:bg-slate-50 text-slate-800 font-extrabold text-xs border border-slate-200/90 shadow-2xs flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
               {copied ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-indigo-600" />}
               {copied ? 'Link Copied!' : 'Copy Referral Link'}
@@ -118,66 +120,66 @@ export const ReferralCenter: React.FC<ReferralCenterProps> = ({
               href={`https://api.whatsapp.com/send?text=${encodeURIComponent(templates[0].text)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="py-3 px-6 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-lg flex items-center justify-center gap-2 cursor-pointer transition-all"
+              className="py-2.5 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs shadow-xs flex items-center justify-center gap-2 cursor-pointer transition-all"
             >
-              <MessageSquare className="w-4 h-4" /> Share on WhatsApp
+              <MessageSquare className="w-4 h-4 fill-white" /> Share on WhatsApp
             </a>
           </div>
         </div>
 
         {/* URL Preview */}
-        <div className="bg-slate-900/90 p-4 rounded-2xl border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3 relative">
-          <div className="flex items-center gap-2.5 overflow-hidden">
+        <div className="bg-white p-3.5 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+          <div className="flex items-center gap-2 overflow-hidden min-w-0">
             <span className="text-xs text-slate-400 shrink-0 font-bold">Referral URL:</span>
-            <code className="font-mono text-xs text-indigo-300 truncate">{referralUrl}</code>
+            <code className="font-mono text-xs text-indigo-700 truncate font-semibold">{referralUrl}</code>
           </div>
           <a
             href={referralUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs font-bold text-amber-300 hover:underline flex items-center gap-1 shrink-0"
+            className="text-xs font-extrabold text-amber-600 hover:text-amber-700 flex items-center gap-1 shrink-0"
           >
             Test Link <ExternalLink className="w-3.5 h-3.5" />
           </a>
         </div>
 
         {/* Social Sharing Row */}
-        <div className="flex flex-wrap gap-2 relative">
-          <span className="text-xs text-slate-500 font-bold self-center mr-1">Also share on:</span>
+        <div className="flex flex-wrap items-center gap-2 pt-1">
+          <span className="text-xs text-slate-500 font-bold mr-1">Also share on:</span>
           <a
             href={linkedinUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 bg-[#0077B5]/20 hover:bg-[#0077B5]/40 border border-[#0077B5]/40 text-[#60C0F5] text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer"
+            className="flex items-center gap-1.5 bg-white hover:bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer shadow-2xs"
           >
-            <ExternalLink className="w-3.5 h-3.5" /> LinkedIn
+            <ExternalLink className="w-3.5 h-3.5 text-sky-600" /> LinkedIn
           </a>
           <a
             href={telegramUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 bg-[#26A5E4]/20 hover:bg-[#26A5E4]/40 border border-[#26A5E4]/40 text-[#70D0FF] text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer"
+            className="flex items-center gap-1.5 bg-white hover:bg-sky-50 border border-sky-200 text-sky-700 text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer shadow-2xs"
           >
-            <Send className="w-3.5 h-3.5" /> Telegram
+            <Send className="w-3.5 h-3.5 text-sky-600" /> Telegram
           </a>
           <a
             href={`https://www.instagram.com/`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 bg-pink-500/20 hover:bg-pink-500/40 border border-pink-500/40 text-pink-300 text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer"
+            className="flex items-center gap-1.5 bg-white hover:bg-pink-50 border border-pink-200 text-pink-700 text-xs font-bold px-3 py-1.5 rounded-full transition-all cursor-pointer shadow-2xs"
           >
-            <Sparkles className="w-3.5 h-3.5" /> Instagram Story
+            <Sparkles className="w-3.5 h-3.5 text-pink-600" /> Instagram Story
           </a>
         </div>
       </div>
 
       {/* BROADCAST TEMPLATES */}
-      <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-5">
-        <div className="border-b border-slate-100 pb-3">
-          <h3 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
-            <Sparkles className="w-5 h-5 text-amber-500" /> High-Converting Broadcast Templates
+      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-5">
+        <div className="border-b border-slate-100 pb-4 space-y-1">
+          <h3 className="font-display font-black text-lg text-slate-900 flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-indigo-600" /> High-Converting Broadcast Templates
           </h3>
-          <p className="text-xs text-slate-500 mt-1">
+          <p className="text-xs text-slate-500 font-medium">
             3 purpose-built templates for different audiences. Click a tab to preview, then copy or share.
           </p>
         </div>
@@ -187,15 +189,16 @@ export const ReferralCenter: React.FC<ReferralCenterProps> = ({
           {templates.map((t, idx) => (
             <button
               key={idx}
+              type="button"
               onClick={() => setActiveTemplate(idx)}
-              className={`text-xs font-bold px-3.5 py-2 rounded-xl border transition-all cursor-pointer flex items-center gap-1.5 ${
+              className={`text-xs font-extrabold px-4 py-2 rounded-xl border transition-all cursor-pointer flex items-center gap-2 ${
                 activeTemplate === idx
-                  ? 'bg-slate-900 text-white border-slate-900'
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-xs'
                   : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
               }`}
             >
-              {t.label}
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
+              <span>{t.label}</span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                 activeTemplate === idx ? 'bg-white/20 text-white' : t.badgeColor
               }`}>{t.badge}</span>
             </button>
@@ -203,20 +206,21 @@ export const ReferralCenter: React.FC<ReferralCenterProps> = ({
         </div>
 
         {/* Active Template */}
-        <div className="bg-slate-950 text-slate-200 p-5 rounded-2xl font-mono text-xs leading-relaxed border border-slate-800">
-          <pre className="whitespace-pre-wrap font-mono text-xs text-slate-200">{templates[activeTemplate].text}</pre>
-          <div className="pt-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200/90 space-y-4">
+          <pre className="whitespace-pre-wrap font-mono text-xs text-slate-800 leading-relaxed max-h-72 overflow-y-auto">{templates[activeTemplate].text}</pre>
+          <div className="pt-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
             <a
               href={`https://api.whatsapp.com/send?text=${encodeURIComponent(templates[activeTemplate].text)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-emerald-700 hover:bg-emerald-600 text-white px-4 py-2 rounded-xl text-xs font-bold font-sans flex items-center gap-1.5 cursor-pointer shadow"
+              className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-500 text-white px-5 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors"
             >
-              <MessageSquare className="w-4 h-4" /> Open in WhatsApp
+              <MessageSquare className="w-4 h-4 fill-white" /> Open in WhatsApp
             </a>
             <button
+              type="button"
               onClick={() => copyTemplate(activeTemplate)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold font-sans flex items-center gap-1.5 cursor-pointer shadow"
+              className="w-full sm:w-auto bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl text-xs font-extrabold flex items-center justify-center gap-2 cursor-pointer shadow-xs transition-colors"
             >
               {copiedTemplate === activeTemplate ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
               {copiedTemplate === activeTemplate ? 'Copied!' : 'Copy Template'}
@@ -225,17 +229,29 @@ export const ReferralCenter: React.FC<ReferralCenterProps> = ({
         </div>
       </div>
 
-      {/* REFERRAL RULES */}
-      <div className="p-5 rounded-3xl bg-indigo-50/80 border border-indigo-200 space-y-2 text-xs text-indigo-950">
-        <div className="font-bold flex items-center gap-2 text-indigo-900 text-sm">
-          <ShieldCheck className="w-4 h-4 text-indigo-600" /> Courage Partner Referral Code Rules:
+      {/* REFERRAL RULES (CLEAN RESPONSIVE GRID) */}
+      <div className="p-6 rounded-3xl bg-slate-50 border border-slate-200/90 space-y-3">
+        <div className="font-extrabold flex items-center gap-2 text-slate-900 text-sm">
+          <ShieldCheck className="w-4.5 h-4.5 text-indigo-600" /> Courage Partner Referral Code Rules:
         </div>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 font-medium text-slate-700 text-xs pt-1">
-          <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> Minimum <strong>4 to 6 characters</strong> long.</li>
-          <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> MUST contain <strong>&quot;CNTS&quot;</strong> (e.g. CNTSJN).</li>
-          <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> Honorarium: <strong>₹25.00 per candidate</strong> (25% revenue share max).</li>
-          <li className="flex items-center gap-2"><span className="w-1.5 h-1.5 rounded-full bg-indigo-600 shrink-0" /> Instant verification upon student fee payment.</li>
-        </ul>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700 font-medium pt-1">
+          <div className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200/80">
+            <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0" />
+            <span>Minimum <strong>4 to 6 characters</strong> long.</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200/80">
+            <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0" />
+            <span>MUST contain <strong>&quot;CNTS&quot;</strong> (e.g. CNTSJN).</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200/80">
+            <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0" />
+            <span>Honorarium: <strong>₹25.00 per candidate</strong> (25% revenue share max).</span>
+          </div>
+          <div className="flex items-center gap-2 bg-white p-2.5 rounded-xl border border-slate-200/80">
+            <span className="w-2 h-2 rounded-full bg-indigo-600 shrink-0" />
+            <span>Instant verification upon student fee payment.</span>
+          </div>
+        </div>
       </div>
 
       {/* QR POSTER MODAL */}

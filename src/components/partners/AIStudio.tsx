@@ -215,20 +215,36 @@ Let's ensure no deserving student stays behind!`;
       )}
 
       {/* OUTPUT PANEL */}
-      <div className="bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-900 rounded-3xl border border-slate-800 shadow-xl overflow-hidden">
+      <div className="bg-white rounded-3xl border border-slate-200/90 shadow-sm overflow-hidden space-y-0">
         {/* Output Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-2">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400" />
-            <span className="text-xs font-bold text-slate-300 font-mono">Generated Output — {selectedFormat}</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="font-mono text-xs text-slate-700 font-extrabold uppercase tracking-wider">Generated Content Output</span>
           </div>
-          <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-500 font-mono">ref: {referralCode}</span>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleCopy}
+              className="py-1.5 px-3 rounded-xl bg-white hover:bg-slate-100 text-slate-700 font-extrabold text-xs border border-slate-200 shadow-2xs flex items-center gap-1.5 cursor-pointer transition-all"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5 text-indigo-600" />}
+              {copied ? 'Copied!' : 'Copy All'}
+            </button>
+
+            <a
+              href={whatsappShare}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="py-1.5 px-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs flex items-center gap-1.5 shadow-2xs cursor-pointer transition-all"
+            >
+              <MessageSquare className="w-3.5 h-3.5 fill-white" /> WhatsApp
+            </a>
           </div>
         </div>
 
-        {/* Content Area */}
-        <div className="p-6 min-h-[220px] relative">
+        {/* Content Box */}
+        <div className="p-6 bg-slate-50/70 border-t border-slate-100">
           {isGenerating ? (
             <div className="flex flex-col items-center justify-center py-12 gap-3">
               <div className="relative">

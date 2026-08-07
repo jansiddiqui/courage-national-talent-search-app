@@ -352,40 +352,39 @@ PLEASE FORMAT THE OUTPUT WITH:
     <div className="space-y-8 animate-fade-in max-w-4xl mx-auto font-sans text-[#0F172A]">
 
       {/* HEADER BANNER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl space-y-5 relative overflow-hidden">
-        <div className="absolute -right-16 -top-16 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4 relative z-10">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-extrabold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-3 py-1 rounded-full mb-2">
-              <Calendar className="w-3.5 h-3.5 text-amber-400" /> CNTS 2026 Official Video Campaign Calendar
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-5">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+              <Calendar className="w-3.5 h-3.5 text-indigo-600" /> CNTS 2026 Official Video Campaign Calendar
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-black text-white tracking-tight">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Content & Video Roadmap to Aug 30 Exam
             </h1>
-            <p className="text-slate-300 text-xs sm:text-sm mt-1 leading-relaxed">
+            <p className="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
               Use our Master AI Prompt Generator below to generate full video scripts in your language using ChatGPT, Claude, or Gemini!
             </p>
           </div>
 
-          <div className="bg-slate-900/90 border border-slate-700/80 p-3.5 rounded-2xl shrink-0 text-right space-y-1">
+          <div className="bg-slate-50 border border-slate-200 p-3 rounded-2xl shrink-0 text-right space-y-0.5">
             <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">Official Exam Date</span>
-            <span className="font-mono text-base font-black text-amber-300 flex items-center justify-end gap-1">
+            <span className="font-mono text-sm font-black text-indigo-700 flex items-center justify-end gap-1">
               📅 30 August 2026
             </span>
           </div>
         </div>
 
         {/* PHASE TAB SELECTOR — RESPONSIVE EQUAL ALIGNMENT */}
-        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1 relative z-10">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-1">
           {timelinePhases.map(p => (
             <button
               key={p.phaseNumber}
+              type="button"
               onClick={() => setSelectedPhase(p.phaseNumber)}
               className={`py-2 px-3 rounded-2xl text-[11px] font-extrabold transition-all cursor-pointer text-center justify-center flex flex-col items-center gap-0.5 ${
                 selectedPhase === p.phaseNumber
-                  ? 'bg-amber-400 text-slate-950 shadow-md font-black ring-2 ring-amber-300'
-                  : 'bg-slate-800/90 text-slate-300 hover:text-white hover:bg-slate-700 border border-slate-700/60'
+                  ? 'bg-indigo-600 text-white shadow-xs font-black'
+                  : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border border-slate-200/80'
               }`}
             >
               <span className="truncate w-full font-black">Phase {p.phaseNumber}</span>

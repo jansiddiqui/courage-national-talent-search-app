@@ -84,16 +84,16 @@ export const PartnerSupportCenter: React.FC<PartnerSupportCenterProps> = ({
     <div className="space-y-8 animate-fade-in max-w-5xl mx-auto">
 
       {/* HEADER */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 text-white p-6 md:p-8 rounded-3xl border border-slate-800 shadow-xl">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-300 bg-indigo-900/50 border border-indigo-700/50 px-3 py-1 rounded-full mb-2">
-              <HelpCircle className="w-3.5 h-3.5" /> Partner Helpdesk
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+              <HelpCircle className="w-3.5 h-3.5 text-indigo-600" /> Partner Helpdesk
             </div>
-            <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
               Support Center & Knowledge Base
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-slate-500 text-xs sm:text-sm font-medium">
               Dedicated assistance for Courage Partners. Average response time: &lt; 4 hours.
             </p>
           </div>
@@ -101,9 +101,9 @@ export const PartnerSupportCenter: React.FC<PartnerSupportCenterProps> = ({
             href={whatsappSupport}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-5 py-3 rounded-2xl transition-all shadow-lg cursor-pointer"
+            className="flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-xs px-5 py-3 rounded-2xl transition-all shadow-xs cursor-pointer shrink-0"
           >
-            <Phone className="w-4 h-4" /> WhatsApp Support
+            <Phone className="w-4 h-4 fill-white" /> WhatsApp Support
           </a>
         </div>
       </div>

@@ -128,14 +128,14 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
   return (
     <div className="space-y-8 animate-fade-in">
       {/* CLEAN MISSIONS HEADER */}
-      <div className="bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-900 text-white rounded-3xl p-6 md:p-8 border border-slate-800 shadow-xl space-y-3">
-        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-300 bg-amber-400/20 border border-amber-400/30 px-3 py-1.5 rounded-full">
-          <Compass className="w-3.5 h-3.5 text-amber-400" /> Flagship Mission Hub
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-3">
+        <div className="inline-flex items-center gap-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1 rounded-full">
+          <Compass className="w-3.5 h-3.5 text-indigo-600" /> Flagship Mission Hub
         </div>
-        <h1 className="font-display text-2xl md:text-3xl font-bold text-white">
+        <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
           Courage Partner Missions & Bounties
         </h1>
-        <p className="text-slate-300 text-xs md:text-sm max-w-2xl leading-relaxed">
+        <p className="text-slate-500 text-xs sm:text-sm max-w-2xl leading-relaxed font-medium">
           Participate in active mobilization drives to unlock milestone bonuses, institutional grants, and verified reputation badges.
         </p>
       </div>
