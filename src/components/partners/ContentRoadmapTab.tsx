@@ -57,6 +57,7 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
 }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [selectedPhase, setSelectedPhase] = useState<number>(1);
+  const [selectedTopicId, setSelectedTopicId] = useState<string>('v1');
 
   // MASTER AI PROMPT GENERATOR STATE
   const [promptLanguage, setPromptLanguage] = useState<string>('Hinglish');
@@ -72,18 +73,34 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  // DYNAMIC MASTER AI PROMPT GENERATION
+  // FULL 8 VIDEO TOPICS ROADMAP LOOKUP
+  const allTopics = [
+    { id: 'v1', phase: 1, title: '🎬 Video #1: What is CNTS 2026? (National Talent Search Opportunity)', hook: '“Parents of Class 5, 6, 7 & 8 students, don’t scroll past this! India’s biggest talent search exam is here…”' },
+    { id: 'v2', phase: 1, title: '🎬 Video #2: Why School Marks Are Not Enough For Your Child', hook: '“Getting 95% in school doesn’t guarantee competitive exam success. Here is why…”' },
+    { id: 'v3', phase: 2, title: '🎬 Video #3: CNTS 2026 Complete Exam Pattern & Marks Breakdown', hook: '“Curious about what questions come in CNTS 2026? Here is the exact subject breakdown for Class 5-8…”' },
+    { id: 'v4', phase: 2, title: '🎬 Video #4: How Class 5-8 Students Can Prepare in 10 Days', hook: '“3 simple tips to score top marks in Courage National Talent Search 2026…”' },
+    { id: 'v5', phase: 3, title: '🚨 Video #5: URGENT: Only 3 Days Left to Register for CNTS 2026!', hook: '“LAST CHANCE! Registrations for CNTS 2026 close in 72 hours! Don’t let your child miss out…”' },
+    { id: 'v6', phase: 3, title: '📲 Video #6: How to Register for CNTS in 60 Seconds (Mobile Demo)', hook: '“Step-by-step screen recording showing exactly how to register your student on mobile…”' },
+    { id: 'v7', phase: 4, title: '🎟️ Video #7: CNTS 2026 Admit Cards Out Now! How to Download & Check Slot', hook: '“CNTS 2026 Admit Cards are LIVE! Here is how to download your hall ticket in 10 seconds…”' },
+    { id: 'v8', phase: 5, title: '🏆 Video #8: Best of Luck to All CNTS 2026 Candidates Today!', hook: '“Today is the day! Best of luck to all Class 5-8 candidates taking CNTS 2026 across India…”' },
+  ];
+
+  const activeTopicObj = allTopics.find(t => t.id === selectedTopicId) || allTopics[0];
+
+  // DYNAMIC MASTER AI PROMPT GENERATION (BASED ON SELECTED VIDEO TOPIC)
   const masterAiPrompt = `ACT AS A WORLD-CLASS EDUCATION CONTENT CREATOR & VIRAL SCRIPTWRITER.
 
 Your task is to write a highly engaging, viral ${promptFormat} script in ${promptLanguage}.
 
 TARGET AUDIENCE: ${promptAudience}.
+SELECTED VIDEO TOPIC: "${activeTopicObj.title}"
+RECOMMENDED OPENING HOOK: ${activeTopicObj.hook}
 PROJECT & EVENT: Courage National Talent Search (CNTS) 2026 (Exam Date: 30 August 2026, Registration Fee: ₹99).
 
 CORE OBJECTIVES & SCRIPT STRUCTURE:
-1. OPENING HOOK (First 3 Seconds): Create an attention-grabbing, pattern-interrupt hook about Class 5, 6, 7 & 8 student cognitive talent and national merit recognition.
+1. OPENING HOOK (First 3 Seconds): Use or adapt the recommended hook: ${activeTopicObj.hook}
 2. PAIN POINT / PROBLEM: Explain why school report card marks (95%) only test memory, whereas CNTS tests Critical Thinking, Logical Reasoning, Science & Mathematics.
-3. SOLUTION & VALUE: Present CNTS 2026 as the ultimate national diagnostic assessment for Class 5-8 students. Mention the official diagnostic report and national rank certificates.
+3. SOLUTION & VALUE: Present CNTS 2026 as the ultimate national diagnostic assessment for Class 5-8 students. Mention national rank certificates & cognitive diagnostic reports.
 4. CALL TO ACTION (CTA): Tell the viewer to click the link in bio/description using official referral code "${referralCode}" (${referralLink}).
 
 PLEASE FORMAT THE OUTPUT WITH:
@@ -332,7 +349,7 @@ PLEASE FORMAT THE OUTPUT WITH:
       </div>
 
       {/* MASTER AI PROMPT SYSTEM & TOOL RECOMMENDER ENGINE */}
-      <div className="bg-white rounded-3xl border border-indigo-100 p-6 sm:p-8 shadow-sm space-y-6">
+      <div id="master-prompt-generator" className="bg-white rounded-3xl border border-indigo-100 p-6 sm:p-8 shadow-sm space-y-6">
         
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
           <div className="space-y-1">
@@ -412,16 +429,38 @@ PLEASE FORMAT THE OUTPUT WITH:
             </select>
           </div>
 
+          {/* Selector 4: Target Video Topic (All 8 Topics Intact) */}
+          <div className="space-y-1.5 sm:col-span-3">
+            <label className="text-xs font-bold text-slate-700 flex items-center gap-1">
+              <Video className="w-3.5 h-3.5 text-indigo-600" /> Selected Video Topic (Choose Any of the 8 Topics)
+            </label>
+            <select
+              value={selectedTopicId}
+              onChange={(e) => {
+                setSelectedTopicId(e.target.value);
+                const found = allTopics.find(t => t.id === e.target.value);
+                if (found) setSelectedPhase(found.phase);
+              }}
+              className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer"
+            >
+              {allTopics.map(t => (
+                <option key={t.id} value={t.id}>
+                  [Phase {t.phase}] {t.title}
+                </option>
+              ))}
+            </select>
+          </div>
+
         </div>
 
         {/* GENERATED MASTER PROMPT DISPLAY BOX */}
         <div className="bg-[#0F172A] text-white rounded-2xl p-5 border border-slate-800 space-y-3 shadow-inner">
           <div className="flex items-center justify-between border-b border-slate-800 pb-2">
             <span className="text-[10px] font-mono uppercase font-bold text-amber-300 tracking-wider">
-              Generated Master AI Prompt (Ready to Paste in ChatGPT / Claude)
+              Generated Master AI Prompt for {activeTopicObj.title.split(':')[0]}
             </span>
             <span className="text-[10px] text-slate-400 font-mono">
-              Auto-filled with Code: <strong className="text-amber-300">{referralCode}</strong>
+              Auto-filled Code: <strong className="text-amber-300">{referralCode}</strong>
             </span>
           </div>
 
@@ -486,69 +525,94 @@ PLEASE FORMAT THE OUTPUT WITH:
             </p>
           </div>
 
-          {/* Video Blueprint Cards */}
+          {/* Video Blueprint Cards (ALL 2 TOPICS INTACK PER PHASE) */}
           <div className="space-y-4">
-            {phase.videoConcepts.map(video => (
-              <div key={video.id} className="bg-white p-6 rounded-3xl border border-slate-200/90 shadow-sm hover:shadow-md transition-all space-y-4">
-                
-                {/* Top Row: Video Title & Type */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 pb-3">
-                  <div className="space-y-1">
-                    <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-100">
-                      {video.type} • {video.recommendedPostingDays}
+            {phase.videoConcepts.map(video => {
+              const isCurrentActive = selectedTopicId === video.id;
+              return (
+                <div 
+                  key={video.id} 
+                  className={`bg-white p-6 rounded-3xl border transition-all space-y-4 ${
+                    isCurrentActive ? 'border-indigo-500 shadow-md ring-2 ring-indigo-500/20' : 'border-slate-200/90 shadow-sm hover:shadow-md'
+                  }`}
+                >
+                  
+                  {/* Top Row: Video Title & Action Buttons */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-3">
+                    <div className="space-y-1">
+                      <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-600 bg-indigo-50 px-2.5 py-0.5 rounded-md border border-indigo-100">
+                        {video.type} • {video.recommendedPostingDays}
+                      </span>
+                      <h3 className="font-display text-base font-bold text-slate-900">{video.title}</h3>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0">
+                      {/* Button 1: Load into Master Prompt Generator */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedTopicId(video.id);
+                          setSelectedPhase(phase.phaseNumber);
+                          document.getElementById('master-prompt-generator')?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-extrabold px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                      >
+                        <Wand2 className="w-3.5 h-3.5 text-amber-300" />
+                        <span>Generate Master Prompt</span>
+                      </button>
+
+                      {/* Button 2: Copy Raw Outline Script */}
+                      <button
+                        type="button"
+                        onClick={() => copyScript(video.id, `${video.title}\n\nHOOK:\n${video.hookText}\n\nSCRIPT OUTLINE:\n${video.scriptOutline}\n\nCALL TO ACTION:\n${video.callToAction}`)}
+                        className="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-extrabold px-3 py-2 rounded-xl flex items-center gap-1 transition-colors cursor-pointer border border-slate-300"
+                      >
+                        {copiedId === video.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                        {copiedId === video.id ? 'Copied' : 'Outline'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Video Hook Box */}
+                  <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1">
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 block">
+                      🔥 Recommended Video Opening Hook (First 3 Seconds)
                     </span>
-                    <h3 className="font-display text-base font-bold text-slate-900">{video.title}</h3>
+                    <p className="text-xs font-extrabold text-amber-950 italic">
+                      {video.hookText}
+                    </p>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => copyScript(video.id, `${video.title}\n\nHOOK:\n${video.hookText}\n\nSCRIPT OUTLINE:\n${video.scriptOutline}\n\nCALL TO ACTION:\n${video.callToAction}`)}
-                    className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-extrabold px-4 py-2 rounded-xl flex items-center gap-1.5 transition-colors cursor-pointer shrink-0 border border-indigo-200"
-                  >
-                    {copiedId === video.id ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copiedId === video.id ? 'Script Copied!' : 'Copy Script & Hook'}
-                  </button>
-                </div>
-
-                {/* Video Hook Box */}
-                <div className="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-800 block">
-                    🔥 Recommended Video Opening Hook (First 3 Seconds)
-                  </span>
-                  <p className="text-xs font-extrabold text-amber-950 italic">
-                    {video.hookText}
-                  </p>
-                </div>
-
-                {/* Script Outline */}
-                <div className="space-y-1.5">
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block">
-                    📝 Video Script Blueprint & Talking Points
-                  </span>
-                  <pre className="whitespace-pre-wrap font-sans text-xs text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
-                    {video.scriptOutline}
-                  </pre>
-                </div>
-
-                {/* CTA & Referral Link Bar */}
-                <div className="p-3.5 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                  <div className="space-y-0.5 min-w-0">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 block font-bold">Video Description Call-to-Action Link</span>
-                    <span className="font-mono text-xs text-amber-300 font-bold truncate block">{video.callToAction}</span>
+                  {/* Script Outline */}
+                  <div className="space-y-1.5">
+                    <span className="text-[11px] font-extrabold uppercase tracking-wider text-slate-500 block">
+                      📝 Video Script Blueprint & Talking Points
+                    </span>
+                    <pre className="whitespace-pre-wrap font-sans text-xs text-slate-700 leading-relaxed bg-slate-50 p-4 rounded-2xl border border-slate-200/80">
+                      {video.scriptOutline}
+                    </pre>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => copyScript(`${video.id}-cta`, video.callToAction)}
-                    className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1 shrink-0 cursor-pointer"
-                  >
-                    {copiedId === `${video.id}-cta` ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
-                    {copiedId === `${video.id}-cta` ? 'Copied' : 'Copy CTA'}
-                  </button>
-                </div>
+                  {/* CTA & Referral Link Bar */}
+                  <div className="p-3.5 rounded-2xl bg-slate-900 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+                    <div className="space-y-0.5 min-w-0">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-400 block font-bold">Video Description Call-to-Action Link</span>
+                      <span className="font-mono text-xs text-amber-300 font-bold truncate block">{video.callToAction}</span>
+                    </div>
 
-              </div>
-            ))}
+                    <button
+                      type="button"
+                      onClick={() => copyScript(`${video.id}-cta`, video.callToAction)}
+                      className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-3.5 py-1.5 rounded-lg flex items-center gap-1 shrink-0 cursor-pointer"
+                    >
+                      {copiedId === `${video.id}-cta` ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
+                      {copiedId === `${video.id}-cta` ? 'Copied' : 'Copy CTA'}
+                    </button>
+                  </div>
+
+                </div>
+              );
+            })}
           </div>
 
         </div>
