@@ -198,10 +198,10 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
 
       {/* 2. MAIN WORKSPACE CONTAINER */}
       <div className="flex-1 max-w-7xl w-full mx-auto flex">
-        {/* SIDEBAR NAVIGATION */}
+        {/* SIDEBAR NAVIGATION (FIXED & STICKY ON DESKTOP SCROLL) */}
         <aside className={`
-          fixed lg:static inset-y-0 left-0 z-30 w-64 bg-white border-r border-slate-200/80 p-4 space-y-5 flex flex-col overflow-y-auto shrink-0 transition-transform duration-300 shadow-sm lg:shadow-none
-          ${mobileMenuOpen ? 'translate-x-0 top-[61px]' : '-translate-x-full lg:translate-x-0'}
+          fixed lg:sticky lg:top-[61px] lg:h-[calc(100vh-61px)] inset-y-0 left-0 z-30 w-64 bg-white border-r border-slate-200/80 p-4 space-y-5 flex flex-col overflow-y-auto shrink-0 transition-transform duration-300 shadow-sm lg:shadow-none
+          ${mobileMenuOpen ? 'translate-x-0 top-[61px] h-[calc(100vh-61px)]' : '-translate-x-full lg:translate-x-0'}
         `}>
           {/* NAVIGATION SECTIONS */}
           <div className="space-y-4">
