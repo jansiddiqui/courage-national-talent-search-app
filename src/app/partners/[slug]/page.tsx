@@ -16,6 +16,7 @@ import { GrowthCenter } from '@/components/partners/GrowthCenter';
 import { PartnerSupportCenter } from '@/components/partners/PartnerSupportCenter';
 import { PartnerInbox } from '@/components/partners/PartnerInbox';
 import { ContentRoadmapTab } from '@/components/partners/ContentRoadmapTab';
+import { PartnerLaunchpadTab } from '@/components/partners/PartnerLaunchpadTab';
 import { 
   Lock, 
   Sparkles, 
@@ -38,7 +39,7 @@ export default function DedicatedPartnerWorkspacePage() {
   const rawSlug = params?.slug as string;
   const slug = rawSlug ? rawSlug.toLowerCase() : '';
 
-  const [activeTab, setActiveTab] = useState<WorkspaceTab>('overview');
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>('launchpad');
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isRegisteredCode, setIsRegisteredCode] = useState(false);
@@ -331,6 +332,14 @@ export default function DedicatedPartnerWorkspacePage() {
       }}
       applicantData={partnerData}
     >
+      {activeTab === 'launchpad' && (
+        <PartnerLaunchpadTab
+          referralCode={currentReferralCode}
+          partnerName={currentPartnerName}
+          applicantData={partnerData}
+          onNavigateTab={(tab: any) => setActiveTab(tab)}
+        />
+      )}
       {activeTab === 'overview' && (
         <PartnerOverview
           partnerName={currentPartnerName}

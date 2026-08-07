@@ -59,6 +59,15 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
   const [selectedPhase, setSelectedPhase] = useState<number>(1);
   const [selectedTopicId, setSelectedTopicId] = useState<string>('v1');
 
+  // VIDEO SUBMISSION MODAL STATE
+  const [showSubmitModal, setShowSubmitModal] = useState<boolean>(false);
+  const [submittingVideoTopic, setSubmittingVideoTopic] = useState<any | null>(null);
+  const [videoUrlInput, setVideoUrlInput] = useState<string>('');
+  const [videoPlatformInput, setVideoPlatformInput] = useState<string>('Instagram Reel');
+  const [videoNotesInput, setVideoNotesInput] = useState<string>('');
+  const [isSubmittingVideo, setIsSubmittingVideo] = useState<boolean>(false);
+  const [submissionSuccessMsg, setSubmissionSuccessMsg] = useState<string | null>(null);
+
   // MASTER AI PROMPT GENERATOR STATE
   const [promptLanguage, setPromptLanguage] = useState<string>('Hinglish');
   const [promptFormat, setPromptFormat] = useState<string>('Reel / Short (60 Sec)');
@@ -71,6 +80,44 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
     navigator.clipboard.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
+  };
+
+  const handleVideoSubmissionSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!videoUrlInput.trim()) return;
+
+    setIsSubmittingVideo(true);
+    setSubmissionSuccessMsg(null);
+
+    try {
+      const res = await fetch('/api/partner/video-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          referralCode,
+          videoTopicId: submittingVideoTopic?.id || selectedTopicId,
+          videoTitle: submittingVideoTopic?.title || 'Partner Video Campaign',
+          platform: videoPlatformInput,
+          videoUrl: videoUrlInput.trim(),
+          notes: videoNotesInput.trim()
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSubmissionSuccessMsg('🎉 Video link submitted successfully! Admin will review & award points shortly.');
+        setTimeout(() => {
+          setShowSubmitModal(false);
+          setVideoUrlInput('');
+          setVideoNotesInput('');
+          setSubmissionSuccessMsg(null);
+        }, 2200);
+      }
+    } catch (err) {
+      console.error('Failed to submit video:', err);
+    } finally {
+      setIsSubmittingVideo(false);
+    }
   };
 
   // FULL 8 VIDEO TOPICS ROADMAP LOOKUP
@@ -561,7 +608,20 @@ PLEASE FORMAT THE OUTPUT WITH:
                         <span>Generate Master Prompt</span>
                       </button>
 
-                      {/* Button 2: Copy Raw Outline Script */}
+                      {/* Button 2: Submit Published Video Link */}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSubmittingVideoTopic(video);
+                          setShowSubmitModal(true);
+                        }}
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold px-3.5 py-2 rounded-xl flex items-center gap-1.5 transition-all shadow-xs cursor-pointer"
+                      >
+                        <Video className="w-3.5 h-3.5 text-emerald-200" />
+                        <span>Submit Video Link</span>
+                      </button>
+
+                      {/* Button 3: Copy Raw Outline Script */}
                       <button
                         type="button"
                         onClick={() => copyScript(video.id, `${video.title}\n\nHOOK:\n${video.hookText}\n\nSCRIPT OUTLINE:\n${video.scriptOutline}\n\nCALL TO ACTION:\n${video.callToAction}`)}
@@ -627,6 +687,105 @@ PLEASE FORMAT THE OUTPUT WITH:
           Consistency is key! Post 2–3 short videos every week following this timeline sequence. Share your video links inside your WhatsApp groups and pin your CNTS referral link (<code className="font-mono font-bold text-emerald-950">{referralLink}</code>) in the comments!
         </p>
       </div>
+
+      {/* VIDEO SUBMISSION MODAL FOR ADMIN REVIEW */}
+      {showSubmitModal && (
+        <div className="fixed inset-0 z-50 bg-slate-950/70 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-5 border border-slate-200 shadow-2xl animate-scale-up relative">
+            <button
+              type="button"
+              onClick={() => setShowSubmitModal(false)}
+              className="absolute top-5 right-5 p-1 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100"
+            >
+              ✕
+            </button>
+
+            <div className="space-y-1">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-md border border-emerald-200">
+                Track Campaign Video
+              </span>
+              <h3 className="font-display font-black text-xl text-slate-900">
+                Submit Published Video Link
+              </h3>
+              <p className="text-xs text-slate-500">
+                Submit your published video link so the admin team can verify views, award points, and feature your video!
+              </p>
+            </div>
+
+            {submissionSuccessMsg ? (
+              <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-900 text-center animate-fade-in">
+                {submissionSuccessMsg}
+              </div>
+            ) : (
+              <form onSubmit={handleVideoSubmissionSubmit} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 block">Video Topic</label>
+                  <input
+                    type="text"
+                    disabled
+                    value={submittingVideoTopic?.title || 'CNTS Video Campaign'}
+                    className="w-full bg-slate-100 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-700"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 block">Platform</label>
+                  <select
+                    value={videoPlatformInput}
+                    onChange={(e) => setVideoPlatformInput(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-900 cursor-pointer"
+                  >
+                    <option value="Instagram Reel">Instagram Reel</option>
+                    <option value="YouTube Short">YouTube Short</option>
+                    <option value="YouTube Long Video">YouTube Long Video (3-5 Min)</option>
+                    <option value="WhatsApp Status / Broadcast">WhatsApp Status / Broadcast</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 block">Published Video URL *</label>
+                  <input
+                    type="url"
+                    required
+                    placeholder="https://www.instagram.com/reel/... or https://youtu.be/..."
+                    value={videoUrlInput}
+                    onChange={(e) => setVideoUrlInput(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-bold text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  />
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-slate-700 block">Notes / Views Count (Optional)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Posted at 6 PM, received 2,400 views & 15 registrations"
+                    value={videoNotesInput}
+                    onChange={(e) => setVideoNotesInput(e.target.value)}
+                    className="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs font-medium text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none"
+                  />
+                </div>
+
+                <div className="pt-2 flex items-center justify-end gap-3">
+                  <button
+                    type="button"
+                    onClick={() => setShowSubmitModal(false)}
+                    className="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 hover:bg-slate-100"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={isSubmittingVideo}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl shadow-md transition-all cursor-pointer"
+                  >
+                    {isSubmittingVideo ? 'Submitting...' : 'Submit Video Link'}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
+      )}
 
     </div>
   );

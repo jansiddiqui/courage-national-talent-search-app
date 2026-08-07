@@ -31,15 +31,17 @@ import {
   Zap,
   Sliders,
   Flame,
-  Inbox
+  Inbox,
+  Video
 } from 'lucide-react';
 
 export default function AdminPartnersPage() {
-  const [activeTab, setActiveTab] = useState<'approvals' | 'directory' | 'payouts' | 'broadcast' | 'rates'>('approvals');
+  const [activeTab, setActiveTab] = useState<'approvals' | 'directory' | 'video-submissions' | 'payouts' | 'broadcast' | 'rates'>('approvals');
   const [partners, setPartners] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
+  const [videoSubmissions, setVideoSubmissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL'>('PENDING');
+  const [statusFilter, setStatusFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   
   // Rate Editing State
@@ -103,9 +105,25 @@ export default function AdminPartnersPage() {
     }
   };
 
+  const fetchVideoSubmissions = async () => {
+    try {
+      const res = await fetch('/api/admin/partners/video-submissions');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.submissions)) {
+        setVideoSubmissions(data.submissions);
+      } else {
+        setVideoSubmissions([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch video submissions:', err);
+      setVideoSubmissions([]);
+    }
+  };
+
   useEffect(() => {
     fetchPartners();
     fetchPayouts();
+    fetchVideoSubmissions();
   }, []);
 
   const handleUpdateStatus = async (partnerId: string, status: 'APPROVED' | 'REJECTED' | 'SUSPENDED') => {
@@ -357,6 +375,20 @@ export default function AdminPartnersPage() {
             {pendingPayouts.length > 0 && (
               <span className="bg-emerald-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-black">
                 {pendingPayouts.length}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('video-submissions')}
+            className={`py-2.5 px-5 rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'video-submissions' ? 'bg-white text-slate-950 shadow-md font-extrabold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <Zap className="w-4 h-4 text-rose-600" /> Video Submissions
+            {videoSubmissions.filter(s => s.status === 'PENDING_REVIEW' || s.status === 'PENDING').length > 0 && (
+              <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded-full font-black">
+                {videoSubmissions.filter(s => s.status === 'PENDING_REVIEW' || s.status === 'PENDING').length}
               </span>
             )}
           </button>
@@ -637,19 +669,101 @@ export default function AdminPartnersPage() {
               ))}
             </div>
 
-            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xs text-slate-600 flex items-center justify-between">
-              <span>Admin rates apply automatically to new applications unless custom rate is set per creator.</span>
+            <div className="flex items-center justify-between pt-2">
+              <span className="text-xs text-slate-500 font-medium">Automatic system calculation priority mode active.</span>
               <button
-                onClick={() => alert('Tier matrix updated successfully!')}
-                className="py-2 px-4 bg-slate-900 text-white font-bold rounded-xl hover:bg-slate-800 cursor-pointer"
+                onClick={() => alert('Tier baseline commission matrix saved successfully.')}
+                className="py-2 px-5 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs rounded-xl cursor-pointer"
               >
-                Save Tier Rates
+                Save Matrix Baseline
               </button>
             </div>
           </div>
         )}
 
-        {/* TAB 4: WEEKLY PAYOUT SETTLEMENT QUEUE */}
+        {/* TAB 4: PARTNER CAMPAIGN VIDEO SUBMISSIONS REVIEW */}
+        {activeTab === 'video-submissions' && (
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
+              <div>
+                <h2 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <Video className="w-5 h-5 text-rose-600" /> Partner Video Submissions Queue
+                </h2>
+                <p className="text-xs text-slate-500">Review video URLs submitted by partners, watch content, and approve for points & featuring.</p>
+              </div>
+
+              <div className="text-xs font-mono font-bold bg-rose-50 text-rose-700 px-3 py-1.5 rounded-xl border border-rose-200">
+                {videoSubmissions.filter(s => s.status === 'PENDING_REVIEW' || s.status === 'PENDING').length} Pending Admin Review
+              </div>
+            </div>
+
+            {videoSubmissions.length === 0 ? (
+              <div className="p-12 text-center text-slate-500 space-y-2">
+                <Video className="w-10 h-10 text-slate-300 mx-auto" />
+                <p className="font-bold text-xs">No video submissions logged yet.</p>
+                <p className="text-[11px] text-slate-400">Partners submit video URLs directly from their Video Campaign Roadmap tab.</p>
+              </div>
+            ) : (
+              <div className="divide-y divide-slate-100">
+                {videoSubmissions.map((sub, idx) => (
+                  <div key={sub.id || idx} className="py-4 space-y-3 first:pt-0 last:pb-0">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded border border-indigo-100">
+                            {sub.platform || 'Instagram Reel'}
+                          </span>
+                          <span className="font-mono text-xs font-extrabold text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                            Code: {sub.referral_code || sub.referralCode || 'CNTSJN'}
+                          </span>
+                          <span className={`text-[10px] font-extrabold px-2.5 py-0.5 rounded-full ${
+                            sub.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800' : sub.status === 'REJECTED' ? 'bg-rose-100 text-rose-800' : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            {sub.status || 'PENDING_REVIEW'}
+                          </span>
+                        </div>
+
+                        <h4 className="font-display font-bold text-base text-slate-900">{sub.video_title || sub.videoTitle || 'Partner Campaign Video'}</h4>
+                        {sub.notes && <p className="text-xs text-slate-500 font-medium">Notes: {sub.notes}</p>}
+                      </div>
+
+                      <div className="flex items-center gap-2 shrink-0">
+                        <a
+                          href={sub.video_url || sub.videoUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold text-xs px-3.5 py-2 rounded-xl border border-indigo-200 flex items-center gap-1 cursor-pointer"
+                        >
+                          <span>Open Video Link</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+
+                        {sub.status !== 'APPROVED' && (
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              await fetch('/api/admin/partners/video-submissions', {
+                                method: 'PATCH',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ submissionId: sub.id, status: 'APPROVED' })
+                              });
+                              setVideoSubmissions(prev => prev.map(s => s.id === sub.id ? { ...s, status: 'APPROVED' } : s));
+                            }}
+                            className="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs px-3.5 py-2 rounded-xl shadow-xs cursor-pointer flex items-center gap-1"
+                          >
+                            <CheckCircle2 className="w-3.5 h-3.5" /> Approve & Award Points
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 5: WEEKLY PAYOUT SETTLEMENT QUEUE */}
         {activeTab === 'payouts' && (
           <div className="bg-white rounded-3xl border border-slate-200 shadow-sm p-6 space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">

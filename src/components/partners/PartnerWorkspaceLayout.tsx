@@ -35,6 +35,7 @@ import {
 import { RegisterChildWidget } from './RegisterChildWidget';
 
 export type WorkspaceTab = 
+  | 'launchpad'
   | 'overview'
   | 'roadmap'
   | 'child'
@@ -91,6 +92,7 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
   }, [referralCode]);
 
   const navItems: { id: WorkspaceTab; label: string; icon: any; badge?: string; unreadDot?: boolean }[] = [
+    { id: 'launchpad', label: 'Start Here (Launchpad)', icon: Compass, badge: 'Start' },
     { id: 'overview', label: 'Overview', icon: LayoutDashboard },
     { id: 'roadmap', label: 'Video Campaign Roadmap', icon: Video, badge: 'Aug 30' },
     { id: 'inbox', label: 'Inbox', icon: Inbox },
@@ -299,6 +301,25 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
             >
               <MessageSquare className="w-3.5 h-3.5 fill-white" /> Share on WhatsApp
             </a>
+          </div>
+
+          {/* SIDEBAR FOOTER: LOGOUT BUTTON */}
+          <div className="pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                fetch('/api/partner/session', { method: 'DELETE' }).finally(() => {
+                  onExitWorkspace();
+                });
+              }}
+              className="w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-bold text-xs text-rose-600 hover:text-rose-700 hover:bg-rose-50 border border-rose-100/80 transition-all cursor-pointer shadow-2xs"
+            >
+              <div className="flex items-center gap-2.5">
+                <LogOut className="w-4 h-4 text-rose-500" />
+                <span>Sign Out of Workspace</span>
+              </div>
+              <span className="text-[10px] font-mono font-bold text-rose-400">Exit ↗</span>
+            </button>
           </div>
         </aside>
 
