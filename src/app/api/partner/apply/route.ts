@@ -125,17 +125,17 @@ export async function POST(request: Request) {
           primary_role: primaryRole || 'Content Creator & Educator',
           niche: niche || 'Education',
           content_language: contentLanguage || 'Hinglish',
-          bio: bio || '',
+          bio: bio || null,
           audience_scale: audienceScale || '10k - 50k',
-          city: city || '',
-          state: state || '',
+          total_reach: body.totalReach || 0,
+          city: city || null,
+          state: state || null,
+          profile_image_url: avatarPublicUrl || body.profileImage || null,
+          platform_details: processedPlatforms.length > 0 ? processedPlatforms : (body.platformDetails || []),
+          password_hash: body.password || null,
           status: 'PENDING',
           honorarium_rate: 25.00
         };
-
-        if (avatarPublicUrl) insertPayload.profile_image_url = avatarPublicUrl;
-        if (processedPlatforms.length > 0) insertPayload.platform_details = processedPlatforms;
-        if (body.password) insertPayload.password_hash = body.password;
 
         let { data: inserted, error: insertErr } = await (supabaseAdmin as any)
           .from('partners')
