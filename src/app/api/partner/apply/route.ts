@@ -20,28 +20,33 @@ async function uploadBase64ToStorage(bucket: string, path: string, base64Data: s
 
     const contentType = matches[1];
     const buffer = Buffer.from(matches[2], 'base64');
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-    const { error } = await (supabaseAdmin as any).storage
-      .from(bucket)
-      .upload(path, buffer, {
-        contentType,
-        cacheControl: '3600',
-        upsert: true
-      });
+    if (!serviceKey) return null;
 
-    if (error) {
-      console.error(`[Supabase Storage Upload Error - ${bucket}]:`, error);
-      return base64Data;
+    const uploadUrl = `${supabaseUrl}/storage/v1/object/${bucket}/${path}`;
+    const res = await fetch(uploadUrl, {
+      method: 'POST',
+      headers: {
+        'apikey': serviceKey,
+        'Authorization': `Bearer ${serviceKey}`,
+        'Content-Type': contentType,
+        'x-upsert': 'true'
+      },
+      body: buffer
+    });
+
+    if (res.ok) {
+      return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
+    } else {
+      const errText = await res.text();
+      console.error(`[Storage Upload Failed ${bucket}/${path}]:`, errText);
+      return null;
     }
-
-    const { data: publicUrlData } = (supabaseAdmin as any).storage
-      .from(bucket)
-      .getPublicUrl(path);
-
-    return publicUrlData.publicUrl;
   } catch (err) {
-    console.error(`[Supabase Storage Exception - ${bucket}]:`, err);
-    return base64Data || null;
+    console.error(`[Storage Upload Exception ${bucket}/${path}]:`, err);
+    return null;
   }
 }
 
@@ -70,6 +75,15 @@ export async function POST(request: Request) {
 
     const cleanEmail = email.trim().toLowerCase();
 
+    // Auto-parse City & State if entered together (e.g. "Kanpur, Uttar Pradesh")
+    let finalCity = city ? city.trim() : null;
+    let finalState = state ? state.trim() : null;
+    if (finalCity && finalCity.includes(',') && !finalState) {
+      const parts = finalCity.split(',').map((s: string) => s.trim());
+      finalCity = parts[0] || finalCity;
+      finalState = parts.slice(1).join(', ') || null;
+    }
+
     // Determine final customSlug & collision-proof 7-8 char referralCode
     const rawSlug = customSlug || fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
     const cleanSlug = rawSlug.toLowerCase().trim() || `partner${Math.floor(100 + Math.random() * 900)}`;
@@ -95,7 +109,11 @@ export async function POST(request: Request) {
           proofUrl = await uploadBase64ToStorage('partner-proofs', proofPath, proofUrl);
         }
         processedPlatforms.push({
-          ...item,
+          platform: item.platform || 'General',
+          handle: item.handle || item.handleOrUrl || '',
+          handleOrUrl: item.handleOrUrl || item.handle || '',
+          followers: item.followers || item.followerCount || 0,
+          followerCount: item.followerCount || item.followers || 0,
           proofScreenshotUrl: proofUrl
         });
       }
@@ -128,8 +146,8 @@ export async function POST(request: Request) {
           bio: bio || null,
           audience_scale: audienceScale || '10k - 50k',
           total_reach: body.totalReach || 0,
-          city: city || null,
-          state: state || null,
+          city: finalCity,
+          state: finalState,
           profile_image_url: avatarPublicUrl || body.profileImage || null,
           platform_details: processedPlatforms.length > 0 ? processedPlatforms : (body.platformDetails || []),
           password_hash: body.password || null,
