@@ -561,9 +561,9 @@ export default function AdminPartnersPage() {
             }`}
           >
             <AlertTriangle className="w-4 h-4 text-amber-600" /> Suspension Appeals
-            {partners.filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message).length > 0 && (
+            {partners.filter(p => p.status === 'SUSPENDED').length > 0 && (
               <span className="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-black">
-                {partners.filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message).length}
+                {partners.filter(p => p.status === 'SUSPENDED').length}
               </span>
             )}
           </button>
@@ -1246,22 +1246,22 @@ export default function AdminPartnersPage() {
                 </p>
               </div>
               <span className="font-mono text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200">
-                {partners.filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message).length} Account(s) Flagged / Suspended
+                {partners.filter(p => p.status === 'SUSPENDED').length} Account(s) Suspended / Under Review
               </span>
             </div>
 
-            {partners.filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message).length === 0 ? (
+            {partners.filter(p => p.status === 'SUSPENDED').length === 0 ? (
               <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 text-slate-500 space-y-3">
                 <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
                 <h3 className="font-bold text-slate-800 text-base">No Pending Suspension Appeals</h3>
                 <p className="text-xs text-slate-500 max-w-md mx-auto">
-                  There are currently no suspended partners with active review appeals awaiting administrative action.
+                  There are currently no suspended partner accounts awaiting administrative review.
                 </p>
               </div>
             ) : (
               <div className="grid grid-cols-1 gap-4">
                 {partners
-                  .filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message)
+                  .filter(p => p.status === 'SUSPENDED')
                   .map(p => (
                     <div key={p.id} className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-5">
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
