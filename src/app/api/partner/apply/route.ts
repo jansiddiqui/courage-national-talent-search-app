@@ -60,7 +60,6 @@ export async function POST(request: Request) {
       customSlug, 
       referralCode, 
       audienceScale, 
-      primaryRole, 
       profileType = 'CREATOR',
       niche, 
       contentLanguage, 
@@ -68,6 +67,18 @@ export async function POST(request: Request) {
       city, 
       state 
     } = body;
+
+    // Derive human-readable primaryRole from profileType
+    const profileTypeToRole: Record<string, string> = {
+      'CREATOR': 'Content Creator & Educator',
+      'TEACHER': 'Teacher / Educator',
+      'SCHOOL': 'School Institution',
+      'NGO': 'NGO / Foundation',
+      'INSTITUTE': 'Coaching Institute',
+      'CAMPUS_AMBASSADOR': 'Campus Ambassador',
+      'COMMUNITY': 'Community Leader',
+    };
+    const primaryRole = body.primaryRole || profileTypeToRole[profileType] || 'Content Creator & Educator';
 
     if (!fullName || !email) {
       return NextResponse.json({ error: 'Full name and email are required.' }, { status: 400 });
@@ -187,38 +198,24 @@ export async function POST(request: Request) {
           honorarium_rate: 25.00
         };
 
-        let { data: inserted, error: insertErr } = await (supabaseAdmin as any)
+        console.log('[Partner Apply] Inserting payload:', JSON.stringify(insertPayload, null, 2));
+
+        const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
           .from('partners')
           .insert(insertPayload)
           .select()
           .maybeSingle();
 
-        if (insertErr || !inserted) {
-          console.error('[Partner Apply Insert Error - Retrying with Core Schema]:', insertErr);
-          const corePayload: any = {
-            full_name: fullName,
-            email: cleanEmail,
-            phone: phone || null,
-            referral_code: finalReferralCode,
-            custom_slug: cleanSlug,
-            partner_id: partnerId,
-            status: 'PENDING',
-            honorarium_rate: 25.00
-          };
-
-          const { data: retryData, error: retryErr } = await (supabaseAdmin as any)
-            .from('partners')
-            .insert(corePayload)
-            .select()
-            .maybeSingle();
-
-          if (retryErr) {
-            console.error('[Partner Apply Core Insert Critical Error]:', retryErr);
-          }
-          newPartnerRecord = retryData;
-        } else {
-          newPartnerRecord = inserted;
+        if (insertErr) {
+          console.error('[Partner Apply Insert Error]:', JSON.stringify(insertErr));
+          return NextResponse.json({
+            error: 'Database insert failed',
+            details: insertErr?.message || 'Unknown error',
+            code: insertErr?.code
+          }, { status: 500 });
         }
+
+        newPartnerRecord = inserted;
       }
 
       // Dispatch PARTNER_APPLIED event via EventDispatcher
