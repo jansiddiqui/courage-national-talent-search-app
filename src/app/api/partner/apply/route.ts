@@ -129,7 +129,7 @@ export async function POST(request: Request) {
           audience_scale: audienceScale || '10k - 50k',
           city: city || '',
           state: state || '',
-          status: 'APPLIED',
+          status: 'PENDING',
           honorarium_rate: 25.00
         };
 
@@ -151,7 +151,7 @@ export async function POST(request: Request) {
             referral_code: finalReferralCode,
             custom_slug: cleanSlug,
             partner_id: partnerId,
-            status: 'APPLIED',
+            status: 'PENDING',
             honorarium_rate: 25.00
           };
 
