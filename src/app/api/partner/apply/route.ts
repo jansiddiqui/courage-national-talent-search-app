@@ -84,11 +84,16 @@ export async function POST(request: Request) {
       finalState = parts.slice(1).join(', ') || null;
     }
 
-    // Determine final customSlug & collision-proof 7-8 char referralCode
-    const rawSlug = customSlug || fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
-    const cleanSlug = rawSlug.toLowerCase().trim() || `partner${Math.floor(100 + Math.random() * 900)}`;
+    // Honor exact user-selected referralCode and customSlug if provided
+    const userChosenCode = (referralCode || body.referralCode || '').trim().toUpperCase();
+    const finalReferralCode = (userChosenCode && userChosenCode.length >= 4)
+      ? userChosenCode
+      : PartnerReferralEngine.generateReferralCode(fullName);
 
-    const finalReferralCode = PartnerReferralEngine.generateReferralCode(fullName);
+    const userChosenSlug = (customSlug || body.customSlug || '').trim().toLowerCase();
+    const rawSlug = fullName.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const cleanSlug = userChosenSlug || rawSlug || `partner${Math.floor(100 + Math.random() * 900)}`;
+
     const partnerId = `CP-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
     // Upload profile avatar to Supabase Storage bucket 'partner-avatars'
@@ -133,6 +138,8 @@ export async function POST(request: Request) {
         const updatePayload: any = {
           full_name: fullName || existing.full_name,
           phone: phone || existing.phone,
+          referral_code: finalReferralCode || existing.referral_code,
+          custom_slug: cleanSlug || existing.custom_slug,
           primary_role: primaryRole || existing.primary_role,
           niche: niche || existing.niche,
           content_language: contentLanguage || existing.content_language,
