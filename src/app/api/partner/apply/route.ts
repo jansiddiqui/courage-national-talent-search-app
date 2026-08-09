@@ -182,7 +182,6 @@ export async function POST(request: Request) {
           referral_code: finalReferralCode,
           custom_slug: cleanSlug,
           partner_id: partnerId,
-          profile_type: profileType,
           primary_role: primaryRole || 'Content Creator & Educator',
           niche: niche || 'Education',
           content_language: contentLanguage || 'Hinglish',
