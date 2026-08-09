@@ -89,13 +89,13 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
     <div className="max-w-4xl mx-auto space-y-7 animate-fade-in pb-12 font-sans text-[#0F172A]">
 
       {/* 1. HERO WELCOME LAUNCHPAD BANNER */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-5">
-          <div className="space-y-1">
+      <div className="bg-white p-5 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-5">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-100 pb-5">
+          <div className="space-y-1.5 max-w-xl">
             <div className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-black px-3.5 py-1 rounded-full border border-indigo-100">
               <Rocket className="w-3.5 h-3.5 text-indigo-600" /> Start Here • Partner Launchpad
             </div>
-            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">
+            <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
               Welcome to Courage Partner Platform, {partnerName}! 🚀
             </h1>
             <p className="text-slate-500 text-xs sm:text-sm font-medium leading-relaxed">
@@ -103,23 +103,23 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
             </p>
           </div>
 
-          <div className="bg-indigo-50/70 border border-indigo-100 p-3.5 rounded-2xl shrink-0 text-right space-y-0.5">
-            <span className="text-[10px] uppercase font-black text-indigo-500 tracking-wider block font-mono">Official Partner Code</span>
-            <span className="font-mono text-xl font-black text-indigo-700 block">{referralCode}</span>
+          <div className="bg-indigo-50/80 border border-indigo-100 p-4 rounded-2xl shrink-0 flex items-center justify-between md:flex-col md:items-end gap-3 text-left md:text-right shadow-2xs">
+            <span className="text-[10px] uppercase font-black text-indigo-500 tracking-wider font-mono">Official Partner Code</span>
+            <span className="font-mono text-xl sm:text-2xl font-black text-indigo-700">{referralCode}</span>
           </div>
         </div>
 
         {/* QUICK LINK BAR */}
-        <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
-          <div className="flex items-center gap-2 min-w-0 flex-1 overflow-hidden">
+        <div className="p-3.5 sm:p-4 rounded-2xl bg-slate-50 border border-slate-200/90 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1 overflow-hidden">
             <Globe className="w-4 h-4 text-indigo-600 shrink-0" />
-            <span className="font-mono truncate font-bold text-indigo-700 text-xs">{referralLink}</span>
+            <span className="font-mono truncate font-extrabold text-indigo-700 text-xs sm:text-sm">{referralLink}</span>
           </div>
 
           <button
             type="button"
             onClick={copyLink}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-4 py-2 rounded-xl transition-all cursor-pointer shrink-0 flex items-center justify-center gap-1.5 shadow-xs"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs px-5 py-2.5 rounded-xl transition-all cursor-pointer shrink-0 flex items-center justify-center gap-2 shadow-xs active:scale-[0.98]"
           >
             {copiedLink ? <Check className="w-4 h-4 text-emerald-300" /> : <Copy className="w-4 h-4" />}
             <span>{copiedLink ? 'Link Copied!' : 'Copy Referral Link'}</span>
@@ -129,11 +129,11 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
 
       {/* 2. STEP-BY-STEP ONBOARDING FLOW */}
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 sm:gap-4">
           <h2 className="font-display text-xl font-black text-slate-900 tracking-tight">
             Your 4-Step Orientation Checklist
           </h2>
-          <span className="text-xs font-mono font-extrabold text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
+          <span className="text-xs font-mono font-extrabold text-indigo-700 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100 shrink-0 self-start sm:self-auto whitespace-nowrap">
             Step 1 of 4 Completed
           </span>
         </div>
