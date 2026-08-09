@@ -1,51 +1,63 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 import { signSession } from '@/lib/sessionHelper';
 import { EmailService } from '@/services/emailService';
 import { getPartnerApplicationTemplate } from '@/lib/emailTemplates';
 import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
-import { EventDispatcher } from '@/application/dispatchers/EventDispatcher';
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
+
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmb3h3Zm5mZWN4eXBic2Z0cnJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTAxNzIyOCwiZXhwIjoyMDk2NTkzMjI4fQ.utnq3sX_D7ulMgS02QxRWGTBgzuhCS2e2yK5Xxilzo4';
+const JWT_SECRET = SERVICE_KEY;
+
+// Direct Supabase REST API helper
+async function dbQuery(method: string, table: string, body?: any, queryParams?: string): Promise<{ data: any; error: any; status: number }> {
+  const url = `${SUPABASE_URL}/rest/v1/${table}${queryParams ? '?' + queryParams : ''}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=representation'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const text = await res.text();
+  let data = null;
+  try { data = JSON.parse(text); } catch { data = text; }
+  return { data, error: res.ok ? null : data, status: res.status };
+}
 
 async function uploadBase64ToStorage(bucket: string, path: string, base64Data: string): Promise<string | null> {
   try {
     if (!base64Data || typeof base64Data !== 'string' || !base64Data.startsWith('data:')) {
       return base64Data || null;
     }
-
     const matches = base64Data.match(/^data:(.+);base64,(.+)$/);
     if (!matches || matches.length !== 3) return base64Data;
-
     const contentType = matches[1];
     const buffer = Buffer.from(matches[2], 'base64');
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
-    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
-
-    if (!serviceKey) return null;
-
-    const uploadUrl = `${supabaseUrl}/storage/v1/object/${bucket}/${path}`;
+    const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${bucket}/${path}`;
     const res = await fetch(uploadUrl, {
       method: 'POST',
       headers: {
-        'apikey': serviceKey,
-        'Authorization': `Bearer ${serviceKey}`,
+        'apikey': SERVICE_KEY,
+        'Authorization': `Bearer ${SERVICE_KEY}`,
         'Content-Type': contentType,
         'x-upsert': 'true'
       },
       body: buffer
     });
-
     if (res.ok) {
-      return `${supabaseUrl}/storage/v1/object/public/${bucket}/${path}`;
+      return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${path}`;
     } else {
       const errText = await res.text();
       console.error(`[Storage Upload Failed ${bucket}/${path}]:`, errText);
       return null;
     }
   } catch (err) {
-    console.error(`[Storage Upload Exception ${bucket}/${path}]:`, err);
+    console.error(`[Storage Upload Exception]:`, err);
     return null;
   }
 }
@@ -53,22 +65,28 @@ async function uploadBase64ToStorage(bucket: string, path: string, base64Data: s
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { 
-      fullName, 
-      email, 
-      phone, 
-      customSlug, 
-      referralCode, 
-      audienceScale, 
+    const {
+      fullName,
+      email,
+      phone,
+      customSlug,
+      referralCode,
+      audienceScale,
       profileType = 'CREATOR',
-      niche, 
-      contentLanguage, 
-      bio, 
-      city, 
-      state 
+      niche,
+      contentLanguage,
+      bio,
+      city,
+      state
     } = body;
 
-    // Derive human-readable primaryRole from profileType
+    if (!fullName || !email) {
+      return NextResponse.json({ error: 'Full name and email are required.' }, { status: 400 });
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+
+    // Derive primaryRole from profileType
     const profileTypeToRole: Record<string, string> = {
       'CREATOR': 'Content Creator & Educator',
       'TEACHER': 'Teacher / Educator',
@@ -80,13 +98,7 @@ export async function POST(request: Request) {
     };
     const primaryRole = body.primaryRole || profileTypeToRole[profileType] || 'Content Creator & Educator';
 
-    if (!fullName || !email) {
-      return NextResponse.json({ error: 'Full name and email are required.' }, { status: 400 });
-    }
-
-    const cleanEmail = email.trim().toLowerCase();
-
-    // Auto-parse City & State if entered together (e.g. "Kanpur, Uttar Pradesh")
+    // Auto-parse City & State if entered together
     let finalCity = city ? city.trim() : null;
     let finalState = state ? state.trim() : null;
     if (finalCity && finalCity.includes(',') && !finalState) {
@@ -95,7 +107,7 @@ export async function POST(request: Request) {
       finalState = parts.slice(1).join(', ') || null;
     }
 
-    // Honor exact user-selected referralCode and customSlug if provided
+    // Honor user-selected referralCode and customSlug
     const userChosenCode = (referralCode || body.referralCode || '').trim().toUpperCase();
     const finalReferralCode = (userChosenCode && userChosenCode.length >= 4)
       ? userChosenCode
@@ -107,19 +119,19 @@ export async function POST(request: Request) {
 
     const partnerId = `CP-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
-    // Upload profile avatar to Supabase Storage bucket 'partner-avatars'
+    // Upload profile avatar
     let avatarPublicUrl: string | null = null;
-    if (body.profileImage && hasSupabaseAdminConfig) {
+    if (body.profileImage) {
       const avatarPath = `${partnerId}/avatar-${Date.now()}.jpg`;
       avatarPublicUrl = await uploadBase64ToStorage('partner-avatars', avatarPath, body.profileImage);
     }
 
-    // Upload proof screenshots to Supabase Storage bucket 'partner-proofs'
+    // Upload proof screenshots
     const processedPlatforms: any[] = [];
     if (Array.isArray(body.platformDetails)) {
       for (const item of body.platformDetails) {
         let proofUrl = item.proofScreenshotUrl || null;
-        if (proofUrl && proofUrl.startsWith('data:') && hasSupabaseAdminConfig) {
+        if (proofUrl && proofUrl.startsWith('data:')) {
           const cleanPlatformName = (item.platform || 'channel').toLowerCase().replace(/[^a-z0-9]/g, '_');
           const proofPath = `${partnerId}/${cleanPlatformName}-proof-${Date.now()}.png`;
           proofUrl = await uploadBase64ToStorage('partner-proofs', proofPath, proofUrl);
@@ -137,113 +149,90 @@ export async function POST(request: Request) {
 
     let newPartnerRecord: any = null;
 
-    if (hasSupabaseAdminConfig) {
-      // Check if email already exists
-      const { data: existing } = await (supabaseAdmin as any)
-        .from('partners')
-        .select('*')
-        .eq('email', cleanEmail)
-        .maybeSingle();
+    // Check if email already exists
+    const { data: existingArr } = await dbQuery('GET', 'partners', undefined, `email=eq.${encodeURIComponent(cleanEmail)}&limit=1`);
+    const existing = Array.isArray(existingArr) ? existingArr[0] : null;
 
-      if (existing) {
-        const updatePayload: any = {
-          full_name: fullName || existing.full_name,
-          phone: phone || existing.phone,
-          referral_code: finalReferralCode || existing.referral_code,
-          custom_slug: cleanSlug || existing.custom_slug,
-          primary_role: primaryRole || existing.primary_role,
-          niche: niche || existing.niche,
-          content_language: contentLanguage || existing.content_language,
-          bio: bio || existing.bio,
-          audience_scale: audienceScale || existing.audience_scale,
-          total_reach: body.totalReach || existing.total_reach || 0,
-          city: finalCity || existing.city,
-          state: finalState || existing.state,
-          status: existing.status || 'PENDING'
-        };
+    if (existing) {
+      // UPDATE existing record with all new data
+      const updatePayload: any = {
+        full_name: fullName || existing.full_name,
+        phone: phone || existing.phone,
+        referral_code: finalReferralCode || existing.referral_code,
+        custom_slug: cleanSlug || existing.custom_slug,
+        primary_role: primaryRole || existing.primary_role,
+        niche: niche || existing.niche,
+        content_language: contentLanguage || existing.content_language,
+        bio: bio || existing.bio,
+        audience_scale: audienceScale || existing.audience_scale,
+        total_reach: body.totalReach || existing.total_reach || 0,
+        city: finalCity || existing.city,
+        state: finalState || existing.state,
+        status: existing.status || 'PENDING'
+      };
+      if (avatarPublicUrl) updatePayload.profile_image_url = avatarPublicUrl;
+      if (processedPlatforms.length > 0) updatePayload.platform_details = processedPlatforms;
+      if (body.password) updatePayload.password_hash = body.password;
 
-        if (avatarPublicUrl) updatePayload.profile_image_url = avatarPublicUrl;
-        if (processedPlatforms.length > 0) updatePayload.platform_details = processedPlatforms;
-        if (body.password) updatePayload.password_hash = body.password;
+      const { data: updated, error: updateErr, status: updateStatus } = await dbQuery(
+        'PATCH', 'partners', updatePayload, `id=eq.${existing.id}`
+      );
+      if (updateErr) {
+        console.error('[Partner Update Error]:', JSON.stringify(updateErr));
+      }
+      newPartnerRecord = Array.isArray(updated) ? updated[0] : (updated || existing);
+    } else {
+      // INSERT new record
+      const insertPayload: any = {
+        full_name: fullName,
+        email: cleanEmail,
+        phone: phone || null,
+        referral_code: finalReferralCode,
+        custom_slug: cleanSlug,
+        partner_id: partnerId,
+        primary_role: primaryRole,
+        niche: niche || 'Education',
+        content_language: contentLanguage || 'Hinglish',
+        bio: bio || null,
+        audience_scale: audienceScale || '10k - 50k',
+        total_reach: body.totalReach || 0,
+        city: finalCity,
+        state: finalState,
+        profile_image_url: avatarPublicUrl || null,
+        platform_details: processedPlatforms.length > 0 ? processedPlatforms : [],
+        password_hash: body.password || null,
+        status: 'PENDING',
+        honorarium_rate: 25.00
+      };
 
-        const { data: updatedRecord } = await (supabaseAdmin as any)
-          .from('partners')
-          .update(updatePayload)
-          .eq('id', existing.id)
-          .select()
-          .maybeSingle();
+      console.log('[Partner Apply] Inserting for email:', cleanEmail);
 
-        newPartnerRecord = updatedRecord || existing;
-      } else {
-        const insertPayload: any = {
-          full_name: fullName,
-          email: cleanEmail,
-          phone: phone || null,
-          referral_code: finalReferralCode,
-          custom_slug: cleanSlug,
-          partner_id: partnerId,
-          primary_role: primaryRole || 'Content Creator & Educator',
-          niche: niche || 'Education',
-          content_language: contentLanguage || 'Hinglish',
-          bio: bio || null,
-          audience_scale: audienceScale || '10k - 50k',
-          total_reach: body.totalReach || 0,
-          city: finalCity,
-          state: finalState,
-          profile_image_url: avatarPublicUrl || body.profileImage || null,
-          platform_details: processedPlatforms.length > 0 ? processedPlatforms : (body.platformDetails || []),
-          password_hash: body.password || null,
-          status: 'PENDING',
-          honorarium_rate: 25.00
-        };
+      const { data: inserted, error: insertErr, status: insertStatus } = await dbQuery('POST', 'partners', insertPayload);
 
-        console.log('[Partner Apply] Inserting payload:', JSON.stringify(insertPayload, null, 2));
-
-        const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
-          .from('partners')
-          .insert(insertPayload)
-          .select()
-          .maybeSingle();
-
-        if (insertErr) {
-          console.error('[Partner Apply Insert Error]:', JSON.stringify(insertErr));
-          return NextResponse.json({
-            error: 'Database insert failed',
-            details: insertErr?.message || 'Unknown error',
-            code: insertErr?.code
-          }, { status: 500 });
-        }
-
-        newPartnerRecord = inserted;
+      if (insertErr) {
+        console.error('[Partner Insert Error]:', JSON.stringify(insertErr));
+        return NextResponse.json({
+          error: 'Database insert failed',
+          details: insertErr?.message || JSON.stringify(insertErr),
+          code: insertErr?.code
+        }, { status: 500 });
       }
 
-      // Dispatch PARTNER_APPLIED event via EventDispatcher
-      if (newPartnerRecord?.id) {
-        await EventDispatcher.dispatch({
-          eventId: `EVT_APPLY_${newPartnerRecord.id}`,
-          idempotencyKey: `IDEM_APPLY_${newPartnerRecord.id}`,
-          eventType: 'PARTNER_APPLIED',
-          partnerId: newPartnerRecord.id,
-          timestamp: new Date().toISOString(),
-          metadata: { fullName, email: cleanEmail, referralCode: newPartnerRecord.referral_code }
-        });
-      }
+      newPartnerRecord = Array.isArray(inserted) ? inserted[0] : inserted;
+    }
 
-      // Add welcome notification in inbox
-      if (newPartnerRecord?.id) {
-        await (supabaseAdmin as any)
-          .from('partner_notifications')
-          .insert({
-            partner_id: newPartnerRecord.id,
-            referral_code: newPartnerRecord.referral_code,
-            sender: 'Courage Partner Onboarding Desk',
-            title: '🎉 Application Received — Under Review',
-            preview: 'Your official Courage Partner application is under verification by our verification team.',
-            full_body: `Dear ${fullName},\n\nThank you for applying to become an official Courage Partner for CNTS 2026!\n\nYour application (Partner ID: ${newPartnerRecord.partner_id}, Referral Code: ${newPartnerRecord.referral_code}) is currently under review by our Admin Team. You will receive an approval update shortly.\n\nIn the meantime, feel free to explore your workspace dashboard!`,
-            category: 'System',
-            is_read: false,
-          });
-      }
+    // Welcome notification
+    if (newPartnerRecord?.id) {
+      await dbQuery('POST', 'partner_notifications', {
+        partner_id: newPartnerRecord.id,
+        referral_code: newPartnerRecord.referral_code,
+        sender: 'Courage Partner Onboarding Desk',
+        title: '🎉 Application Received — Under Review',
+        preview: 'Your official Courage Partner application is under verification by our verification team.',
+        full_body: `Dear ${fullName},\n\nThank you for applying to become an official Courage Partner for CNTS 2026!\n\nYour application (Partner ID: ${newPartnerRecord.partner_id}, Referral Code: ${newPartnerRecord.referral_code}) is currently under review by our Admin Team. You will receive an approval update shortly.\n\nIn the meantime, feel free to explore your workspace dashboard!`,
+        category: 'System',
+        is_read: false,
+      });
     }
 
     const partnerResponseData = {
@@ -254,14 +243,14 @@ export async function POST(request: Request) {
       referralCode: newPartnerRecord?.referral_code || finalReferralCode,
       customSlug: newPartnerRecord?.custom_slug || cleanSlug,
       partnerId: newPartnerRecord?.partner_id || partnerId,
-      primaryRole: newPartnerRecord?.primary_role || primaryRole || 'Content Creator & Educator',
+      primaryRole: newPartnerRecord?.primary_role || primaryRole,
       audienceScale: newPartnerRecord?.audience_scale || audienceScale || '10k - 50k',
       status: newPartnerRecord?.status || 'PENDING',
       tier: newPartnerRecord?.tier || 'BRONZE',
       honorariumRate: newPartnerRecord?.honorarium_rate || 25,
     };
 
-    // Dispatch automatic instant email directly to the creator's registered email address
+    // Send confirmation email
     try {
       const emailService = new EmailService();
       const emailHtml = getPartnerApplicationTemplate({
@@ -273,14 +262,13 @@ export async function POST(request: Request) {
         audienceScale: partnerResponseData.audienceScale,
         honorariumRate: partnerResponseData.honorariumRate,
       });
-
       await emailService.sendEmail(
         partnerResponseData.email,
         `🎉 Courage Partner Application Received (${partnerResponseData.referralCode})`,
         emailHtml
       );
     } catch (emailErr) {
-      console.error('[Partner Email Notification Error]:', emailErr);
+      console.error('[Partner Email Error]:', emailErr);
     }
 
     // Sign session cookie
@@ -310,6 +298,7 @@ export async function POST(request: Request) {
       success: true,
       partner: partnerResponseData,
     });
+
   } catch (error) {
     console.error('[Partner Application Error]:', error);
     return NextResponse.json({ error: 'Failed to process partner application.' }, { status: 500 });
