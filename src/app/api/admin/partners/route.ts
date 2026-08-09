@@ -26,38 +26,14 @@ export async function GET(request: Request) {
     if (hasSupabaseAdminConfig) {
       const allFetched: any[] = [];
 
-      // 1. Fetch from 'partners' table
+      // Fetch 100% from canonical 'partners' table
       try {
-        let query1 = (supabaseAdmin as any).from('partners').select('*');
-        if (statusFilter) query1 = query1.eq('status', statusFilter.toUpperCase());
-        const { data: d1 } = await query1.order('created_at', { ascending: false });
+        let query = (supabaseAdmin as any).from('partners').select('*');
+        if (statusFilter) query = query.eq('status', statusFilter.toUpperCase());
+        const { data: d1 } = await query.order('created_at', { ascending: false });
         if (Array.isArray(d1)) allFetched.push(...d1);
       } catch (e) {
         console.warn('Query partners table notice:', e);
-      }
-
-      // 2. Fetch from 'courage_partners' table
-      try {
-        let query2 = (supabaseAdmin as any).from('courage_partners').select('*');
-        if (statusFilter) query2 = query2.eq('status', statusFilter.toUpperCase());
-        const { data: d2 } = await query2.order('created_at', { ascending: false });
-        if (Array.isArray(d2)) {
-          allFetched.push(...d2.map((p: any) => ({
-            id: p.id || `cp-${p.email}`,
-            full_name: p.full_name || p.fullName || p.name || 'Partner Applicant',
-            email: p.email,
-            phone: p.phone,
-            referral_code: p.referral_code || p.referralCode || p.code || 'CNTSJN',
-            custom_slug: p.custom_slug || p.slug || 'partner',
-            status: p.status || 'PENDING',
-            tier: p.tier || 'BRONZE',
-            honorarium_rate: p.honorarium_rate || p.rate || 25,
-            audience_scale: p.audience_scale || p.audienceScale || '10k - 50k',
-            created_at: p.created_at || new Date().toISOString()
-          })));
-        }
-      } catch (e) {
-        console.warn('Query courage_partners table notice:', e);
       }
 
       // 3. Fetch from 'partner_applications' table

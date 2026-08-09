@@ -130,66 +130,40 @@ export async function POST(request: Request) {
           city: city || '',
           state: state || '',
           status: 'APPLIED',
-          trust_score: 100,
-          performance_score: 0,
-          growth_score: 0,
-          compliance_score: 100,
           honorarium_rate: 25.00
         };
 
         if (avatarPublicUrl) insertPayload.profile_image_url = avatarPublicUrl;
         if (processedPlatforms.length > 0) insertPayload.platform_details = processedPlatforms;
 
-        const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
+        let { data: inserted, error: insertErr } = await (supabaseAdmin as any)
           .from('partners')
           .insert(insertPayload)
           .select()
-          .single();
+          .maybeSingle();
 
-        // Also insert into courage_partners for double safety across DB table schemas
-        try {
-          await (supabaseAdmin as any)
-            .from('courage_partners')
-            .insert({
-              full_name: fullName,
-              email: cleanEmail,
-              phone: phone || null,
-              referral_code: finalReferralCode,
-              custom_slug: cleanSlug,
-              status: 'APPLIED',
-              honorarium_rate: 25.00
-            });
-        } catch (cpErr) {
-          console.warn('courage_partners dual insert notice:', cpErr);
-        }
+        if (insertErr || !inserted) {
+          console.error('[Partner Apply Insert Error - Retrying with Core Schema]:', insertErr);
+          const corePayload: any = {
+            full_name: fullName,
+            email: cleanEmail,
+            phone: phone || null,
+            referral_code: finalReferralCode,
+            custom_slug: cleanSlug,
+            partner_id: partnerId,
+            status: 'APPLIED',
+            honorarium_rate: 25.00
+          };
 
-        if (insertErr) {
-          console.error('[Partner Apply Insert Error]:', insertErr);
-          const fallbackRef = PartnerReferralEngine.generateReferralCode(fullName);
-          const fallbackSlug = `${cleanSlug}-${Math.floor(100 + Math.random() * 900)}`;
-
-          const { data: retryData } = await (supabaseAdmin as any)
+          const { data: retryData, error: retryErr } = await (supabaseAdmin as any)
             .from('partners')
-            .insert({
-              full_name: fullName,
-              email: cleanEmail,
-              phone: phone || null,
-              referral_code: fallbackRef,
-              custom_slug: fallbackSlug,
-              partner_id: partnerId,
-              profile_type: profileType,
-              primary_role: primaryRole || 'Content Creator & Educator',
-              audience_scale: audienceScale || '10k - 50k',
-              status: 'APPLIED',
-              trust_score: 100,
-              performance_score: 0,
-              growth_score: 0,
-              compliance_score: 100,
-              honorarium_rate: 25.00
-            })
+            .insert(corePayload)
             .select()
-            .single();
+            .maybeSingle();
 
+          if (retryErr) {
+            console.error('[Partner Apply Core Insert Critical Error]:', retryErr);
+          }
           newPartnerRecord = retryData;
         } else {
           newPartnerRecord = inserted;
