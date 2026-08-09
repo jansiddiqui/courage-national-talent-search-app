@@ -32,6 +32,7 @@ import {
   Maximize2,
   Sliders,
   Eye,
+  EyeOff,
   Info,
   BookOpen,
   X
@@ -60,6 +61,17 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
   const [availabilityCheck, setAvailabilityCheck] = useState<{ available: boolean; message: string }>({ available: true, message: '' });
   const [codeSuggestions, setCodeSuggestions] = useState<string[]>([]);
   const [showPolicyModal, setShowPolicyModal] = useState<boolean>(false);
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState<boolean>(false);
+
+  // STRONG PASSWORD RULE EVALUATOR
+  const getPasswordRules = (pwd: string) => [
+    { id: 'length', label: 'At least 8 characters', passed: pwd.length >= 8 },
+    { id: 'uppercase', label: 'One uppercase letter (A-Z)', passed: /[A-Z]/.test(pwd) },
+    { id: 'lowercase', label: 'One lowercase letter (a-z)', passed: /[a-z]/.test(pwd) },
+    { id: 'number', label: 'One number (0-9)', passed: /[0-9]/.test(pwd) },
+    { id: 'special', label: 'One special character (!@#$%^&*)', passed: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(pwd) }
+  ];
 
   // ALL FORM FIELDS INITIALIZED EMPTY FOR REAL CREATOR INPUT
   const [formData, setFormData] = useState({
@@ -453,8 +465,13 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
       newErrors.referralCode = availabilityCheck.message;
     }
 
-    if (!formData.password || formData.password.length < 6) {
-      newErrors.password = 'Password must be at least 6 characters long.';
+    const pwdRules = getPasswordRules(formData.password || '');
+    const rulesPassedCount = pwdRules.filter(r => r.passed).length;
+
+    if (!formData.password || formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters long.';
+    } else if (rulesPassedCount < 3) {
+      newErrors.password = 'Password is too weak. Please fulfill at least 3 strong password rules below.';
     }
 
     if (formData.password !== formData.confirmPassword) {
@@ -1156,48 +1173,114 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
             )}
 
             {/* PARTNER ACCOUNT PASSWORD SETUP */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Create Partner Account Password *
-                </label>
-                <input
-                  type="password"
-                  placeholder="At least 6 characters"
-                  value={formData.password}
-                  onChange={e => {
-                    setFormData({ ...formData, password: e.target.value });
-                    if (errors.password) setErrors(prev => ({ ...prev, password: '' }));
-                  }}
-                  className={`w-full px-4 py-3 rounded-xl border text-sm focus:ring-2 focus:ring-indigo-600 ${errors.password ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'}`}
-                />
-                {errors.password && (
-                  <p className="text-xs text-rose-600 font-bold mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-3.5 h-3.5" /> {errors.password}
-                  </p>
-                )}
+            <div className="space-y-4 pt-3 border-t border-slate-100">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Create Partner Account Password *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="At least 8 characters"
+                      value={formData.password}
+                      onChange={e => {
+                        setFormData({ ...formData, password: e.target.value });
+                        if (errors.password) setErrors(prev => ({ ...prev, password: '' }));
+                      }}
+                      className={`w-full px-4 py-3 pr-11 rounded-xl border text-sm focus:ring-2 focus:ring-indigo-600 ${errors.password ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+                      title={showPassword ? 'Hide Password' : 'Show Password'}
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-xs text-rose-600 font-bold mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" /> {errors.password}
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Confirm Password *
+                  </label>
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="Re-enter password"
+                      value={formData.confirmPassword}
+                      onChange={e => {
+                        setFormData({ ...formData, confirmPassword: e.target.value });
+                        if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: '' }));
+                      }}
+                      className={`w-full px-4 py-3 pr-11 rounded-xl border text-sm focus:ring-2 focus:ring-indigo-600 ${errors.confirmPassword ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'}`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors p-1 cursor-pointer"
+                      title={showConfirmPassword ? 'Hide Password' : 'Show Password'}
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  {errors.confirmPassword && (
+                    <p className="text-xs text-rose-600 font-bold mt-1 flex items-center gap-1">
+                      <AlertCircle className="w-3.5 h-3.5" /> {errors.confirmPassword}
+                    </p>
+                  )}
+                </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-bold text-slate-700 mb-1">
-                  Confirm Password *
-                </label>
-                <input
-                  type="password"
-                  placeholder="Re-enter password"
-                  value={formData.confirmPassword}
-                  onChange={e => {
-                    setFormData({ ...formData, confirmPassword: e.target.value });
-                    if (errors.confirmPassword) setErrors(prev => ({ ...prev, confirmPassword: '' }));
-                  }}
-                  className={`w-full px-4 py-3 rounded-xl border text-sm focus:ring-2 focus:ring-indigo-600 ${errors.confirmPassword ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'}`}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-xs text-rose-600 font-bold mt-1 flex items-center gap-1">
-                    <AlertCircle className="w-3.5 h-3.5" /> {errors.confirmPassword}
-                  </p>
-                )}
-              </div>
+              {/* DYNAMIC STRONG PASSWORD RULES & STRENGTH METER */}
+              {formData.password && (
+                <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200/80 space-y-3 animate-fade-in">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-extrabold text-slate-700">Password Strength:</span>
+                    {(() => {
+                      const passedCount = getPasswordRules(formData.password).filter(r => r.passed).length;
+                      if (passedCount <= 1) return <span className="font-extrabold text-rose-600">Weak</span>;
+                      if (passedCount <= 3) return <span className="font-extrabold text-amber-600">Fair</span>;
+                      if (passedCount === 4) return <span className="font-extrabold text-blue-600">Good</span>;
+                      return <span className="font-extrabold text-emerald-600 flex items-center gap-1"><Check className="w-3.5 h-3.5" /> Strong Password</span>;
+                    })()}
+                  </div>
+
+                  {/* STRENGTH BAR */}
+                  <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden flex gap-1 p-0.5">
+                    {getPasswordRules(formData.password).map((rule, idx) => (
+                      <div
+                        key={idx}
+                        className={`h-full flex-1 rounded-full transition-all duration-300 ${
+                          rule.passed
+                            ? idx < 2 ? 'bg-rose-500' : idx < 4 ? 'bg-amber-500' : 'bg-emerald-500'
+                            : 'bg-slate-200'
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  {/* LIVE RULES CHECKLIST */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] pt-1">
+                    {getPasswordRules(formData.password).map(rule => (
+                      <div key={rule.id} className={`flex items-center gap-1.5 font-semibold ${rule.passed ? 'text-emerald-700' : 'text-slate-400'}`}>
+                        {rule.passed ? (
+                          <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                        ) : (
+                          <span className="w-3.5 h-3.5 rounded-full border border-slate-300 inline-block shrink-0" />
+                        )}
+                        <span>{rule.label}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* ASSIGNED RATE RECAP */}
