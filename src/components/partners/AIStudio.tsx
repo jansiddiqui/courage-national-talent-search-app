@@ -244,47 +244,49 @@ Let's ensure no deserving student stays behind!`;
         </div>
 
         {/* Content Box */}
-        <div className="p-6 bg-slate-50/70 border-t border-slate-100">
+        <div className="p-6 bg-slate-50/60 border-t border-slate-100">
           {isGenerating ? (
             <div className="flex flex-col items-center justify-center py-12 gap-3">
               <div className="relative">
                 <div className="w-12 h-12 rounded-full border-2 border-indigo-500/30 border-t-indigo-400 animate-spin" />
                 <Sparkles className="w-5 h-5 text-indigo-400 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
               </div>
-              <p className="text-sm text-slate-400 font-medium">Gemini AI is crafting your {selectedLanguage} content...</p>
-              <p className="text-xs text-slate-500">Tailored for {targetAudience} • {selectedTone} tone</p>
+              <p className="text-sm text-slate-500 font-medium">Gemini AI is crafting your {selectedLanguage} content...</p>
+              <p className="text-xs text-slate-400 font-semibold">Tailored for {targetAudience} • {selectedTone} tone</p>
             </div>
           ) : (
-            <pre className="whitespace-pre-wrap font-mono text-xs text-slate-200 leading-relaxed">
-              {generatedOutput}
-            </pre>
+            <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/80 shadow-xs">
+              <pre className="whitespace-pre-wrap font-sans text-sm sm:text-base text-slate-900 font-medium leading-relaxed selection:bg-indigo-100 selection:text-indigo-900">
+                {generatedOutput}
+              </pre>
+            </div>
           )}
         </div>
 
         {/* Action Bar */}
-        <div className="px-6 py-4 border-t border-slate-800 flex flex-wrap items-center justify-between gap-3">
+        <div className="px-6 py-4 border-t border-slate-100 bg-white flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center gap-2">
             <a
               href={whatsappShare}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer transition-all shadow"
+              className="flex items-center gap-1.5 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-xs"
             >
-              <MessageSquare className="w-3.5 h-3.5" /> Open in WhatsApp
+              <MessageSquare className="w-4 h-4 fill-white" /> Open in WhatsApp
             </a>
             <button
               onClick={handleGenerate}
               disabled={isGenerating}
-              className="flex items-center gap-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold px-4 py-2 rounded-xl cursor-pointer transition-all border border-slate-700"
+              className="flex items-center gap-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-extrabold px-4 py-2.5 rounded-xl cursor-pointer transition-all border border-slate-200"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isGenerating ? 'animate-spin' : ''}`} /> Regenerate
+              <RefreshCw className={`w-3.5 h-3.5 text-slate-600 ${isGenerating ? 'animate-spin' : ''}`} /> Regenerate
             </button>
           </div>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl cursor-pointer transition-all shadow"
+            className="flex items-center gap-1.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-extrabold px-4 py-2.5 rounded-xl cursor-pointer transition-all shadow-xs"
           >
-            {copied ? <><Check className="w-3.5 h-3.5 text-emerald-300" /> Copied!</> : <><Copy className="w-3.5 h-3.5" /> Copy Content</>}
+            {copied ? <><Check className="w-4 h-4 text-white" /> Copied!</> : <><Copy className="w-4 h-4" /> Copy Content</>}
           </button>
         </div>
       </div>
