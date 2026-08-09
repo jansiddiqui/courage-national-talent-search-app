@@ -130,7 +130,32 @@ export async function POST(request: Request) {
         .maybeSingle();
 
       if (existing) {
-        newPartnerRecord = existing;
+        const updatePayload: any = {
+          full_name: fullName || existing.full_name,
+          phone: phone || existing.phone,
+          primary_role: primaryRole || existing.primary_role,
+          niche: niche || existing.niche,
+          content_language: contentLanguage || existing.content_language,
+          bio: bio || existing.bio,
+          audience_scale: audienceScale || existing.audience_scale,
+          total_reach: body.totalReach || existing.total_reach || 0,
+          city: finalCity || existing.city,
+          state: finalState || existing.state,
+          status: existing.status || 'PENDING'
+        };
+
+        if (avatarPublicUrl) updatePayload.profile_image_url = avatarPublicUrl;
+        if (processedPlatforms.length > 0) updatePayload.platform_details = processedPlatforms;
+        if (body.password) updatePayload.password_hash = body.password;
+
+        const { data: updatedRecord } = await (supabaseAdmin as any)
+          .from('partners')
+          .update(updatePayload)
+          .eq('id', existing.id)
+          .select()
+          .maybeSingle();
+
+        newPartnerRecord = updatedRecord || existing;
       } else {
         const insertPayload: any = {
           full_name: fullName,
