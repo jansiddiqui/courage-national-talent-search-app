@@ -1,9 +1,28 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifySession } from '@/lib/sessionHelper';
-import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const JWT_SECRET = SERVICE_KEY || 'partner-session-secret-key';
+
+async function dbFetch(method: string, path: string, body?: any): Promise<{ data: any; ok: boolean; status: number }> {
+  const url = `${SUPABASE_URL}/rest/v1/${path}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=representation'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const text = await res.text();
+  let data = null;
+  try { data = JSON.parse(text); } catch { data = text; }
+  return { data, ok: res.ok, status: res.status };
+}
 
 export async function GET() {
   try {
@@ -11,40 +30,32 @@ export async function GET() {
     const sessionCookie = cookieStore.get('cnts_partner_session');
 
     let partnerId: string | null = null;
-    let referralCode: string | null = null;
-
     if (sessionCookie && sessionCookie.value) {
       const payload = await verifySession(sessionCookie.value, JWT_SECRET);
       if (payload) {
         partnerId = payload.partnerDbId;
-        referralCode = payload.referralCode;
       }
     }
 
-    let payoutRequests: any[] = [];
-
-    if (hasSupabaseAdminConfig && partnerId) {
-      const { data: requests, error } = await (supabaseAdmin as any)
-        .from('partner_payout_requests')
-        .select('*')
-        .eq('partner_id', partnerId)
-        .order('requested_at', { ascending: false });
-
-      if (!error && Array.isArray(requests)) {
-        payoutRequests = requests.map((r: any) => ({
-          id: r.id,
-          reqId: `REQ-${r.id.substring(0, 4).toUpperCase()}`,
-          amount: `₹${Number(r.amount).toLocaleString('en-IN')}`,
-          rawAmount: Number(r.amount),
-          date: new Date(r.requested_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-          batchDate: r.batch_date ? new Date(r.batch_date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) : 'Monday, Aug 10, 2026',
-          status: r.status === 'PENDING' ? 'Pending Weekly Batch' : r.status,
-          method: 'Registered Payout Account',
-        }));
-      }
+    if (!partnerId) {
+      return NextResponse.json({ success: true, requests: [] });
     }
 
-    // Return real payout requests exclusively from Supabase DB
+    const { data: requests } = await dbFetch(
+      'GET',
+      `partner_payout_requests?partner_id=eq.${encodeURIComponent(partnerId)}&order=requested_at.desc`
+    );
+
+    const payoutRequests = Array.isArray(requests) ? requests.map((r: any) => ({
+      id: r.id,
+      reqId: `REQ-${String(r.id).substring(0, 4).toUpperCase()}`,
+      amount: `₹${Number(r.amount).toLocaleString('en-IN')}`,
+      rawAmount: Number(r.amount),
+      date: new Date(r.requested_at || Date.now()).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      batchDate: r.batch_date ? new Date(r.batch_date).toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric' }) : 'Monday, Aug 10, 2026',
+      status: r.status === 'PENDING' ? 'Pending Weekly Batch' : r.status,
+      method: 'Registered Payout Account',
+    })) : [];
 
     return NextResponse.json({
       success: true,
@@ -72,6 +83,10 @@ export async function POST(request: Request) {
       }
     }
 
+    if (!partnerId) {
+      return NextResponse.json({ error: 'Unauthorized partner session.' }, { status: 401 });
+    }
+
     const { amount } = await request.json();
     const numericAmount = Number(amount);
 
@@ -83,25 +98,16 @@ export async function POST(request: Request) {
     nextMonday.setDate(nextMonday.getDate() + ((1 + 7 - nextMonday.getDay()) % 7 || 7));
     const batchDateStr = nextMonday.toISOString().split('T')[0];
 
-    let newReqId = `REQ-${Math.floor(1000 + Math.random() * 9000)}`;
+    const { data: inserted, ok: insertOk } = await dbFetch('POST', 'partner_payout_requests', {
+      partner_id: partnerId,
+      referral_code: referralCode || 'CNTSJN',
+      amount: numericAmount,
+      status: 'PENDING',
+      batch_date: batchDateStr,
+    });
 
-    if (hasSupabaseAdminConfig && partnerId) {
-      const { data: inserted, error } = await (supabaseAdmin as any)
-        .from('partner_payout_requests')
-        .insert({
-          partner_id: partnerId,
-          referral_code: referralCode || 'CNTSJN',
-          amount: numericAmount,
-          status: 'PENDING',
-          batch_date: batchDateStr,
-        })
-        .select()
-        .single();
-
-      if (!error && inserted) {
-        newReqId = `REQ-${inserted.id.substring(0, 4).toUpperCase()}`;
-      }
-    }
+    const insertedObj = Array.isArray(inserted) ? inserted[0] : inserted;
+    const newReqId = (insertOk && insertedObj?.id) ? `REQ-${String(insertedObj.id).substring(0, 4).toUpperCase()}` : `REQ-${Math.floor(1000 + Math.random() * 9000)}`;
 
     return NextResponse.json({
       success: true,

@@ -1,9 +1,21 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifySession } from '@/lib/sessionHelper';
-import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const JWT_SECRET = SERVICE_KEY || 'partner-session-secret-key';
+
+async function dbFetch(path: string): Promise<any[]> {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+    headers: {
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+    }
+  });
+  const text = await res.text();
+  try { return JSON.parse(text); } catch { return []; }
+}
 
 export async function GET() {
   try {
@@ -19,61 +31,39 @@ export async function GET() {
       return NextResponse.json({ isAuthenticated: false });
     }
 
-    let partnerData: {
-      id: string;
-      fullName: string;
-      email: string;
-      phone?: string | null;
-      referralCode: string;
-      customSlug: string;
-      partnerId: string;
-      primaryRole: string;
-      audienceScale: string;
-      status: string;
-      tier: string;
-      honorariumRate: number;
-    } = {
-      id: payload.partnerDbId || 'demo-id',
-      fullName: payload.fullName || 'Jan Mohammad',
-      email: payload.email || 'partner@example.com',
-      phone: payload.phone || null,
-      referralCode: payload.referralCode || 'CNTSJN',
-      customSlug: payload.referralCode ? payload.referralCode.toLowerCase() : 'cntsjn',
-      partnerId: 'CP-2026-000412',
-      primaryRole: 'Content Creator & Educator',
-      audienceScale: '10k - 50k',
-      status: payload.status || 'PENDING',
-      tier: 'BRONZE',
-      honorariumRate: 25,
-    };
+    let partnerData = null;
 
-    if (hasSupabaseAdminConfig && payload.email) {
-      const { data: dbPartner } = await (supabaseAdmin as any)
-        .from('partners')
-        .select('*')
-        .eq('email', payload.email)
-        .maybeSingle();
+    if (payload.email) {
+      const partners = await dbFetch(`partners?email=eq.${encodeURIComponent(payload.email)}&limit=1`);
+      const dbPartner = Array.isArray(partners) ? partners[0] : null;
 
-      if (!dbPartner) {
-        // Partner record was deleted from Supabase DB — clear cookie and revoke session
-        cookieStore.delete('cnts_partner_session');
-        return NextResponse.json({ isAuthenticated: false, message: 'Partner record no longer exists.' });
+      if (dbPartner) {
+        partnerData = {
+          id: dbPartner.id,
+          fullName: dbPartner.full_name,
+          email: dbPartner.email,
+          phone: dbPartner.phone,
+          referralCode: dbPartner.referral_code,
+          customSlug: dbPartner.custom_slug,
+          partnerId: dbPartner.partner_id,
+          primaryRole: dbPartner.primary_role || 'Content Creator & Educator',
+          audienceScale: dbPartner.audience_scale || '10k - 50k',
+          bio: dbPartner.bio,
+          city: dbPartner.city,
+          state: dbPartner.state,
+          profileImageUrl: dbPartner.profile_image_url,
+          status: dbPartner.status || 'PENDING',
+          tier: dbPartner.tier || 'BRONZE',
+          honorariumRate: dbPartner.honorarium_rate || 25,
+          platformDetails: dbPartner.platform_details || [],
+        };
       }
+    }
 
-      partnerData = {
-        id: dbPartner.id,
-        fullName: dbPartner.full_name,
-        email: dbPartner.email,
-        phone: dbPartner.phone,
-        referralCode: dbPartner.referral_code,
-        customSlug: dbPartner.custom_slug,
-        partnerId: dbPartner.partner_id,
-        primaryRole: dbPartner.primary_role || 'Content Creator & Educator',
-        audienceScale: dbPartner.audience_scale || '10k - 50k',
-        status: dbPartner.status || 'PENDING',
-        tier: dbPartner.tier || 'BRONZE',
-        honorariumRate: dbPartner.honorarium_rate || 25,
-      };
+    if (!partnerData) {
+      // Session token exists but partner not found in database — revoke session
+      cookieStore.delete('cnts_partner_session');
+      return NextResponse.json({ isAuthenticated: false, message: 'Partner account not found.' });
     }
 
     return NextResponse.json({
