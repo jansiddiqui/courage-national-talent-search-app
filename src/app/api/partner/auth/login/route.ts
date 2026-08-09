@@ -6,62 +6,59 @@ const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfec
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 const JWT_SECRET = SERVICE_KEY || 'partner-session-secret-key';
 
-async function dbFetch(method: string, path: string, body?: any): Promise<{ data: any; ok: boolean; status: number }> {
-  const url = `${SUPABASE_URL}/rest/v1/${path}`;
-  const res = await fetch(url, {
-    method,
+async function dbFetch(path: string): Promise<any[]> {
+  const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
     headers: {
       'apikey': SERVICE_KEY,
       'Authorization': `Bearer ${SERVICE_KEY}`,
-      'Content-Type': 'application/json',
-      'Prefer': 'return=representation'
-    },
-    body: body ? JSON.stringify(body) : undefined
+    }
   });
   const text = await res.text();
-  let data = null;
-  try { data = JSON.parse(text); } catch { data = text; }
-  return { data, ok: res.ok, status: res.status };
+  try { return JSON.parse(text); } catch { return []; }
 }
 
 export async function POST(request: Request) {
   try {
-    const { email, otp } = await request.json();
+    const { identity, password } = await request.json();
 
-    if (!email || !otp) {
-      return NextResponse.json({ error: 'Email and OTP are required.' }, { status: 400 });
+    if (!identity || !password) {
+      return NextResponse.json({ error: 'Email/phone and password are required.' }, { status: 400 });
     }
 
-    const cleanEmail = email.trim().toLowerCase();
-    const cleanOtp = otp.toString().trim();
-
-    // Look up OTP in database
-    const { data: otpRecords } = await dbFetch(
-      'GET',
-      `partner_otps?email=eq.${encodeURIComponent(cleanEmail)}&otp_code=eq.${cleanOtp}&is_used=eq.false&expires_at=gt.${new Date().toISOString()}&order=created_at.desc&limit=1`
-    );
-
-    const otpRecord = Array.isArray(otpRecords) ? otpRecords[0] : null;
-
-    if (!otpRecord) {
-      return NextResponse.json({ error: 'Invalid or expired OTP code. Please request a new one.' }, { status: 401 });
+    if (password.length < 6) {
+      return NextResponse.json({ error: 'Password must be at least 6 characters.' }, { status: 400 });
     }
 
-    // Mark OTP as used
-    await dbFetch('PATCH', `partner_otps?id=eq.${otpRecord.id}`, { is_used: true });
+    const cleanIdentity = identity.trim().toLowerCase();
 
-    // Look up partner in database
-    const { data: partners } = await dbFetch('GET', `partners?email=eq.${encodeURIComponent(cleanEmail)}&limit=1`);
-    const partner = Array.isArray(partners) ? partners[0] : null;
+    // Look up partner by email OR phone
+    let partners: any[] = [];
+    if (cleanIdentity.includes('@')) {
+      partners = await dbFetch(`partners?email=eq.${encodeURIComponent(cleanIdentity)}&limit=1`);
+    } else {
+      // Try phone lookup
+      const cleanPhone = identity.trim().replace(/\s/g, '');
+      partners = await dbFetch(`partners?phone=eq.${encodeURIComponent(cleanPhone)}&limit=1`);
+    }
+
+    const partner = partners[0];
 
     if (!partner) {
-      // OTP valid but partner not registered — prompt them to apply
+      // Use a generic message to prevent email enumeration
+      return NextResponse.json({ error: 'Invalid credentials. Please check your email/phone and password.' }, { status: 401 });
+    }
+
+    // Check password — must be set during registration
+    if (!partner.password_hash) {
       return NextResponse.json({
-        success: true,
-        isRegistered: false,
-        message: 'OTP verified. Please complete your partner registration.',
-        email: cleanEmail,
-      });
+        error: 'No password set for this account. Please use OTP login instead.',
+        useOtp: true
+      }, { status: 401 });
+    }
+
+    // Direct string comparison (passwords stored as plaintext during registration)
+    if (partner.password_hash !== password) {
+      return NextResponse.json({ error: 'Invalid credentials. Please check your email/phone and password.' }, { status: 401 });
     }
 
     // Build partner data
@@ -100,7 +97,7 @@ export async function POST(request: Request) {
       JWT_SECRET
     );
 
-    // Set session cookie
+    // Set secure session cookie
     const cookieStore = await cookies();
     cookieStore.set('cnts_partner_session', token, {
       httpOnly: true,
@@ -112,12 +109,11 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      isRegistered: true,
       partner: partnerData,
     });
 
   } catch (error) {
-    console.error('[Verify OTP Error]:', error);
-    return NextResponse.json({ error: 'Failed to verify OTP. Please try again.' }, { status: 500 });
+    console.error('[Partner Password Login Error]:', error);
+    return NextResponse.json({ error: 'Login failed. Please try again.' }, { status: 500 });
   }
 }

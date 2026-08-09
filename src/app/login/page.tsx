@@ -164,51 +164,49 @@ export default function LoginPage() {
       setError("Please enter your Password / Secret PIN");
       return;
     }
+    if (partnerPassword.length < 6) {
+      setError("Password must be at least 6 characters.");
+      return;
+    }
 
     setLoading(true);
 
-    // Retrieve registered partner account credentials from local session / storage
-    let storedPartner: any = null;
-    if (typeof window !== "undefined") {
-      const raw = localStorage.getItem("cnts_partner_session");
-      if (raw) {
-        try {
-          storedPartner = JSON.parse(raw);
-        } catch (e) {
-          // ignore
-        }
-      }
-    }
+    try {
+      // Call real server-side API — validates against database, not localStorage
+      const res = await fetch('/api/partner/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ identity: partnerIdentity.trim(), password: partnerPassword }),
+      });
 
-    setTimeout(() => {
+      const data = await res.json();
+
+      if (!res.ok || data.error) {
+        if (data.useOtp) {
+          setError("No password set for this account. Please use OTP login at /partners instead.");
+        } else {
+          setError(data.error || "Invalid credentials. Please try again.");
+        }
+        setLoading(false);
+        return;
+      }
+
+      // Success — session cookie is set by the API
+      const partner = data.partner;
+      const slug = (partner.customSlug || partner.referralCode || 'partner').toLowerCase();
+
+      setSuccessMessage("Login successful! Redirecting to your workspace...");
       setLoading(false);
 
-      // Verify strict password match if a partner account password was set during Step 3 registration
-      if (storedPartner && storedPartner.password) {
-        if (storedPartner.password !== partnerPassword) {
-          setError("Invalid Password / Secret PIN. Please check your password and try again.");
-          return;
-        }
-      } else {
-        // Enforce minimum 6-character password rule
-        if (partnerPassword.length < 6) {
-          setError("Invalid Password / Secret PIN. Must be at least 6 characters.");
-          return;
-        }
-      }
+      // Redirect to partner workspace
+      setTimeout(() => {
+        router.push(`/partners/${slug}`);
+      }, 800);
 
-      // Successful password authentication
-      setSuccessMessage("Partner authentication successful!");
-      setUserRoles({
-        isAdmin: true,
-        isParent: true,
-        isCreator: true,
-        isSchool: false,
-        userName: storedPartner?.fullName || "Jan Mohammad",
-        referralCode: storedPartner?.referralCode || "CNTSJN"
-      });
-      setShowPersonaSelector(true);
-    }, 600);
+    } catch (err) {
+      setError("Network error. Please try again.");
+      setLoading(false);
+    }
   };
 
   const handleSendMagicLink = async (e: React.FormEvent) => {

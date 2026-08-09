@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { EmailService } from '@/services/emailService';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmb3h3Zm5mZWN4eXBic2Z0cnJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTAxNzIyOCwiZXhwIjoyMDk2NTkzMjI4fQ.utnq3sX_D7ulMgS02QxRWGTBgzuhCS2e2yK5Xxilzo4';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
 async function dbFetch(method: string, path: string, body?: any): Promise<{ data: any; ok: boolean; status: number }> {
   const url = `${SUPABASE_URL}/rest/v1/${path}`;

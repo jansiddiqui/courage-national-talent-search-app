@@ -7,8 +7,8 @@ import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferra
 
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
-const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmb3h3Zm5mZWN4eXBic2Z0cnJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTAxNzIyOCwiZXhwIjoyMDk2NTkzMjI4fQ.utnq3sX_D7ulMgS02QxRWGTBgzuhCS2e2yK5Xxilzo4';
-const JWT_SECRET = SERVICE_KEY;
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
+const JWT_SECRET = SERVICE_KEY || 'partner-session-secret-key';
 
 // Direct Supabase REST API helper
 async function dbQuery(method: string, table: string, body?: any, queryParams?: string): Promise<{ data: any; error: any; status: number }> {
