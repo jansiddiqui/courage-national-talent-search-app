@@ -1252,6 +1252,51 @@ export default function AdminPartnersPage() {
                     )}
                   </div>
 
+                  {/* SUBMITTED CAMPAIGN VIDEO LINKS BY THIS PARTNER */}
+                  <div className="bg-slate-50 p-4 rounded-2xl space-y-3 border border-slate-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block flex items-center gap-1">
+                        <Video className="w-3.5 h-3.5 text-indigo-600" /> Submitted Campaign Video Links
+                      </span>
+                      <span className="font-mono text-indigo-600 text-[11px] font-bold">
+                        {videoSubmissions.filter(v => (v.referral_code || v.referralCode || '').toUpperCase() === (selectedPartnerDetail.referral_code || '').toUpperCase()).length} Video(s)
+                      </span>
+                    </div>
+
+                    {videoSubmissions.filter(v => (v.referral_code || v.referralCode || '').toUpperCase() === (selectedPartnerDetail.referral_code || '').toUpperCase()).length > 0 ? (
+                      <div className="space-y-2.5 pt-1">
+                        {videoSubmissions
+                          .filter(v => (v.referral_code || v.referralCode || '').toUpperCase() === (selectedPartnerDetail.referral_code || '').toUpperCase())
+                          .map((vid, vIdx) => (
+                            <div key={vIdx} className="bg-white p-3.5 rounded-xl border border-slate-200 space-y-1.5">
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="font-bold text-slate-900 text-xs block">{vid.video_title || vid.videoTitle || 'Campaign Video'}</span>
+                                <span className={`text-[9.5px] font-mono font-extrabold px-2 py-0.5 rounded-full ${
+                                  vid.status === 'APPROVED' ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-800'
+                                }`}>
+                                  {vid.status || 'PENDING_REVIEW'}
+                                </span>
+                              </div>
+                              <div className="flex items-center justify-between gap-2">
+                                <span className="text-[11px] font-mono text-indigo-600 truncate max-w-xs">{vid.video_url || vid.videoUrl}</span>
+                                <a
+                                  href={vid.video_url || vid.videoUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-[10.5px] px-2.5 py-1 rounded-lg shrink-0 flex items-center gap-1 cursor-pointer"
+                                >
+                                  <span>Watch Video</span>
+                                  <ExternalLink className="w-3 h-3" />
+                                </a>
+                              </div>
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <p className="text-slate-500 italic text-[11px]">No video submission links logged yet for this partner.</p>
+                    )}
+                  </div>
+
                   {/* Honorarium Rate Adjuster in Drawer */}
                   <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-2">
                     <span className="text-[10px] uppercase font-bold text-emerald-800 block">Custom Honorarium Rate Setting</span>
