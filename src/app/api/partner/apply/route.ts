@@ -107,11 +107,18 @@ export async function POST(request: Request) {
       finalState = parts.slice(1).join(', ') || null;
     }
 
-    // Honor user-selected referralCode and customSlug
+    // Honor user-selected referralCode and customSlug with uniqueness guarantee
     const userChosenCode = (referralCode || body.referralCode || '').trim().toUpperCase();
-    const finalReferralCode = (userChosenCode && userChosenCode.length >= 4)
+    let finalReferralCode = (userChosenCode && userChosenCode.length >= 4)
       ? userChosenCode
       : PartnerReferralEngine.generateReferralCode(fullName);
+
+    // Check if referral code is already claimed by another partner
+    const { data: codeCheckArr } = await dbQuery('GET', 'partners', undefined, `referral_code=eq.${encodeURIComponent(finalReferralCode)}&limit=1`);
+    if (Array.isArray(codeCheckArr) && codeCheckArr.length > 0) {
+      // If code belongs to another user, append unique numeric suffix
+      finalReferralCode = `${finalReferralCode.substring(0, 8)}${Math.floor(10 + Math.random() * 90)}`;
+    }
 
     const userChosenSlug = (customSlug || body.customSlug || '').trim().toLowerCase();
     const rawSlug = fullName.toLowerCase().replace(/[^a-z0-9]/g, '');

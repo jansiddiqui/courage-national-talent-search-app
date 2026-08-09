@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { EmailService } from '@/services/emailService';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -24,6 +25,15 @@ async function dbFetch(method: string, path: string, body?: any): Promise<{ data
 
 export async function POST(request: Request) {
   try {
+    const clientIp = getClientIp(request);
+    const rateCheck = checkRateLimit(`send-otp:${clientIp}`, { windowMs: 15 * 60 * 1000, maxRequests: 5 });
+    if (!rateCheck.allowed) {
+      return NextResponse.json(
+        { error: `Too many OTP requests. Please wait ${rateCheck.retryAfterSeconds} seconds before requesting again.` },
+        { status: 429, headers: { 'Retry-After': String(rateCheck.retryAfterSeconds) } }
+      );
+    }
+
     const { email, referralCode, phone } = await request.json();
 
     // Resolve the email to use

@@ -50,7 +50,13 @@ export async function POST(request: Request) {
 
     if (process.env.NODE_ENV === "production" || WEBHOOK_SECRET) {
       if (!signature) {
+        console.error("[Razorpay Webhook] Rejected request missing x-razorpay-signature header");
         return new NextResponse("Missing signature header", { status: 400 });
+      }
+
+      if (!WEBHOOK_SECRET) {
+        console.error("[Razorpay Webhook] CRITICAL: RAZORPAY_WEBHOOK_SECRET or RAZORPAY_KEY_SECRET is not configured");
+        return new NextResponse("Webhook secret configuration error", { status: 500 });
       }
 
       const expectedSignature = crypto
@@ -58,7 +64,10 @@ export async function POST(request: Request) {
         .update(rawBody)
         .digest("hex");
 
-      if (expectedSignature !== signature) {
+      const expectedBuffer = Buffer.from(expectedSignature, 'utf8');
+      const actualBuffer = Buffer.from(signature, 'utf8');
+
+      if (expectedBuffer.length !== actualBuffer.length || !crypto.timingSafeEqual(expectedBuffer, actualBuffer)) {
         console.error("[Razorpay Webhook] Signature verification failed");
         return new NextResponse("Invalid signature", { status: 400 });
       }
