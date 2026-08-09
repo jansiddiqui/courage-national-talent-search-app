@@ -345,7 +345,11 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
     }
 
     if (!formData.city || formData.city.trim().length < 2) {
-      newErrors.city = 'Please enter your City and State.';
+      newErrors.city = 'Please enter your City.';
+    }
+
+    if (!formData.state || formData.state.trim().length < 2) {
+      newErrors.state = 'Please enter your State.';
     }
 
     if (!formData.bio || formData.bio.trim().length < 10) {
@@ -723,10 +727,10 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">City & State *</label>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">City *</label>
                 <input
                   type="text"
-                  placeholder="e.g. Patna, Bihar"
+                  placeholder="e.g. Kanpur"
                   value={formData.city}
                   onChange={e => {
                     setFormData({ ...formData, city: e.target.value });
@@ -737,6 +741,25 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
                 {errors.city && (
                   <p className="text-xs text-rose-600 mt-1 font-bold flex items-center gap-1">
                     <AlertCircle className="w-3.5 h-3.5" /> {errors.city}
+                  </p>
+                )}
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 mb-1">State *</label>
+                <input
+                  type="text"
+                  placeholder="e.g. Uttar Pradesh"
+                  value={formData.state}
+                  onChange={e => {
+                    setFormData({ ...formData, state: e.target.value });
+                    if (errors.state) setErrors(prev => ({ ...prev, state: '' }));
+                  }}
+                  className={`w-full px-4 py-3 rounded-xl border text-sm focus:ring-2 focus:ring-indigo-600 ${errors.state ? 'border-rose-400 bg-rose-50/20' : 'border-slate-200'}`}
+                />
+                {errors.state && (
+                  <p className="text-xs text-rose-600 mt-1 font-bold flex items-center gap-1">
+                    <AlertCircle className="w-3.5 h-3.5" /> {errors.state}
                   </p>
                 )}
               </div>
