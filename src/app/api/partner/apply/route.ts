@@ -71,6 +71,8 @@ export async function POST(request: Request) {
             audience_scale: audienceScale || '10k - 50k',
             city: city || '',
             state: state || '',
+            profile_image_url: body.profileImage || null,
+            platform_details: body.platformDetails || [],
             status: 'APPLIED',
             trust_score: 100,
             performance_score: 0,
