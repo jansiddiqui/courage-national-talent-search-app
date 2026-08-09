@@ -1,9 +1,28 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
-import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 import { signSession } from '@/lib/sessionHelper';
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmb3h3Zm5mZWN4eXBic2Z0cnJrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4MTAxNzIyOCwiZXhwIjoyMDk2NTkzMjI4fQ.utnq3sX_D7ulMgS02QxRWGTBgzuhCS2e2yK5Xxilzo4';
+const JWT_SECRET = SERVICE_KEY;
+
+async function dbFetch(method: string, path: string, body?: any): Promise<{ data: any; ok: boolean; status: number }> {
+  const url = `${SUPABASE_URL}/rest/v1/${path}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const text = await res.text();
+  let data = null;
+  try { data = JSON.parse(text); } catch { data = text; }
+  return { data, ok: res.ok, status: res.status };
+}
 
 export async function POST(request: Request) {
   try {
@@ -14,71 +33,29 @@ export async function POST(request: Request) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const cleanOtp = otp.trim();
+    const cleanOtp = otp.toString().trim();
 
-    let isValidOtp = false;
+    // Look up OTP in database
+    const { data: otpRecords } = await dbFetch(
+      'GET',
+      `partner_otps?email=eq.${encodeURIComponent(cleanEmail)}&otp_code=eq.${cleanOtp}&is_used=eq.false&expires_at=gt.${new Date().toISOString()}&order=created_at.desc&limit=1`
+    );
 
-    if (hasSupabaseAdminConfig) {
-      const { data: record, error } = await (supabaseAdmin as any)
-        .from('partner_otps')
-        .select('*')
-        .eq('email', cleanEmail)
-        .eq('otp_code', cleanOtp)
-        .eq('is_used', false)
-        .gt('expires_at', new Date().toISOString())
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
+    const otpRecord = Array.isArray(otpRecords) ? otpRecords[0] : null;
 
-      if (record) {
-        isValidOtp = true;
-        // Mark OTP as used
-        await (supabaseAdmin as any)
-          .from('partner_otps')
-          .update({ is_used: true })
-          .eq('id', record.id);
-      }
-    } else {
-      // In sandbox/testing mode, accept 6-digit numeric OTPs or '123456'
-      if (cleanOtp.length === 6 && /^\d+$/.test(cleanOtp)) {
-        isValidOtp = true;
-      }
+    if (!otpRecord) {
+      return NextResponse.json({ error: 'Invalid or expired OTP code. Please request a new one.' }, { status: 401 });
     }
 
-    if (!isValidOtp) {
-      return NextResponse.json({ error: 'Invalid or expired OTP code.' }, { status: 401 });
-    }
+    // Mark OTP as used
+    await dbFetch('PATCH', `partner_otps?id=eq.${otpRecord.id}`, { is_used: true });
 
     // Look up partner in database
-    let partnerData = null;
+    const { data: partners } = await dbFetch('GET', `partners?email=eq.${encodeURIComponent(cleanEmail)}&limit=1`);
+    const partner = Array.isArray(partners) ? partners[0] : null;
 
-    if (hasSupabaseAdminConfig) {
-      const { data: partner } = await (supabaseAdmin as any)
-        .from('partners')
-        .select('*')
-        .eq('email', cleanEmail)
-        .maybeSingle();
-
-      if (partner) {
-        partnerData = {
-          id: partner.id,
-          fullName: partner.full_name,
-          email: partner.email,
-          phone: partner.phone,
-          referralCode: partner.referral_code,
-          customSlug: partner.custom_slug,
-          partnerId: partner.partner_id,
-          primaryRole: partner.primary_role || 'Content Creator & Educator',
-          audienceScale: partner.audience_scale || '10k - 50k',
-          status: partner.status || 'PENDING',
-          tier: partner.tier || 'BRONZE',
-          honorariumRate: partner.honorarium_rate || 25,
-        };
-      }
-    }
-
-    // If partner not registered in DB yet, return prompt to apply
-    if (!partnerData) {
+    if (!partner) {
+      // OTP valid but partner not registered — prompt them to apply
       return NextResponse.json({
         success: true,
         isRegistered: false,
@@ -87,21 +64,43 @@ export async function POST(request: Request) {
       });
     }
 
-    // Generate session JWT token
+    // Build partner data
+    const partnerData = {
+      id: partner.id,
+      fullName: partner.full_name,
+      email: partner.email,
+      phone: partner.phone,
+      referralCode: partner.referral_code,
+      customSlug: partner.custom_slug,
+      partnerId: partner.partner_id,
+      primaryRole: partner.primary_role || 'Content Creator & Educator',
+      audienceScale: partner.audience_scale || '10k - 50k',
+      bio: partner.bio,
+      city: partner.city,
+      state: partner.state,
+      profileImageUrl: partner.profile_image_url,
+      status: partner.status || 'PENDING',
+      tier: partner.tier || 'BRONZE',
+      honorariumRate: partner.honorarium_rate || 25,
+      platformDetails: partner.platform_details || [],
+    };
+
+    // Generate session JWT
     const token = await signSession(
       {
         partnerDbId: partnerData.id,
         email: partnerData.email,
         fullName: partnerData.fullName,
         referralCode: partnerData.referralCode,
+        customSlug: partnerData.customSlug,
         status: partnerData.status,
         role: 'PARTNER',
-        exp: Date.now() + 7 * 24 * 60 * 60 * 1000, // 7 days
+        exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
       },
       JWT_SECRET
     );
 
-    // Set cookie
+    // Set session cookie
     const cookieStore = await cookies();
     cookieStore.set('cnts_partner_session', token, {
       httpOnly: true,
@@ -116,6 +115,7 @@ export async function POST(request: Request) {
       isRegistered: true,
       partner: partnerData,
     });
+
   } catch (error) {
     console.error('[Verify OTP Error]:', error);
     return NextResponse.json({ error: 'Failed to verify OTP. Please try again.' }, { status: 500 });

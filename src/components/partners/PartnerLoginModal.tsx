@@ -30,6 +30,7 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
 }) => {
   const [loginMethod, setLoginMethod] = useState<'email' | 'phone' | 'code'>('email');
   const [phoneOrEmailOrCode, setPhoneOrEmailOrCode] = useState('');
+  const [resolvedEmail, setResolvedEmail] = useState(''); // actual email returned by send-otp
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState('');
   const [loading, setLoading] = useState(false);
@@ -44,15 +45,20 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
     setError(null);
 
     try {
-      // Send OTP via email API
-      const targetEmail = loginMethod === 'email' 
-        ? phoneOrEmailOrCode 
-        : (phoneOrEmailOrCode.includes('@') ? phoneOrEmailOrCode : `${phoneOrEmailOrCode.toLowerCase().replace(/[^a-z0-9]/g, '')}@couragepartner.id`);
+      // Build correct payload based on login method
+      let payload: Record<string, string> = {};
+      if (loginMethod === 'email') {
+        payload = { email: phoneOrEmailOrCode.trim() };
+      } else if (loginMethod === 'phone') {
+        payload = { phone: phoneOrEmailOrCode.trim() };
+      } else {
+        payload = { referralCode: phoneOrEmailOrCode.trim().toUpperCase() };
+      }
 
       const res = await fetch('/api/partner/auth/send-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: targetEmail })
+        body: JSON.stringify(payload)
       });
 
       const data = await res.json();
@@ -60,6 +66,8 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
         throw new Error(data.error || 'Failed to send OTP');
       }
 
+      // Store the resolved email for OTP verification
+      setResolvedEmail(data.email || phoneOrEmailOrCode.trim());
       setOtpSent(true);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error sending OTP');
@@ -74,14 +82,10 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
     setError(null);
 
     try {
-      const targetEmail = loginMethod === 'email' 
-        ? phoneOrEmailOrCode 
-        : (phoneOrEmailOrCode.includes('@') ? phoneOrEmailOrCode : `${phoneOrEmailOrCode.toLowerCase().replace(/[^a-z0-9]/g, '')}@couragepartner.id`);
-
       const res = await fetch('/api/partner/auth/verify-otp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: targetEmail, otp })
+        body: JSON.stringify({ email: resolvedEmail, otp })
       });
 
       const data = await res.json();
@@ -90,7 +94,6 @@ export const PartnerLoginModal: React.FC<PartnerLoginModalProps> = ({
       }
 
       if (!data.isRegistered) {
-        // Unregistered partner -> open apply modal
         onClose();
         onSwitchToApply();
         return;
