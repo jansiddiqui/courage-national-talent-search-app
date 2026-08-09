@@ -60,10 +60,19 @@ export async function POST(request: Request) {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('cnts_partner_session');
     let sessionRefCode: string | null = null;
+    let sessionPartnerId: string | null = null;
     if (sessionCookie && sessionCookie.value) {
       const payload = await verifySession(sessionCookie.value, SERVICE_KEY || 'partner-session-secret-key');
-      if (payload && payload.referralCode) {
+      if (payload) {
         sessionRefCode = payload.referralCode;
+        sessionPartnerId = payload.partnerDbId;
+      }
+    }
+
+    if (sessionPartnerId) {
+      const { data: partnerCheck } = await dbFetch('GET', `partners?id=eq.${encodeURIComponent(sessionPartnerId)}&select=status&limit=1`);
+      if (Array.isArray(partnerCheck) && partnerCheck[0]?.status === 'SUSPENDED') {
+        return NextResponse.json({ error: 'Your partner account is currently suspended. Restricted operations disabled.' }, { status: 403 });
       }
     }
 

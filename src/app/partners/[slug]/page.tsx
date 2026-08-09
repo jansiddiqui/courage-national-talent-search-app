@@ -17,6 +17,7 @@ import { PartnerSupportCenter } from '@/components/partners/PartnerSupportCenter
 import { PartnerInbox } from '@/components/partners/PartnerInbox';
 import { ContentRoadmapTab } from '@/components/partners/ContentRoadmapTab';
 import { PartnerLaunchpadTab } from '@/components/partners/PartnerLaunchpadTab';
+import { PartnerSuspensionScreen } from '@/components/partners/PartnerSuspensionScreen';
 import { 
   Lock, 
   Sparkles, 
@@ -46,66 +47,66 @@ export default function DedicatedPartnerWorkspacePage() {
   const [partnerData, setPartnerData] = useState<any>(null);
   const [copiedUrl, setCopiedUrl] = useState(false);
 
-  useEffect(() => {
-    const verifyPartnerAccess = async () => {
-      try {
-        // 1. Check if user is authenticated as a partner
-        const res = await fetch('/api/partner/session');
-        const data = await res.json();
+  const verifyPartnerAccess = async () => {
+    try {
+      // 1. Check if user is authenticated as a partner
+      const res = await fetch('/api/partner/session');
+      const data = await res.json();
 
-        if (data.isAuthenticated && data.partner) {
-          setPartnerData(data.partner);
-          setIsAuthenticated(true);
-          setIsRegisteredCode(true);
-          setLoading(false);
-          return;
-        }
+      if (data.isAuthenticated && data.partner) {
+        setPartnerData(data.partner);
+        setIsAuthenticated(true);
+        setIsRegisteredCode(true);
+        setLoading(false);
+        return;
+      }
 
-        // 2. Check local session storage fallback
-        const savedPartner = localStorage.getItem('cnts_partner_session');
-        if (savedPartner) {
-          try {
-            const parsed = JSON.parse(savedPartner);
-            if (parsed && (parsed.customSlug || parsed.referralCode || parsed.fullName)) {
-              setPartnerData(parsed);
-              setIsAuthenticated(true);
-              setIsRegisteredCode(true);
-              setLoading(false);
-              return;
-            }
-          } catch (e) {
-            // ignore
+      // 2. Check local session storage fallback
+      const savedPartner = localStorage.getItem('cnts_partner_session');
+      if (savedPartner) {
+        try {
+          const parsed = JSON.parse(savedPartner);
+          if (parsed && (parsed.customSlug || parsed.referralCode || parsed.fullName)) {
+            setPartnerData(parsed);
+            setIsAuthenticated(true);
+            setIsRegisteredCode(true);
+            setLoading(false);
+            return;
           }
+        } catch (e) {
+          // ignore
         }
+      }
 
-        // 3. Unauthenticated visitor — Check if this slug/code exists as a registered partner in system
-        const cleanSlug = slug.trim().toLowerCase();
-        const knownRegisteredSlugs = ['cntsjn', 'janmohammad', 'partner', 'demo'];
+      // 3. Unauthenticated visitor — Check if this slug/code exists as a registered partner in system
+      const cleanSlug = slug.trim().toLowerCase();
+      const knownRegisteredSlugs = ['cntsjn', 'janmohammad', 'partner', 'demo'];
 
-        if (knownRegisteredSlugs.includes(cleanSlug)) {
-          setIsRegisteredCode(true);
-        } else if (cleanSlug) {
-          try {
-            const statsRes = await fetch(`/api/partner/stats?referralCode=${encodeURIComponent(cleanSlug)}`);
-            const statsData = await statsRes.json();
-            if (statsData.success && statsData.status !== 'UNREGISTERED') {
-              setIsRegisteredCode(true);
-            } else {
-              setIsRegisteredCode(false);
-            }
-          } catch (e) {
+      if (knownRegisteredSlugs.includes(cleanSlug)) {
+        setIsRegisteredCode(true);
+      } else if (cleanSlug) {
+        try {
+          const statsRes = await fetch(`/api/partner/stats?referralCode=${encodeURIComponent(cleanSlug)}`);
+          const statsData = await statsRes.json();
+          if (statsData.success && statsData.status !== 'UNREGISTERED') {
+            setIsRegisteredCode(true);
+          } else {
             setIsRegisteredCode(false);
           }
+        } catch (e) {
+          setIsRegisteredCode(false);
         }
-
-        setIsAuthenticated(false);
-      } catch (e) {
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
       }
-    };
 
+      setIsAuthenticated(false);
+    } catch (e) {
+      setIsAuthenticated(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     verifyPartnerAccess();
   }, [slug]);
 
@@ -115,6 +116,16 @@ export default function DedicatedPartnerWorkspacePage() {
         <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
         <p className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider">Verifying Partner Handle Authentication...</p>
       </div>
+    );
+  }
+
+  // SUSPENDED PARTNER ACCOUNT INTERCEPTOR
+  if (isAuthenticated && partnerData?.status === 'SUSPENDED') {
+    return (
+      <PartnerSuspensionScreen 
+        partnerData={partnerData} 
+        onRefresh={verifyPartnerAccess} 
+      />
     );
   }
 

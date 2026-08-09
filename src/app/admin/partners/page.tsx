@@ -36,13 +36,19 @@ import {
 } from 'lucide-react';
 
 export default function AdminPartnersPage() {
-  const [activeTab, setActiveTab] = useState<'approvals' | 'directory' | 'video-submissions' | 'payouts' | 'broadcast' | 'rates'>('approvals');
+  const [activeTab, setActiveTab] = useState<'approvals' | 'directory' | 'video-submissions' | 'payouts' | 'broadcast' | 'rates' | 'appeals'>('approvals');
   const [partners, setPartners] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
   const [videoSubmissions, setVideoSubmissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [statusFilter, setStatusFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'ALL'>('ALL');
+  const [statusFilter, setStatusFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED' | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
+  
+  // Suspension Modal State
+  const [suspendingPartner, setSuspendingPartner] = useState<any | null>(null);
+  const [suspensionReason, setSuspensionReason] = useState<string>('Policy violation');
+  const [suspensionNote, setSuspensionNote] = useState<string>('');
+  const [isSuspending, setIsSuspending] = useState<boolean>(false);
   
   // Rate Editing State
   const [editingPartnerId, setEditingPartnerId] = useState<string | null>(null);
@@ -130,7 +136,13 @@ export default function AdminPartnersPage() {
     fetchVideoSubmissions();
   }, []);
 
-  const handleUpdateStatus = async (partnerId: string, status: 'APPROVED' | 'REJECTED' | 'SUSPENDED') => {
+  const handleUpdateStatus = async (partnerId: string, status: string) => {
+    if (status === 'SUSPENDED') {
+      const target = partners.find(p => p.id === partnerId);
+      if (target) setSuspendingPartner(target);
+      return;
+    }
+
     try {
       const res = await fetch('/api/admin/partners', {
         method: 'PATCH',
@@ -146,6 +158,75 @@ export default function AdminPartnersPage() {
       }
     } catch (err) {
       console.error('Failed to update partner status:', err);
+    }
+  };
+
+  const handleConfirmSuspend = async () => {
+    if (!suspendingPartner) return;
+    if (suspensionReason === 'Other' && !suspensionNote.trim()) {
+      alert('Please provide an explanation note when selecting "Other".');
+      return;
+    }
+    setIsSuspending(true);
+    try {
+      const res = await fetch('/api/admin/partners/suspend', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          partnerId: suspendingPartner.id,
+          reason: suspensionReason,
+          note: suspensionNote
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPartners(prev => prev.map(p => p.id === suspendingPartner.id ? { 
+          ...p, 
+          status: 'SUSPENDED', 
+          suspension_reason: suspensionReason, 
+          suspension_note: suspensionNote 
+        } : p));
+        if (selectedPartnerDetail?.id === suspendingPartner.id) {
+          setSelectedPartnerDetail((prev: any) => ({
+            ...prev,
+            status: 'SUSPENDED',
+            suspension_reason: suspensionReason,
+            suspension_note: suspensionNote
+          }));
+        }
+        setSuspendingPartner(null);
+        setSuspensionNote('');
+        alert('Partner account suspended successfully.');
+      } else {
+        alert(data.error || 'Failed to suspend partner.');
+      }
+    } catch (err) {
+      console.error('Suspend error:', err);
+    } finally {
+      setIsSuspending(false);
+    }
+  };
+
+  const handleReinstatePartner = async (partnerId: string) => {
+    if (!confirm('Are you sure you want to reinstate this partner account? Dashboard access will be fully restored.')) return;
+    try {
+      const res = await fetch('/api/admin/partners/reinstate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ partnerId, note: 'Reinstated by Admin' })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setPartners(prev => prev.map(p => p.id === partnerId ? { ...p, status: 'APPROVED', appeal_status: 'APPROVED' } : p));
+        if (selectedPartnerDetail?.id === partnerId) {
+          setSelectedPartnerDetail((prev: any) => ({ ...prev, status: 'APPROVED', appeal_status: 'APPROVED' }));
+        }
+        alert('Partner account reinstated successfully.');
+      } else {
+        alert(data.error || 'Failed to reinstate partner.');
+      }
+    } catch (err) {
+      console.error('Reinstate error:', err);
     }
   };
 
@@ -1150,6 +1231,40 @@ export default function AdminPartnersPage() {
 
                 {/* Details list */}
                 <div className="space-y-4 text-xs">
+                  {/* SUSPENSION STATUS BANNER IN DRAWER */}
+                  {selectedPartnerDetail.status === 'SUSPENDED' ? (
+                    <div className="bg-amber-50 border border-amber-300 p-4 rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-bold text-amber-900 uppercase tracking-wider flex items-center gap-1">
+                          <AlertTriangle className="w-3.5 h-3.5 text-amber-700" /> Account Currently Suspended
+                        </span>
+                        <button
+                          onClick={() => handleReinstatePartner(selectedPartnerDetail.id)}
+                          className="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition shadow"
+                        >
+                          Reinstate Account
+                        </button>
+                      </div>
+                      <div className="text-xs text-amber-950 font-medium">
+                        <strong>Reason:</strong> {selectedPartnerDetail.suspension_reason || 'Compliance Verification Review'}
+                      </div>
+                      {selectedPartnerDetail.suspension_note && (
+                        <div className="text-[11px] text-amber-800 italic bg-amber-100/60 p-2 rounded-lg">
+                          "{selectedPartnerDetail.suspension_note}"
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="flex justify-end">
+                      <button
+                        onClick={() => setSuspendingPartner(selectedPartnerDetail)}
+                        className="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-bold text-xs rounded-xl transition flex items-center gap-1.5 cursor-pointer"
+                      >
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-700" /> Suspend Account
+                      </button>
+                    </div>
+                  )}
+
                   <div className="bg-slate-50 p-4 rounded-2xl space-y-2 border border-slate-200">
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Contact Information</span>
                     <p className="font-semibold text-slate-800">Email: {selectedPartnerDetail.email}</p>
@@ -1376,6 +1491,94 @@ export default function AdminPartnersPage() {
               />
               <div className="py-2.5 text-center text-xs text-slate-300 font-semibold flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-emerald-400" /> Official Verification Proof Screenshot • Click anywhere outside to close
+              </div>
+            </div>
+          </div>
+        )}
+        {/* SUSPEND CONFIRMATION MODAL */}
+        {suspendingPartner && (
+          <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl p-6 sm:p-8 max-w-lg w-full shadow-2xl border border-slate-200 space-y-6 animate-fade-in relative text-slate-900">
+              <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-700 border border-amber-200 flex items-center justify-center font-bold">
+                    <AlertTriangle className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-display font-bold text-lg text-slate-900">Suspend Partner Account</h3>
+                    <p className="text-xs text-slate-500">Restricts dashboard access & retains historical records</p>
+                  </div>
+                </div>
+                <button onClick={() => setSuspendingPartner(null)} className="text-slate-400 hover:text-slate-600 font-bold p-1">✕</button>
+              </div>
+
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200/80 text-xs space-y-1">
+                <span className="font-bold text-slate-700">Target Partner:</span>
+                <div className="font-bold text-indigo-700 text-sm">{suspendingPartner.full_name}</div>
+                <div className="text-slate-500 font-mono">{suspendingPartner.email} • Code: {suspendingPartner.referral_code}</div>
+              </div>
+
+              <div className="space-y-4">
+                <div>
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">
+                    Select Suspension Reason <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={suspensionReason}
+                    onChange={(e) => setSuspensionReason(e.target.value)}
+                    className="w-full bg-white border border-slate-300 rounded-xl p-3 text-xs font-semibold text-slate-800 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  >
+                    <option value="Policy violation">Policy violation</option>
+                    <option value="Fraudulent or suspicious activity">Fraudulent or suspicious activity</option>
+                    <option value="Misleading information">Misleading information</option>
+                    <option value="Invalid referral activity">Invalid referral activity</option>
+                    <option value="Repeated violations">Repeated violations</option>
+                    <option value="Payment / financial issue">Payment / financial issue</option>
+                    <option value="Inappropriate content">Inappropriate content</option>
+                    <option value="Verification issue">Verification issue</option>
+                    <option value="Other">Other (Requires note below)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider block mb-1.5">
+                    Additional Administrative Explanation {suspensionReason === 'Other' && <span className="text-rose-500">*</span>}
+                  </label>
+                  <textarea
+                    value={suspensionNote}
+                    onChange={(e) => setSuspensionNote(e.target.value)}
+                    rows={3}
+                    placeholder="Provide context explaining why this account is being suspended..."
+                    className="w-full bg-white border border-slate-300 rounded-xl p-3 text-xs text-slate-800 placeholder:text-slate-400 focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                    required={suspensionReason === 'Other'}
+                  />
+                </div>
+
+                <div className="bg-amber-50 border border-amber-200/80 rounded-xl p-3 text-[11px] text-amber-900 leading-relaxed">
+                  <strong>What happens next?</strong>
+                  <ul className="list-disc list-inside mt-1 space-y-0.5 text-amber-800">
+                    <li>Partner dashboard access will be restricted.</li>
+                    <li>Partner sees exact reason and can submit an appeal.</li>
+                    <li>Historical referrals, earnings, and payout records remain safe.</li>
+                    <li>Account can be reinstated by admin at any time.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end space-x-3 pt-2">
+                <button
+                  onClick={() => setSuspendingPartner(null)}
+                  className="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleConfirmSuspend}
+                  disabled={isSuspending}
+                  className="px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-lg shadow-amber-600/20 flex items-center space-x-2 transition"
+                >
+                  {isSuspending ? 'Suspending...' : 'Suspend Account'}
+                </button>
               </div>
             </div>
           </div>

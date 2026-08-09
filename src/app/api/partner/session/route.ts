@@ -56,6 +56,12 @@ export async function GET() {
           tier: dbPartner.tier || 'BRONZE',
           honorariumRate: dbPartner.honorarium_rate || 25,
           platformDetails: dbPartner.platform_details || [],
+          suspensionReason: dbPartner.suspension_reason || null,
+          suspensionNote: dbPartner.suspension_note || null,
+          suspendedAt: dbPartner.suspended_at || null,
+          appealStatus: dbPartner.appeal_status || 'NONE',
+          appealMessage: dbPartner.appeal_message || null,
+          appealRequestedAt: dbPartner.appeal_requested_at || null,
         };
       }
     }

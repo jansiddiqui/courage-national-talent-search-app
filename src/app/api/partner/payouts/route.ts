@@ -87,6 +87,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized partner session.' }, { status: 401 });
     }
 
+    // Check if partner account is suspended
+    const { data: partnerCheck } = await dbFetch('GET', `partners?id=eq.${encodeURIComponent(partnerId)}&select=status&limit=1`);
+    if (Array.isArray(partnerCheck) && partnerCheck[0]?.status === 'SUSPENDED') {
+      return NextResponse.json({ error: 'Your partner account is currently suspended. Restricted operations disabled.' }, { status: 403 });
+    }
+
     const { amount } = await request.json();
     const numericAmount = Number(amount);
 
