@@ -1,4 +1,6 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
+import { verifySession } from '@/lib/sessionHelper';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -54,7 +56,18 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Video URL and title are required.' }, { status: 400 });
     }
 
-    const cleanRef = (referralCode || 'CNTSJN').toUpperCase().trim();
+    // Try to derive referral code from trusted session JWT first
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get('cnts_partner_session');
+    let sessionRefCode: string | null = null;
+    if (sessionCookie && sessionCookie.value) {
+      const payload = await verifySession(sessionCookie.value, SERVICE_KEY || 'partner-session-secret-key');
+      if (payload && payload.referralCode) {
+        sessionRefCode = payload.referralCode;
+      }
+    }
+
+    const cleanRef = (sessionRefCode || referralCode || 'CNTSJN').toUpperCase().trim();
 
     const submissionPayload = {
       referral_code: cleanRef,
