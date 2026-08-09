@@ -9,6 +9,42 @@ import { EventDispatcher } from '@/application/dispatchers/EventDispatcher';
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
 
+async function uploadBase64ToStorage(bucket: string, path: string, base64Data: string): Promise<string | null> {
+  try {
+    if (!base64Data || typeof base64Data !== 'string' || !base64Data.startsWith('data:')) {
+      return base64Data || null;
+    }
+
+    const matches = base64Data.match(/^data:(.+);base64,(.+)$/);
+    if (!matches || matches.length !== 3) return base64Data;
+
+    const contentType = matches[1];
+    const buffer = Buffer.from(matches[2], 'base64');
+
+    const { error } = await (supabaseAdmin as any).storage
+      .from(bucket)
+      .upload(path, buffer, {
+        contentType,
+        cacheControl: '3600',
+        upsert: true
+      });
+
+    if (error) {
+      console.error(`[Supabase Storage Upload Error - ${bucket}]:`, error);
+      return base64Data;
+    }
+
+    const { data: publicUrlData } = (supabaseAdmin as any).storage
+      .from(bucket)
+      .getPublicUrl(path);
+
+    return publicUrlData.publicUrl;
+  } catch (err) {
+    console.error(`[Supabase Storage Exception - ${bucket}]:`, err);
+    return base64Data || null;
+  }
+}
+
 export async function POST(request: Request) {
   try {
     const body = await request.json();
@@ -41,6 +77,30 @@ export async function POST(request: Request) {
     const finalReferralCode = PartnerReferralEngine.generateReferralCode(fullName);
     const partnerId = `CP-2026-${Math.floor(100000 + Math.random() * 900000)}`;
 
+    // Upload profile avatar to Supabase Storage bucket 'partner-avatars'
+    let avatarPublicUrl: string | null = null;
+    if (body.profileImage && hasSupabaseAdminConfig) {
+      const avatarPath = `${partnerId}/avatar-${Date.now()}.jpg`;
+      avatarPublicUrl = await uploadBase64ToStorage('partner-avatars', avatarPath, body.profileImage);
+    }
+
+    // Upload proof screenshots to Supabase Storage bucket 'partner-proofs'
+    const processedPlatforms: any[] = [];
+    if (Array.isArray(body.platformDetails)) {
+      for (const item of body.platformDetails) {
+        let proofUrl = item.proofScreenshotUrl || null;
+        if (proofUrl && proofUrl.startsWith('data:') && hasSupabaseAdminConfig) {
+          const cleanPlatformName = (item.platform || 'channel').toLowerCase().replace(/[^a-z0-9]/g, '_');
+          const proofPath = `${partnerId}/${cleanPlatformName}-proof-${Date.now()}.png`;
+          proofUrl = await uploadBase64ToStorage('partner-proofs', proofPath, proofUrl);
+        }
+        processedPlatforms.push({
+          ...item,
+          proofScreenshotUrl: proofUrl
+        });
+      }
+    }
+
     let newPartnerRecord: any = null;
 
     if (hasSupabaseAdminConfig) {
@@ -54,32 +114,35 @@ export async function POST(request: Request) {
       if (existing) {
         newPartnerRecord = existing;
       } else {
+        const insertPayload: any = {
+          full_name: fullName,
+          email: cleanEmail,
+          phone: phone || null,
+          referral_code: finalReferralCode,
+          custom_slug: cleanSlug,
+          partner_id: partnerId,
+          profile_type: profileType,
+          primary_role: primaryRole || 'Content Creator & Educator',
+          niche: niche || 'Education',
+          content_language: contentLanguage || 'Hinglish',
+          bio: bio || '',
+          audience_scale: audienceScale || '10k - 50k',
+          city: city || '',
+          state: state || '',
+          status: 'APPLIED',
+          trust_score: 100,
+          performance_score: 0,
+          growth_score: 0,
+          compliance_score: 100,
+          honorarium_rate: 25.00
+        };
+
+        if (avatarPublicUrl) insertPayload.profile_image_url = avatarPublicUrl;
+        if (processedPlatforms.length > 0) insertPayload.platform_details = processedPlatforms;
+
         const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
           .from('partners')
-          .insert({
-            full_name: fullName,
-            email: cleanEmail,
-            phone: phone || null,
-            referral_code: finalReferralCode,
-            custom_slug: cleanSlug,
-            partner_id: partnerId,
-            profile_type: profileType,
-            primary_role: primaryRole || 'Content Creator & Educator',
-            niche: niche || 'Education',
-            content_language: contentLanguage || 'Hinglish',
-            bio: bio || '',
-            audience_scale: audienceScale || '10k - 50k',
-            city: city || '',
-            state: state || '',
-            profile_image_url: body.profileImage || null,
-            platform_details: body.platformDetails || [],
-            status: 'APPLIED',
-            trust_score: 100,
-            performance_score: 0,
-            growth_score: 0,
-            compliance_score: 100,
-            honorarium_rate: 25.00
-          })
+          .insert(insertPayload)
           .select()
           .single();
 
