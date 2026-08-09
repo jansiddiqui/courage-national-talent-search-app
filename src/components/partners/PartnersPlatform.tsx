@@ -7,6 +7,7 @@ import Footer from '@/components/layout/Footer';
 import { PartnersLanding } from './PartnersLanding';
 import { CreatorApplicationPage } from './CreatorApplicationPage';
 import { ApprovalMomentModal } from './ApprovalMomentModal';
+import { PartnerLoginModal } from './PartnerLoginModal';
 
 interface PartnersPlatformProps {
   initialView?: 'landing' | 'apply';
@@ -18,65 +19,59 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
   const router = useRouter();
   const [viewMode, setViewMode] = useState<'landing' | 'apply'>(initialView);
   const [isApprovalModalOpen, setIsApprovalModalOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
   const [applicantData, setApplicantData] = useState<any>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
       const viewParam = params.get('view');
+
       if (viewParam === 'apply') {
         setViewMode('apply');
         return;
       }
 
-      // Check real partner session from API
+      if (viewParam === 'login') {
+        setIsLoginModalOpen(true);
+        return;
+      }
+
+      // Check real partner session from API — redirect if already logged in
       fetch('/api/partner/session')
         .then(res => res.json())
         .then(data => {
           if (data.isAuthenticated && data.partner) {
             const p = data.partner;
             const targetSlug = (p.customSlug || p.referralCode || 'partner').toLowerCase();
-            // Automatically redirect authenticated partners directly to their dedicated workspace route!
             router.replace(`/partners/${targetSlug}`);
-          } else {
-            const savedPartner = localStorage.getItem('cnts_partner_session');
-            if (savedPartner) {
-              try {
-                const parsed = JSON.parse(savedPartner);
-                if (parsed && (parsed.customSlug || parsed.referralCode)) {
-                  const targetSlug = (parsed.customSlug || parsed.referralCode).toLowerCase();
-                  router.replace(`/partners/${targetSlug}`);
-                }
-              } catch (e) {
-                // ignore
-              }
-            }
           }
         })
         .catch(() => {
-          const savedPartner = localStorage.getItem('cnts_partner_session');
-          if (savedPartner) {
-            try {
-              const parsed = JSON.parse(savedPartner);
-              if (parsed && (parsed.customSlug || parsed.referralCode)) {
-                const targetSlug = (parsed.customSlug || parsed.referralCode).toLowerCase();
-                router.replace(`/partners/${targetSlug}`);
-              }
-            } catch (e) {
-              // ignore
-            }
-          }
+          // Session check failed — stay on landing
         });
     }
   }, [router]);
 
+  // Called after partner successfully logs in via OTP
+  const handleLoginSuccess = (partnerData: any) => {
+    const slug = (partnerData.customSlug || partnerData.referralCode || 'partner').toLowerCase();
+    setIsLoginModalOpen(false);
+    // Save to localStorage as backup
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cnts_partner_session', JSON.stringify(partnerData));
+    }
+    // Redirect to partner workspace
+    router.push(`/partners/${slug}`);
+  };
+
+  // Called after partner completes registration form
   const handleApplicationSubmitted = (data: any) => {
     const slug = (data.customSlug || data.referralCode || 'partner').toLowerCase();
     const finalData = {
       ...data,
       fullName: data.fullName || 'Partner Account',
       customSlug: slug,
-      partnerId: `CP-2026-${Math.floor(100000 + Math.random() * 900000)}`,
       referralCode: data.referralCode || 'CNTSJN'
     };
     setApplicantData(finalData);
@@ -94,13 +89,14 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
 
   return (
     <div className="w-full min-h-screen bg-[#F8FAFF] flex flex-col justify-between">
-      {/* 1. PUBLIC LANDING PAGE VIEW WITH GLOBAL SITE NAVBAR & FOOTER */}
+
+      {/* 1. PUBLIC LANDING PAGE VIEW */}
       {viewMode === 'landing' && (
         <>
           <Navbar />
           <PartnersLanding
             onOpenApply={() => setViewMode('apply')}
-            onOpenLogin={() => router.push('/login?tab=partner')}
+            onOpenLogin={() => setIsLoginModalOpen(true)}
             onExploreMissions={() => {
               const slug = (applicantData?.customSlug || 'cntsjn').toLowerCase();
               router.push(`/partners/${slug}`);
@@ -125,6 +121,17 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
           <Footer />
         </>
       )}
+
+      {/* PARTNER LOGIN MODAL */}
+      <PartnerLoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={handleLoginSuccess}
+        onSwitchToApply={() => {
+          setIsLoginModalOpen(false);
+          setViewMode('apply');
+        }}
+      />
 
       {/* APPROVAL MOMENT REVEAL MODAL */}
       <ApprovalMomentModal
