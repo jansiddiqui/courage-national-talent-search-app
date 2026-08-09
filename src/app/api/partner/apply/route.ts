@@ -135,6 +135,7 @@ export async function POST(request: Request) {
 
         if (avatarPublicUrl) insertPayload.profile_image_url = avatarPublicUrl;
         if (processedPlatforms.length > 0) insertPayload.platform_details = processedPlatforms;
+        if (body.password) insertPayload.password_hash = body.password;
 
         let { data: inserted, error: insertErr } = await (supabaseAdmin as any)
           .from('partners')
