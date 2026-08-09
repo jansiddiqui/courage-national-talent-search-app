@@ -687,13 +687,24 @@ export default function AdminPartnersPage() {
                             <UserX className="w-4 h-4" /> Reject
                           </button>
                         </div>
+                      ) : p.status === 'SUSPENDED' ? (
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleReinstatePartner(p.id)}
+                            className="py-2 px-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer shadow transition"
+                          >
+                            <UserCheck className="w-3.5 h-3.5" /> Reinstate Account
+                          </button>
+                        </div>
                       ) : (
-                        <button
-                          onClick={() => handleUpdateStatus(p.id, p.status === 'APPROVED' ? 'SUSPENDED' : 'APPROVED')}
-                          className="text-xs font-bold text-indigo-600 hover:underline cursor-pointer"
-                        >
-                          Change Status
-                        </button>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => setSuspendingPartner(p)}
+                            className="py-2 px-3.5 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer transition"
+                          >
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-600" /> Suspend Account
+                          </button>
+                        </div>
                       )}
                     </div>
                   </div>
@@ -778,7 +789,7 @@ export default function AdminPartnersPage() {
                             <span className="font-mono font-bold text-emerald-700 text-sm">₹{p.honorarium_rate || 25} / Student</span>
                           )}
                         </td>
-                        <td className="py-3.5 px-2">
+                        <td className="py-3.5 px-2 flex items-center gap-2">
                           <button
                             onClick={() => {
                               setEditingPartnerId(p.id);
@@ -788,6 +799,21 @@ export default function AdminPartnersPage() {
                           >
                             <Edit3 className="w-3.5 h-3.5" /> Edit Rate
                           </button>
+                          {p.status === 'SUSPENDED' ? (
+                            <button
+                              onClick={() => handleReinstatePartner(p.id)}
+                              className="px-2.5 py-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10.5px] rounded-lg transition cursor-pointer"
+                            >
+                              Reinstate
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => setSuspendingPartner(p)}
+                              className="px-2.5 py-1 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 font-bold text-[10.5px] rounded-lg transition cursor-pointer"
+                            >
+                              Suspend
+                            </button>
+                          )}
                         </td>
                       </tr>
                     ))}
