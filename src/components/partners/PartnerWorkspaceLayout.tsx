@@ -350,7 +350,6 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
                 <LogOut className="w-4 h-4 text-rose-500" />
                 <span>Sign Out of Workspace</span>
               </div>
-              <span className="text-[10px] font-mono text-rose-400 font-bold">Exit ↗</span>
             </button>
           </div>
         </aside>
