@@ -40,6 +40,7 @@ export const PaymentSetupAndRulesTab: React.FC<PaymentSetupAndRulesTabProps> = (
     bankName?: string;
     source?: string;
     verificationBadge?: string;
+    message?: string;
     error?: string;
   } | null>(null);
 
@@ -108,7 +109,8 @@ export const PaymentSetupAndRulesTab: React.FC<PaymentSetupAndRulesTabProps> = (
           receiverName: data.receiverName,
           bankName: data.bankName,
           source: data.source,
-          verificationBadge: data.verificationBadge
+          verificationBadge: data.verificationBadge,
+          message: data.message
         });
       } else {
         setUpiResult({
@@ -393,23 +395,26 @@ export const PaymentSetupAndRulesTab: React.FC<PaymentSetupAndRulesTabProps> = (
                 </div>
 
                 {/* INLINE VERIFICATION BADGE */}
-                {upiResult && upiResult.verified && (
-                  <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-950 space-y-1.5 animate-fade-in">
-                    <div className="flex items-center justify-between text-xs font-extrabold text-emerald-800">
+                {upiResult && (
+                  <div className="p-4 rounded-2xl bg-amber-50/80 border border-amber-200 text-amber-950 space-y-2 animate-fade-in">
+                    <div className="flex items-center justify-between text-xs font-extrabold text-amber-900">
                       <span className="flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-600" /> ✓ Verified UPI Beneficiary
+                        <Clock className="w-4 h-4 text-amber-600" /> Pending Verification
                       </span>
-                      <span className="font-mono text-[10px] bg-emerald-100 text-emerald-800 border border-emerald-200 px-2 py-0.5 rounded font-black">
-                        RazorpayX Verified
+                      <span className="font-mono text-[10px] bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded font-black">
+                        Destination Saved
                       </span>
                     </div>
-                    <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                    <p className="text-[11.5px] text-amber-800 font-medium leading-relaxed">
+                      {upiResult.message || 'Verification will be completed after RazorpayX activation. Your payout destination is saved securely.'}
+                    </p>
+                    <div className="grid grid-cols-2 gap-2 text-xs pt-1 border-t border-amber-200/60">
                       <div>
-                        <span className="text-slate-500 text-[10px] block font-bold">Account Holder Name</span>
+                        <span className="text-amber-700 text-[10px] block font-bold">Registered Holder</span>
                         <span className="font-extrabold text-slate-900">{upiResult.receiverName}</span>
                       </div>
                       <div>
-                        <span className="text-slate-500 text-[10px] block font-bold">Bank Name</span>
+                        <span className="text-amber-700 text-[10px] block font-bold">Bank Name</span>
                         <span className="font-bold text-slate-900">{upiResult.bankName}</span>
                       </div>
                     </div>

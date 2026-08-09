@@ -1,76 +1,71 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifySession } from '@/lib/sessionHelper';
+import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
+import { ProviderFactory } from '@/lib/payouts/ProviderFactory';
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
 
-// IFSC & Penny-Drop Bank Account Verification handler using RazorpayX Bank Validation API
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies();
     const sessionCookie = cookieStore.get('cnts_partner_session');
 
-    let partnerName = 'Partner';
+    let partnerName = 'Registered Partner';
 
     if (sessionCookie && sessionCookie.value) {
       const payload = await verifySession(sessionCookie.value, JWT_SECRET);
-      if (payload && payload.fullName) {
-        partnerName = payload.fullName;
+      if (payload) {
+        if (payload.fullName && payload.fullName !== 'Partner') {
+          partnerName = payload.fullName;
+        } else if (payload.partnerDbId && hasSupabaseAdminConfig) {
+          const { data } = await (supabaseAdmin as any)
+            .from('partners')
+            .select('full_name, name')
+            .eq('id', payload.partnerDbId)
+            .maybeSingle();
+
+          if (data && (data.full_name || data.name)) {
+            partnerName = data.full_name || data.name;
+          }
+        }
       }
     }
 
-    const { accountNumber, confirmAccountNumber, ifsc } = await request.json();
+    const { accountNumber, ifsc, accountHolderName } = await request.json();
 
-    if (!accountNumber || !confirmAccountNumber || accountNumber !== confirmAccountNumber) {
+    if (!accountNumber || !ifsc) {
       return NextResponse.json({
         success: false,
-        error: 'Account numbers do not match. Please verify your entries.'
+        error: 'Bank Account Number and IFSC code are required.'
       }, { status: 400 });
     }
 
-    if (!ifsc || typeof ifsc !== 'string' || ifsc.trim().length < 11) {
+    const verificationProvider = ProviderFactory.getVerificationProvider();
+
+    try {
+      const result = await verificationProvider.verifyBankAccount({
+        accountNumber,
+        ifsc,
+        accountHolderName,
+        partnerName
+      });
+
+      return NextResponse.json({
+        success: true,
+        ...result
+      });
+    } catch (valErr: any) {
       return NextResponse.json({
         success: false,
-        error: 'Invalid IFSC Code format. Must be 11 characters (e.g. SBIN0001234).'
+        error: valErr?.message || 'Bank account verification failed.'
       }, { status: 400 });
     }
-
-    const cleanIfsc = ifsc.trim().toUpperCase();
-
-    // Simulated Bank & Branch lookup based on IFSC Prefix
-    const bankPrefixMap: Record<string, { name: string; branch: string }> = {
-      'SBIN': { name: 'State Bank of India', branch: 'Main Branch, District HQ' },
-      'HDFC': { name: 'HDFC Bank', branch: 'Central Plaza Branch' },
-      'ICIC': { name: 'ICICI Bank', branch: 'Commercial Hub Branch' },
-      'UTIB': { name: 'Axis Bank', branch: 'Retail Operations Branch' },
-      'PUNB': { name: 'Punjab National Bank', branch: 'Civil Lines Branch' },
-      'BARB': { name: 'Bank of Baroda', branch: 'Regional Hub Branch' },
-      'CNRB': { name: 'Canara Bank', branch: 'Town Center Branch' },
-    };
-
-    const prefix = cleanIfsc.substring(0, 4);
-    const bankInfo = bankPrefixMap[prefix] || {
-      name: `${prefix} Bank Limited`,
-      branch: 'National Educational Disbursal Branch'
-    };
-
-    return NextResponse.json({
-      success: true,
-      verified: true,
-      accountNumberMasked: `•••• •••• ${accountNumber.slice(-4)}`,
-      ifsc: cleanIfsc,
-      accountHolderName: partnerName,
-      bankName: bankInfo.name,
-      branch: bankInfo.branch,
-      nameMatchScore: 100.0,
-      verificationBadge: 'VERIFIED_BANK_ACCOUNT',
-      verifiedAt: new Date().toISOString()
-    });
   } catch (error) {
     console.error('[Verify Bank POST Error]:', error);
     return NextResponse.json({
       success: false,
-      error: 'Failed to verify bank details. Please check the IFSC code and account number.'
+      error: 'Failed to process bank account verification request.'
     }, { status: 500 });
   }
 }

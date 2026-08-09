@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
+import { ProviderFactory } from '@/lib/payouts/ProviderFactory';
+import { PayoutBatchItem } from '@/lib/payouts/PayoutProvider';
 
 export async function GET() {
   try {
@@ -19,10 +21,14 @@ export async function GET() {
       }
     }
 
+    const pendingRequests = requests.filter(r => r.status === 'PENDING' || r.status === 'BATCHED');
+    const totalPendingAmount = pendingRequests.reduce((sum, r) => sum + Number(r.amount || 0), 0);
+
     return NextResponse.json({
       success: true,
       requests,
-      pendingCount: requests.filter(r => r.status === 'PENDING').length,
+      pendingCount: pendingRequests.length,
+      totalPendingAmount
     });
   } catch (error) {
     console.error('[Admin Payouts GET Error]:', error);
@@ -30,28 +36,105 @@ export async function GET() {
   }
 }
 
+// POST: Batch Creation & CSV/Excel Export Generation
+export async function POST(request: Request) {
+  try {
+    const { action, requestIds } = await request.json();
+    const payoutProvider = ProviderFactory.getPayoutProvider();
+
+    let requestsToBatch: PayoutBatchItem[] = [];
+
+    if (hasSupabaseAdminConfig) {
+      let query = (supabaseAdmin as any)
+        .from('partner_payout_requests')
+        .select(`
+          *,
+          partners (full_name, email, phone, referral_code)
+        `);
+
+      if (Array.isArray(requestIds) && requestIds.length > 0) {
+        query = query.in('id', requestIds);
+      } else {
+        query = query.eq('status', 'PENDING');
+      }
+
+      const { data, error } = await query;
+      if (!error && Array.isArray(data)) {
+        requestsToBatch = data.map(r => {
+          const partnerInfo = r.partners || {};
+          const gross = Number(r.amount);
+          const tds = Math.round(gross * 0.05);
+          return {
+            id: r.id,
+            partnerId: r.partner_id,
+            partnerName: partnerInfo.full_name || 'Partner',
+            email: partnerInfo.email,
+            phone: partnerInfo.phone,
+            referralCode: r.referral_code || partnerInfo.referral_code,
+            payoutMethod: r.payout_method || 'UPI',
+            destinationAddress: r.destination_address || 'Saved Destination',
+            bankName: r.bank_name || 'Bank',
+            amount: gross,
+            tdsDeducted: tds,
+            netPayable: gross - tds,
+            status: r.status
+          };
+        });
+      }
+    }
+
+    const batchSummary = await payoutProvider.createBatch(requestsToBatch);
+
+    if (action === 'EXPORT_CSV' || action === 'EXPORT_EXCEL') {
+      const csvContent = payoutProvider.generateCsvExport(batchSummary);
+      return new Response(csvContent, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/csv; charset=utf-8',
+          'Content-Disposition': `attachment; filename="CNTS_Payout_Batch_${batchSummary.batchId}.csv"`
+        }
+      });
+    }
+
+    return NextResponse.json({
+      success: true,
+      batchSummary
+    });
+  } catch (error: any) {
+    console.error('[Admin Payouts POST Error]:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to create payout batch.' }, { status: 500 });
+  }
+}
+
+// PATCH: Single Manual UTR Settlement
 export async function PATCH(request: Request) {
   try {
     const { requestId, status, transactionRef, adminNote } = await request.json();
 
-    if (!requestId || !status) {
-      return NextResponse.json({ error: 'requestId and status are required' }, { status: 400 });
+    if (!requestId) {
+      return NextResponse.json({ error: 'requestId is required' }, { status: 400 });
     }
 
+    const payoutProvider = ProviderFactory.getPayoutProvider();
+
+    if (status?.toUpperCase() === 'SETTLED') {
+      const item = await payoutProvider.processSingleSettlement({
+        requestId,
+        transactionRef,
+        remarks: adminNote
+      });
+
+      return NextResponse.json({ success: true, request: item });
+    }
+
+    // Default status update if not settled
     if (hasSupabaseAdminConfig) {
-      const updatePayload: any = {
-        status: status.toUpperCase(),
-        admin_note: adminNote || null,
-      };
-
-      if (status.toUpperCase() === 'SETTLED') {
-        updatePayload.settled_at = new Date().toISOString();
-        updatePayload.transaction_ref = transactionRef || `UTR-${Math.floor(10000000 + Math.random() * 90000000)}`;
-      }
-
       const { data: updated, error } = await (supabaseAdmin as any)
         .from('partner_payout_requests')
-        .update(updatePayload)
+        .update({
+          status: status ? status.toUpperCase() : 'PENDING',
+          admin_note: adminNote || null
+        })
         .eq('id', requestId)
         .select()
         .single();
@@ -60,28 +143,36 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
-      // Notify partner in inbox if settled
-      if (updated && updated.partner_id && status.toUpperCase() === 'SETTLED') {
-        await (supabaseAdmin as any)
-          .from('partner_notifications')
-          .insert({
-            partner_id: updated.partner_id,
-            referral_code: updated.referral_code,
-            sender: 'Finance Operations Desk',
-            title: `💰 Honorarium Payout Settled: ₹${updated.amount}`,
-            preview: `Your weekly payout request of ₹${updated.amount} has been successfully settled.`,
-            full_body: `Your withdrawal request of ₹${updated.amount} has been disbursed.\n\nTransaction Ref / UTR: ${updated.transaction_ref}\nDate: ${new Date().toLocaleDateString()}\n\nThank you for being a valued Courage Partner!`,
-            category: 'Payout',
-            is_read: false,
-          });
-      }
-
       return NextResponse.json({ success: true, request: updated });
     }
 
     return NextResponse.json({ success: true, message: 'Updated in sandbox mode' });
-  } catch (error) {
+  } catch (error: any) {
     console.error('[Admin Payouts PATCH Error]:', error);
-    return NextResponse.json({ error: 'Failed to update payout request.' }, { status: 500 });
+    return NextResponse.json({ error: error?.message || 'Failed to update payout request.' }, { status: 500 });
+  }
+}
+
+// PUT: Bulk Excel/CSV Re-Upload Settlement Parser & Auto-Updater
+export async function PUT(request: Request) {
+  try {
+    const { rows } = await request.json();
+
+    if (!Array.isArray(rows) || rows.length === 0) {
+      return NextResponse.json({ error: 'rows array is required for bulk settlement.' }, { status: 400 });
+    }
+
+    const payoutProvider = ProviderFactory.getPayoutProvider();
+    const result = await payoutProvider.processBulkExcelSettlement(rows);
+
+    return NextResponse.json({
+      success: true,
+      settledCount: result.settledCount,
+      failedCount: result.failedCount,
+      updatedIds: result.updatedIds
+    });
+  } catch (error: any) {
+    console.error('[Admin Payouts PUT Error]:', error);
+    return NextResponse.json({ error: error?.message || 'Failed to process bulk Excel settlement.' }, { status: 500 });
   }
 }

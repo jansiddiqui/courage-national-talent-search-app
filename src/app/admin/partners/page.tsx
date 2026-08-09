@@ -54,6 +54,9 @@ export default function AdminPartnersPage() {
   // Settlement Modal State
   const [settlingPayoutId, setSettlingPayoutId] = useState<string | null>(null);
   const [transactionRef, setTransactionRef] = useState('');
+  const [showBulkSettlementModal, setShowBulkSettlementModal] = useState(false);
+  const [bulkSettlementInput, setBulkSettlementInput] = useState('');
+  const [bulkSettlementResult, setBulkSettlementResult] = useState<{ settledCount: number; failedCount: number } | null>(null);
 
   // Broadcast Form State
   const [broadcastTitle, setBroadcastTitle] = useState('');
@@ -186,6 +189,73 @@ export default function AdminPartnersPage() {
       }
     } catch (err) {
       console.error('Failed to settle payout:', err);
+    }
+  };
+
+  const handleExportBatchCsv = async () => {
+    try {
+      const res = await fetch('/api/admin/partners/payouts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'EXPORT_CSV' })
+      });
+      const blob = await res.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `CNTS_Payout_Batch_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } catch (err) {
+      console.error('Failed to export payout CSV batch:', err);
+    }
+  };
+
+  const handleBulkExcelSettlement = async () => {
+    if (!bulkSettlementInput.trim()) return;
+    try {
+      const parsedRows: any[] = [];
+      const lines = bulkSettlementInput.trim().split('\n');
+
+      for (const line of lines) {
+        const parts = line.split(/,|\t|;/).map(p => p.trim().replace(/^"|"$/g, ''));
+        if (parts.length >= 2) {
+          // Expected row format: RequestID, UTR, [Status], [Remarks]
+          const requestId = parts[0];
+          const utr = parts[1];
+          const status = parts[2] ? (parts[2].toUpperCase().includes('FAIL') ? 'FAILED' : 'SETTLED') : 'SETTLED';
+          const remarks = parts[3] || 'Bulk Excel Auto-Settlement';
+
+          if (requestId && utr) {
+            parsedRows.push({
+              requestId,
+              transactionRef: utr,
+              status,
+              remarks
+            });
+          }
+        }
+      }
+
+      if (parsedRows.length === 0) {
+        alert('No valid rows found. Please enter lines formatted as: RequestID, UTR');
+        return;
+      }
+
+      const res = await fetch('/api/admin/partners/payouts', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ rows: parsedRows })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setBulkSettlementResult({ settledCount: data.settledCount, failedCount: data.failedCount });
+        fetchPayouts();
+      }
+    } catch (err) {
+      console.error('Bulk Excel settlement error:', err);
     }
   };
 
@@ -769,9 +839,29 @@ export default function AdminPartnersPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-4">
               <div>
                 <h2 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5 text-emerald-600" /> Weekly Payout Settlement Queue
+                  <CreditCard className="w-5 h-5 text-emerald-600" /> Weekly Payout Settlement Queue & Batch Engine
                 </h2>
-                <p className="text-xs text-slate-500">Review submitted partner withdrawal requests and enter UTR / transaction ref to mark settled.</p>
+                <p className="text-xs text-slate-500">Review partner withdrawal requests, export bank batch CSV/Excel, and re-upload UTRs for bulk settlement.</p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onClick={handleExportBatchCsv}
+                  className="py-2 px-3.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer shadow"
+                >
+                  <Send className="w-3.5 h-3.5" /> Export Batch CSV / Excel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBulkSettlementResult(null);
+                    setShowBulkSettlementModal(true);
+                  }}
+                  className="py-2 px-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 cursor-pointer shadow"
+                >
+                  <CheckCircle2 className="w-3.5 h-3.5" /> Bulk Excel Re-Upload Auto-Settlement
+                </button>
               </div>
             </div>
 
@@ -860,6 +950,67 @@ export default function AdminPartnersPage() {
                   >
                     Confirm Settlement & Notify Partner
                   </button>
+                </div>
+              </div>
+            )}
+
+            {/* BULK EXCEL RE-UPLOAD AUTO-SETTLEMENT MODAL */}
+            {showBulkSettlementModal && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md">
+                <div className="bg-white rounded-3xl max-w-lg w-full p-6 space-y-5 shadow-2xl border border-slate-200 animate-slide-up">
+                  <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div>
+                      <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <CheckCircle2 className="w-5 h-5 text-emerald-600" /> Bulk Excel Re-Upload Auto-Settlement
+                      </h3>
+                      <p className="text-xs text-slate-500">Paste or upload corporate netbanking CSV/Excel output containing UTRs.</p>
+                    </div>
+                    <button onClick={() => setShowBulkSettlementModal(false)} className="text-slate-400 hover:text-slate-700">
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-xs font-bold text-slate-700">
+                      Paste CSV/Tab-Separated Data (Format: <span className="font-mono text-emerald-700">RequestID, UTR, [Status], [Remarks]</span>)
+                    </label>
+                    <textarea
+                      rows={6}
+                      value={bulkSettlementInput}
+                      onChange={e => setBulkSettlementInput(e.target.value)}
+                      placeholder={`req_019283, UTR99887766, SETTLED, Netbanking Paid\nreq_019284, UTR99887767, SETTLED, Netbanking Paid`}
+                      className="w-full p-3 border border-slate-200 rounded-xl text-xs font-mono focus:ring-2 focus:ring-emerald-600 bg-slate-50"
+                    />
+                  </div>
+
+                  {bulkSettlementResult && (
+                    <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-900 text-xs font-bold space-y-1">
+                      <p className="flex items-center gap-1.5">
+                        <Check className="w-4 h-4 text-emerald-600" /> Bulk Settlement Completed Successfully!
+                      </p>
+                      <p className="text-[11px] text-emerald-700">
+                        {bulkSettlementResult.settledCount} partners updated to SETTLED and notified. {bulkSettlementResult.failedCount} failed or skipped.
+                      </p>
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-3 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowBulkSettlementModal(false)}
+                      className="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl"
+                    >
+                      Close
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleBulkExcelSettlement}
+                      disabled={!bulkSettlementInput.trim()}
+                      className="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow cursor-pointer disabled:opacity-50"
+                    >
+                      Process & Notify Partners
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
