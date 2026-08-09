@@ -34,7 +34,19 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
   onNavigateTab
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
+  const [hasPayoutAccount, setHasPayoutAccount] = useState<boolean>(false);
   const referralLink = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+
+  React.useEffect(() => {
+    fetch('/api/partner/payout-account')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && (data.hasPrimaryAccount || data.account)) {
+          setHasPayoutAccount(true);
+        }
+      })
+      .catch(err => console.error('Error fetching payout account status:', err));
+  }, []);
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);
@@ -56,12 +68,14 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
     {
       stepNumber: 2,
       title: 'Step 2: Set Up Payout Bank Account or UPI ID',
-      desc: 'Verify your UPI ID or Bank Account to receive automatic Monday honorarium payouts.',
-      actionLabel: 'Setup Payouts',
+      desc: hasPayoutAccount
+        ? 'Your payout account (Bank/UPI) is verified and active for automatic Monday honorarium payouts.'
+        : 'Verify your UPI ID or Bank Account to receive automatic Monday honorarium payouts.',
+      actionLabel: hasPayoutAccount ? 'Update Payouts' : 'Setup Payouts',
       actionIcon: CreditCard,
       onClick: () => onNavigateTab && onNavigateTab('payment-setup'),
-      completed: false,
-      badge: 'Action Required'
+      completed: hasPayoutAccount,
+      badge: hasPayoutAccount ? 'Completed' : 'Action Required'
     },
     {
       stepNumber: 3,
@@ -84,6 +98,8 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
       badge: 'Partner Welfare'
     }
   ];
+
+  const completedCount = steps.filter(s => s.completed).length;
 
   return (
     <div className="max-w-4xl mx-auto space-y-7 animate-fade-in pb-12 font-sans text-[#0F172A]">
@@ -134,7 +150,7 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
             Your 4-Step Orientation Checklist
           </h2>
           <span className="text-xs font-mono font-extrabold text-indigo-700 bg-indigo-50 px-3.5 py-1.5 rounded-full border border-indigo-100 shrink-0 self-start sm:self-auto whitespace-nowrap">
-            Step 1 of 4 Completed
+            Step {completedCount} of 4 Completed
           </span>
         </div>
 
