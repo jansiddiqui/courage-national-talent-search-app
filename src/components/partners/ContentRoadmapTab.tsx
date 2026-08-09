@@ -59,7 +59,7 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
   const [selectedPhase, setSelectedPhase] = useState<number>(1);
   const [selectedTopicId, setSelectedTopicId] = useState<string>('v1');
 
-  // VIDEO SUBMISSION MODAL STATE
+  // VIDEO SUBMISSION MODAL & INLINE CARD INPUT STATE
   const [showSubmitModal, setShowSubmitModal] = useState<boolean>(false);
   const [submittingVideoTopic, setSubmittingVideoTopic] = useState<any | null>(null);
   const [videoUrlInput, setVideoUrlInput] = useState<string>('');
@@ -67,6 +67,67 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
   const [videoNotesInput, setVideoNotesInput] = useState<string>('');
   const [isSubmittingVideo, setIsSubmittingVideo] = useState<boolean>(false);
   const [submissionSuccessMsg, setSubmissionSuccessMsg] = useState<string | null>(null);
+
+  // INLINE CARD INPUT STATE FOR EVERY ROADMAP CARD
+  const [cardInputs, setCardInputs] = useState<Record<string, string>>({});
+  const [submittedMap, setSubmittedMap] = useState<Record<string, string>>({});
+  const [submittingCardId, setSubmittingCardId] = useState<string | null>(null);
+  const [toastMsg, setToastMsg] = useState<string | null>(null);
+
+  // FETCH EXISTING SUBMISSIONS ON MOUNT
+  React.useEffect(() => {
+    fetch(`/api/partner/video-submissions?referralCode=${encodeURIComponent(referralCode)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && Array.isArray(data.submissions)) {
+          const inputs: Record<string, string> = {};
+          const map: Record<string, string> = {};
+          data.submissions.forEach((sub: any) => {
+            const topicId = sub.video_topic_id || sub.videoTopicId || 'v1';
+            const url = sub.video_url || sub.videoUrl;
+            if (url) {
+              inputs[topicId] = url;
+              map[topicId] = url;
+            }
+          });
+          setCardInputs(prev => ({ ...inputs, ...prev }));
+          setSubmittedMap(prev => ({ ...map, ...prev }));
+        }
+      })
+      .catch(err => console.error('Error fetching video submissions:', err));
+  }, [referralCode]);
+
+  const handleInlineCardSubmit = async (video: any) => {
+    const url = (cardInputs[video.id] || '').trim();
+    if (!url) return;
+
+    setSubmittingCardId(video.id);
+    try {
+      const res = await fetch('/api/partner/video-submissions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          referralCode,
+          videoTopicId: video.id,
+          videoTitle: video.title,
+          platform: url.includes('youtube') || url.includes('youtu.be') ? 'YouTube Short' : 'Instagram Reel',
+          videoUrl: url,
+          notes: `Inline roadmap card submission for ${video.title}`
+        })
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSubmittedMap(prev => ({ ...prev, [video.id]: url }));
+        setToastMsg(`🎉 Video link saved & submitted for admin verification!`);
+        setTimeout(() => setToastMsg(null), 3500);
+      }
+    } catch (err) {
+      console.error('Inline video submission error:', err);
+    } finally {
+      setSubmittingCardId(null);
+    }
+  };
 
   // MASTER AI PROMPT GENERATOR STATE
   const [promptLanguage, setPromptLanguage] = useState<string>('Hinglish');
@@ -349,7 +410,18 @@ PLEASE FORMAT THE OUTPUT WITH:
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in max-w-4xl mx-auto font-sans text-[#0F172A]">
+    <div className="max-w-4xl mx-auto space-y-7 animate-fade-in pb-12 font-sans text-[#0F172A]">
+
+      {/* FLOATING SUCCESS TOAST NOTIFICATION */}
+      {toastMsg && (
+        <div className="bg-emerald-600 text-white font-extrabold text-xs px-5 py-3 rounded-2xl shadow-lg flex items-center justify-between animate-slide-down">
+          <div className="flex items-center gap-2">
+            <CheckCircle2 className="w-4 h-4 text-emerald-200" />
+            <span>{toastMsg}</span>
+          </div>
+          <button onClick={() => setToastMsg(null)} className="text-emerald-100 hover:text-white text-xs">✕</button>
+        </div>
+      )}
 
       {/* HEADER BANNER */}
       <div className="bg-white p-6 sm:p-8 rounded-3xl border border-slate-200/90 shadow-sm space-y-5">
@@ -667,6 +739,66 @@ PLEASE FORMAT THE OUTPUT WITH:
                       {copiedId === `${video.id}-cta` ? <Check className="w-3.5 h-3.5 text-emerald-300" /> : <Copy className="w-3.5 h-3.5" />}
                       {copiedId === `${video.id}-cta` ? 'Copied' : 'Copy CTA'}
                     </button>
+                  </div>
+
+                  {/* INLINE VIDEO LINK SUBMISSION FIELD IN EVERY CARD */}
+                  <div className="p-4 rounded-2xl bg-[#0F172A] text-white space-y-2.5 border border-slate-800 shadow-sm">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <label className="text-[11px] font-bold uppercase tracking-wider text-slate-300 flex items-center gap-1.5">
+                        <Video className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>{submittedMap[video.id] ? 'Your Submitted Reel / Video Link' : 'Submit Your Published Video Link'}</span>
+                      </label>
+                      {submittedMap[video.id] && (
+                        <span className="bg-emerald-500/20 text-emerald-300 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-emerald-500/30 flex items-center gap-1">
+                          <CheckCircle2 className="w-3 h-3 text-emerald-400" /> Submitted & Under Review
+                        </span>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                      <div className="relative flex-1">
+                        <input
+                          type="url"
+                          placeholder="Paste your Instagram Reel / YouTube Short URL (e.g. https://instagram.com/reel/...)"
+                          value={cardInputs[video.id] || ''}
+                          onChange={e => setCardInputs(prev => ({ ...prev, [video.id]: e.target.value }))}
+                          className="w-full px-3.5 py-2.5 rounded-xl bg-slate-950 border border-slate-700 text-xs font-mono text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+                        />
+                      </div>
+
+                      <button
+                        type="button"
+                        disabled={submittingCardId === video.id || !(cardInputs[video.id] || '').trim()}
+                        onClick={() => handleInlineCardSubmit(video)}
+                        className="bg-emerald-600 hover:bg-emerald-500 disabled:opacity-50 text-white font-extrabold text-xs px-4 py-2.5 rounded-xl transition-all cursor-pointer shrink-0 flex items-center justify-center gap-1.5 shadow-sm"
+                      >
+                        {submittingCardId === video.id ? (
+                          <span>Saving...</span>
+                        ) : submittedMap[video.id] ? (
+                          <>
+                            <Check className="w-4 h-4 text-emerald-200" />
+                            <span>Update Link</span>
+                          </>
+                        ) : (
+                          <>
+                            <Video className="w-4 h-4 text-emerald-200" />
+                            <span>Submit Link</span>
+                          </>
+                        )}
+                      </button>
+
+                      {submittedMap[video.id] && (
+                        <a
+                          href={submittedMap[video.id]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-3.5 py-2.5 rounded-xl border border-slate-700 transition-colors flex items-center justify-center gap-1.5 shrink-0"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5 text-indigo-400" />
+                          <span>View Video</span>
+                        </a>
+                      )}
+                    </div>
                   </div>
 
                 </div>

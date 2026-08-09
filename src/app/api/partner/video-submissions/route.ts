@@ -1,35 +1,39 @@
 import { NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
-import { verifySession } from '@/lib/sessionHelper';
-import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 
-const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY || 'default-partner-secret-key-cnts-2026';
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-// In-memory fallback store for video submissions if DB table is initializing
-let memoryVideoSubmissions: any[] = [];
+async function dbFetch(method: string, path: string, body?: any): Promise<{ data: any; error: any; ok: boolean; status: number }> {
+  const url = `${SUPABASE_URL}/rest/v1/${path}`;
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'apikey': SERVICE_KEY,
+      'Authorization': `Bearer ${SERVICE_KEY}`,
+      'Content-Type': 'application/json',
+      'Prefer': method === 'POST' ? 'return=representation' : 'return=representation'
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const text = await res.text();
+  let data = null;
+  try { data = JSON.parse(text); } catch { data = text; }
+  return { data, error: res.ok ? null : data, ok: res.ok, status: res.status };
+}
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const referralCode = searchParams.get('referralCode') || 'CNTSJN';
 
-    let submissions: any[] = [];
+    const cleanRef = referralCode.toUpperCase().trim();
 
-    if (hasSupabaseAdminConfig) {
-      const { data, error } = await (supabaseAdmin as any)
-        .from('partner_video_submissions')
-        .select('*')
-        .eq('referral_code', referralCode.toUpperCase().trim())
-        .order('created_at', { ascending: false });
+    const { data: dbSubmissions } = await dbFetch(
+      'GET',
+      `partner_video_submissions?referral_code=eq.${encodeURIComponent(cleanRef)}&order=created_at.desc`
+    );
 
-      if (!error && Array.isArray(data)) {
-        submissions = data;
-      }
-    }
-
-    if (submissions.length === 0) {
-      submissions = memoryVideoSubmissions.filter(s => s.referralCode === referralCode.toUpperCase().trim());
-    }
+    const submissions = Array.isArray(dbSubmissions) ? dbSubmissions : [];
 
     return NextResponse.json({
       success: true,
@@ -52,46 +56,28 @@ export async function POST(request: Request) {
 
     const cleanRef = (referralCode || 'CNTSJN').toUpperCase().trim();
 
-    const submissionRecord = {
-      id: `SUB-${Date.now()}-${Math.floor(100 + Math.random() * 900)}`,
+    const submissionPayload = {
       referral_code: cleanRef,
-      referralCode: cleanRef,
       video_topic_id: videoTopicId || 'v1',
       video_title: videoTitle,
-      videoTitle,
-      platform: platform || 'Instagram Reel',
+      platform: platform || (videoUrl.includes('youtube') || videoUrl.includes('youtu.be') ? 'YouTube Short' : 'Instagram Reel'),
       video_url: videoUrl,
-      videoUrl,
       notes: notes || '',
       status: 'PENDING_REVIEW',
-      created_at: new Date().toISOString(),
-      submittedAt: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
     };
 
-    if (hasSupabaseAdminConfig) {
-      try {
-        await (supabaseAdmin as any)
-          .from('partner_video_submissions')
-          .insert({
-            referral_code: cleanRef,
-            video_topic_id: videoTopicId || 'v1',
-            video_title: videoTitle,
-            platform: platform || 'Instagram Reel',
-            video_url: videoUrl,
-            notes: notes || '',
-            status: 'PENDING_REVIEW',
-          });
-      } catch (dbErr) {
-        console.warn('Supabase video submission insert notice:', dbErr);
-      }
+    const { data: inserted, error: insertErr } = await dbFetch('POST', 'partner_video_submissions', submissionPayload);
+
+    if (insertErr) {
+      console.error('[Video Submission POST Error]:', JSON.stringify(insertErr));
     }
 
-    memoryVideoSubmissions.unshift(submissionRecord);
+    const record = Array.isArray(inserted) ? inserted[0] : (inserted || submissionPayload);
 
     return NextResponse.json({
       success: true,
       message: 'Video submitted successfully for admin review!',
-      submission: submissionRecord
+      submission: record
     });
   } catch (error) {
     console.error('[Video Submission POST Error]:', error);
