@@ -48,8 +48,9 @@ export default function AdminPartnersPage() {
   const [editingPartnerId, setEditingPartnerId] = useState<string | null>(null);
   const [newRate, setNewRate] = useState<number>(25);
 
-  // Inspector Drawer State
+  // Inspector Drawer & Proof Preview State
   const [selectedPartnerDetail, setSelectedPartnerDetail] = useState<any | null>(null);
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   // Settlement Modal State
   const [settlingPayoutId, setSettlingPayoutId] = useState<string | null>(null);
@@ -1118,17 +1119,31 @@ export default function AdminPartnersPage() {
               <div className="space-y-6">
                 <div className="flex items-center justify-between border-b border-slate-100 pb-4">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-2xl bg-indigo-600 text-white font-bold flex items-center justify-center text-lg shadow">
-                      {selectedPartnerDetail.full_name?.substring(0, 2).toUpperCase()}
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden bg-indigo-600 text-white font-bold flex items-center justify-center text-lg shadow shrink-0 border-2 border-white">
+                      {(selectedPartnerDetail.profile_image_url || selectedPartnerDetail.profileImageUrl) ? (
+                        <img 
+                          src={selectedPartnerDetail.profile_image_url || selectedPartnerDetail.profileImageUrl} 
+                          alt="Profile Avatar" 
+                          className="w-full h-full object-cover cursor-pointer hover:opacity-90 transition-opacity"
+                          onClick={() => setPreviewImage(selectedPartnerDetail.profile_image_url || selectedPartnerDetail.profileImageUrl)}
+                        />
+                      ) : (
+                        selectedPartnerDetail.full_name?.substring(0, 2).toUpperCase()
+                      )}
                     </div>
                     <div>
                       <span className="text-[10px] font-mono font-bold text-indigo-600 uppercase">
                         {selectedPartnerDetail.partner_id} • {selectedPartnerDetail.referral_code}
                       </span>
                       <h2 className="font-display font-bold text-xl text-slate-900">{selectedPartnerDetail.full_name}</h2>
+                      {[selectedPartnerDetail.city, selectedPartnerDetail.state].filter(Boolean).length > 0 && (
+                        <span className="text-xs text-slate-500 font-medium block">
+                          📍 {[selectedPartnerDetail.city, selectedPartnerDetail.state].filter(Boolean).join(', ')}
+                        </span>
+                      )}
                     </div>
                   </div>
-                  <button onClick={() => setSelectedPartnerDetail(null)} className="text-slate-400 hover:text-slate-700 p-2 rounded-xl bg-slate-100">
+                  <button onClick={() => setSelectedPartnerDetail(null)} className="text-slate-400 hover:text-slate-700 p-2 rounded-xl bg-slate-100 cursor-pointer">
                     <X className="w-5 h-5" />
                   </button>
                 </div>
@@ -1139,6 +1154,11 @@ export default function AdminPartnersPage() {
                     <span className="text-[10px] uppercase font-bold text-slate-400 block">Contact Information</span>
                     <p className="font-semibold text-slate-800">Email: {selectedPartnerDetail.email}</p>
                     <p className="font-semibold text-slate-800">Phone: {selectedPartnerDetail.phone || 'Not specified'}</p>
+                    {(selectedPartnerDetail.city || selectedPartnerDetail.state) && (
+                      <p className="font-semibold text-slate-800">
+                        Location: {[selectedPartnerDetail.city, selectedPartnerDetail.state].filter(Boolean).join(', ')}
+                      </p>
+                    )}
                   </div>
 
                   <div className="bg-slate-50 p-4 rounded-2xl space-y-2 border border-slate-200">
@@ -1148,11 +1168,11 @@ export default function AdminPartnersPage() {
                   </div>
 
                   <div className="bg-slate-50 p-4 rounded-2xl space-y-3 border border-slate-200">
-                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Audience Reach & Platforms</span>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block">Audience Reach & Scale</span>
                     <div className="flex items-center justify-between">
                       <span className="text-slate-600 font-medium">Claimed Audience Scale:</span>
                       <span className="font-bold text-indigo-700 bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-200">
-                        {selectedPartnerDetail.audience_scale}
+                        {selectedPartnerDetail.audience_scale || 'Not specified'}
                       </span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -1161,6 +1181,75 @@ export default function AdminPartnersPage() {
                         {(selectedPartnerDetail.total_reach || 0).toLocaleString('en-IN')}
                       </span>
                     </div>
+                  </div>
+
+                  {/* VERIFIED CHANNELS & PROOF SCREENSHOTS */}
+                  <div className="bg-slate-50 p-4 rounded-2xl space-y-3 border border-slate-200">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] uppercase font-bold text-slate-400 block">Verified Channels & Proof Screenshots</span>
+                      <span className="font-mono text-indigo-600 text-[11px] font-bold">
+                        {Array.isArray(selectedPartnerDetail.platform_details || selectedPartnerDetail.platformDetails) 
+                          ? (selectedPartnerDetail.platform_details || selectedPartnerDetail.platformDetails).length 
+                          : 0} Channel(s)
+                      </span>
+                    </div>
+
+                    {Array.isArray(selectedPartnerDetail.platform_details || selectedPartnerDetail.platformDetails) && 
+                     (selectedPartnerDetail.platform_details || selectedPartnerDetail.platformDetails).length > 0 ? (
+                      <div className="space-y-3 pt-1">
+                        {(selectedPartnerDetail.platform_details || selectedPartnerDetail.platformDetails).map((item: any, idx: number) => {
+                          const proofUrl = item.proofScreenshotUrl || item.proof_screenshot_url;
+                          return (
+                            <div key={idx} className="bg-white p-3.5 rounded-xl border border-slate-200 space-y-2.5 shadow-2xs">
+                              <div className="flex items-start justify-between gap-2">
+                                <div>
+                                  <span className="font-extrabold text-slate-900 block text-xs">{item.platform || 'Channel/Platform'}</span>
+                                  <span className="text-indigo-600 font-mono text-[11px] font-medium block truncate max-w-xs">{item.handleOrUrl || item.handle || 'No handle'}</span>
+                                </div>
+                                {(item.followerCount || item.followers) ? (
+                                  <span className="bg-slate-100 text-slate-700 font-mono text-[10.5px] font-bold px-2.5 py-1 rounded-lg border border-slate-200 shrink-0">
+                                    {Number(item.followerCount || item.followers).toLocaleString('en-IN')} followers
+                                  </span>
+                                ) : null}
+                              </div>
+
+                              {/* Proof Screenshot Image */}
+                              {proofUrl ? (
+                                <div className="pt-1">
+                                  <span className="text-[10px] font-bold text-slate-500 block mb-1.5 flex items-center gap-1">
+                                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> Proof Screenshot Uploaded:
+                                  </span>
+                                  <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-900 max-h-52 flex items-center justify-center">
+                                    <img
+                                      src={proofUrl}
+                                      alt={`Proof for ${item.platform}`}
+                                      className="w-full h-auto max-h-52 object-contain cursor-pointer hover:opacity-90 transition-opacity"
+                                      onClick={() => setPreviewImage(proofUrl)}
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => setPreviewImage(proofUrl)}
+                                      className="absolute inset-0 bg-slate-950/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-bold text-xs gap-1.5 cursor-pointer backdrop-blur-[2px]"
+                                    >
+                                      <Eye className="w-4 h-4 text-amber-300" /> Click to Expand Full Proof
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200/70 text-amber-800 text-[11px] font-medium flex items-center gap-2">
+                                  <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                                  <span>No proof screenshot image attached for this channel.</span>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="p-3 rounded-xl bg-slate-100 text-slate-500 text-[11px] italic">
+                        No channel platform details or proof screenshots submitted.
+                      </div>
+                    )}
                   </div>
 
                   {/* Honorarium Rate Adjuster in Drawer */}
@@ -1214,6 +1303,34 @@ export default function AdminPartnersPage() {
                     Done Inspecting
                   </button>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* FULLSCREEN PROOF IMAGE PREVIEW LIGHTBOX MODAL */}
+        {previewImage && (
+          <div 
+            className="fixed inset-0 z-[100] bg-slate-950/90 backdrop-blur-md flex items-center justify-center p-4 animate-fade-in"
+            onClick={() => setPreviewImage(null)}
+          >
+            <div 
+              className="relative max-w-5xl max-h-[92vh] bg-slate-900 rounded-3xl overflow-hidden border border-slate-700 shadow-2xl p-3 flex flex-col items-center"
+              onClick={e => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setPreviewImage(null)}
+                className="absolute top-4 right-4 z-10 bg-slate-800/80 hover:bg-slate-700 text-white p-2 rounded-full cursor-pointer shadow-lg transition-colors"
+              >
+                <X className="w-6 h-6" />
+              </button>
+              <img
+                src={previewImage}
+                alt="Verification Proof Screenshot"
+                className="max-w-full max-h-[85vh] object-contain rounded-2xl"
+              />
+              <div className="py-2.5 text-center text-xs text-slate-300 font-semibold flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-emerald-400" /> Official Verification Proof Screenshot • Click anywhere outside to close
               </div>
             </div>
           </div>
