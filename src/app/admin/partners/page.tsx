@@ -553,6 +553,20 @@ export default function AdminPartnersPage() {
           >
             <Send className="w-4 h-4 text-violet-600" /> Dispatch Inbox Broadcast
           </button>
+
+          <button
+            onClick={() => setActiveTab('appeals')}
+            className={`py-2.5 px-5 rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'appeals' ? 'bg-white text-slate-950 shadow-md font-extrabold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <AlertTriangle className="w-4 h-4 text-amber-600" /> Suspension Appeals
+            {partners.filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message).length > 0 && (
+              <span className="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-black">
+                {partners.filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message).length}
+              </span>
+            )}
+          </button>
         </div>
 
         {/* TAB 1: APPROVALS QUEUE */}
@@ -1193,6 +1207,111 @@ export default function AdminPartnersPage() {
           </div>
         )}
 
+        {/* TAB 7: SUSPENSION REVIEWS & APPEALS QUEUE */}
+        {activeTab === 'appeals' && (
+          <div className="space-y-6">
+            <div className="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex items-center justify-between">
+              <div>
+                <h2 className="font-display font-bold text-lg text-slate-900 flex items-center gap-2">
+                  <AlertTriangle className="w-5 h-5 text-amber-600" /> Suspension Review Appeals Queue
+                </h2>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Review review requests and appeal explanations submitted by restricted partners.
+                </p>
+              </div>
+              <span className="font-mono text-xs font-bold text-amber-700 bg-amber-50 px-3 py-1.5 rounded-xl border border-amber-200">
+                {partners.filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message).length} Account(s) Flagged / Suspended
+              </span>
+            </div>
+
+            {partners.filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message).length === 0 ? (
+              <div className="bg-white rounded-3xl p-12 text-center border border-slate-200 text-slate-500 space-y-3">
+                <CheckCircle2 className="w-12 h-12 text-emerald-500 mx-auto" />
+                <h3 className="font-bold text-slate-800 text-base">No Pending Suspension Appeals</h3>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  There are currently no suspended partners with active review appeals awaiting administrative action.
+                </p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 gap-4">
+                {partners
+                  .filter(p => p.status === 'SUSPENDED' || p.appeal_status === 'PENDING' || p.appeal_message)
+                  .map(p => (
+                    <div key={p.id} className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-5">
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+                        <div className="flex items-start gap-3">
+                          <div className="w-11 h-11 rounded-2xl bg-amber-50 border border-amber-200 text-amber-700 font-bold flex items-center justify-center text-sm shrink-0">
+                            {p.full_name?.substring(0, 2).toUpperCase() || 'CP'}
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-display font-bold text-base text-slate-900">{p.full_name}</h3>
+                              <span className="text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-300">
+                                {p.status}
+                              </span>
+                              {p.appeal_status === 'PENDING' && (
+                                <span className="text-[10px] font-mono font-extrabold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-900 border border-indigo-300 animate-pulse">
+                                  APPEAL PENDING
+                                </span>
+                              )}
+                            </div>
+                            <p className="text-xs text-slate-500 font-mono mt-0.5">
+                              {p.email} • Code: {p.referral_code} • ID: {p.partner_id || p.id}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => handleReinstatePartner(p.id)}
+                            className="py-2 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition shadow cursor-pointer"
+                          >
+                            <UserCheck className="w-4 h-4" /> Approve Appeal & Reinstate
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-1.5">
+                          <span className="text-[10px] font-mono font-bold text-amber-800 uppercase tracking-wider block">Suspension Reason & Admin Note</span>
+                          <div className="font-semibold text-slate-900 text-xs">{p.suspension_reason || 'Policy & Compliance Verification Review'}</div>
+                          <div className="text-slate-600 text-xs italic bg-white p-2.5 rounded-xl border border-slate-200">
+                            "{p.suspension_note || 'Administrative review initiated.'}"
+                          </div>
+                          {p.suspended_at && (
+                            <span className="text-[10.5px] font-mono text-slate-400 block pt-1">
+                              Suspended on: {new Date(p.suspended_at).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="bg-indigo-50/60 p-4 rounded-2xl border border-indigo-200/80 space-y-1.5">
+                          <span className="text-[10px] font-mono font-bold text-indigo-900 uppercase tracking-wider block">Partner Appeal Message</span>
+                          {p.appeal_message ? (
+                            <>
+                              <div className="text-slate-800 text-xs font-sans bg-white p-3 rounded-xl border border-indigo-100 leading-relaxed">
+                                "{p.appeal_message}"
+                              </div>
+                              {p.appeal_requested_at && (
+                                <span className="text-[10.5px] font-mono text-indigo-700 block pt-1 font-semibold">
+                                  Appeal Submitted: {new Date(p.appeal_requested_at).toLocaleDateString()}
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <div className="text-slate-400 text-xs italic bg-white/60 p-3 rounded-xl border border-indigo-100">
+                              No appeal message written yet by partner.
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* CREATOR APPLICATION INSPECTION SLIDE-OVER DRAWER */}
         {selectedPartnerDetail && (
           <div className="fixed inset-0 z-50 flex justify-end bg-slate-950/80 backdrop-blur-sm animate-fade-in">
@@ -1262,6 +1381,25 @@ export default function AdminPartnersPage() {
                       >
                         <AlertTriangle className="w-3.5 h-3.5 text-amber-700" /> Suspend Account
                       </button>
+                    </div>
+                  )}
+
+                  {/* SUBMITTED PARTNER APPEAL MESSAGE IN DRAWER */}
+                  {selectedPartnerDetail.appeal_message && (
+                    <div className="bg-indigo-50 border border-indigo-200 p-4 rounded-2xl space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] uppercase font-bold text-indigo-900 block flex items-center gap-1">
+                          <MessageSquare className="w-3.5 h-3.5 text-indigo-700" /> Submitted Partner Review Appeal
+                        </span>
+                        {selectedPartnerDetail.appeal_requested_at && (
+                          <span className="text-[10.5px] font-mono text-indigo-700 font-bold">
+                            {new Date(selectedPartnerDetail.appeal_requested_at).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-slate-800 bg-white p-3 rounded-xl border border-indigo-100 font-sans leading-relaxed">
+                        "{selectedPartnerDetail.appeal_message}"
+                      </p>
                     </div>
                   )}
 
