@@ -92,9 +92,9 @@ export const PartnerWorkspaceLayout: React.FC<PartnerWorkspaceLayoutProps> = ({
   }, [referralCode]);
 
   const navItems: { id: WorkspaceTab; label: string; icon: any; badge?: string; tooltip?: string }[] = [
-    { id: 'launchpad', label: 'Start Here (Launchpad)', icon: Compass, badge: 'Start', tooltip: 'Complete 4-step partner onboarding flow' },
+    { id: 'launchpad', label: 'Start Here', icon: Compass, badge: 'Start', tooltip: 'Complete 4-step partner onboarding flow' },
     { id: 'overview', label: 'Overview', icon: LayoutDashboard, tooltip: 'Live registrations & performance metrics' },
-    { id: 'roadmap', label: 'Video Campaign Roadmap', icon: Video, badge: 'Aug 30', tooltip: '8 ready-to-post video blueprints & AI prompts' },
+    { id: 'roadmap', label: 'Roadmap', icon: Video, badge: 'Aug 30', tooltip: '8 ready-to-post video blueprints & AI prompts' },
     { id: 'inbox', label: 'Inbox', icon: Inbox, tooltip: 'Official announcements & campaign notices' },
     { id: 'missions', label: 'CNTS Missions', icon: Target, tooltip: 'Bonus reward challenges & milestones' },
     { id: 'referral', label: 'Referral & Media Kit', icon: Share2, tooltip: 'Banners, posters & official referral link' },

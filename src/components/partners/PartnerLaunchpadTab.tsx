@@ -93,7 +93,7 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
         <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-slate-100 pb-5">
           <div className="space-y-1.5 max-w-xl">
             <div className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-black px-3.5 py-1 rounded-full border border-indigo-100">
-              <Rocket className="w-3.5 h-3.5 text-indigo-600" /> Start Here • Partner Launchpad
+              <Rocket className="w-3.5 h-3.5 text-indigo-600" /> Start Here
             </div>
             <h1 className="font-display text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-tight">
               Welcome to Courage Partner Platform, {partnerName}! 🚀
