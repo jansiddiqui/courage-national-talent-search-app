@@ -87,10 +87,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized partner session.' }, { status: 401 });
     }
 
-    // Check if partner account is suspended
+    // Check if partner account is approved (block PENDING or SUSPENDED partners)
     const { data: partnerCheck } = await dbFetch('GET', `partners?id=eq.${encodeURIComponent(partnerId)}&select=status&limit=1`);
-    if (Array.isArray(partnerCheck) && partnerCheck[0]?.status === 'SUSPENDED') {
-      return NextResponse.json({ error: 'Your partner account is currently suspended. Restricted operations disabled.' }, { status: 403 });
+    if (Array.isArray(partnerCheck) && partnerCheck[0]?.status !== 'APPROVED') {
+      return NextResponse.json({ error: 'Your partner account is under review or restricted. Operations disabled.' }, { status: 403 });
     }
 
     const { amount } = await request.json();

@@ -75,16 +75,14 @@ export const PartnersPlatform: React.FC<PartnersPlatformProps> = ({
       referralCode: data.referralCode || 'CNTSJN'
     };
     setApplicantData(finalData);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cnts_partner_session', JSON.stringify(finalData));
-    }
+    // Do NOT store an authenticated session for PENDING applicants
     setIsApprovalModalOpen(true);
   };
 
   const handleEnterWorkspaceFromApproval = () => {
     setIsApprovalModalOpen(false);
-    const slug = (applicantData?.customSlug || applicantData?.referralCode || 'partner').toLowerCase();
-    router.push(`/partners/${slug}`);
+    // Redirect to Courage Library home page per application flow rules
+    router.push('/');
   };
 
   return (

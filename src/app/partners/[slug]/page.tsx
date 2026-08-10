@@ -18,6 +18,7 @@ import { PartnerInbox } from '@/components/partners/PartnerInbox';
 import { ContentRoadmapTab } from '@/components/partners/ContentRoadmapTab';
 import { PartnerLaunchpadTab } from '@/components/partners/PartnerLaunchpadTab';
 import { PartnerSuspensionScreen } from '@/components/partners/PartnerSuspensionScreen';
+import { PartnerPendingScreen } from '@/components/partners/PartnerPendingScreen';
 import { 
   Lock, 
   Sparkles, 
@@ -45,11 +46,12 @@ export default function DedicatedPartnerWorkspacePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isRegisteredCode, setIsRegisteredCode] = useState(false);
   const [partnerData, setPartnerData] = useState<any>(null);
+  const [pendingPartnerData, setPendingPartnerData] = useState<any>(null);
   const [copiedUrl, setCopiedUrl] = useState(false);
 
   const verifyPartnerAccess = async () => {
     try {
-      // 1. Check if user is authenticated as a partner
+      // 1. Check if user is authenticated as a partner via signed JWT session
       const res = await fetch('/api/partner/session');
       const data = await res.json();
 
@@ -61,24 +63,7 @@ export default function DedicatedPartnerWorkspacePage() {
         return;
       }
 
-      // 2. Check local session storage fallback
-      const savedPartner = localStorage.getItem('cnts_partner_session');
-      if (savedPartner) {
-        try {
-          const parsed = JSON.parse(savedPartner);
-          if (parsed && (parsed.customSlug || parsed.referralCode || parsed.fullName)) {
-            setPartnerData(parsed);
-            setIsAuthenticated(true);
-            setIsRegisteredCode(true);
-            setLoading(false);
-            return;
-          }
-        } catch (e) {
-          // ignore
-        }
-      }
-
-      // 3. Unauthenticated visitor — Check if this slug/code exists as a registered partner in system
+      // 2. Unauthenticated visitor — Check if this slug/code exists as a registered partner in system
       const cleanSlug = slug.trim().toLowerCase();
       const knownRegisteredSlugs = ['cntsjn', 'janmohammad', 'partner', 'demo'];
 
@@ -90,6 +75,15 @@ export default function DedicatedPartnerWorkspacePage() {
           const statsData = await statsRes.json();
           if (statsData.success && statsData.status !== 'UNREGISTERED') {
             setIsRegisteredCode(true);
+            if (statsData.status === 'PENDING') {
+              setPendingPartnerData({
+                partnerId: statsData.partnerId || `CP-2026-${cleanSlug}`,
+                fullName: statsData.fullName || 'Partner Applicant',
+                referralCode: cleanSlug.toUpperCase(),
+                customSlug: cleanSlug,
+                status: 'PENDING'
+              });
+            }
           } else {
             setIsRegisteredCode(false);
           }
@@ -116,6 +110,16 @@ export default function DedicatedPartnerWorkspacePage() {
         <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin"></div>
         <p className="text-xs font-mono font-bold text-slate-500 uppercase tracking-wider">Verifying Partner Handle Authentication...</p>
       </div>
+    );
+  }
+
+  // PENDING PARTNER ACCOUNT INTERCEPTOR (AUTHENTICATED SESSION OR PUBLIC PENDING SLUG)
+  if ((isAuthenticated && partnerData?.status === 'PENDING') || pendingPartnerData) {
+    return (
+      <PartnerPendingScreen 
+        partnerData={partnerData || pendingPartnerData} 
+        onRefresh={verifyPartnerAccess} 
+      />
     );
   }
 

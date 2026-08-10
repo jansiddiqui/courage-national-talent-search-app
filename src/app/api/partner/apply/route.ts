@@ -257,7 +257,7 @@ export async function POST(request: Request) {
       honorariumRate: newPartnerRecord?.honorarium_rate || 25,
     };
 
-    // Send confirmation email
+    // Send confirmation email (pre-approval status notification)
     try {
       const emailService = new EmailService();
       const emailHtml = getPartnerApplicationTemplate({
@@ -266,41 +266,18 @@ export async function POST(request: Request) {
         referralCode: partnerResponseData.referralCode,
         partnerId: partnerResponseData.partnerId,
         customSlug: partnerResponseData.customSlug,
-        audienceScale: partnerResponseData.audienceScale,
-        honorariumRate: partnerResponseData.honorariumRate,
       });
       await emailService.sendEmail(
         partnerResponseData.email,
-        `🎉 Courage Partner Application Received (${partnerResponseData.referralCode})`,
+        `We've received your Courage Partner application`,
         emailHtml
       );
     } catch (emailErr) {
-      console.error('[Partner Email Error]:', emailErr);
+      console.error('[Partner Confirmation Email Error]:', emailErr);
     }
 
-    // Sign session cookie
-    const token = await signSession(
-      {
-        partnerDbId: partnerResponseData.id,
-        email: partnerResponseData.email,
-        fullName: partnerResponseData.fullName,
-        referralCode: partnerResponseData.referralCode,
-        status: partnerResponseData.status,
-        role: 'PARTNER',
-        exp: Date.now() + 7 * 24 * 60 * 60 * 1000,
-      },
-      JWT_SECRET
-    );
-
-    const cookieStore = await cookies();
-    cookieStore.set('cnts_partner_session', token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60,
-      path: '/',
-    });
-
+    // Do NOT create an authenticated partner session for PENDING applicants.
+    // The applicant will log in via OTP after admin approval.
     return NextResponse.json({
       success: true,
       partner: partnerResponseData,

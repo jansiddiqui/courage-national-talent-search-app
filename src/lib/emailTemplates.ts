@@ -530,43 +530,140 @@ export function getPartnerApplicationTemplate(data: {
   email: string;
   referralCode: string;
   partnerId: string;
-  customSlug: string;
-  audienceScale?: string;
+  customSlug?: string;
+}): string {
+  const dateStr = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const content = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
+      
+      <!-- HEADER HERO BADGE -->
+      <div style="background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #312E81;">
+        <div style="display: inline-block; background-color: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
+          COURAGE PARTNER PROGRAM
+        </div>
+        <h1 style="margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff;">
+          Application Received ✓
+        </h1>
+        <p style="margin: 0; color: #C7D2FE; font-size: 13px; font-weight: 500;">
+          Your Courage Partner application is under review.
+        </p>
+      </div>
+
+      <!-- SALUTATION & RECEIPT ACKNOWLEDGMENT -->
+      <p style="font-size: 15px; line-height: 1.5; color: #0F172A; margin: 0 0 12px;">Hello <strong>${data.fullName}</strong>,</p>
+      <p style="font-size: 13.5px; line-height: 1.6; color: #334155; margin: 0 0 20px;">
+        Thank you for applying to become a <strong>Courage Partner</strong>. We've successfully received your application and it is now under review by our compliance team.
+      </p>
+
+      <!-- APPLICATION DETAILS BOX -->
+      <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 14px; padding: 18px; margin: 20px 0;">
+        <div style="font-size: 11px; font-weight: 900; color: #0F172A; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 14px;">
+          📋 APPLICATION DETAILS
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Application Reference</div>
+          <div style="font-size: 14px; font-weight: 800; color: #0F172A; font-family: monospace; margin-top: 2px;">${data.partnerId}</div>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Submitted Date</div>
+          <div style="font-size: 13.5px; font-weight: 700; color: #0F172A; margin-top: 2px;">${dateStr}</div>
+        </div>
+
+        <div>
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Current Status</div>
+          <span style="display: inline-block; background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800;">
+            UNDER REVIEW
+          </span>
+        </div>
+      </div>
+
+      <!-- WHAT HAPPENS NEXT -->
+      <div style="background-color: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #2563EB; border-radius: 12px; padding: 16px; margin: 24px 0;">
+        <h4 style="margin: 0 0 12px; color: #1E40AF; font-size: 12.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">
+          WHAT HAPPENS NEXT
+        </h4>
+        
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
+          <strong>01 Application Review:</strong><br />
+          Our team will review the information and credentials you submitted.
+        </div>
+
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
+          <strong>02 Approval Decision:</strong><br />
+          If your application is approved, we'll send you an official approval confirmation email.
+        </div>
+
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55;">
+          <strong>03 Partner Access:</strong><br />
+          After approval, you'll be able to sign in and access your Courage Partner Dashboard.
+        </div>
+      </div>
+
+      <p style="font-size: 13px; color: #334155; line-height: 1.6; margin: 20px 0 15px;">
+        No action is required from you right now. We'll contact you by email when there is an update.
+      </p>
+
+      <!-- CTA BUTTON -->
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${WEBSITE_URL}" style="display: inline-block; background-color: #1E40AF; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 800; font-size: 13.5px; letter-spacing: 0.5px;">
+          Visit Courage Library
+        </a>
+      </div>
+
+      <!-- SUPPORT FOOTER -->
+      <p style="font-size: 12px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
+        If you have questions, contact Partner Support at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
+      </p>
+    </div>
+  `;
+  return wrapLayout(content, `Your application is now under review. We'll email you when there's an update.`);
+}
+
+export function getPartnerApprovalTemplate(data: {
+  fullName: string;
+  email: string;
+  referralCode: string;
+  partnerId: string;
+  customSlug?: string;
   honorariumRate?: number;
 }): string {
-  const workspaceUrl = `https://thecouragelibrary.com/partners/${data.customSlug}`;
+  const workspaceUrl = `https://thecouragelibrary.com/partners/${data.customSlug || 'partner'}`;
+  const loginUrl = `https://thecouragelibrary.com/partners/apply?view=login`;
   const referralUrl = `https://thecouragelibrary.com/register?ref=${data.referralCode}`;
 
   const content = `
-    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-border-box;">
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
       
       <!-- HERO HEADER CARD -->
       <div style="background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #312E81;">
-        <div style="display: inline-block; background-color: rgba(245, 158, 11, 0.2); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
-          FOUNDING CREATOR COHORT • CNTS 2026
+        <div style="display: inline-block; background-color: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
+          APPLICATION APPROVED • OFFICIAL PARTNER
         </div>
-        <h1 style="margin: 0 0 6px; font-size: 19px; font-weight: 900; line-height: 1.3; color: #ffffff; word-break: normal; white-space: normal; overflow-wrap: normal;">
-          Application Received & Registered!
+        <h1 style="margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff;">
+          Welcome to the Courage Partner Program! 🎉
         </h1>
-        <p style="margin: 0; color: #C7D2FE; font-size: 13px; font-weight: 500; line-height: 1.4;">
-          Welcome to the Official Courage Partner Creator Ecosystem.
+        <p style="margin: 0; color: #C7D2FE; font-size: 13px; font-weight: 500;">
+          Your partner application has been verified and approved.
         </p>
       </div>
 
       <!-- PERSONALIZED SALUTATION -->
       <p style="font-size: 15px; line-height: 1.5; color: #0F172A; margin: 0 0 10px;">Dear <strong>${data.fullName}</strong>,</p>
       <p style="font-size: 13.5px; line-height: 1.55; color: #334155; margin: 0 0 20px;">
-        Thank you for applying to join the <strong>Courage Partner Program</strong> for the Courage National Talent Search (CNTS) 2026. Your application has been logged and queued for 24-hour verification by our Courage Admin team.
+        Congratulations! Your application to become an official <strong>Courage Partner</strong> for the Courage National Talent Search (CNTS) 2026 has been approved by our team.
       </p>
 
-      <!-- STACKED CREDENTIAL PASS ITEMS FOR 100% PERFECT MOBILE RENDERING -->
+      <!-- OFFICIAL PARTNER CREDENTIALS CARD -->
       <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 14px; padding: 18px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
         <div style="font-size: 12px; font-weight: 900; color: #0F172A; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 14px;">
-          🛡️ OFFICIAL CREATOR CREDENTIAL PASS
+          🛡️ OFFICIAL PARTNER CREDENTIAL PASS
         </div>
 
         <div style="margin-bottom: 12px;">
-          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Creator Name</div>
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Partner Name</div>
           <div style="font-size: 14px; font-weight: 800; color: #0F172A; margin-top: 2px;">${data.fullName}</div>
         </div>
 
@@ -576,15 +673,8 @@ export function getPartnerApplicationTemplate(data: {
         </div>
 
         <div style="margin-bottom: 12px;">
-          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Referral Code</div>
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Official Referral Code</div>
           <div style="font-size: 17px; font-weight: 900; color: #4F46E5; font-family: monospace; letter-spacing: 1px; margin-top: 2px;">${data.referralCode}</div>
-        </div>
-
-        <div style="margin-bottom: 12px;">
-          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px;">Dedicated Workspace URL</div>
-          <div style="font-size: 12px; font-weight: 700; color: #2563EB; word-break: break-all; margin-top: 2px;">
-            <a href="${workspaceUrl}" style="color: #2563EB; text-decoration: underline;">${workspaceUrl}</a>
-          </div>
         </div>
 
         <div style="margin-bottom: 12px;">
@@ -593,49 +683,50 @@ export function getPartnerApplicationTemplate(data: {
         </div>
 
         <div>
-          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Verification Status</div>
-          <span style="display: inline-block; background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800;">
-            PENDING ADMIN REVIEW (24-Hour Verification)
+          <div style="font-size: 10.5px; font-weight: 800; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Account Status</div>
+          <span style="display: inline-block; background-color: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800;">
+            ACTIVE & APPROVED
           </span>
         </div>
       </div>
 
       <!-- MAIN CTA BUTTON -->
       <div style="text-align: center; margin: 24px 0;">
-        <a href="${workspaceUrl}" style="display: block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); color: #ffffff; padding: 14px 20px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-align: center;">
-          OPEN CREATOR OS WORKSPACE &rarr;
+        <a href="${loginUrl}" style="display: block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); color: #ffffff; padding: 14px 20px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-align: center;">
+          SIGN IN TO PARTNER DASHBOARD &rarr;
         </a>
       </div>
 
-      <!-- 3-STEP MOBILIZATION GUIDE CARDS -->
+      <!-- QUICK START STEPS -->
       <div style="background-color: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #2563EB; border-radius: 12px; padding: 16px; margin: 24px 0;">
         <h4 style="margin: 0 0 10px; color: #1E40AF; font-size: 13.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">
-          🚀 Quick-Start Creator Mobilization Guide:
+          🚀 Next Steps to Start Earning:
         </h4>
         
         <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
-          <strong>1. Share Your Referral Link:</strong><br />
-          Direct Class 5-8 students to register via <a href="${referralUrl}" style="color: #2563EB; font-weight: bold; word-break: break-all;">${referralUrl}</a>.
+          <strong>1. Sign in to your workspace:</strong><br />
+          Use your registered email or phone to log in at <a href="${loginUrl}" style="color: #2563EB; font-weight: bold;">${loginUrl}</a>.
         </div>
 
         <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
-          <strong>2. Real-Time Analytics Tracking:</strong><br />
-          View live candidate registrations and accrued honorarium balances inside your workspace.
+          <strong>2. Share your referral link:</strong><br />
+          Invite students to register using link <a href="${referralUrl}" style="color: #2563EB; font-weight: bold; word-break: break-all;">${referralUrl}</a>.
         </div>
 
         <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55;">
           <strong>3. Weekly Monday Settlements:</strong><br />
-          Accumulated honorarium payouts are automatically disbursed every Monday directly to your registered UPI ID.
+          Accumulated honoraria are automatically paid out every Monday to your registered account.
         </div>
       </div>
 
       <!-- SUPPORT FOOTER -->
       <p style="font-size: 12.5px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
-        Have questions or need custom promo banners? Reach out to our Partner Desk at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
+        Have questions? Contact our Partner Desk at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
       </p>
     </div>
   `;
-  return wrapLayout(content, `Hi ${data.fullName}, your Courage Partner application (Code: ${data.referralCode}) has been received and logged for 24h review.`);
+  return wrapLayout(content, `Welcome to the Courage Partner Program. Your application has been approved!`);
 }
+
 
 

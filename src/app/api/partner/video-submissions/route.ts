@@ -71,8 +71,8 @@ export async function POST(request: Request) {
 
     if (sessionPartnerId) {
       const { data: partnerCheck } = await dbFetch('GET', `partners?id=eq.${encodeURIComponent(sessionPartnerId)}&select=status&limit=1`);
-      if (Array.isArray(partnerCheck) && partnerCheck[0]?.status === 'SUSPENDED') {
-        return NextResponse.json({ error: 'Your partner account is currently suspended. Restricted operations disabled.' }, { status: 403 });
+      if (Array.isArray(partnerCheck) && partnerCheck[0]?.status !== 'APPROVED') {
+        return NextResponse.json({ error: 'Your partner account is under review or restricted. Restricted operations disabled.' }, { status: 403 });
       }
     }
 

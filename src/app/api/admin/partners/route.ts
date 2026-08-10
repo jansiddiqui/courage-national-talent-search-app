@@ -3,6 +3,9 @@ import { cookies } from 'next/headers';
 import { verifySession } from '@/lib/sessionHelper';
 import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 
+import { EmailService } from '@/services/emailService';
+import { getPartnerApprovalTemplate } from '@/lib/emailTemplates';
+
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
 export async function GET(request: Request) {
@@ -92,11 +95,30 @@ export async function PATCH(request: Request) {
     }
 
     if (hasSupabaseAdminConfig) {
+      // Check existing status to prevent duplicate approval emails
+      let isFirstTimeApproval = false;
+      try {
+        const { data: existingPartner } = await (supabaseAdmin as any)
+          .from('partners')
+          .select('id, status, approval_email_sent')
+          .eq('id', partnerId)
+          .single();
+
+        if (existingPartner && existingPartner.status === 'PENDING' && status?.toUpperCase() === 'APPROVED') {
+          isFirstTimeApproval = !existingPartner.approval_email_sent;
+        }
+      } catch (e) {
+        // Ignore fetch error, fallback to status check
+      }
+
       const updateData: any = {};
       if (status) {
         updateData.status = status.toUpperCase();
         if (status.toUpperCase() === 'APPROVED') {
           updateData.approved_at = new Date().toISOString();
+          if (isFirstTimeApproval) {
+            updateData.approval_email_sent = true;
+          }
         }
       }
       if (typeof honorariumRate === 'number' && honorariumRate > 0) {
@@ -117,8 +139,9 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
-      // If approved or rate changed, notify partner in inbox
+      // If approved, notify partner in inbox AND send approval email
       if (updated && status && status.toUpperCase() === 'APPROVED') {
+        // 1. In-app Inbox Notification
         await (supabaseAdmin as any)
           .from('partner_notifications')
           .insert({
@@ -131,6 +154,28 @@ export async function PATCH(request: Request) {
             category: 'System',
             is_read: false,
           });
+
+        // 2. Approval Email (only on first-time approval to prevent duplicates)
+        if (isFirstTimeApproval && updated.email) {
+          try {
+            const emailService = new EmailService();
+            const approvalHtml = getPartnerApprovalTemplate({
+              fullName: updated.full_name,
+              email: updated.email,
+              referralCode: updated.referral_code,
+              partnerId: updated.partner_id || `CP-2026-${updated.id}`,
+              customSlug: updated.custom_slug,
+              honorariumRate: updated.honorarium_rate,
+            });
+            await emailService.sendEmail(
+              updated.email,
+              'Your Courage Partner application has been approved',
+              approvalHtml
+            );
+          } catch (emailErr) {
+            console.error('[Partner Approval Email Error - Non Blocking]:', emailErr);
+          }
+        }
       }
 
       return NextResponse.json({
