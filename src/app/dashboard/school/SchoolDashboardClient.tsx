@@ -29,7 +29,9 @@ import {
   Settings,
   HelpCircle,
   FileDown,
-  RefreshCw
+  RefreshCw,
+  Key,
+  Lock
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import PhotoUploader from "@/components/registration/PhotoUploader";
@@ -495,6 +497,63 @@ export default function SchoolDashboardClient({
     }
   };
 
+  // Change PIN Modal State
+  const [showChangePinModal, setShowChangePinModal] = useState(false);
+  const [currentPinInput, setCurrentPinInput] = useState("");
+  const [newPinInput, setNewPinInput] = useState("");
+  const [confirmPinInput, setConfirmPinInput] = useState("");
+  const [changingPin, setChangingPin] = useState(false);
+  const [changePinError, setChangePinError] = useState("");
+  const [changePinSuccess, setChangePinSuccess] = useState("");
+
+  const handleChangePinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setChangePinError("");
+    setChangePinSuccess("");
+
+    if (!currentPinInput.trim() || !newPinInput.trim()) {
+      setChangePinError("All PIN fields are required.");
+      return;
+    }
+
+    if (newPinInput.trim().length < 4) {
+      setChangePinError("New PIN must be at least 4 digits.");
+      return;
+    }
+
+    if (newPinInput.trim() !== confirmPinInput.trim()) {
+      setChangePinError("New PIN and Confirm PIN do not match.");
+      return;
+    }
+
+    setChangingPin(true);
+    try {
+      const res = await fetch("/api/schools/dashboard-actions", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "change_pin",
+          currentPin: currentPinInput.trim(),
+          newPin: newPinInput.trim(),
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setChangePinSuccess("Login PIN updated successfully! Use your new PIN for future logins.");
+        setCurrentPinInput("");
+        setNewPinInput("");
+        setConfirmPinInput("");
+      } else {
+        setChangePinError(data.message || "Failed to update PIN.");
+      }
+    } catch {
+      setChangePinError("Network error. Please try again.");
+    } finally {
+      setChangingPin(false);
+    }
+  };
+
   const handlePhotoUploaded = (regId: string) => {
     setStudentList((prev: any[]) =>
       prev.map((r) =>
@@ -529,6 +588,97 @@ export default function SchoolDashboardClient({
           />
         )}
 
+        {/* Change Login PIN Modal */}
+        {showChangePinModal && (
+          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+            <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <Key size={18} className="text-amber-600" /> Update School Dashboard PIN
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Update access PIN for <span className="font-semibold text-slate-700">{school.name}</span>
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowChangePinModal(false)}
+                  className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <form onSubmit={handleChangePinSubmit} className="p-6 space-y-4">
+                {changePinError && (
+                  <div className="p-3 bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-100 flex items-center gap-1.5">
+                    <AlertCircle size={16} className="shrink-0" /> {changePinError}
+                  </div>
+                )}
+
+                {changePinSuccess && (
+                  <div className="p-3 bg-emerald-50 text-emerald-800 text-xs font-semibold rounded-xl border border-emerald-200 flex items-center gap-1.5">
+                    <CheckCircle size={16} className="shrink-0 text-emerald-600" /> {changePinSuccess}
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Current PIN *</label>
+                  <input
+                    required
+                    type="password"
+                    value={currentPinInput}
+                    onChange={(e) => setCurrentPinInput(e.target.value)}
+                    placeholder="Enter current PIN"
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">New PIN *</label>
+                  <input
+                    required
+                    type="password"
+                    value={newPinInput}
+                    onChange={(e) => setNewPinInput(e.target.value)}
+                    placeholder="Enter new 4+ digit PIN"
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Confirm New PIN *</label>
+                  <input
+                    required
+                    type="password"
+                    value={confirmPinInput}
+                    onChange={(e) => setConfirmPinInput(e.target.value)}
+                    placeholder="Re-enter new PIN"
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                  />
+                </div>
+
+                <div className="pt-3 flex gap-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setShowChangePinModal(false)}
+                    className="flex-1 py-2.5 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-bold transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={changingPin || !currentPinInput.trim() || !newPinInput.trim()}
+                    className="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors shadow-sm"
+                  >
+                    {changingPin ? "Updating PIN…" : "Update Login PIN"}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
         {/* School Header */}
         <div className="bg-white rounded-3xl p-6 md:p-8 border border-slate-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
           <div className="flex items-center gap-4">
@@ -542,16 +692,41 @@ export default function SchoolDashboardClient({
               <p className="text-slate-500 font-medium text-sm mt-1">
                 {school.city} • Code: <span className="font-semibold text-slate-700">{school.school_code}</span>
               </p>
+              <div className="mt-2.5">
+                {school.profile_status === "PUBLISHED" && school.slug ? (
+                  <a
+                    href={`/schools/${school.slug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/80 rounded-xl text-xs font-bold transition-all shadow-2xs"
+                  >
+                    <Eye size={13} /> View Public School Page ↗
+                  </a>
+                ) : (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500">
+                    Public Profile: Not Published Yet
+                  </span>
+                )}
+              </div>
             </div>
           </div>
-          <div className="flex gap-4 w-full md:w-auto">
-            <div className="bg-slate-50 px-6 py-4 rounded-2xl border border-slate-100 text-center flex-1 md:flex-none">
-              <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-1">Total Quota</p>
-              <p className="text-2xl font-bold text-slate-900">{dashboardData.config?.quota || school.quota}</p>
-            </div>
-            <div className="bg-blue-50 px-6 py-4 rounded-2xl border border-blue-100 text-center flex-1 md:flex-none">
-              <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wide mb-1">Available Quota</p>
-              <p className="text-2xl font-bold text-blue-700">{remainingQuota}</p>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full md:w-auto">
+            <button
+              onClick={() => { setShowChangePinModal(true); setChangePinError(""); setChangePinSuccess(""); }}
+              className="inline-flex items-center justify-center gap-1.5 px-4 py-3 bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-200 rounded-2xl text-xs font-bold transition-all shadow-2xs shrink-0 cursor-pointer"
+            >
+              <Key size={14} className="text-amber-600" /> Change Login PIN
+            </button>
+
+            <div className="flex gap-3">
+              <div className="bg-slate-50 px-5 py-3 rounded-2xl border border-slate-100 text-center flex-1 sm:flex-none">
+                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-wide mb-0.5">Total Quota</p>
+                <p className="text-xl font-bold text-slate-900">{dashboardData.config?.quota || school.quota}</p>
+              </div>
+              <div className="bg-blue-50 px-5 py-3 rounded-2xl border border-blue-100 text-center flex-1 sm:flex-none">
+                <p className="text-[10px] font-bold text-blue-600 uppercase tracking-wide mb-0.5">Available Quota</p>
+                <p className="text-xl font-bold text-blue-700">{remainingQuota}</p>
+              </div>
             </div>
           </div>
         </div>

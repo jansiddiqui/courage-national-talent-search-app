@@ -64,6 +64,25 @@ export async function POST(request: Request) {
       });
     }
 
+    // Block PENDING and SUSPENDED partners before issuing any session
+    const partnerStatus: string = partner.status || 'PENDING';
+    if (partnerStatus === 'PENDING') {
+      return NextResponse.json({
+        success: false,
+        isRegistered: true,
+        accountStatus: 'PENDING',
+        error: 'Your application is still under review. You will be notified by email once your account is approved.',
+      }, { status: 403 });
+    }
+    if (partnerStatus === 'SUSPENDED') {
+      return NextResponse.json({
+        success: false,
+        isRegistered: true,
+        accountStatus: 'SUSPENDED',
+        error: 'Your partner account has been suspended. Please check your email for details or contact support.',
+      }, { status: 403 });
+    }
+
     // Build partner data
     const partnerData = {
       id: partner.id,
@@ -115,6 +134,7 @@ export async function POST(request: Request) {
       isRegistered: true,
       partner: partnerData,
     });
+
 
   } catch (error) {
     console.error('[Verify OTP Error]:', error);

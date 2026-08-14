@@ -4,6 +4,7 @@ import { SchoolAuthService } from "@/domains/school/SchoolAuthService";
 import { SchoolLedgerService } from "@/domains/school/SchoolLedgerService";
 import { SchoolDocumentService } from "@/domains/school/SchoolDocumentService";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
+import bcrypt from "bcryptjs";
 
 const db = supabaseAdmin as any;
 
@@ -100,6 +101,57 @@ export async function POST(request: Request) {
 
     const body = await request.json();
     const { action } = body;
+
+    if (action === "change_pin") {
+      const { currentPin, newPin } = body;
+      if (!currentPin || !newPin) {
+        return NextResponse.json({ success: false, message: "Current PIN and New PIN are required" }, { status: 400 });
+      }
+
+      if (newPin.trim().length < 4) {
+        return NextResponse.json({ success: false, message: "New PIN must be at least 4 digits" }, { status: 400 });
+      }
+
+      if (!hasSupabaseAdminConfig) {
+        return NextResponse.json({ success: true, message: "Sandbox PIN update success" });
+      }
+
+      const { data: school, error: sErr } = await db
+        .from("schools")
+        .select("id, pin")
+        .eq("id", session.schoolId)
+        .maybeSingle();
+
+      if (sErr || !school) {
+        return NextResponse.json({ success: false, message: "School record not found" }, { status: 404 });
+      }
+
+      const storedPin = school.pin || "";
+      const isBcryptHash = storedPin.startsWith("$2a$") || storedPin.startsWith("$2b$") || storedPin.startsWith("$2y$");
+
+      let isValid = false;
+      if (isBcryptHash) {
+        isValid = await bcrypt.compare(currentPin.trim(), storedPin);
+      } else {
+        isValid = (currentPin.trim() === storedPin);
+      }
+
+      if (!isValid) {
+        return NextResponse.json({ success: false, message: "Incorrect current PIN" }, { status: 401 });
+      }
+
+      const hashedNewPin = await bcrypt.hash(newPin.trim(), 12);
+      const { error: uErr } = await db
+        .from("schools")
+        .update({ pin: hashedNewPin })
+        .eq("id", session.schoolId);
+
+      if (uErr) {
+        return NextResponse.json({ success: false, message: uErr.message }, { status: 500 });
+      }
+
+      return NextResponse.json({ success: true, message: "Login PIN updated successfully" });
+    }
 
     if (action === "acknowledge") {
       const { announcementId } = body;

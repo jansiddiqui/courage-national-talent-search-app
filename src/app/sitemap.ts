@@ -1,7 +1,8 @@
 import { MetadataRoute } from "next";
 import { getAllBlogPosts } from "@/lib/blog";
+import { getAllPublishedSchoolSlugs } from "@/lib/schoolProfiles";
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://thecouragelibrary.com";
   const staticRoutes = [
     "",
@@ -57,5 +58,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
     console.error("Failed to read blog posts in sitemap generation", e);
   }
 
-  return [...staticSitemaps, ...postsSitemaps];
+  let schoolSitemaps: MetadataRoute.Sitemap = [];
+  try {
+    const schoolSlugs = await getAllPublishedSchoolSlugs();
+    schoolSitemaps = schoolSlugs.map((s) => ({
+      url: `${baseUrl}/schools/${s.slug}`,
+      lastModified: new Date(),
+      changeFrequency: "monthly" as const,
+      priority: 0.6,
+    }));
+  } catch (e) {
+    console.error("Failed to read school profiles in sitemap generation", e);
+  }
+
+  return [...staticSitemaps, ...postsSitemaps, ...schoolSitemaps];
 }

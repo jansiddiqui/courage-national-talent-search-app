@@ -55,7 +55,9 @@ export default async function SchoolDashboardPage() {
       city: "New Delhi",
       quota: 100,
       used_quota: 24,
-      sponsorship_mode: "FULL"
+      sponsorship_mode: "FULL",
+      slug: "courage-public-school-jaipur-rajasthan",
+      profile_status: "PUBLISHED"
     };
     registrations = Array(24).fill(null).map((_, i) => ({
       registration_id: `REG-${i}`,

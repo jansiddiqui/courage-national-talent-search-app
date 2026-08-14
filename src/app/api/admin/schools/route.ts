@@ -7,6 +7,8 @@ import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
 import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 import bcrypt from "bcryptjs";
 
+import { sendSchoolCredentialsNotification } from "@/services/schoolNotificationService";
+
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
 async function authenticateAndAuthorize(permissionKey: string) {
@@ -67,7 +69,7 @@ export async function POST(request: Request) {
   try {
     // Sandbox Check — bypass auth if DB is not configured
     if (!hasSupabaseAdminConfig) {
-      return NextResponse.json({ success: true, message: "Sandbox success" });
+      return NextResponse.json({ success: true, message: "Sandbox success", raw_pin: "1234" });
     }
 
     const session = await authenticateAndAuthorize("schools.edit");
@@ -84,12 +86,20 @@ export async function POST(request: Request) {
     const cleanPin = body.pin.trim();
     const hashedPin = await bcrypt.hash(cleanPin, 12);
 
+    const generatedSlug = body.slug
+      ? body.slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "")
+      : `${body.name}-${body.city}-${body.state || "india"}`
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, "-")
+          .replace(/(^-|-$)/g, "");
+
     const { data, error } = await (supabaseAdmin as any)
       .from("schools")
       .insert({
         school_code: body.school_code.trim().toUpperCase(),
         name: body.name,
         city: body.city,
+        state: body.state || null,
         board: body.board,
         school_type: body.school_type || "OTHER",
         coordinator_name: body.coordinator_name || "",
@@ -104,6 +114,10 @@ export async function POST(request: Request) {
         status: body.status || "ACTIVE",
         notes: body.notes || null,
         is_featured: body.is_featured || false,
+        slug: generatedSlug,
+        profile_status: body.profile_status || "DRAFT",
+        is_founding_school: body.is_founding_school || false,
+        public_description: body.public_description || null,
         created_by: session.id,
       })
       .select()
@@ -112,6 +126,23 @@ export async function POST(request: Request) {
     if (error) {
       console.error("[Schools API] Insert error:", error);
       return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+
+    // Automatically send credentials notification via Email & WhatsApp
+    let notificationResult = null;
+    try {
+      notificationResult = await sendSchoolCredentialsNotification({
+        schoolName: data.name,
+        schoolCode: data.school_code,
+        pin: cleanPin,
+        coordinatorName: data.coordinator_name,
+        coordinatorEmail: data.coordinator_email,
+        coordinatorMobile: data.coordinator_mobile,
+        quota: data.quota,
+        sponsorshipMode: data.sponsorship_mode,
+      });
+    } catch (notifErr) {
+      console.error("[Schools API] Automatic notification dispatch error:", notifErr);
     }
 
     await writeAuditEntry(supabaseAdmin, {
@@ -124,7 +155,12 @@ export async function POST(request: Request) {
       ipAddress: request.headers.get("x-forwarded-for") || "unknown"
     });
 
-    return NextResponse.json({ success: true, school: data });
+    return NextResponse.json({
+      success: true,
+      school: data,
+      raw_pin: cleanPin,
+      notification: notificationResult
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
@@ -143,23 +179,51 @@ export async function PUT(request: Request) {
     }
 
     const body = await request.json();
-    const { id, ...updates } = body;
+    const { id, notifyCoordinator, ...updates } = body;
 
     if (!id) {
       return NextResponse.json({ success: false, message: "Missing school ID" }, { status: 400 });
     }
 
-    if (updates.pin) {
-      updates.pin = await bcrypt.hash(updates.pin.trim(), 12);
+    let rawPinForNotification: string | null = null;
+    if (updates.pin && typeof updates.pin === "string") {
+      const pinStr = updates.pin.trim();
+      rawPinForNotification = pinStr;
+      updates.pin = await bcrypt.hash(pinStr, 12);
     }
 
-    const { error } = await (supabaseAdmin as any)
+    if (updates.slug) {
+      updates.slug = updates.slug.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    }
+
+    const { data: updatedSchool, error } = await (supabaseAdmin as any)
       .from("schools")
       .update(updates)
-      .eq("id", id);
+      .eq("id", id)
+      .select()
+      .single();
 
     if (error) {
       return NextResponse.json({ success: false, message: error.message }, { status: 500 });
+    }
+
+    // Trigger notification if explicit notify flag or PIN reset with notify is requested
+    let notificationResult = null;
+    if ((notifyCoordinator || updates.sendNotification) && updatedSchool) {
+      try {
+        notificationResult = await sendSchoolCredentialsNotification({
+          schoolName: updatedSchool.name,
+          schoolCode: updatedSchool.school_code,
+          pin: rawPinForNotification || "[Current PIN]",
+          coordinatorName: updatedSchool.coordinator_name,
+          coordinatorEmail: updatedSchool.coordinator_email,
+          coordinatorMobile: updatedSchool.coordinator_mobile,
+          quota: updatedSchool.quota,
+          sponsorshipMode: updatedSchool.sponsorship_mode,
+        });
+      } catch (notifErr) {
+        console.error("[Schools API] Notification dispatch on update failed:", notifErr);
+      }
     }
 
     await writeAuditEntry(supabaseAdmin, {
@@ -172,7 +236,13 @@ export async function PUT(request: Request) {
       ipAddress: request.headers.get("x-forwarded-for") || "unknown"
     });
 
-    return NextResponse.json({ success: true, message: "School updated" });
+    return NextResponse.json({
+      success: true,
+      message: "School updated",
+      school: updatedSchool,
+      raw_pin: rawPinForNotification,
+      notification: notificationResult
+    });
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }

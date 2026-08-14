@@ -4,7 +4,11 @@ import { verifySession } from '@/lib/sessionHelper';
 import { supabaseAdmin, hasSupabaseAdminConfig } from '@/lib/supabaseAdmin';
 
 import { EmailService } from '@/services/emailService';
-import { getPartnerApprovalTemplate } from '@/lib/emailTemplates';
+import { 
+  getPartnerApprovalTemplate, 
+  getPartnerSuspensionTemplate, 
+  getPartnerReinstatementTemplate 
+} from '@/lib/emailTemplates';
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
@@ -87,6 +91,20 @@ export async function GET(request: Request) {
 
 export async function PATCH(request: Request) {
   try {
+    // ── Admin authentication (must precede body parse) ──────────────────────
+    const cookieStore = await cookies();
+    const adminSessionCookie = cookieStore.get('cnts_session');
+
+    if (!adminSessionCookie || !adminSessionCookie.value) {
+      return NextResponse.json({ error: 'Unauthorized: admin session required.' }, { status: 401 });
+    }
+
+    const adminSession = await verifySession(adminSessionCookie.value, JWT_SECRET || 'admin-secret');
+    if (!adminSession || (adminSession.role !== 'ADMIN' && adminSession.role !== 'SUPER_ADMIN')) {
+      return NextResponse.json({ error: 'Forbidden: insufficient admin privileges.' }, { status: 403 });
+    }
+    // ────────────────────────────────────────────────────────────────────────
+
     const body = await request.json();
     const { partnerId, status, honorariumRate, tier, adminNote } = body;
 
@@ -95,8 +113,9 @@ export async function PATCH(request: Request) {
     }
 
     if (hasSupabaseAdminConfig) {
-      // Check existing status to prevent duplicate approval emails
-      let isFirstTimeApproval = false;
+      // Check existing status to determine exact lifecycle state transition
+      let previousStatus: string | null = null;
+      let approvalEmailSent = false;
       try {
         const { data: existingPartner } = await (supabaseAdmin as any)
           .from('partners')
@@ -104,12 +123,17 @@ export async function PATCH(request: Request) {
           .eq('id', partnerId)
           .single();
 
-        if (existingPartner && existingPartner.status === 'PENDING' && status?.toUpperCase() === 'APPROVED') {
-          isFirstTimeApproval = !existingPartner.approval_email_sent;
+        if (existingPartner) {
+          previousStatus = existingPartner.status;
+          approvalEmailSent = !!existingPartner.approval_email_sent;
         }
       } catch (e) {
         // Ignore fetch error, fallback to status check
       }
+
+      const isFirstTimeApproval = previousStatus === 'PENDING' && status?.toUpperCase() === 'APPROVED' && !approvalEmailSent;
+      const isReinstatement = previousStatus === 'SUSPENDED' && status?.toUpperCase() === 'APPROVED';
+      const isNewSuspension = previousStatus !== 'SUSPENDED' && status?.toUpperCase() === 'SUSPENDED';
 
       const updateData: any = {};
       if (status) {
@@ -139,26 +163,13 @@ export async function PATCH(request: Request) {
         return NextResponse.json({ error: error.message }, { status: 500 });
       }
 
-      // If approved, notify partner in inbox AND send approval email
-      if (updated && status && status.toUpperCase() === 'APPROVED') {
-        // 1. In-app Inbox Notification
-        await (supabaseAdmin as any)
-          .from('partner_notifications')
-          .insert({
-            partner_id: updated.id,
-            referral_code: updated.referral_code,
-            sender: 'Courage Verification Desk',
-            title: '🟢 Partner Application Approved!',
-            preview: 'Your official Courage Partner application has been verified and approved.',
-            full_body: `Congratulations ${updated.full_name}!\n\nYour application has been officially APPROVED by our verification team.\n\nYour referral code is ${updated.referral_code}.\nYour current honorarium rate is set to ₹${updated.honorarium_rate || 25} per verified student enrolment.\n\nYou can now start sharing your link and earning honoraria!`,
-            category: 'System',
-            is_read: false,
-          });
+      // Dispatch appropriate transactional email based on exact state transition
+      if (updated && updated.email) {
+        const emailService = new EmailService();
 
-        // 2. Approval Email (only on first-time approval to prevent duplicates)
-        if (isFirstTimeApproval && updated.email) {
+        // 1. FIRST-TIME APPROVAL EMAIL
+        if (isFirstTimeApproval) {
           try {
-            const emailService = new EmailService();
             const approvalHtml = getPartnerApprovalTemplate({
               fullName: updated.full_name,
               email: updated.email,
@@ -174,6 +185,49 @@ export async function PATCH(request: Request) {
             );
           } catch (emailErr) {
             console.error('[Partner Approval Email Error - Non Blocking]:', emailErr);
+          }
+        }
+
+        // 2. REINSTATEMENT EMAIL
+        else if (isReinstatement) {
+          try {
+            const reinstatementHtml = getPartnerReinstatementTemplate({
+              fullName: updated.full_name || 'Partner',
+              email: updated.email,
+              partnerId: updated.partner_id || `CP-2026-${updated.id}`,
+              reinstatedAt: new Date().toISOString(),
+              note: adminNote || '',
+              customSlug: updated.custom_slug,
+            });
+            await emailService.sendEmail(
+              updated.email,
+              'Your Courage Partner account has been reinstated',
+              reinstatementHtml
+            );
+          } catch (emailErr) {
+            console.error('[Partner Reinstatement Email Error - Non Blocking]:', emailErr);
+          }
+        }
+
+        // 3. SUSPENSION EMAIL
+        else if (isNewSuspension) {
+          try {
+            const suspensionHtml = getPartnerSuspensionTemplate({
+              fullName: updated.full_name || 'Partner',
+              email: updated.email,
+              partnerId: updated.partner_id || `CP-2026-${updated.id}`,
+              reason: updated.suspension_reason || 'Compliance Verification Review',
+              note: adminNote || updated.suspension_note || '',
+              suspendedAt: new Date().toISOString(),
+              customSlug: updated.custom_slug,
+            });
+            await emailService.sendEmail(
+              updated.email,
+              'Your Courage Partner account has been suspended',
+              suspensionHtml
+            );
+          } catch (emailErr) {
+            console.error('[Partner Suspension Email Error - Non Blocking]:', emailErr);
           }
         }
       }

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { signSession } from '@/lib/sessionHelper';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
+import bcrypt from 'bcryptjs';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -58,17 +59,51 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid credentials. Please check your email/phone and password.' }, { status: 401 });
     }
 
-    // Check password — must be set during registration
-    if (!partner.password_hash) {
-      return NextResponse.json({
-        error: 'No password set for this account. Please use OTP login instead.',
-        useOtp: true
-      }, { status: 401 });
+    // Password verification with safe migration for legacy plaintext records
+    const storedHash: string = partner.password_hash;
+    const isBcryptHash = storedHash.startsWith('$2a$') || storedHash.startsWith('$2b$') || storedHash.startsWith('$2y$');
+
+    let passwordMatches: boolean;
+    if (isBcryptHash) {
+      // Normal path: compare against stored bcrypt hash
+      passwordMatches = await bcrypt.compare(password, storedHash);
+    } else {
+      // Migration path: record still has a legacy plaintext value
+      passwordMatches = storedHash === password;
+      if (passwordMatches) {
+        // Upgrade to hash on next successful login (fire-and-forget, non-blocking)
+        const newHash = await bcrypt.hash(password, 12);
+        fetch(`${SUPABASE_URL}/rest/v1/partners?id=eq.${encodeURIComponent(partner.id)}`, {
+          method: 'PATCH',
+          headers: {
+            'apikey': SERVICE_KEY,
+            'Authorization': `Bearer ${SERVICE_KEY}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ password_hash: newHash }),
+        }).catch((upgradeErr) => {
+          console.error('[Password Hash Upgrade Error]:', upgradeErr);
+        });
+      }
     }
 
-    // Direct string comparison (passwords stored as plaintext during registration)
-    if (partner.password_hash !== password) {
+    if (!passwordMatches) {
       return NextResponse.json({ error: 'Invalid credentials. Please check your email/phone and password.' }, { status: 401 });
+    }
+
+    // Block PENDING and SUSPENDED partners from obtaining an active session
+    const partnerStatus: string = partner.status || 'PENDING';
+    if (partnerStatus === 'PENDING') {
+      return NextResponse.json({
+        error: 'Your application is still under review. You will be notified by email once approved.',
+        accountStatus: 'PENDING',
+      }, { status: 403 });
+    }
+    if (partnerStatus === 'SUSPENDED') {
+      return NextResponse.json({
+        error: 'Your partner account has been suspended. Please check your email for details or contact support.',
+        accountStatus: 'SUSPENDED',
+      }, { status: 403 });
     }
 
     // Build partner data

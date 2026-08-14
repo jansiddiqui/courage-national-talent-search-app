@@ -4,6 +4,7 @@ import { signSession } from '@/lib/sessionHelper';
 import { EmailService } from '@/services/emailService';
 import { getPartnerApplicationTemplate } from '@/lib/emailTemplates';
 import { PartnerReferralEngine } from '@/domains/partner-referral/PartnerReferralEngine';
+import bcrypt from 'bcryptjs';
 
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
@@ -179,7 +180,10 @@ export async function POST(request: Request) {
       };
       if (avatarPublicUrl) updatePayload.profile_image_url = avatarPublicUrl;
       if (processedPlatforms.length > 0) updatePayload.platform_details = processedPlatforms;
-      if (body.password) updatePayload.password_hash = body.password;
+      if (body.password) {
+        // Hash before storing — never write plaintext
+        updatePayload.password_hash = await bcrypt.hash(body.password, 12);
+      }
 
       const { data: updated, error: updateErr, status: updateStatus } = await dbQuery(
         'PATCH', 'partners', updatePayload, `id=eq.${existing.id}`
@@ -207,7 +211,7 @@ export async function POST(request: Request) {
         state: finalState,
         profile_image_url: avatarPublicUrl || null,
         platform_details: processedPlatforms.length > 0 ? processedPlatforms : [],
-        password_hash: body.password || null,
+        password_hash: body.password ? await bcrypt.hash(body.password, 12) : null,
         status: 'PENDING',
         honorarium_rate: 25.00
       };

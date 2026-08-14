@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { School, Search, Plus, Copy, Check, Users, CheckCircle, Phone, Mail, FileDown, Eye, EyeOff } from "lucide-react";
+import { School, Search, Plus, Copy, Check, Users, CheckCircle, Phone, Mail, FileDown, Eye, EyeOff, Globe, Sparkles, ExternalLink, X, Key, Send } from "lucide-react";
 
 export default function SchoolPartnersPanel() {
   const router = useRouter();
@@ -10,6 +10,24 @@ export default function SchoolPartnersPanel() {
   const [searchTerm, setSearchTerm] = useState("");
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   
+  // Public Profile Modal State
+  const [editingProfileSchool, setEditingProfileSchool] = useState<any | null>(null);
+  const [profileState, setProfileState] = useState("");
+  const [profileSlug, setProfileSlug] = useState("");
+  const [profileStatus, setProfileStatus] = useState("DRAFT");
+  const [isFounding, setIsFounding] = useState(false);
+  const [publicDescription, setPublicDescription] = useState("");
+  const [savingProfile, setSavingProfile] = useState(false);
+  const [profileError, setProfileError] = useState("");
+
+  // Reset PIN Modal State
+  const [resetPinSchool, setResetPinSchool] = useState<any | null>(null);
+  const [newPinInput, setNewPinInput] = useState("");
+  const [notifyCoordinatorOnReset, setNotifyCoordinatorOnReset] = useState(true);
+  const [resettingPin, setResettingPin] = useState(false);
+  const [resetSuccessInfo, setResetSuccessInfo] = useState<{ clearPin: string; schoolName: string; emailSent?: boolean; whatsappSent?: boolean } | null>(null);
+  const [resetErrorMsg, setResetErrorMsg] = useState("");
+
   // Inquiries State
   const [subTab, setSubTab] = useState<"active" | "requests">("active");
   const [inquiries, setInquiries] = useState<any[]>([]);
@@ -106,16 +124,126 @@ export default function SchoolPartnersPanel() {
     setTimeout(() => setCopiedCode(null), 2000);
   };
 
+  const openProfileModal = (school: any) => {
+    setEditingProfileSchool(school);
+    setProfileState(school.state || "");
+    const defaultSlug = `${school.name}-${school.city}-${school.state || "india"}`
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
+    setProfileSlug(school.slug || defaultSlug);
+    setProfileStatus(school.profile_status || "DRAFT");
+    setIsFounding(Boolean(school.is_founding_school));
+    setPublicDescription(school.public_description || "");
+    setProfileError("");
+  };
+
+  const handleSaveProfile = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProfileSchool) return;
+    setSavingProfile(true);
+    setProfileError("");
+
+    try {
+      const res = await fetch("/api/admin/schools", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: editingProfileSchool.id,
+          state: profileState.trim() || null,
+          slug: profileSlug.trim().toLowerCase(),
+          profile_status: profileStatus,
+          is_founding_school: isFounding,
+          public_description: publicDescription.trim() || null,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setSchools((prev) =>
+          prev.map((s) =>
+            s.id === editingProfileSchool.id
+              ? {
+                  ...s,
+                  state: profileState.trim() || null,
+                  slug: profileSlug.trim().toLowerCase(),
+                  profile_status: profileStatus,
+                  is_founding_school: isFounding,
+                  public_description: publicDescription.trim() || null,
+                }
+              : s
+          )
+        );
+        setEditingProfileSchool(null);
+      } else {
+        setProfileError(data.message || "Failed to update profile");
+      }
+    } catch {
+      setProfileError("Network error. Please try again.");
+    } finally {
+      setSavingProfile(false);
+    }
+  };
+
+  const openResetPinModal = (school: any) => {
+    setResetPinSchool(school);
+    const autoPin = Math.floor(1000 + Math.random() * 9000).toString();
+    setNewPinInput(autoPin);
+    setNotifyCoordinatorOnReset(true);
+    setResetSuccessInfo(null);
+    setResetErrorMsg("");
+  };
+
+  const handleResetPinSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!resetPinSchool || !newPinInput.trim()) return;
+    setResettingPin(true);
+    setResetErrorMsg("");
+
+    try {
+      const res = await fetch("/api/admin/schools", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          id: resetPinSchool.id,
+          pin: newPinInput.trim(),
+          notifyCoordinator: notifyCoordinatorOnReset,
+        }),
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setResetSuccessInfo({
+          clearPin: newPinInput.trim(),
+          schoolName: resetPinSchool.name,
+          emailSent: data.notification?.emailSent,
+          whatsappSent: data.notification?.whatsappSent,
+        });
+      } else {
+        setResetErrorMsg(data.message || "Failed to reset PIN");
+      }
+    } catch {
+      setResetErrorMsg("Network error. Please try again.");
+    } finally {
+      setResettingPin(false);
+    }
+  };
+
   const filteredSchools = schools.filter(s => 
     s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
     s.school_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
     s.city.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const printCredentials = (school: any) => {
+  const printCredentials = (school: any, overridePin?: string) => {
     const printWindow = window.open('', '_blank');
     if (!printWindow) return;
-    
+
+    let displayPin = overridePin || school.raw_pin || school.pin || "";
+    if (!overridePin && displayPin.startsWith("$2")) {
+      displayPin = "[Secured - Click 'Reset PIN' to generate a new PIN]";
+    }
+
     const html = `
       <html>
         <head>
@@ -162,7 +290,7 @@ export default function SchoolPartnersPanel() {
               </div>
               <div>
                 <div class="label">Dashboard PIN</div>
-                <div class="value mono">${school.pin}</div>
+                <div class="value mono">${displayPin}</div>
               </div>
             </div>
             <div style="margin-top: 20px;">
@@ -318,7 +446,20 @@ export default function SchoolPartnersPanel() {
                 </div>
 
                 {/* Actions */}
-                <div className="px-4 pb-3">
+                <div className="px-4 pb-3 flex flex-wrap gap-2">
+                  <button
+                    onClick={() => openResetPinModal(school)}
+                    className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-amber-700 hover:text-white bg-amber-50 hover:bg-amber-600 py-2 rounded-lg transition-all duration-200 border border-amber-200"
+                    title="Reset PIN & dispatch Email/WhatsApp notification"
+                  >
+                    <Key size={13} /> Reset PIN
+                  </button>
+                  <button
+                    onClick={() => openProfileModal(school)}
+                    className="flex-1 flex items-center justify-center gap-1 text-xs font-semibold text-blue-600 hover:text-white bg-blue-50 hover:bg-blue-600 py-2 rounded-lg transition-all duration-200 border border-blue-100"
+                  >
+                    <Globe size={13} /> Profile ({school.profile_status || "DRAFT"})
+                  </button>
                   <button
                     onClick={() => printCredentials(school)}
                     className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-white bg-indigo-50 hover:bg-indigo-600 py-2 rounded-lg transition-all duration-200 border border-indigo-100 hover:border-indigo-600"
@@ -443,6 +584,247 @@ export default function SchoolPartnersPanel() {
             )}
           </div>
         )
+      )}
+
+      {/* Edit Public Profile Modal */}
+      {editingProfileSchool && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-lg shadow-2xl overflow-hidden border border-slate-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">Public Profile Settings</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  Configure public visibility for <span className="font-semibold text-slate-700">{editingProfileSchool.name}</span>
+                </p>
+              </div>
+              <button onClick={() => setEditingProfileSchool(null)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProfile} className="p-6 space-y-4">
+              {profileError && (
+                <div className="p-3 bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-100">
+                  {profileError}
+                </div>
+              )}
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">State (Location) *</label>
+                <input
+                  required
+                  type="text"
+                  value={profileState}
+                  onChange={(e) => setProfileState(e.target.value)}
+                  placeholder="e.g. Rajasthan, Uttar Pradesh"
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Public URL Slug *</label>
+                <input
+                  required
+                  type="text"
+                  value={profileSlug}
+                  onChange={(e) => setProfileSlug(e.target.value)}
+                  placeholder="e.g. courage-public-school-jaipur-rajasthan"
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono"
+                />
+                <p className="text-[10px] text-slate-400 font-mono">
+                  URL: /schools/{profileSlug || "slug"}
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Profile Status</label>
+                  <select
+                    value={profileStatus}
+                    onChange={(e) => setProfileStatus(e.target.value)}
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"
+                  >
+                    <option value="DRAFT">DRAFT (Hidden)</option>
+                    <option value="PUBLISHED">PUBLISHED (Public)</option>
+                    <option value="VERIFIED">VERIFIED (Reviewed)</option>
+                    <option value="ARCHIVED">ARCHIVED (Disabled)</option>
+                  </select>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Founding School 2026</label>
+                  <label className="flex items-center gap-2 pt-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={isFounding}
+                      onChange={(e) => setIsFounding(e.target.checked)}
+                      className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-xs font-bold text-slate-800">CNTS Founding Badge</span>
+                  </label>
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Public About Description</label>
+                <textarea
+                  rows={3}
+                  value={publicDescription}
+                  onChange={(e) => setPublicDescription(e.target.value)}
+                  placeholder="Optional brief public description about this institution for their CNTS page..."
+                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                />
+              </div>
+
+              {profileStatus === "PUBLISHED" && profileSlug && (
+                <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-100 flex items-center justify-between text-xs">
+                  <span className="font-semibold text-blue-900">Live Public Page</span>
+                  <a
+                    href={`/schools/${profileSlug}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="font-bold text-blue-600 hover:underline flex items-center gap-1"
+                  >
+                    Preview Page <ExternalLink size={12} />
+                  </a>
+                </div>
+              )}
+
+              <div className="pt-4 flex gap-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditingProfileSchool(null)}
+                  className="flex-1 py-2.5 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-bold transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingProfile}
+                  className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors shadow-sm"
+                >
+                  {savingProfile ? "Saving…" : "Save Profile Settings"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Reset PIN Modal */}
+      {resetPinSchool && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl w-full max-w-md shadow-2xl overflow-hidden border border-slate-200">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-100 bg-slate-50">
+              <div>
+                <h3 className="font-bold text-slate-900 text-base">Reset School Access PIN</h3>
+                <p className="text-xs text-slate-500 mt-0.5">
+                  For <span className="font-semibold text-slate-700">{resetPinSchool.name}</span> ({resetPinSchool.school_code})
+                </p>
+              </div>
+              <button onClick={() => setResetPinSchool(null)} className="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors">
+                <X size={18} />
+              </button>
+            </div>
+
+            {resetSuccessInfo ? (
+              <div className="p-6 space-y-4">
+                <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-2xl space-y-2">
+                  <div className="flex items-center gap-2 font-bold text-sm">
+                    <CheckCircle size={18} className="text-emerald-600" />
+                    PIN Reset & Dispatched Successfully!
+                  </div>
+                  <p className="text-xs text-emerald-700">
+                    New PIN: <span className="font-mono font-bold text-slate-900 text-base px-2 py-0.5 bg-white rounded border border-emerald-300">{resetSuccessInfo.clearPin}</span>
+                  </p>
+                  <div className="pt-2 text-[11px] text-emerald-800 space-y-1 font-medium border-t border-emerald-200">
+                    <p>• Brevo Email: {resetSuccessInfo.emailSent ? "✓ Delivered to coordinator" : "— Skipped/Pending"}</p>
+                    <p>• Meta WhatsApp: {resetSuccessInfo.whatsappSent ? "✓ Delivered to mobile" : "— Skipped/Pending"}</p>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => printCredentials(resetPinSchool, resetSuccessInfo.clearPin)}
+                    className="flex-1 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1.5"
+                  >
+                    <FileDown size={14} /> Print Credentials PDF
+                  </button>
+                  <button
+                    onClick={() => setResetPinSchool(null)}
+                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <form onSubmit={handleResetPinSubmit} className="p-6 space-y-4">
+                {resetErrorMsg && (
+                  <div className="p-3 bg-red-50 text-red-600 text-xs font-semibold rounded-xl border border-red-100">
+                    {resetErrorMsg}
+                  </div>
+                )}
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">New Access PIN *</label>
+                  <div className="flex gap-2">
+                    <input
+                      required
+                      type="text"
+                      value={newPinInput}
+                      onChange={(e) => setNewPinInput(e.target.value)}
+                      placeholder="e.g. 5750"
+                      className="flex-1 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono font-bold text-slate-900"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setNewPinInput(Math.floor(1000 + Math.random() * 9000).toString())}
+                      className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
+                    >
+                      Auto-Generate
+                    </button>
+                  </div>
+                  <p className="text-[10px] text-slate-400">The coordinator uses this 4-digit PIN to log into their dashboard.</p>
+                </div>
+
+                <div className="bg-blue-50/60 border border-blue-100 p-3.5 rounded-xl space-y-2">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={notifyCoordinatorOnReset}
+                      onChange={(e) => setNotifyCoordinatorOnReset(e.target.checked)}
+                      className="w-4 h-4 rounded text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-xs font-bold text-slate-800 flex items-center gap-1">
+                      <Send size={12} className="text-blue-600" /> Send Email & WhatsApp Credentials
+                    </span>
+                  </label>
+                  <p className="text-[10px] text-slate-500 pl-6">
+                    Dispatches credentials to <strong>{resetPinSchool.coordinator_email || "Email"}</strong> & <strong>{resetPinSchool.coordinator_mobile || "Mobile"}</strong>.
+                  </p>
+                </div>
+
+                <div className="pt-3 flex gap-3 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setResetPinSchool(null)}
+                    className="flex-1 py-2.5 border border-slate-200 text-slate-600 hover:bg-slate-50 rounded-xl text-xs font-bold transition-colors"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={resettingPin || !newPinInput.trim()}
+                    className="flex-1 py-2.5 bg-amber-600 hover:bg-amber-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold transition-colors shadow-sm"
+                  >
+                    {resettingPin ? "Updating & Sending…" : "Update PIN & Notify"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </div>
       )}
     </div>
   );

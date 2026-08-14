@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { verifySession } from '@/lib/sessionHelper';
+import { EmailService } from '@/services/emailService';
+import { getPartnerReinstatementTemplate } from '@/lib/emailTemplates';
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://pfoxwfnfecxypbsftrrk.supabase.co';
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
@@ -65,17 +67,44 @@ export async function POST(request: Request) {
 
     const partnerRecord = Array.isArray(updated) ? updated[0] : updated;
 
-    // Send Notification to Partner Inbox
-    await dbFetch('POST', 'partner_notifications', {
-      partner_id: partnerId,
-      referral_code: partnerRecord?.referral_code || 'PARTNER',
-      sender: 'Courage Verification Desk',
-      title: '🟢 Partner Account Reinstated',
-      preview: 'Your Courage Partner account access has been fully restored.',
-      full_body: `Great news ${partnerRecord?.full_name || ''}!\n\nYour Courage Partner account has been officially REINSTATED by our compliance desk.\n\nNote: ${note || 'Account review completed.'}\n\nYou can now access your full partner dashboard, share your link, and submit withdrawal requests.`,
-      category: 'System',
-      is_read: false
-    });
+    // 1. Send Notification to Partner Inbox (non-blocking)
+    try {
+      await dbFetch('POST', 'partner_notifications', {
+        partner_id: partnerId,
+        referral_code: partnerRecord?.referral_code || 'PARTNER',
+        sender: 'Courage Verification Desk',
+        title: '🟢 Partner Account Reinstated',
+        preview: 'Your Courage Partner account access has been fully restored.',
+        full_body: `Great news ${partnerRecord?.full_name || ''}!\n\nYour Courage Partner account has been officially REINSTATED by our compliance desk.\n\nNote: ${note || 'Account review completed.'}\n\nYou can now access your full partner dashboard, share your link, and submit withdrawal requests.`,
+        category: 'System',
+        is_read: false
+      });
+    } catch (notifErr) {
+      console.error('[Partner Reinstatement Notification Error - Non Blocking]:', notifErr);
+    }
+
+
+    // 2. Send Reinstatement Email (Non-blocking)
+    if (partnerRecord?.email) {
+      try {
+        const emailService = new EmailService();
+        const reinstatementHtml = getPartnerReinstatementTemplate({
+          fullName: partnerRecord.full_name || 'Partner',
+          email: partnerRecord.email,
+          partnerId: partnerRecord.partner_id || `CP-2026-${partnerRecord.id}`,
+          reinstatedAt: now,
+          note: note || '',
+          customSlug: partnerRecord.custom_slug,
+        });
+        await emailService.sendEmail(
+          partnerRecord.email,
+          'Your Courage Partner account has been reinstated',
+          reinstatementHtml
+        );
+      } catch (emailErr) {
+        console.error('[Partner Reinstatement Email Error - Non Blocking]:', emailErr);
+      }
+    }
 
     return NextResponse.json({
       success: true,

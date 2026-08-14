@@ -725,8 +725,216 @@ export function getPartnerApprovalTemplate(data: {
       </p>
     </div>
   `;
-  return wrapLayout(content, `Welcome to the Courage Partner Program. Your application has been approved!`);
+  return wrapLayout(content, `Your Courage Partner application has been approved. Welcome to the team!`);
 }
+
+export function getPartnerSuspensionTemplate(data: {
+  fullName: string;
+  email: string;
+  partnerId: string;
+  reason: string;
+  note?: string;
+  suspendedAt?: string;
+  customSlug?: string;
+}): string {
+  const dateStr = data.suspendedAt 
+    ? new Date(data.suspendedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const reviewUrl = `https://thecouragelibrary.com/partners/${data.customSlug || 'partner'}`;
+
+  const content = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
+      
+      <!-- HERO HEADER CARD -->
+      <div style="background: linear-gradient(135deg, #0F172A 0%, #451A03 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #78350F;">
+        <div style="display: inline-block; background-color: rgba(245, 158, 11, 0.2); color: #FDBA74; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
+          ACCOUNT SUSPENDED • ACTION REQUIRED
+        </div>
+        <h1 style="margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff;">
+          Account Status Update
+        </h1>
+        <p style="margin: 0; color: #FED7AA; font-size: 13px; font-weight: 500;">
+          Your Courage Partner account access has been suspended.
+        </p>
+      </div>
+
+      <!-- SALUTATION -->
+      <p style="font-size: 15px; line-height: 1.5; color: #0F172A; margin: 0 0 12px;">Hello <strong>${data.fullName}</strong>,</p>
+      <p style="font-size: 13.5px; line-height: 1.6; color: #334155; margin: 0 0 20px;">
+        Your Courage Partner account has been temporarily suspended by our compliance desk.
+      </p>
+
+      <!-- REASON & DETAILS CARD -->
+      <div style="background-color: #FFFBEB; border: 2px solid #FCD34D; border-radius: 14px; padding: 18px; margin: 20px 0;">
+        <div style="font-size: 11px; font-weight: 900; color: #78350F; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #FDE68A; padding-bottom: 8px; margin-bottom: 14px;">
+          ⚠️ SUSPENSION DETAILS
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.5px;">Primary Reason</div>
+          <div style="font-size: 14px; font-weight: 800; color: #78350F; margin-top: 2px;">${data.reason}</div>
+        </div>
+
+        ${data.note ? `
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.5px;">Administrative Explanation</div>
+          <div style="font-size: 13px; font-weight: 600; color: #451A03; background-color: #FEF3C7; padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid #FDE68A;">
+            "${data.note}"
+          </div>
+        </div>
+        ` : ''}
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.5px;">Suspended Date</div>
+          <div style="font-size: 13px; font-weight: 700; color: #78350F; margin-top: 2px;">${dateStr}</div>
+        </div>
+
+        <div>
+          <div style="font-size: 10.5px; font-weight: 800; color: #92400E; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px;">Account Status</div>
+          <span style="display: inline-block; background-color: #FFEDD5; color: #9A3412; border: 1px solid #FDBA74; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800;">
+            SUSPENDED
+          </span>
+        </div>
+      </div>
+
+      <!-- WHAT THIS MEANS -->
+      <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-radius: 12px; padding: 16px; margin: 24px 0;">
+        <h4 style="margin: 0 0 10px; color: #0F172A; font-size: 12.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">
+          What This Means:
+        </h4>
+        
+        <div style="font-size: 13px; color: #334155; line-height: 1.55; margin-bottom: 10px;">
+          • Your Partner workspace and referral activities are currently restricted.
+        </div>
+
+        <div style="font-size: 13px; color: #334155; line-height: 1.55; margin-bottom: 10px;">
+          • Your historical referral data, candidate records, and accrued payouts remain preserved.
+        </div>
+
+        <div style="font-size: 13px; color: #334155; line-height: 1.55;">
+          • If you believe this suspension was made in error, you can submit an official review request.
+        </div>
+      </div>
+
+      <!-- CTA BUTTON -->
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${reviewUrl}" style="display: block; width: 100%; box-sizing: border-box; background-color: #D97706; color: #ffffff; padding: 14px 20px; text-decoration: none; border-radius: 10px; font-weight: 800; font-size: 14px; letter-spacing: 0.5px; text-align: center;">
+          Request a Review &rarr;
+        </a>
+      </div>
+
+      <!-- SUPPORT FOOTER -->
+      <p style="font-size: 12px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
+        If you have questions, contact Partner Support at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
+      </p>
+    </div>
+  `;
+  return wrapLayout(content, `Your Partner account is currently suspended. Review details and request a review if needed.`);
+}
+
+export function getPartnerReinstatementTemplate(data: {
+  fullName: string;
+  email: string;
+  partnerId: string;
+  reinstatedAt?: string;
+  note?: string;
+  customSlug?: string;
+}): string {
+  const dateStr = data.reinstatedAt 
+    ? new Date(data.reinstatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
+    : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+  const loginUrl = `https://thecouragelibrary.com/partners/apply?view=login`;
+
+  const content = `
+    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
+      
+      <!-- HERO HEADER CARD -->
+      <div style="background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #065F46;">
+        <div style="display: inline-block; background-color: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
+          ACCOUNT REINSTATED • WELCOME BACK
+        </div>
+        <h1 style="margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff;">
+          Account Reinstated 🎉
+        </h1>
+        <p style="margin: 0; color: #A7F3D0; font-size: 13px; font-weight: 500;">
+          Your Courage Partner account access has been fully restored.
+        </p>
+      </div>
+
+      <!-- SALUTATION -->
+      <p style="font-size: 15px; line-height: 1.5; color: #0F172A; margin: 0 0 12px;">Hello <strong>${data.fullName}</strong>,</p>
+      <p style="font-size: 13.5px; line-height: 1.6; color: #334155; margin: 0 0 20px;">
+        We're pleased to let you know that your <strong>Courage Partner account</strong> has been reinstated by our compliance team.
+      </p>
+
+      <!-- DETAILS CARD -->
+      <div style="background-color: #ECFDF5; border: 2px solid #A7F3D0; border-radius: 14px; padding: 18px; margin: 20px 0;">
+        <div style="font-size: 11px; font-weight: 900; color: #065F46; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #6EE7B7; padding-bottom: 8px; margin-bottom: 14px;">
+          🟢 ACCOUNT REINSTATED
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #047857; text-transform: uppercase; letter-spacing: 0.5px;">Account Status</div>
+          <span style="display: inline-block; background-color: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 800; margin-top: 4px;">
+            ACTIVE & APPROVED
+          </span>
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <div style="font-size: 10.5px; font-weight: 800; color: #047857; text-transform: uppercase; letter-spacing: 0.5px;">Reinstated Date</div>
+          <div style="font-size: 13.5px; font-weight: 700; color: #065F46; margin-top: 2px;">${dateStr}</div>
+        </div>
+
+        ${data.note ? `
+        <div>
+          <div style="font-size: 10.5px; font-weight: 800; color: #047857; text-transform: uppercase; letter-spacing: 0.5px;">Compliance Note</div>
+          <div style="font-size: 13px; font-weight: 600; color: #064E3B; background-color: #D1FAE5; padding: 10px 12px; border-radius: 8px; margin-top: 4px; border: 1px solid #6EE7B7;">
+            "${data.note}"
+          </div>
+        </div>
+        ` : ''}
+      </div>
+
+      <!-- WHAT YOU CAN DO NOW -->
+      <div style="background-color: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #2563EB; border-radius: 12px; padding: 16px; margin: 24px 0;">
+        <h4 style="margin: 0 0 10px; color: #1E40AF; font-size: 12.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">
+          What You Can Do Now:
+        </h4>
+        
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
+          <strong>01 Sign in to your Partner account:</strong><br />
+          Log in at <a href="${loginUrl}" style="color: #2563EB; font-weight: bold;">${loginUrl}</a>.
+        </div>
+
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
+          <strong>02 Review your Partner Launchpad:</strong><br />
+          Access your referral links, campaign missions, and analytics tracking.
+        </div>
+
+        <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55;">
+          <strong>03 Continue your Partner activities:</strong><br />
+          Resume referral mobilization and receive weekly Monday payouts.
+        </div>
+      </div>
+
+      <!-- CTA BUTTON -->
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${loginUrl}" style="display: block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); color: #ffffff; padding: 14px 20px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-align: center;">
+          Sign in to Partner Dashboard &rarr;
+        </a>
+      </div>
+
+      <!-- SUPPORT FOOTER -->
+      <p style="font-size: 12.5px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
+        If you have questions, contact Partner Support at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
+      </p>
+    </div>
+  `;
+  return wrapLayout(content, `Your Partner account is active again. You can now sign in to your Partner Dashboard.`);
+}
+
 
 
 
