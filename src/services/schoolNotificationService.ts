@@ -143,16 +143,30 @@ export async function sendSchoolCredentialsNotification(
       `Please check your inbox to log in and manage student registrations.`;
 
     try {
-      // Try template message first, fallback to text
-      let waRes = await whatsappService.sendTemplateMessage(
-        cleanMobile,
-        "school_partner_welcome",
-        [coordinatorName || "Coordinator", schoolName, coordinatorEmail || "your email"],
-        "school_credentials"
-      );
+      // Try approved template candidates (matching any approved template name & language code in Meta Manager)
+      const templateCandidates = [
+        { name: "school_welcome_msg", lang: "en" },
+        { name: "school_welcome_msg", lang: "en_US" },
+        { name: "school_partner_welcome", lang: "en" },
+        { name: "school_partner_welcome", lang: "en_US" },
+        { name: "school_credentials", lang: "en" },
+        { name: "school_credentials", lang: "en_US" },
+      ];
+
+      let waRes = false;
+      for (const t of templateCandidates) {
+        waRes = await whatsappService.sendTemplateMessage(
+          cleanMobile,
+          t.name,
+          [coordinatorName || "Coordinator", schoolName, coordinatorEmail || "your email"],
+          "school_credentials",
+          t.lang
+        );
+        if (waRes) break;
+      }
 
       if (!waRes) {
-        // Fallback to text dispatch if template fails or sandbox
+        // Fallback to text dispatch if sandbox mode
         const rawRes = await whatsappService.sendMetaWhatsAppMessage(cleanMobile, {
           type: "text",
           text: { body: whatsappText }

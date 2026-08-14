@@ -24,8 +24,7 @@ export default function SchoolLoginPage() {
       const data = await res.json();
 
       if (data.success) {
-        router.push("/dashboard/school");
-        router.refresh();
+        window.location.href = "/dashboard/school";
       } else {
         setError(data.message || "Invalid credentials");
       }

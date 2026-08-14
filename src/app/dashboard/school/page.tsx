@@ -15,10 +15,12 @@ export default async function SchoolDashboardPage() {
   }
 
   let schoolCode = "";
+  let schoolId = "";
   try {
     const { payload } = await jwtVerify(token, JWT_SECRET);
-    schoolCode = payload.schoolCode as string;
-  } catch (err) {
+    schoolCode = (payload.schoolCode as string) || "";
+    schoolId = (payload.schoolId as string) || "";
+  } catch {
     redirect("/dashboard/school/login");
   }
 
@@ -27,11 +29,14 @@ export default async function SchoolDashboardPage() {
   let registrations: any[] = [];
 
   if (hasSupabaseAdminConfig) {
-    const { data: sData, error: sErr } = await (supabaseAdmin as any)
-      .from("schools")
-      .select("*")
-      .eq("school_code", schoolCode)
-      .maybeSingle();
+    let query = (supabaseAdmin as any).from("schools").select("*");
+    if (schoolId) {
+      query = query.eq("id", schoolId);
+    } else {
+      query = query.ilike("school_code", schoolCode.trim());
+    }
+
+    const { data: sData } = await query.maybeSingle();
     
     if (sData) {
       school = sData;
