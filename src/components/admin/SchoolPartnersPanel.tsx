@@ -53,9 +53,16 @@ export default function SchoolPartnersPanel() {
       const res = await fetch("/api/admin/support");
       const data = await res.json();
       if (data.success && Array.isArray(data.messages)) {
-        const schoolInquiries = data.messages.filter(
-          (m: any) => m.subject === "School Partnership Inquiry"
-        );
+        const schoolInquiries = data.messages.filter((m: any) => {
+          if (!m.subject) return false;
+          const subj = m.subject.toLowerCase();
+          return (
+            subj === "school partnership inquiry" ||
+            subj.includes("school partnership") ||
+            subj.includes("partnership request") ||
+            subj.includes("school partnership request")
+          );
+        });
         setInquiries(schoolInquiries);
       }
     } catch (err) {
@@ -65,24 +72,27 @@ export default function SchoolPartnersPanel() {
     }
   };
 
-  const handleResolveInquiry = async (id: string) => {
+  const handleUpdateInquiryStatus = async (id: string, newStatus: string) => {
     try {
       const res = await fetch("/api/admin/support", {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           id,
-          updates: { status: "RESOLVED" }
+          updates: { status: newStatus }
         })
       });
       const data = await res.json();
       if (data.success) {
-        setInquiries(prev => prev.map(inq => inq.id === id ? { ...inq, status: "RESOLVED" } : inq));
+        setInquiries(prev => prev.map(inq => inq.id === id ? { ...inq, status: newStatus } : inq));
       }
     } catch (err) {
-      console.error("Failed to resolve inquiry:", err);
+      console.error("Failed to update inquiry status:", err);
     }
   };
+
+  const handleResolveInquiry = (id: string) => handleUpdateInquiryStatus(id, "RESOLVED");
+  const handleReopenInquiry = (id: string) => handleUpdateInquiryStatus(id, "PENDING");
 
   const parseInquiryMessage = (messageText: string) => {
     const lines = (messageText || "").split("\n");
@@ -569,8 +579,25 @@ export default function SchoolPartnersPanel() {
                         </button>
                       </>
                     ) : (
-                      <div className="w-full text-center py-2 text-xs font-bold text-emerald-600 bg-emerald-50 rounded-xl border border-emerald-100 flex items-center justify-center gap-1">
-                        <CheckCircle size={14} /> Inquiry Resolved & Onboarded
+                      <div className="w-full flex items-center justify-between gap-2 p-2 bg-emerald-50/80 rounded-xl border border-emerald-100 flex-wrap sm:flex-nowrap">
+                        <div className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                          <CheckCircle size={14} className="text-emerald-600 shrink-0" /> Onboarded / Resolved
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <button
+                            onClick={() => router.push(onboardUrl)}
+                            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg transition-all shadow-2xs shrink-0"
+                          >
+                            Re-Onboard School →
+                          </button>
+                          <button
+                            onClick={() => handleReopenInquiry(inq.id)}
+                            className="px-2 py-1 text-[11px] font-semibold text-slate-500 hover:text-slate-700 underline shrink-0"
+                            title="Reset status back to Pending"
+                          >
+                            Re-Open
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
