@@ -15,7 +15,7 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // Bypass parent session check for school dashboard paths
-  if (pathname.startsWith("/dashboard/school")) {
+  if (pathname.startsWith("/school") || pathname.startsWith("/dashboard/school")) {
     return NextResponse.next();
   }
 

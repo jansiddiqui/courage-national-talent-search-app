@@ -287,16 +287,10 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (data.success) {
-        setSuccessMessage("Login successful!");
+        setSuccessMessage("Login successful! Redirecting to School Portal...");
         setTimeout(() => {
-          setUserRoles({
-            isParent: false,
-            isCreator: false,
-            isSchool: true,
-            userName: schoolCode.toUpperCase()
-          });
-          router.push("/dashboard/school");
-        }, 800);
+          window.location.href = "/dashboard/school";
+        }, 300);
       } else {
         setError(data.message || "Invalid credentials");
       }
@@ -711,6 +705,30 @@ export default function LoginPage() {
                   </p>
                 </div>
                 <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-1 transition-all" />
+              </button>
+
+              {/* Option 3: School Partner Workspace Dashboard */}
+              <button
+                onClick={() => { window.location.href = '/dashboard/school'; }}
+                className="p-4 rounded-2xl border-2 border-slate-200 hover:border-blue-600 hover:bg-blue-50/50 transition-all text-left flex items-center gap-4 cursor-pointer group"
+              >
+                <div className="w-12 h-12 rounded-2xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xl group-hover:bg-blue-600 group-hover:text-white transition-all shrink-0">
+                  <School className="w-6 h-6 text-blue-700 group-hover:text-white transition-colors" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-2">
+                    <h4 className="font-bold text-slate-900 text-sm group-hover:text-blue-900">
+                      School Partner Workspace
+                    </h4>
+                    <span className="text-[10px] font-bold bg-blue-100 text-blue-800 px-2 py-0.5 rounded">
+                      School Dashboard
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Manage school student registrations, seat quota, admit cards & analytics.
+                  </p>
+                </div>
+                <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-1 transition-all" />
               </button>
             </div>
 

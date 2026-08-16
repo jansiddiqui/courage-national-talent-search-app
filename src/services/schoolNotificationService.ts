@@ -35,7 +35,7 @@ export async function sendSchoolCredentialsNotification(
   let emailSent = false;
   let whatsappSent = false;
 
-  const loginUrl = "https://thecouragelibrary.com/dashboard/school/login";
+  const loginUrl = "https://thecouragelibrary.com/school/login";
   const studentReferralUrl = `https://thecouragelibrary.com/register?school=${schoolCode}`;
 
   // 1. Send Email Notification

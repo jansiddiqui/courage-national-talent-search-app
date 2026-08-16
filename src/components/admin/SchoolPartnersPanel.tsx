@@ -305,7 +305,7 @@ export default function SchoolPartnersPanel() {
             </div>
             <div style="margin-top: 20px;">
               <div class="label">Dashboard Login Link</div>
-              <div class="value" style="font-size: 14px;">https://www.thecouragelibrary.com/dashboard/school/login</div>
+              <div class="value" style="font-size: 14px;">https://www.thecouragelibrary.com/school/login</div>
             </div>
           </div>
 
