@@ -289,8 +289,8 @@ export default function LoginPage() {
       if (data.success) {
         setSuccessMessage("Login successful! Redirecting to School Portal...");
         setTimeout(() => {
-          window.location.href = "/dashboard/school";
-        }, 300);
+          window.location.href = "/school";
+        }, 100);
       } else {
         setError(data.message || "Invalid credentials");
       }
