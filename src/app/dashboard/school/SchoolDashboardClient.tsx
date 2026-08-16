@@ -35,6 +35,8 @@ import {
 } from "lucide-react";
 import * as XLSX from "xlsx";
 import PhotoUploader from "@/components/registration/PhotoUploader";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 // ─── Inline Student 360° Profile Modal ──────────────────────────────────────────
 function Student360Modal({
@@ -565,8 +567,11 @@ export default function SchoolDashboardClient({
   const remainingQuota = (dashboardData.config?.quota || school.quota) - (dashboardData.config?.used_quota || school.used_quota);
 
   return (
-    <div className="min-h-screen bg-slate-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
-      <div className="max-w-7xl mx-auto space-y-8">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+      <Navbar theme="light" />
+
+      <main className="flex-1 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Photo Upload Modal */}
         {photoModalReg && (
@@ -1213,8 +1218,10 @@ export default function SchoolDashboardClient({
           )}
 
         </div>
-
       </div>
-    </div>
+    </main>
+
+    <Footer />
+  </div>
   );
 }
