@@ -500,34 +500,52 @@ export const PayoutCenter: React.FC<PayoutCenterProps> = ({
           </div>
 
           {/* Action Buttons to Create Content / Request Withdrawal */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-2">
+          <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 pt-2">
+            {/* Primary Action Button: Unlock Withdrawal */}
             <button
               type="button"
               onClick={() => setIsContentModalOpen(true)}
-              className="py-3.5 px-6 bg-indigo-600 hover:bg-indigo-700 text-white font-extrabold text-xs sm:text-sm rounded-2xl shadow-md hover:shadow-lg transition-all cursor-pointer flex items-center justify-center gap-2"
+              className="w-full lg:w-auto p-3.5 sm:px-6 sm:py-3.5 bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 hover:from-indigo-700 hover:to-indigo-900 text-white rounded-2xl shadow-md hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer flex items-center justify-between sm:justify-center gap-3 group text-left sm:text-center shrink-0"
             >
-              <Sparkles className="w-4 h-4 text-amber-300" />
-              <span>Unlock Withdrawal — Create Content with Referral Code</span>
-              <ArrowRight className="w-4 h-4" />
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-8 h-8 rounded-xl bg-white/15 border border-white/20 flex items-center justify-center shrink-0 shadow-inner">
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                </div>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:gap-1.5 min-w-0">
+                  <span className="font-extrabold text-xs sm:text-sm tracking-tight text-white block">
+                    Unlock Withdrawal
+                  </span>
+                  <span className="hidden sm:inline text-indigo-200/80 font-medium text-xs">—</span>
+                  <span className="text-[11px] sm:text-xs text-indigo-200 font-medium block truncate">
+                    Create Content with Code
+                  </span>
+                </div>
+              </div>
+              <div className="w-7 h-7 rounded-xl bg-white/10 flex items-center justify-center shrink-0 group-hover:bg-white/20 transition-colors sm:bg-transparent sm:w-auto sm:h-auto">
+                <ArrowRight className="w-4 h-4 text-indigo-200 group-hover:translate-x-0.5 group-hover:text-white transition-all" />
+              </div>
             </button>
 
-            <button
-              type="button"
-              onClick={shareOnWhatsApp}
-              className="py-3.5 px-5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 font-extrabold text-xs rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-2"
-            >
-              <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-600" />
-              <span>Share on WhatsApp</span>
-            </button>
+            {/* Quick Share Secondary Actions */}
+            <div className="grid grid-cols-2 sm:flex sm:items-center gap-2.5 w-full lg:w-auto">
+              <button
+                type="button"
+                onClick={shareOnWhatsApp}
+                className="py-3 px-3.5 sm:px-4 bg-emerald-50 hover:bg-emerald-100 active:scale-[0.98] text-emerald-800 border border-emerald-200/90 font-extrabold text-xs rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+              >
+                <MessageCircle className="w-4 h-4 text-emerald-600 fill-emerald-600 shrink-0" />
+                <span className="truncate">WhatsApp</span>
+              </button>
 
-            <button
-              type="button"
-              onClick={copyReferralCode}
-              className="py-3.5 px-4 bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 font-bold text-xs rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-1.5"
-            >
-              {copiedCode ? <Check className="w-4 h-4 text-emerald-600" /> : <Copy className="w-4 h-4 text-slate-500" />}
-              <span>{copiedCode ? 'Copied Code!' : `Copy: ${activeRefCode}`}</span>
-            </button>
+              <button
+                type="button"
+                onClick={copyReferralCode}
+                className="py-3 px-3.5 sm:px-4 bg-white hover:bg-slate-50 active:scale-[0.98] text-slate-700 border border-slate-200/90 font-bold text-xs rounded-2xl transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-xs"
+              >
+                {copiedCode ? <Check className="w-4 h-4 text-emerald-600 shrink-0" /> : <Copy className="w-4 h-4 text-slate-500 shrink-0" />}
+                <span className="truncate font-mono">{copiedCode ? 'Copied!' : activeRefCode}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
