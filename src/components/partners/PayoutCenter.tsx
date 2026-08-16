@@ -616,176 +616,216 @@ export const PayoutCenter: React.FC<PayoutCenterProps> = ({
 
       {/* 5. POPUP MODAL: CREATE CONTENT WITH REFERRAL CODE TO UNLOCK WITHDRAWAL */}
       {isContentModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in overflow-y-auto">
-          <div className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-xl w-full p-6 sm:p-8 space-y-6 relative max-h-[92vh] overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-slate-950/75 backdrop-blur-md animate-fade-in overflow-y-auto">
+          <div className="bg-white rounded-3xl border border-slate-200/90 shadow-2xl max-w-2xl w-full p-5 sm:p-7 space-y-5 relative max-h-[92vh] overflow-y-auto">
             
             {/* Close Button */}
             <button
               type="button"
               onClick={() => setIsContentModalOpen(false)}
-              className="absolute right-5 top-5 p-2 rounded-full text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition cursor-pointer"
+              className="absolute right-4 top-4 sm:right-6 sm:top-6 w-9 h-9 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-all flex items-center justify-center active:scale-95 cursor-pointer z-10"
+              aria-label="Close modal"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
 
             {/* Modal Header */}
-            <div className="space-y-1.5 pr-8">
+            <div className="space-y-1.5 pr-10">
               <div className="inline-flex items-center gap-1.5 text-[11px] font-black text-indigo-700 bg-indigo-50 px-3 py-1 rounded-full border border-indigo-100">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" /> Unlock Honorarium Withdrawal
               </div>
-              <h2 className="font-display font-black text-xl sm:text-2xl text-slate-900">
+              <h2 className="font-display font-black text-xl sm:text-2xl text-slate-900 tracking-tight">
                 Earn Honorarium with Your Referral Code
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
-                To request a withdrawal, you need a minimum available balance of <strong className="text-slate-900">₹500</strong>. You earn <strong className="text-emerald-600 font-mono">₹{payoutStats.honorariumRate}</strong> for every student who registers using your code!
+                To request a withdrawal, you need a minimum available balance of <strong className="text-slate-900">₹500</strong>. You earn <strong className="text-emerald-600 font-mono font-bold">₹{payoutStats.honorariumRate}</strong> for every verified student who registers using your code!
               </p>
             </div>
 
-            {/* Current Balance Progress Box */}
-            <div className="bg-amber-50/80 border border-amber-200 rounded-2xl p-4 space-y-2">
-              <div className="flex items-center justify-between text-xs font-bold">
-                <span className="text-amber-900">Current Available Balance</span>
-                <span className="font-mono text-slate-900 text-sm font-extrabold">{payoutStats.availableBalanceFormatted} / ₹500</span>
+            {/* Premium Dual-Tone Balance & Progress Meter Card */}
+            <div className="bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900 text-white rounded-2xl p-4 sm:p-5 border border-slate-800 shadow-sm relative overflow-hidden space-y-3">
+              {/* Subtle Glow Accent */}
+              <div className="absolute -right-8 -top-8 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
+
+              <div className="flex items-center justify-between gap-2 relative z-10">
+                <div>
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 block">
+                    Current Available Balance
+                  </span>
+                  <div className="font-mono text-2xl sm:text-3xl font-black text-emerald-400 mt-0.5">
+                    {payoutStats.availableBalanceFormatted}
+                  </div>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-slate-400 block">
+                    Target Threshold
+                  </span>
+                  <div className="font-mono text-lg sm:text-xl font-bold text-amber-300 mt-0.5">
+                    ₹500
+                  </div>
+                </div>
               </div>
-              <div className="w-full bg-white h-2.5 rounded-full overflow-hidden border border-amber-200">
-                <div 
-                  className="bg-gradient-to-r from-amber-400 to-emerald-500 h-full rounded-full transition-all duration-500" 
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-              <div className="flex items-center justify-between text-[11px] text-amber-800 font-semibold">
-                <span>Shortfall: ₹{payoutStats.shortfall.toLocaleString('en-IN')}</span>
-                <span>≈ {estimatedStudentsNeeded} student registration{estimatedStudentsNeeded > 1 ? 's' : ''} needed</span>
+
+              {/* Progress Bar with Glow */}
+              <div className="space-y-1.5 relative z-10">
+                <div className="w-full bg-slate-800/90 h-3 rounded-full overflow-hidden p-0.5 border border-slate-700">
+                  <div 
+                    className="bg-gradient-to-r from-amber-400 via-emerald-400 to-emerald-300 h-full rounded-full transition-all duration-500 shadow-xs" 
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-between text-[11px] font-medium text-slate-300">
+                  <span>Shortfall: <strong className="text-amber-300 font-mono">₹{payoutStats.shortfall.toLocaleString('en-IN')}</strong></span>
+                  <span className="font-mono text-slate-300">≈ {estimatedStudentsNeeded} registration{estimatedStudentsNeeded > 1 ? 's' : ''} needed</span>
+                </div>
               </div>
             </div>
 
-            {/* Referral Code & Link Share Card */}
-            <div className="bg-slate-50 border border-slate-200/90 rounded-2xl p-4 space-y-3">
-              <span className="text-[11px] font-mono font-bold text-slate-500 uppercase tracking-wider block">
+            {/* Referral Assets Container (Responsive 2-Col on Desktop, Stack on Mobile) */}
+            <div className="bg-slate-50/90 border border-slate-200/90 rounded-2xl p-4 sm:p-5 space-y-3.5">
+              <span className="text-[10.5px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
                 Your Official Referral Assets
               </span>
 
-              {/* Code row */}
-              <div className="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200">
-                <div>
-                  <span className="text-[10px] text-slate-400 font-mono uppercase block">Referral Code</span>
-                  <span className="font-mono font-extrabold text-sm text-indigo-700">{activeRefCode}</span>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Code Card */}
+                <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200/90 shadow-xs flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 font-mono uppercase block font-bold">Referral Code</span>
+                    <span className="font-mono font-black text-sm sm:text-base text-indigo-700 tracking-wider truncate block">
+                      {activeRefCode}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={copyReferralCode}
+                    className="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 active:scale-95 text-indigo-700 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  >
+                    {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedCode ? 'Copied!' : 'Copy'}</span>
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={copyReferralCode}
-                  className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg transition flex items-center gap-1 cursor-pointer"
-                >
-                  {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedCode ? 'Copied!' : 'Copy Code'}</span>
-                </button>
+
+                {/* Link Card */}
+                <div className="bg-white p-3 sm:p-3.5 rounded-xl border border-slate-200/90 shadow-xs flex items-center justify-between gap-2">
+                  <div className="min-w-0">
+                    <span className="text-[10px] text-slate-400 font-mono uppercase block font-bold">Direct Link</span>
+                    <span className="font-mono text-xs text-slate-600 truncate block">
+                      {referralLink}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={copyReferralLink}
+                    className="px-3 py-2 bg-indigo-50 hover:bg-indigo-100 active:scale-95 text-indigo-700 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 shrink-0 cursor-pointer"
+                  >
+                    {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
+                    <span>{copiedLink ? 'Copied!' : 'Copy'}</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Link row */}
-              <div className="flex items-center justify-between bg-white px-3.5 py-2.5 rounded-xl border border-slate-200 gap-2">
-                <div className="truncate">
-                  <span className="text-[10px] text-slate-400 font-mono uppercase block">Direct Referral Link</span>
-                  <span className="font-mono text-xs text-slate-700 truncate block">{referralLink}</span>
-                </div>
-                <button
-                  type="button"
-                  onClick={copyReferralLink}
-                  className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg transition flex items-center gap-1 shrink-0 cursor-pointer"
-                >
-                  {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
-                  <span>{copiedLink ? 'Copied!' : 'Copy Link'}</span>
-                </button>
-              </div>
-
-              {/* WhatsApp Share Button */}
+              {/* Standout WhatsApp Share CTA */}
               <button
                 type="button"
                 onClick={shareOnWhatsApp}
-                className="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-xs transition-all cursor-pointer flex items-center justify-center gap-2"
+                className="w-full py-3.5 px-4 bg-gradient-to-r from-emerald-600 via-emerald-500 to-emerald-600 hover:from-emerald-700 hover:to-emerald-600 text-white font-extrabold text-xs sm:text-sm rounded-xl shadow-md hover:shadow-lg active:scale-[0.98] transition-all cursor-pointer flex items-center justify-center gap-2.5"
               >
                 <MessageCircle className="w-4 h-4 fill-white" />
-                <span>Share Referral Message on WhatsApp (1-Click)</span>
+                <span>Share Referral Invitation on WhatsApp (1-Click)</span>
               </button>
             </div>
 
-            {/* 3 Content Creation Action Options */}
+            {/* 3 Action Cards (3-Column Grid on Windows / Desktop, Smooth Stack on Mobile) */}
             <div className="space-y-2.5">
-              <span className="text-[11px] font-mono font-bold text-slate-500 uppercase tracking-wider block">
+              <span className="text-[10.5px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
                 Quick Ways to Mobilize Registrations
               </span>
 
-              {/* Option 1: AI Studio */}
-              <div 
-                onClick={() => navigateTo('growth')}
-                className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5 transition-all cursor-pointer group flex items-center justify-between gap-3 shadow-xs hover:shadow-md"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Zap className="w-5 h-5" />
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {/* Option 1: AI Studio */}
+                <div 
+                  onClick={() => navigateTo('growth')}
+                  className="bg-white hover:bg-indigo-50/50 border border-slate-200/90 hover:border-indigo-300 rounded-2xl p-3.5 transition-all cursor-pointer group flex flex-col justify-between shadow-xs hover:shadow-md"
+                >
+                  <div className="space-y-2">
+                    <div className="w-9 h-9 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <Zap className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
+                        AI Content Studio
+                      </h4>
+                      <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                        Generate reels, hooks & WhatsApp posts in seconds.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 group-hover:text-indigo-600 transition-colors">
-                      AI Content Studio
-                    </h4>
-                    <p className="text-[11px] text-slate-500">
-                      Generate viral reel scripts, YouTube hooks & WhatsApp group posts in seconds.
-                    </p>
+                  <div className="pt-2.5 flex items-center gap-1 text-[11px] font-bold text-indigo-600 group-hover:translate-x-0.5 transition-transform">
+                    <span>Launch Studio</span>
+                    <ArrowRight className="w-3 h-3" />
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-indigo-600 group-hover:translate-x-1 transition-all shrink-0" />
-              </div>
 
-              {/* Option 2: Video Missions */}
-              <div 
-                onClick={() => navigateTo('missions')}
-                className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5 transition-all cursor-pointer group flex items-center justify-between gap-3 shadow-xs hover:shadow-md"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <Video className="w-5 h-5" />
+                {/* Option 2: Video Missions */}
+                <div 
+                  onClick={() => navigateTo('missions')}
+                  className="bg-white hover:bg-amber-50/50 border border-slate-200/90 hover:border-amber-300 rounded-2xl p-3.5 transition-all cursor-pointer group flex flex-col justify-between shadow-xs hover:shadow-md"
+                >
+                  <div className="space-y-2">
+                    <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <Video className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
+                        Video Missions
+                      </h4>
+                      <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                        High-converting video scripts for Class 5–10 students.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 group-hover:text-amber-600 transition-colors">
-                      Video Creation Topics
-                    </h4>
-                    <p className="text-[11px] text-slate-500">
-                      Explore high-converting video topics for Class 5–10 students and submit video links.
-                    </p>
+                  <div className="pt-2.5 flex items-center gap-1 text-[11px] font-bold text-amber-700 group-hover:translate-x-0.5 transition-transform">
+                    <span>Explore Topics</span>
+                    <ArrowRight className="w-3 h-3" />
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-amber-600 group-hover:translate-x-1 transition-all shrink-0" />
-              </div>
 
-              {/* Option 3: Download QR */}
-              <div 
-                onClick={() => navigateTo('referral')}
-                className="bg-white hover:bg-slate-50 border border-slate-200/90 rounded-2xl p-3.5 transition-all cursor-pointer group flex items-center justify-between gap-3 shadow-xs hover:shadow-md"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                    <QrCode className="w-5 h-5" />
+                {/* Option 3: Download QR */}
+                <div 
+                  onClick={() => navigateTo('referral')}
+                  className="bg-white hover:bg-emerald-50/50 border border-slate-200/90 hover:border-emerald-300 rounded-2xl p-3.5 transition-all cursor-pointer group flex flex-col justify-between shadow-xs hover:shadow-md"
+                >
+                  <div className="space-y-2">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                      <QrCode className="w-4.5 h-4.5" />
+                    </div>
+                    <div>
+                      <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
+                        Printable QR Poster
+                      </h4>
+                      <p className="text-[11px] text-slate-500 leading-tight mt-0.5">
+                        Custom QR poster for tuition centers & school batches.
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
-                      Download QR Code Poster
-                    </h4>
-                    <p className="text-[11px] text-slate-500">
-                      Print or display your branded QR code poster in tuition batches & coaching centers.
-                    </p>
+                  <div className="pt-2.5 flex items-center gap-1 text-[11px] font-bold text-emerald-700 group-hover:translate-x-0.5 transition-transform">
+                    <span>Get Poster</span>
+                    <ArrowRight className="w-3 h-3" />
                   </div>
                 </div>
-                <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-emerald-600 group-hover:translate-x-1 transition-all shrink-0" />
               </div>
             </div>
 
             {/* Close / Action Footer */}
-            <div className="pt-2">
+            <div className="pt-1">
               <button
                 type="button"
                 onClick={() => setIsContentModalOpen(false)}
-                className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition cursor-pointer"
+                className="w-full py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs sm:text-sm rounded-xl active:scale-[0.99] transition cursor-pointer"
               >
-                Got it, I'll Start Creating Content
+                I'll Start Mobilizing Now
               </button>
             </div>
 
