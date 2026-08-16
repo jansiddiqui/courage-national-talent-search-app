@@ -3,19 +3,19 @@ import { notFound } from "next/navigation";
 import { 
   School, 
   Award, 
-  Calendar, 
   MapPin, 
   CheckCircle2, 
   Sparkles, 
-  Share2, 
   ShieldCheck,
   TrendingUp,
-  Users
+  Users,
+  Globe
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import JsonLd from "@/components/shared/JsonLd";
 import { getPublishedSchoolProfile } from "@/lib/schoolProfiles";
+import ShareSchoolProfileButton from "@/components/schools/ShareSchoolProfileButton";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -48,7 +48,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       siteName: "Courage National Talent Search",
       images: [
         {
-          url: "https://thecouragelibrary.com/og-cnts.png",
+          url: school.logo_url || "https://thecouragelibrary.com/og-cnts.png",
           width: 1200,
           height: 630,
           alt: `${school.name} CNTS Profile`,
@@ -59,7 +59,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title,
       description,
-      images: ["https://thecouragelibrary.com/og-cnts.png"],
+      images: [school.logo_url || "https://thecouragelibrary.com/og-cnts.png"],
     },
   };
 }
@@ -73,12 +73,16 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
   }
 
   const joinYear = new Date(school.joined_at).getFullYear() || 2026;
+  const totalCandidates = school.snapshots?.reduce((acc, s) => acc + (s.student_count || 0), 0) || 0;
+  const totalScholarships = school.snapshots?.reduce((acc, s) => acc + (s.scholarship_count || 0), 0) || 0;
 
   // JSON-LD Schemas
   const orgSchema = {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     "name": school.name,
+    "url": school.website || `https://thecouragelibrary.com/schools/${school.slug}`,
+    "logo": school.logo_url || undefined,
     "address": {
       "@type": "PostalAddress",
       "addressLocality": school.city,
@@ -127,12 +131,17 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
         <div className="max-w-4xl mx-auto space-y-8">
           
           {/* Breadcrumb Header */}
-          <div className="flex items-center gap-2 text-xs font-semibold text-slate-400">
-            <span>Home</span>
-            <span>/</span>
-            <span>Schools</span>
-            <span>/</span>
-            <span className="text-slate-700 truncate">{school.name}</span>
+          <div className="flex items-center justify-between gap-4 text-xs font-semibold text-slate-400 flex-wrap">
+            <div className="flex items-center gap-2">
+              <span>Home</span>
+              <span>/</span>
+              <span>Schools</span>
+              <span>/</span>
+              <span className="text-slate-700 truncate max-w-[200px] sm:max-w-xs">{school.name}</span>
+            </div>
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/80 flex items-center gap-1">
+              ✓ Official CNTS School Profile
+            </span>
           </div>
 
           {/* School Hero Header Card */}
@@ -142,9 +151,18 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
 
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-2">
               <div className="flex items-start gap-4">
-                <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center shadow-inner shrink-0 text-blue-700">
-                  <School size={36} />
-                </div>
+                {school.logo_url ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img 
+                    src={school.logo_url} 
+                    alt={`${school.name} Logo`} 
+                    className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-2xl p-1 bg-white border border-slate-200 shadow-xs shrink-0"
+                  />
+                ) : (
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center shadow-inner shrink-0 text-blue-700">
+                    <School size={36} />
+                  </div>
+                )}
                 <div className="space-y-1.5">
                   <h1 className="font-display font-black text-2xl sm:text-4xl text-slate-900 tracking-tight leading-tight">
                     {school.name}
@@ -155,6 +173,9 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                   </p>
                 </div>
               </div>
+
+              {/* Share & Website Actions */}
+              <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} website={school.website} />
             </div>
 
             {/* Status & Identity Badges */}
@@ -165,9 +186,9 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
               </span>
 
               {school.is_founding_school && (
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-gradient-to-r from-amber-500/10 to-amber-600/10 text-amber-900 border border-amber-300/80 shadow-2xs">
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs">
                   <Sparkles size={14} className="text-amber-600" />
-                  CNTS Founding School — 2026
+                  🏛️ CNTS Founding School — 2026
                 </span>
               )}
 
@@ -179,6 +200,24 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                 Partner Since {joinYear}
               </span>
             </div>
+
+            {/* Aggregate Institutional Metrics Grid */}
+            {school.snapshots && school.snapshots.length > 0 && (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-center">
+                  <span className="text-xs font-semibold text-slate-400 block">Total Candidates</span>
+                  <span className="text-xl font-bold text-slate-900 mt-0.5 block">{totalCandidates}</span>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-amber-50/60 border border-amber-100 text-center">
+                  <span className="text-xs font-semibold text-amber-800 block">Scholarships Awarded</span>
+                  <span className="text-xl font-bold text-amber-900 mt-0.5 block">{totalScholarships}</span>
+                </div>
+                <div className="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 text-center col-span-2 sm:col-span-1">
+                  <span className="text-xs font-semibold text-blue-800 block">Evaluation Status</span>
+                  <span className="text-sm font-bold text-blue-900 mt-1 block">✓ Verified Record</span>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* CNTS Journey / Participation History */}

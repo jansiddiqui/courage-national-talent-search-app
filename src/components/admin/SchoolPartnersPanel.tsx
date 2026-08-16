@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { School, Search, Plus, Copy, Check, Users, CheckCircle, Phone, Mail, FileDown, Eye, EyeOff, Globe, Sparkles, ExternalLink, X, Key, Send } from "lucide-react";
+import { School, Search, Plus, Copy, Check, Users, CheckCircle, Phone, Mail, FileDown, Eye, EyeOff, Globe, Sparkles, ExternalLink, X, Key, Send, Lock } from "lucide-react";
 
 export default function SchoolPartnersPanel() {
   const router = useRouter();
@@ -17,6 +17,9 @@ export default function SchoolPartnersPanel() {
   const [profileStatus, setProfileStatus] = useState("DRAFT");
   const [isFounding, setIsFounding] = useState(false);
   const [publicDescription, setPublicDescription] = useState("");
+  const [profileLogoUrl, setProfileLogoUrl] = useState("");
+  const [profileWebsite, setProfileWebsite] = useState("");
+  const [isSlugLocked, setIsSlugLocked] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [profileError, setProfileError] = useState("");
 
@@ -145,6 +148,9 @@ export default function SchoolPartnersPanel() {
     setProfileStatus(school.profile_status || "DRAFT");
     setIsFounding(Boolean(school.is_founding_school));
     setPublicDescription(school.public_description || "");
+    setProfileLogoUrl(school.logo_url || "");
+    setProfileWebsite(school.website || "");
+    setIsSlugLocked(school.profile_status === "PUBLISHED");
     setProfileError("");
   };
 
@@ -165,6 +171,8 @@ export default function SchoolPartnersPanel() {
           profile_status: profileStatus,
           is_founding_school: isFounding,
           public_description: publicDescription.trim() || null,
+          logo_url: profileLogoUrl.trim() || null,
+          website: profileWebsite.trim() || null,
         }),
       });
 
@@ -180,6 +188,8 @@ export default function SchoolPartnersPanel() {
                   profile_status: profileStatus,
                   is_founding_school: isFounding,
                   public_description: publicDescription.trim() || null,
+                  logo_url: profileLogoUrl.trim() || null,
+                  website: profileWebsite.trim() || null,
                 }
               : s
           )
@@ -649,17 +659,29 @@ export default function SchoolPartnersPanel() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Public URL Slug *</label>
+                <div className="flex items-center justify-between">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Public URL Slug *</label>
+                  {isSlugLocked && (
+                    <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1">
+                      🔒 Published Slug Locked
+                    </span>
+                  )}
+                </div>
                 <input
                   required
+                  disabled={isSlugLocked}
                   type="text"
                   value={profileSlug}
                   onChange={(e) => setProfileSlug(e.target.value)}
                   placeholder="e.g. courage-public-school-jaipur-rajasthan"
-                  className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono"
+                  className={`w-full px-4 py-2 border rounded-xl text-sm font-mono ${
+                    isSlugLocked 
+                      ? "bg-slate-100 border-slate-200 text-slate-500 cursor-not-allowed" 
+                      : "bg-slate-50 border-slate-200"
+                  }`}
                 />
                 <p className="text-[10px] text-slate-400 font-mono">
-                  URL: /schools/{profileSlug || "slug"}
+                  URL: /schools/{profileSlug || "slug"} {isSlugLocked ? "(Permanent Institutional URL)" : ""}
                 </p>
               </div>
 
@@ -669,7 +691,7 @@ export default function SchoolPartnersPanel() {
                   <select
                     value={profileStatus}
                     onChange={(e) => setProfileStatus(e.target.value)}
-                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold"
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-bold text-slate-900"
                   >
                     <option value="DRAFT">DRAFT (Hidden)</option>
                     <option value="PUBLISHED">PUBLISHED (Public)</option>
@@ -692,6 +714,29 @@ export default function SchoolPartnersPanel() {
                 </div>
               </div>
 
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">School Logo URL (Optional)</label>
+                  <input
+                    type="url"
+                    value={profileLogoUrl}
+                    onChange={(e) => setProfileLogoUrl(e.target.value)}
+                    placeholder="https://example.com/logo.png"
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Official Website (Optional)</label>
+                  <input
+                    type="url"
+                    value={profileWebsite}
+                    onChange={(e) => setProfileWebsite(e.target.value)}
+                    placeholder="https://couragepublicschool.edu.in"
+                    className="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm"
+                  />
+                </div>
+              </div>
+
               <div className="space-y-1.5">
                 <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Public About Description</label>
                 <textarea
@@ -703,17 +748,28 @@ export default function SchoolPartnersPanel() {
                 />
               </div>
 
-              {profileStatus === "PUBLISHED" && profileSlug && (
-                <div className="p-3 bg-blue-50/60 rounded-xl border border-blue-100 flex items-center justify-between text-xs">
-                  <span className="font-semibold text-blue-900">Live Public Page</span>
+              {profileStatus === "PUBLISHED" && profileSlug ? (
+                <div className="p-3 bg-emerald-50/80 rounded-xl border border-emerald-200 flex items-center justify-between text-xs">
+                  <span className="font-semibold text-emerald-900 flex items-center gap-1.5">
+                    <CheckCircle size={14} className="text-emerald-600" /> Live Public Page
+                  </span>
                   <a
                     href={`/schools/${profileSlug}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="font-bold text-blue-600 hover:underline flex items-center gap-1"
                   >
-                    Preview Page <ExternalLink size={12} />
+                    Preview Public Page <ExternalLink size={12} />
                   </a>
+                </div>
+              ) : (
+                <div className="p-3 bg-amber-50/80 rounded-xl border border-amber-200/80 flex items-center justify-between text-xs text-amber-900">
+                  <span className="font-semibold flex items-center gap-1.5">
+                    <Lock size={13} className="text-amber-600 shrink-0" /> Status: DRAFT (Unpublished)
+                  </span>
+                  <span className="font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded text-[11px]">
+                    Publish to Preview Page
+                  </span>
                 </div>
               )}
 

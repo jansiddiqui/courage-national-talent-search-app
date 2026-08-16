@@ -19,6 +19,8 @@ export interface SchoolPublicProfile {
   profile_status: string;
   is_founding_school: boolean;
   public_description: string | null;
+  logo_url: string | null;
+  website: string | null;
   joined_at: string;
   is_featured: boolean;
   snapshots: SchoolPublicSnapshot[];
@@ -36,6 +38,8 @@ const MOCK_PUBLISHED_SCHOOL: SchoolPublicProfile = {
   profile_status: "PUBLISHED",
   is_founding_school: true,
   public_description: "Courage Public School is a premier educational institution in Jaipur, dedicated to academic excellence, holistic character development, and empowering students to excel in national talent evaluations.",
+  logo_url: null,
+  website: "https://www.couragepublicschool.edu.in",
   joined_at: "2026-01-15T00:00:00.000Z",
   is_featured: true,
   snapshots: [
@@ -74,7 +78,7 @@ export async function getPublishedSchoolProfile(
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data: school, error: schoolErr } = await (supabaseAdmin as any)
       .from("schools")
-      .select("id, name, slug, city, state, board, school_type, profile_status, is_founding_school, public_description, joined_at, is_featured")
+      .select("id, name, slug, city, state, board, school_type, profile_status, is_founding_school, public_description, logo_url, website, joined_at, is_featured")
       .eq("slug", normalizedSlug)
       .eq("profile_status", "PUBLISHED")
       .maybeSingle();

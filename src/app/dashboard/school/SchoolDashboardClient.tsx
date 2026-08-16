@@ -501,6 +501,7 @@ export default function SchoolDashboardClient({
 
   // Change PIN Modal State
   const [showChangePinModal, setShowChangePinModal] = useState(false);
+  const [profileCopied, setProfileCopied] = useState(false);
   const [currentPinInput, setCurrentPinInput] = useState("");
   const [newPinInput, setNewPinInput] = useState("");
   const [confirmPinInput, setConfirmPinInput] = useState("");
@@ -697,19 +698,34 @@ export default function SchoolDashboardClient({
               <p className="text-slate-500 font-medium text-sm mt-1">
                 {school.city} • Code: <span className="font-semibold text-slate-700">{school.school_code}</span>
               </p>
-              <div className="mt-2.5">
+              <div className="mt-2.5 flex items-center gap-2 flex-wrap">
                 {school.profile_status === "PUBLISHED" && school.slug ? (
-                  <a
-                    href={`/schools/${school.slug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/80 rounded-xl text-xs font-bold transition-all shadow-2xs"
-                  >
-                    <Eye size={13} /> View Public School Page ↗
-                  </a>
+                  <>
+                    <a
+                      href={`/schools/${school.slug}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200/80 rounded-xl text-xs font-bold transition-all shadow-2xs"
+                    >
+                      <Eye size={13} /> View Public School Profile ↗
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const url = `${window.location.origin}/schools/${school.slug}`;
+                        navigator.clipboard.writeText(url);
+                        setProfileCopied(true);
+                        setTimeout(() => setProfileCopied(false), 2000);
+                      }}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-all border border-slate-200 cursor-pointer"
+                    >
+                      {profileCopied ? <Check size={13} className="text-emerald-600" /> : <Copy size={13} />}
+                      {profileCopied ? "Link Copied!" : "Copy Public Link"}
+                    </button>
+                  </>
                 ) : (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-semibold bg-slate-100 text-slate-500">
-                    Public Profile: Not Published Yet
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
+                    🔒 Official Public Profile: Pending Admin Verification
                   </span>
                 )}
               </div>
