@@ -570,7 +570,7 @@ export default function SchoolDashboardClient({
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <Navbar theme="light" />
 
-      <main className="flex-1 pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+      <main className="flex-1 pt-28 md:pt-32 lg:pt-36 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-8">
         
         {/* Photo Upload Modal */}
