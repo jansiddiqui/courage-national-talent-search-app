@@ -91,6 +91,22 @@ export async function GET(request: Request) {
       timelineFeed = await dbFetch(`partner_events?partner_id=eq.${encodeURIComponent(partnerDbRecord.id)}&order=created_at.desc&limit=20`);
     }
 
+    // 5. Fetch Payout Requests to calculate withdrawn amounts vs live available balance
+    let payoutRequests: any[] = [];
+    if (partnerDbRecord?.id) {
+      payoutRequests = await dbFetch(`partner_payout_requests?partner_id=eq.${encodeURIComponent(partnerDbRecord.id)}&order=requested_at.desc`);
+    } else {
+      payoutRequests = await dbFetch(`partner_payout_requests?referral_code=eq.${encodeURIComponent(cleanRef)}&order=requested_at.desc`);
+    }
+    const activePayouts = Array.isArray(payoutRequests)
+      ? payoutRequests.filter((r: any) => r.status !== 'REJECTED' && r.status !== 'CANCELLED')
+      : [];
+    const totalWithdrawnOrPending = activePayouts.reduce((sum: number, r: any) => sum + (Number(r.amount) || 0), 0);
+    const availableBalance = Math.max(0, totalHonorariumEarned - totalWithdrawnOrPending);
+    const minWithdrawalThreshold = 500;
+    const canWithdraw = availableBalance >= minWithdrawalThreshold;
+    const shortfall = Math.max(0, minWithdrawalThreshold - availableBalance);
+
     return NextResponse.json({
       success: true,
       referralCode: cleanRef,
@@ -111,6 +127,13 @@ export async function GET(request: Request) {
       totalRegistrations: verifiedRegistrationsCount,
       totalHonorariumEarned: `₹${totalHonorariumEarned.toLocaleString('en-IN')}`,
       rawHonorariumEarned: totalHonorariumEarned,
+      totalWithdrawn: totalWithdrawnOrPending,
+      totalWithdrawnFormatted: `₹${totalWithdrawnOrPending.toLocaleString('en-IN')}`,
+      availableBalance: availableBalance,
+      availableBalanceFormatted: `₹${availableBalance.toLocaleString('en-IN')}`,
+      canWithdraw,
+      minWithdrawalThreshold,
+      shortfall,
       referralClicks: 0,
       conversionRate: verifiedRegistrationsCount > 0 ? '100.0%' : '0.0%',
       conversionsRoster,

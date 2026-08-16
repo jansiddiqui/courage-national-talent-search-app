@@ -73,10 +73,12 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
             const rate = Number(data.honorariumRate || data.effectiveRate || 25);
             const earnings = data.rawHonorariumEarned ?? (regs * rate);
 
+            const available = typeof data.availableBalance === 'number' ? data.availableBalance : earnings;
+
             setStats({
               totalRegistrations: regs,
               totalEarnings: earnings,
-              maturedBalance: earnings, // Matured balance matches earnings for verified candidates
+              maturedBalance: available, // Live available balance after deducting withdrawals
               effectiveRate: rate,
               ruleSource: data.ruleResult?.winningRuleName || data.ruleSource || 'Growth Tier (Bronze)',
               tierName: data.achievements?.unlockedBadges?.[0]?.title || 'Bronze Mobilizer',

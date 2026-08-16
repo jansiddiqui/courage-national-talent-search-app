@@ -402,6 +402,7 @@ export default function DedicatedPartnerWorkspacePage() {
           partnerName={currentPartnerName}
           referralCode={currentReferralCode}
           onNavigateToPaymentSetup={() => setActiveTab('payment-setup')}
+          onNavigateTab={(tab) => setActiveTab(tab)}
         />
       )}
       {activeTab === 'payment-setup' && <PaymentSetupAndRulesTab />}
