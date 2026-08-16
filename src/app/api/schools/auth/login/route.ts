@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     const { data: school, error } = await (supabaseAdmin as any)
       .from("schools")
       .select("id, status, pin")
-      .eq("school_code", cleanCode)
+      .ilike("school_code", cleanCode)
       .maybeSingle();
 
     if (error || !school) {
@@ -86,7 +86,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Invalid School Code or PIN" }, { status: 401 });
     }
 
-    if (school.status !== "ACTIVE") {
+    const rawStatus = (school.status || "ACTIVE").toString().toUpperCase();
+    if (rawStatus !== "ACTIVE" && rawStatus !== "PUBLISHED" && rawStatus !== "VERIFIED") {
       return NextResponse.json({ success: false, message: "School account is inactive. Please contact support." }, { status: 403 });
     }
 
@@ -115,8 +116,8 @@ export async function POST(request: Request) {
       .setExpirationTime("24h")
       .sign(JWT_SECRET);
 
-    const cookieStore = await cookies();
-    cookieStore.set("cnts_school_session", token, {
+    const response = NextResponse.json({ success: true, message: "Logged in successfully" });
+    response.cookies.set("cnts_school_session", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
@@ -124,7 +125,7 @@ export async function POST(request: Request) {
       maxAge: 60 * 60 * 24
     });
 
-    return NextResponse.json({ success: true, message: "Logged in successfully" });
+    return response;
   } catch (error: any) {
     return NextResponse.json({ success: false, message: error.message }, { status: 500 });
   }
