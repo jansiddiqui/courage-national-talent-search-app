@@ -471,42 +471,58 @@ export class NotificationService {
     subject: string,
     replyText: string
   ): Promise<{ whatsapp: boolean; email: boolean; jobIds?: string[] }> {
-    console.log(`[NotificationService] Scheduling support agent reply notification for ticket: ${ticketNumber}`);
+    console.log(`[NotificationService] Dispatching support reply notification for ticket: ${ticketNumber}, email: ${email}`);
 
     const emailSubject = subject 
       ? `[CNTS Support] #${ticketNumber} — ${subject}`
       : `[CNTS Support] Update on Ticket #${ticketNumber}`;
 
+    let emailSent = false;
+    if (email && email.includes("@")) {
+      try {
+        const htmlContent = getSupportAgentRepliedTemplate(ticketNumber, subject, replyText);
+        const emailRes = await emailService.sendEmail(email, emailSubject, htmlContent);
+        emailSent = emailRes.success;
+        if (emailSent) {
+          console.log(`[NotificationService] Support reply email dispatched successfully to ${email}`);
+        } else {
+          console.error(`[NotificationService] Brevo dispatch failed for ${email}:`, emailRes.error);
+        }
+      } catch (err) {
+        console.error("[NotificationService] Direct email send error:", err);
+      }
+    }
+
     if (!hasSupabaseAdminConfig) {
-      const emailPromise = email 
-        ? emailService.sendEmail(
-            email, 
-            emailSubject, 
-            getSupportAgentRepliedTemplate(ticketNumber, subject, replyText)
-          ).then(r => r.success)
-        : Promise.resolve(false);
-      const emailRes = await emailPromise;
-      return { whatsapp: false, email: emailRes };
+      return { whatsapp: false, email: emailSent };
     }
 
     const jobIds: string[] = [];
 
-    // Email Job
-    let emailJobId: string | null = null;
-    if (email) {
+    // Email Outbox Job for Audit / Tracking
+    if (email && email.includes("@")) {
       const htmlContent = getSupportAgentRepliedTemplate(ticketNumber, subject, replyText);
-      emailJobId = await this.createJob(email, "EMAIL", "support_agent_replied", {
+      const emailJobId = await this.createJob(email, "EMAIL", "support_agent_replied", {
         subject: emailSubject,
         htmlContent
       });
-      if (emailJobId) jobIds.push(emailJobId);
+      if (emailJobId) {
+        jobIds.push(emailJobId);
+        // Mark job as sent if direct dispatch succeeded
+        if (emailSent) {
+          await db
+            .from("notification_jobs")
+            .update({ status: "SENT", updated_at: new Date().toISOString() })
+            .eq("id", emailJobId);
+        } else {
+          this.scheduleExecution([emailJobId]);
+        }
+      }
     }
-
-    this.scheduleExecution(jobIds);
 
     return {
       whatsapp: false,
-      email: !!emailJobId,
+      email: emailSent || jobIds.length > 0,
       jobIds
     };
   }

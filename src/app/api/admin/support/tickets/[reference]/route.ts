@@ -6,6 +6,7 @@ import { verifySession } from "@/lib/sessionHelper";
 import { isRateLimited } from "@/lib/rateLimiter";
 import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
 import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
+import { NotificationService } from "@/services/NotificationService";
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
@@ -293,6 +294,38 @@ export async function POST(request: Request, props: { params: Promise<{ referenc
       } catch (notifErr) {
         console.error("[Ticket Partner Notification non-blocking error]:", notifErr);
       }
+    }
+
+    // Dispatch Email Notification to Requester
+    try {
+      let recipientEmail = ticket.metadata?.email;
+      let recipientPhone = ticket.metadata?.phone;
+
+      // If partner ticket and email is placeholder or missing, resolve from partner_applications
+      if ((!recipientEmail || recipientEmail.includes("couragetalent.org")) && refCode) {
+        const { data: partnerApp } = await (supabaseAdmin as any)
+          .from("partner_applications")
+          .select("email, phone")
+          .or(`id.eq.${ticket.requester_id},referral_code.eq.${refCode}`)
+          .maybeSingle();
+
+        if (partnerApp) {
+          recipientEmail = partnerApp.email || recipientEmail;
+          recipientPhone = partnerApp.phone || recipientPhone;
+        }
+      }
+
+      if (recipientEmail) {
+        await NotificationService.sendAgentReplied(
+          recipientPhone || null,
+          recipientEmail,
+          ticket.ticket_number,
+          ticket.subject,
+          cleanMessage
+        );
+      }
+    } catch (emailErr) {
+      console.error("[Ticket Reference POST Email Error]:", emailErr);
     }
 
     return NextResponse.json({

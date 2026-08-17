@@ -131,7 +131,9 @@ export async function POST(request: Request) {
     const token = await signSession(
       {
         partnerDbId: partnerData.id,
+        partnerId: partnerData.partnerId,
         email: partnerData.email,
+        phone: partnerData.phone,
         fullName: partnerData.fullName,
         referralCode: partnerData.referralCode,
         customSlug: partnerData.customSlug,

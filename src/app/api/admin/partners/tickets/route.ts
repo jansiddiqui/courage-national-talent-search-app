@@ -5,6 +5,7 @@ import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
 import { isRateLimited } from "@/lib/rateLimiter";
 import { checkAdminPermission } from "@/domains/admin/AdminAuthService";
+import { NotificationService } from "@/services/NotificationService";
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
@@ -234,6 +235,40 @@ export async function POST(request: Request) {
         });
     } catch (notifErr) {
       console.error("[Partner Ticket Admin Notification Error]:", notifErr);
+    }
+
+    // 5. Send Email Notification to Partner
+    if (cleanMessage) {
+      try {
+        let partnerEmail = ticket.metadata?.email;
+        let partnerPhone = ticket.metadata?.phone;
+
+        // If email is missing or a placeholder domain, fetch from partner_applications
+        if (!partnerEmail || partnerEmail.includes("couragetalent.org")) {
+          const { data: partnerApp } = await (supabaseAdmin as any)
+            .from("partner_applications")
+            .select("email, phone")
+            .or(`id.eq.${ticket.requester_id},referral_code.eq.${targetRefCode}`)
+            .maybeSingle();
+
+          if (partnerApp) {
+            partnerEmail = partnerApp.email || partnerEmail;
+            partnerPhone = partnerApp.phone || partnerPhone;
+          }
+        }
+
+        if (partnerEmail) {
+          await NotificationService.sendAgentReplied(
+            partnerPhone || null,
+            partnerEmail,
+            ticket.ticket_number,
+            ticket.subject,
+            cleanMessage
+          );
+        }
+      } catch (emailErr) {
+        console.error("[Partner Ticket Admin Email Dispatch Error]:", emailErr);
+      }
     }
 
     return NextResponse.json({

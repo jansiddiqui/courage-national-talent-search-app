@@ -52,10 +52,35 @@ export async function POST(request: Request) {
       partnerSession = await verifySession(partnerCookie.value, JWT_SECRET);
     }
 
-    const activePartnerName = sanitizeInput(partnerSession?.fullName || partnerName || "Courage Partner");
-    const activeRefCode = sanitizeInput(partnerSession?.referralCode || referralCode || "PARTNER").toUpperCase();
-    const activeEmail = sanitizeInput(partnerSession?.email || email || `${activeRefCode.toLowerCase()}@partner.couragetalent.org`);
-    const activePhone = sanitizeInput(partnerSession?.phone || phone || "");
+    let activePartnerName = sanitizeInput(partnerSession?.fullName || partnerName || "Courage Partner");
+    let activeRefCode = sanitizeInput(partnerSession?.referralCode || referralCode || "PARTNER").toUpperCase();
+    let activeEmail = sanitizeInput(partnerSession?.email || email || "");
+    let activePhone = sanitizeInput(partnerSession?.phone || phone || "");
+
+    // Resolve real registered partner email and phone if missing
+    if ((!activeEmail || !activePhone || activeEmail.includes("couragetalent.org")) && hasSupabaseAdminConfig) {
+      try {
+        const searchId = partnerSession?.partnerDbId;
+        const searchRef = partnerSession?.referralCode || referralCode;
+        let pQuery = (supabaseAdmin as any).from("partner_applications").select("email, phone, full_name, referral_code");
+        if (searchId) pQuery = pQuery.eq("id", searchId);
+        else if (searchRef) pQuery = pQuery.ilike("referral_code", searchRef);
+
+        const { data: pData } = await pQuery.maybeSingle();
+        if (pData) {
+          if (!activeEmail || activeEmail.includes("couragetalent.org")) activeEmail = pData.email;
+          if (!activePhone) activePhone = pData.phone;
+          if (!activePartnerName || activePartnerName === "Courage Partner") activePartnerName = pData.full_name;
+        }
+      } catch (err) {
+        console.error("[Partner Ticket Email Resolution Error]:", err);
+      }
+    }
+
+    if (!activeEmail) {
+      activeEmail = `${activeRefCode.toLowerCase()}@thecouragelibrary.com`;
+    }
+
     const cleanMessage = sanitizeInput(message);
 
     // If this is a follow-up reply to an existing ticket:
