@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import {
-  HelpCircle, MessageSquare, BookOpen, Send, CheckCircle2, ShieldCheck,
+  HelpCircle, MessageSquare, BookOpen, Send, CheckCircle2, ShieldCheck, User,
   Search, ChevronDown, ChevronUp, Phone, X, Clock, AlertCircle, RefreshCw, MessageCircle
 } from 'lucide-react';
 
@@ -85,30 +85,94 @@ export const PartnerSupportCenter: React.FC<PartnerSupportCenterProps> = ({
   const [tickets, setTickets] = useState<PartnerTicket[]>([]);
   const [loadingTickets, setLoadingTickets] = useState(false);
   const [selectedTicket, setSelectedTicket] = useState<PartnerTicket | null>(null);
+  const [followUpText, setFollowUpText] = useState('');
+  const [isSendingFollowUp, setIsSendingFollowUp] = useState(false);
+  const messagesEndRef = React.useRef<HTMLDivElement | null>(null);
 
   // FAQs
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
-  const fetchTickets = async () => {
+  const fetchTickets = async (silent = false) => {
     if (!referralCode) return;
-    setLoadingTickets(true);
+    if (!silent) setLoadingTickets(true);
     try {
       const res = await fetch(`/api/partner/tickets?referralCode=${encodeURIComponent(referralCode)}`);
       const data = await res.json();
       if (data.success && Array.isArray(data.tickets)) {
         setTickets(data.tickets);
+        if (selectedTicket) {
+          const updated = data.tickets.find((t: any) => t.id === selectedTicket.id);
+          if (updated) {
+            setSelectedTicket(updated);
+          }
+        }
       }
     } catch (err) {
       console.error('Failed to fetch partner tickets:', err);
     } finally {
-      setLoadingTickets(false);
+      if (!silent) setLoadingTickets(false);
     }
   };
 
   useEffect(() => {
     fetchTickets();
   }, [referralCode]);
+
+  // Live Auto-Polling Heartbeat (No reload needed)
+  useEffect(() => {
+    if (!referralCode || activeTab !== 'history') return;
+    const interval = setInterval(() => {
+      fetchTickets(true);
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [referralCode, activeTab, selectedTicket?.id]);
+
+  // Auto-scroll on new messages
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [selectedTicket?.messages?.length]);
+
+  const handleSendFollowUp = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedTicket || !followUpText.trim()) return;
+    const msg = followUpText.trim();
+    setIsSendingFollowUp(true);
+    setFollowUpText('');
+
+    // Optimistic instant UI update
+    const optimisticMsg: TicketMessage = {
+      id: `temp-${Date.now()}`,
+      sender_role: 'PARTNER',
+      message: msg,
+      created_at: new Date().toISOString()
+    };
+    setSelectedTicket(prev => prev ? {
+      ...prev,
+      messages: [...(prev.messages || []), optimisticMsg]
+    } : null);
+
+    try {
+      const res = await fetch('/api/partner/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId: selectedTicket.id,
+          message: msg,
+          partnerName,
+          referralCode
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        fetchTickets(true);
+      }
+    } catch (err) {
+      console.error('Failed to send follow up:', err);
+    } finally {
+      setIsSendingFollowUp(false);
+    }
+  };
 
   const handleTicketSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -428,7 +492,7 @@ export const PartnerSupportCenter: React.FC<PartnerSupportCenterProps> = ({
             </div>
             <button
               type="button"
-              onClick={fetchTickets}
+              onClick={() => fetchTickets()}
               className="p-2 bg-slate-50 hover:bg-slate-100 text-slate-600 rounded-xl border border-slate-200 transition cursor-pointer flex items-center gap-1.5 text-xs font-bold"
             >
               <RefreshCw className={`w-3.5 h-3.5 ${loadingTickets ? 'animate-spin' : ''}`} />
@@ -513,37 +577,75 @@ export const PartnerSupportCenter: React.FC<PartnerSupportCenterProps> = ({
                         </div>
                         <h3 className="font-bold text-sm text-slate-900 mt-0.5">{selectedTicket.subject}</h3>
                       </div>
-                      <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider self-start shrink-0 ${
-                        selectedTicket.status === 'RESOLVED' || selectedTicket.status === 'CLOSED'
-                          ? 'bg-emerald-100 text-emerald-800'
-                          : 'bg-amber-100 text-amber-800'
-                      }`}>
-                        Status: {selectedTicket.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                          <span>Live Sync</span>
+                        </span>
+                        <span className={`text-[10px] px-2.5 py-1 rounded-full font-bold uppercase tracking-wider ${
+                          selectedTicket.status === 'RESOLVED' || selectedTicket.status === 'CLOSED'
+                            ? 'bg-emerald-100 text-emerald-800'
+                            : 'bg-amber-100 text-amber-800'
+                        }`}>
+                          {selectedTicket.status}
+                        </span>
+                      </div>
                     </div>
 
                     {/* Messages Thread */}
-                    <div className="space-y-3 max-h-[400px] overflow-y-auto pr-1">
+                    <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
                       {selectedTicket.messages.map((m, idx) => {
                         const isAdmin = m.sender_role === 'ADMIN';
                         return (
                           <div
                             key={idx}
-                            className={`p-3.5 rounded-2xl text-xs space-y-1 ${
+                            className={`p-3.5 rounded-2xl text-xs space-y-1 transition-all ${
                               isAdmin
                                 ? 'bg-indigo-600 text-white ml-6 rounded-tr-none shadow-xs'
                                 : 'bg-white text-slate-800 mr-6 rounded-tl-none border border-slate-200 shadow-xs'
                             }`}
                           >
-                            <div className="flex items-center justify-between text-[10px] font-bold opacity-80">
-                              <span>{isAdmin ? '🛡️ Courage Helpdesk Admin' : `👤 You (${partnerName})`}</span>
+                            <div className="flex items-center justify-between text-[10px] font-bold opacity-90">
+                              <span className="flex items-center gap-1.5">
+                                {isAdmin ? (
+                                  <>
+                                    <ShieldCheck className="w-3.5 h-3.5" />
+                                    <span>Courage Helpdesk Admin</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <User className="w-3.5 h-3.5" />
+                                    <span>You ({partnerName})</span>
+                                  </>
+                                )}
+                              </span>
                               <span>{new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                             </div>
                             <p className="leading-relaxed whitespace-pre-wrap">{m.message}</p>
                           </div>
                         );
                       })}
+                      <div ref={messagesEndRef} />
                     </div>
+
+                    {/* Interactive Follow-up Reply Box */}
+                    <form onSubmit={handleSendFollowUp} className="pt-2 border-t border-slate-200/80 flex items-center gap-2">
+                      <input
+                        type="text"
+                        value={followUpText}
+                        onChange={e => setFollowUpText(e.target.value)}
+                        placeholder="Type a follow-up reply or question (live syncs immediately)..."
+                        className="flex-1 px-3.5 py-2.5 bg-white border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-indigo-300 focus:outline-none"
+                      />
+                      <button
+                        type="submit"
+                        disabled={isSendingFollowUp || !followUpText.trim()}
+                        className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl shadow-xs transition cursor-pointer flex items-center gap-1.5 shrink-0"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>{isSendingFollowUp ? 'Sending...' : 'Reply'}</span>
+                      </button>
+                    </form>
                   </div>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center p-8 text-center text-slate-400 space-y-2 border border-dashed border-slate-200 rounded-2xl min-h-[250px]">

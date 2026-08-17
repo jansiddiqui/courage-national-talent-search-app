@@ -284,7 +284,7 @@ export async function POST(request: Request, props: { params: Promise<{ referenc
             partner_id: ticket.requester_id || refCode,
             referral_code: refCode,
             sender: "Courage Helpdesk Admin",
-            title: `💬 Update on Support Ticket #${ticket.ticket_number}`,
+            title: `Update on Support Ticket #${ticket.ticket_number}`,
             preview: `Helpdesk response: ${cleanMessage.slice(0, 80)}...`,
             full_body: `Dear Partner,\n\nOur Helpdesk team has replied to your support inquiry #${ticket.ticket_number}.\n\nReply:\n"${cleanMessage}"\n\nYou can track this resolution in your Partner Support Center tab.`,
             category: "System",

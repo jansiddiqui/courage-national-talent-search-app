@@ -226,7 +226,7 @@ export async function POST(request: Request) {
           partner_id: ticket.requester_id || targetRefCode,
           referral_code: targetRefCode,
           sender: "Courage Partner Helpdesk",
-          title: `💬 Update on Support Ticket #${ticket.ticket_number}`,
+          title: `Update on Support Ticket #${ticket.ticket_number}`,
           preview: cleanMessage ? `Helpdesk response: ${cleanMessage.slice(0, 80)}...` : `Ticket status updated to ${updatedStatus}`,
           full_body: `Dear ${partnerFullName},\n\nOur Partner Support team has updated your ticket (${ticket.ticket_number}).\n\nSubject: ${ticket.subject}\nStatus: ${updatedStatus}\n${cleanMessage ? `\nHelpdesk Reply:\n"${cleanMessage}"\n` : ''}\nIf you have further questions, you can continue the thread in your Support Center tab.\n\nWarm regards,\nCourage Partner Operations`,
           category: "System",

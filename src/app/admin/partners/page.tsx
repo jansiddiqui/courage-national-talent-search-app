@@ -32,7 +32,8 @@ import {
   Sliders,
   Flame,
   Inbox,
-  Video
+  Video,
+  User
 } from 'lucide-react';
 
 export default function AdminPartnersPage() {
@@ -139,21 +140,27 @@ export default function AdminPartnersPage() {
     }
   };
 
-  const fetchPartnerTickets = async () => {
-    setLoadingTickets(true);
+  const fetchPartnerTickets = async (silent = false) => {
+    if (!silent) setLoadingTickets(true);
     try {
       const res = await fetch('/api/admin/partners/tickets');
       const data = await res.json();
       if (data.success && Array.isArray(data.tickets)) {
         setPartnerTickets(data.tickets);
-      } else {
+        if (selectedPartnerTicket) {
+          const updated = data.tickets.find((t: any) => t.id === selectedPartnerTicket.id);
+          if (updated) {
+            setSelectedPartnerTicket(updated);
+          }
+        }
+      } else if (!silent) {
         setPartnerTickets([]);
       }
     } catch (err) {
       console.error('Failed to fetch partner tickets:', err);
-      setPartnerTickets([]);
+      if (!silent) setPartnerTickets([]);
     } finally {
-      setLoadingTickets(false);
+      if (!silent) setLoadingTickets(false);
     }
   };
 
@@ -161,38 +168,41 @@ export default function AdminPartnersPage() {
     if (!ticketId) return;
     if (!ticketReplyMessage.trim() && !newStatus) return;
 
+    const messageToSend = ticketReplyMessage.trim();
     setIsSendingTicketReply(true);
+    setTicketReplyMessage('');
+
+    // Instant optimistic update
+    if (selectedPartnerTicket && selectedPartnerTicket.id === ticketId && messageToSend) {
+      setSelectedPartnerTicket({
+        ...selectedPartnerTicket,
+        status: newStatus || selectedPartnerTicket.status,
+        messages: [
+          ...(selectedPartnerTicket.messages || []),
+          {
+            id: `temp-${Date.now()}`,
+            sender_role: 'ADMIN',
+            message: messageToSend,
+            created_at: new Date().toISOString()
+          }
+        ]
+      });
+    }
+
     try {
       const res = await fetch('/api/admin/partners/tickets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ticketId,
-          message: ticketReplyMessage.trim(),
+          message: messageToSend,
           newStatus: newStatus || undefined
         })
       });
 
       const data = await res.json();
       if (data.success) {
-        setTicketReplyMessage('');
-        await fetchPartnerTickets();
-        const updated = partnerTickets.find(t => t.id === ticketId);
-        if (updated) {
-          setSelectedPartnerTicket({
-            ...updated,
-            status: newStatus || updated.status,
-            messages: ticketReplyMessage.trim() ? [
-              ...updated.messages,
-              {
-                id: `temp-${Date.now()}`,
-                sender_role: 'ADMIN',
-                message: ticketReplyMessage.trim(),
-                created_at: new Date().toISOString()
-              }
-            ] : updated.messages
-          });
-        }
+        await fetchPartnerTickets(true);
       } else {
         alert(data.message || 'Failed to dispatch ticket reply.');
       }
@@ -209,6 +219,15 @@ export default function AdminPartnersPage() {
     fetchVideoSubmissions();
     fetchPartnerTickets();
   }, []);
+
+  // Real-time live polling for Partner Support Desk (no page reload needed)
+  useEffect(() => {
+    if (activeTab !== 'support-tickets') return;
+    const interval = setInterval(() => {
+      fetchPartnerTickets(true);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, [activeTab, selectedPartnerTicket?.id]);
 
   const handleUpdateStatus = async (partnerId: string, status: string) => {
     if (status === 'SUSPENDED') {
@@ -1500,7 +1519,7 @@ export default function AdminPartnersPage() {
                   />
                 </div>
                 <button
-                  onClick={fetchPartnerTickets}
+                  onClick={() => fetchPartnerTickets()}
                   className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition cursor-pointer"
                   title="Refresh tickets"
                 >
@@ -1615,15 +1634,21 @@ export default function AdminPartnersPage() {
                             </span>
                             <span className="text-xs text-slate-500 font-medium">({selectedPartnerTicket.topic})</span>
                           </div>
-                          <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
-                            selectedPartnerTicket.status === 'RESOLVED' || selectedPartnerTicket.status === 'CLOSED'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : selectedPartnerTicket.status === 'IN_PROGRESS'
-                              ? 'bg-blue-100 text-blue-800'
-                              : 'bg-amber-100 text-amber-800'
-                          }`}>
-                            {selectedPartnerTicket.status}
-                          </span>
+                          <div className="flex items-center gap-2">
+                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[10px] font-bold">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>Live Sync</span>
+                            </span>
+                            <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
+                              selectedPartnerTicket.status === 'RESOLVED' || selectedPartnerTicket.status === 'CLOSED'
+                                ? 'bg-emerald-100 text-emerald-800'
+                                : selectedPartnerTicket.status === 'IN_PROGRESS'
+                                ? 'bg-blue-100 text-blue-800'
+                                : 'bg-amber-100 text-amber-800'
+                            }`}>
+                              {selectedPartnerTicket.status}
+                            </span>
+                          </div>
                         </div>
 
                         <h3 className="font-bold text-base text-slate-900">{selectedPartnerTicket.subject}</h3>
@@ -1641,7 +1666,10 @@ export default function AdminPartnersPage() {
                         {/* Original Partner Query */}
                         <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-1 mr-8">
                           <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-500">
-                            <span>👤 {selectedPartnerTicket.partnerName} (Partner Inquiry)</span>
+                            <span className="flex items-center gap-1.5">
+                              <User className="w-3.5 h-3.5 text-slate-400" />
+                              <span>{selectedPartnerTicket.partnerName} (Partner Inquiry)</span>
+                            </span>
                             <span>{new Date(selectedPartnerTicket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                           </div>
                           <p className="text-xs text-slate-800 leading-relaxed whitespace-pre-wrap font-sans">
@@ -1663,8 +1691,20 @@ export default function AdminPartnersPage() {
                                     : 'bg-white text-slate-800 mr-8 rounded-tl-none border border-slate-200'
                                 }`}
                               >
-                                <div className="flex items-center justify-between text-[10px] font-bold opacity-80">
-                                  <span>{isAdmin ? '🛡️ Admin Helpdesk Response' : `👤 ${selectedPartnerTicket.partnerName}`}</span>
+                                <div className="flex items-center justify-between text-[10px] font-bold opacity-90">
+                                  <span className="flex items-center gap-1.5">
+                                    {isAdmin ? (
+                                      <>
+                                        <ShieldCheck className="w-3.5 h-3.5" />
+                                        <span>Admin Helpdesk Response</span>
+                                      </>
+                                    ) : (
+                                      <>
+                                        <User className="w-3.5 h-3.5 text-slate-400" />
+                                        <span>{selectedPartnerTicket.partnerName}</span>
+                                      </>
+                                    )}
+                                  </span>
                                   <span>{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                                 </div>
                                 <p className="leading-relaxed whitespace-pre-wrap">{msg.message}</p>

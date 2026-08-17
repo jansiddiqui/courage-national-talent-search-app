@@ -34,11 +34,11 @@ export async function POST(request: Request) {
     }
 
     const body = JSON.parse(rawBody);
-    const { topic, subject, message, partnerName, referralCode, email, phone } = body;
+    const { ticketId, ticketNumber: targetTicketNumber, topic, subject, message, partnerName, referralCode, email, phone } = body;
 
-    if (!subject || !message) {
+    if (!message) {
       return NextResponse.json(
-        { success: false, message: "Subject and message are required." },
+        { success: false, message: "Message is required." },
         { status: 400 }
       );
     }
@@ -56,8 +56,59 @@ export async function POST(request: Request) {
     const activeRefCode = sanitizeInput(partnerSession?.referralCode || referralCode || "PARTNER").toUpperCase();
     const activeEmail = sanitizeInput(partnerSession?.email || email || `${activeRefCode.toLowerCase()}@partner.couragetalent.org`);
     const activePhone = sanitizeInput(partnerSession?.phone || phone || "");
-    const cleanSubject = sanitizeInput(subject);
     const cleanMessage = sanitizeInput(message);
+
+    // If this is a follow-up reply to an existing ticket:
+    if (ticketId || targetTicketNumber) {
+      let query = (supabaseAdmin as any).from("support_tickets").select("id, ticket_number, status, metadata");
+      if (ticketId) query = query.eq("id", ticketId);
+      else if (targetTicketNumber) query = query.eq("ticket_number", targetTicketNumber);
+
+      const { data: existingTicket, error: fetchErr } = await query.single();
+      if (fetchErr || !existingTicket) {
+        return NextResponse.json({ success: false, message: "Ticket not found." }, { status: 404 });
+      }
+
+      const { data: createdMsg, error: msgErr } = await (supabaseAdmin as any)
+        .from("support_ticket_messages")
+        .insert({
+          ticket_id: existingTicket.id,
+          sender_id: partnerSession?.partnerDbId || activeRefCode,
+          sender_role: "PARTNER",
+          message: cleanMessage,
+          is_internal: false
+        })
+        .select("*")
+        .single();
+
+      if (msgErr) {
+        console.error("[Partner Reply Error]:", msgErr);
+        return NextResponse.json({ success: false, message: "Failed to send message." }, { status: 500 });
+      }
+
+      await (supabaseAdmin as any)
+        .from("support_tickets")
+        .update({
+          updated_at: new Date().toISOString(),
+          status: existingTicket.status === "RESOLVED" || existingTicket.status === "CLOSED" ? "OPEN" : existingTicket.status
+        })
+        .eq("id", existingTicket.id);
+
+      return NextResponse.json({
+        success: true,
+        message: "Reply sent successfully.",
+        reply: createdMsg
+      });
+    }
+
+    if (!subject) {
+      return NextResponse.json(
+        { success: false, message: "Subject is required for new tickets." },
+        { status: 400 }
+      );
+    }
+
+    const cleanSubject = sanitizeInput(subject);
     const cleanTopic = sanitizeInput(topic || "General Partner Support");
 
     // Priority based on topic
