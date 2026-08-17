@@ -417,6 +417,8 @@ export default function DedicatedPartnerWorkspacePage() {
         <PartnerSupportCenter
           partnerName={currentPartnerName}
           referralCode={currentReferralCode}
+          partnerEmail={partnerData?.email}
+          partnerPhone={partnerData?.phone}
         />
       )}
     </PartnerWorkspaceLayout>

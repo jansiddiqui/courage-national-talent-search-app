@@ -65,12 +65,12 @@ export async function POST(request: Request) {
     const rawCategory = category ? sanitizeInput(category) : "GENERAL";
 
     // Allowed categories check
-    const allowedCategories = ["REGISTRATION", "PAYMENT", "EXAM", "RESULT", "CERTIFICATE", "SCHOOL", "ACCOUNT", "TECHNICAL", "GENERAL"];
+    const allowedCategories = ["REGISTRATION", "PAYMENT", "EXAM", "RESULT", "CERTIFICATE", "SCHOOL", "ACCOUNT", "TECHNICAL", "PARTNER", "GENERAL"];
     const resolvedCategory = allowedCategories.includes(rawCategory.toUpperCase()) ? rawCategory.toUpperCase() : "GENERAL";
 
     // Priority configuration
     let priority = "MEDIUM";
-    if (resolvedCategory === "PAYMENT") {
+    if (resolvedCategory === "PAYMENT" || resolvedCategory === "PARTNER") {
       priority = "HIGH";
     } else if (resolvedCategory === "GENERAL") {
       priority = "LOW";
@@ -80,11 +80,22 @@ export async function POST(request: Request) {
       // 5. Auth identity resolution
       const cookieStore = await cookies();
       const sessionCookie = cookieStore.get("cnts_session");
+      const partnerCookie = cookieStore.get("cnts_partner_session");
 
       let requesterId = "ANON";
       let requesterRole = "PUBLIC";
 
-      if (sessionCookie && sessionCookie.value && JWT_SECRET) {
+      if (partnerCookie && partnerCookie.value && JWT_SECRET) {
+        try {
+          const partnerPayload = await verifySession(partnerCookie.value, JWT_SECRET);
+          if (partnerPayload) {
+            requesterId = partnerPayload.partnerDbId || partnerPayload.referralCode || cleanEmail;
+            requesterRole = "PARTNER";
+          }
+        } catch (partnerErr) {
+          console.error("[Ticket API] Partner session verification error:", partnerErr);
+        }
+      } else if (sessionCookie && sessionCookie.value && JWT_SECRET) {
         try {
           const payload = await verifySession(sessionCookie.value, JWT_SECRET);
           if (payload) {

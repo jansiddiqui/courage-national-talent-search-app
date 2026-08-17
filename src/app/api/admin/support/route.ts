@@ -33,6 +33,35 @@ export async function GET() {
   }
 
   try {
+    // 1. Query support_tickets for full ticket lifecycle
+    const { data: ticketsData, error: ticketsErr } = await (supabaseAdmin as any)
+      .from("support_tickets")
+      .select("*, assigned_agent:assigned_to(id, name, email)")
+      .order("created_at", { ascending: false });
+
+    if (!ticketsErr && ticketsData && ticketsData.length > 0) {
+      const formattedTickets = ticketsData.map((t: any) => ({
+        id: t.id,
+        reference: t.ticket_number || t.id,
+        student_name: t.metadata?.partner_name ? `${t.metadata.partner_name} (Partner)` : (t.metadata?.name || t.requester_id || "User"),
+        category: t.category || "GENERAL",
+        status: t.status || "OPEN",
+        priority: t.priority || "MEDIUM",
+        subject: t.subject || "No Subject",
+        description: t.description || "",
+        requester_role: t.requester_role || "PUBLIC",
+        metadata: t.metadata || {},
+        created_at: t.created_at
+      }));
+
+      return NextResponse.json({
+        success: true,
+        tickets: formattedTickets,
+        messages: formattedTickets
+      });
+    }
+
+    // 2. Fallback to contact_messages if support_tickets is empty
     const { data, error } = await (supabaseAdmin as any)
       .from("contact_messages")
       .select("*")
@@ -43,7 +72,19 @@ export async function GET() {
       return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 
-    return NextResponse.json({ success: true, messages: data });
+    const mapped = (data || []).map((m: any) => ({
+      id: m.id,
+      reference: m.id,
+      student_name: m.name || "Inquirer",
+      category: "GENERAL",
+      status: m.status || "OPEN",
+      priority: "MEDIUM",
+      subject: m.subject || "General Inquiry",
+      description: m.message || "",
+      created_at: m.created_at
+    }));
+
+    return NextResponse.json({ success: true, tickets: mapped, messages: mapped });
   } catch (error) {
     console.error("GET /api/admin/support error:", error);
     return NextResponse.json({ success: false, error: "Server error" }, { status: 500 });

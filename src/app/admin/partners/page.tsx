@@ -36,7 +36,7 @@ import {
 } from 'lucide-react';
 
 export default function AdminPartnersPage() {
-  const [activeTab, setActiveTab] = useState<'approvals' | 'directory' | 'video-submissions' | 'payouts' | 'broadcast' | 'rates' | 'appeals'>('approvals');
+  const [activeTab, setActiveTab] = useState<'approvals' | 'directory' | 'video-submissions' | 'payouts' | 'broadcast' | 'rates' | 'appeals' | 'support-tickets'>('approvals');
   const [partners, setPartners] = useState<any[]>([]);
   const [payouts, setPayouts] = useState<any[]>([]);
   const [videoSubmissions, setVideoSubmissions] = useState<any[]>([]);
@@ -44,6 +44,15 @@ export default function AdminPartnersPage() {
   const [statusFilter, setStatusFilter] = useState<'PENDING' | 'APPROVED' | 'REJECTED' | 'SUSPENDED' | 'ALL'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   
+  // Partner Support Tickets State
+  const [partnerTickets, setPartnerTickets] = useState<any[]>([]);
+  const [loadingTickets, setLoadingTickets] = useState(false);
+  const [selectedPartnerTicket, setSelectedPartnerTicket] = useState<any | null>(null);
+  const [ticketReplyMessage, setTicketReplyMessage] = useState<string>('');
+  const [isSendingTicketReply, setIsSendingTicketReply] = useState<boolean>(false);
+  const [ticketStatusFilter, setTicketStatusFilter] = useState<'ALL' | 'OPEN' | 'IN_PROGRESS' | 'RESOLVED'>('ALL');
+  const [ticketSearchQuery, setTicketSearchQuery] = useState<string>('');
+
   // Suspension Modal State
   const [suspendingPartner, setSuspendingPartner] = useState<any | null>(null);
   const [suspensionReason, setSuspensionReason] = useState<string>('Policy violation');
@@ -130,10 +139,75 @@ export default function AdminPartnersPage() {
     }
   };
 
+  const fetchPartnerTickets = async () => {
+    setLoadingTickets(true);
+    try {
+      const res = await fetch('/api/admin/partners/tickets');
+      const data = await res.json();
+      if (data.success && Array.isArray(data.tickets)) {
+        setPartnerTickets(data.tickets);
+      } else {
+        setPartnerTickets([]);
+      }
+    } catch (err) {
+      console.error('Failed to fetch partner tickets:', err);
+      setPartnerTickets([]);
+    } finally {
+      setLoadingTickets(false);
+    }
+  };
+
+  const handleSendTicketReply = async (ticketId: string, newStatus?: string) => {
+    if (!ticketId) return;
+    if (!ticketReplyMessage.trim() && !newStatus) return;
+
+    setIsSendingTicketReply(true);
+    try {
+      const res = await fetch('/api/admin/partners/tickets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ticketId,
+          message: ticketReplyMessage.trim(),
+          newStatus: newStatus || undefined
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        setTicketReplyMessage('');
+        await fetchPartnerTickets();
+        const updated = partnerTickets.find(t => t.id === ticketId);
+        if (updated) {
+          setSelectedPartnerTicket({
+            ...updated,
+            status: newStatus || updated.status,
+            messages: ticketReplyMessage.trim() ? [
+              ...updated.messages,
+              {
+                id: `temp-${Date.now()}`,
+                sender_role: 'ADMIN',
+                message: ticketReplyMessage.trim(),
+                created_at: new Date().toISOString()
+              }
+            ] : updated.messages
+          });
+        }
+      } else {
+        alert(data.message || 'Failed to dispatch ticket reply.');
+      }
+    } catch (err) {
+      console.error('Failed to send partner ticket reply:', err);
+    } finally {
+      setIsSendingTicketReply(false);
+    }
+  };
+
   useEffect(() => {
     fetchPartners();
     fetchPayouts();
     fetchVideoSubmissions();
+    fetchPartnerTickets();
   }, []);
 
   const handleUpdateStatus = async (partnerId: string, status: string) => {
@@ -564,6 +638,20 @@ export default function AdminPartnersPage() {
             {partners.filter(p => p.status === 'SUSPENDED').length > 0 && (
               <span className="bg-amber-500 text-slate-950 text-[10px] px-2 py-0.5 rounded-full font-black">
                 {partners.filter(p => p.status === 'SUSPENDED').length}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => setActiveTab('support-tickets')}
+            className={`py-2.5 px-5 rounded-xl transition-all cursor-pointer flex items-center gap-2 ${
+              activeTab === 'support-tickets' ? 'bg-white text-slate-950 shadow-md font-extrabold' : 'text-slate-600 hover:text-slate-900'
+            }`}
+          >
+            <MessageSquare className="w-4 h-4 text-blue-600" /> Partner Support Tickets
+            {partnerTickets.filter(t => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length > 0 && (
+              <span className="bg-blue-600 text-white text-[10px] px-2 py-0.5 rounded-full font-black">
+                {partnerTickets.filter(t => t.status === 'OPEN' || t.status === 'IN_PROGRESS').length}
               </span>
             )}
           </button>
@@ -1333,6 +1421,311 @@ export default function AdminPartnersPage() {
                       </div>
                     </div>
                   ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* TAB 8: PARTNER SUPPORT TICKETS & RESOLUTION DESK */}
+        {activeTab === 'support-tickets' && (
+          <div className="space-y-6">
+            {/* Stats Header */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+              <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-xs">
+                <span className="text-[10.5px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+                  Total Partner Tickets
+                </span>
+                <div className="font-mono text-2xl font-black text-slate-900 mt-1">
+                  {partnerTickets.length}
+                </div>
+              </div>
+
+              <div className="bg-white p-5 rounded-2xl border border-amber-200/80 shadow-xs">
+                <span className="text-[10.5px] font-mono font-bold text-amber-700 uppercase tracking-wider block">
+                  Open Inquiries
+                </span>
+                <div className="font-mono text-2xl font-black text-amber-600 mt-1">
+                  {partnerTickets.filter(t => t.status === 'OPEN').length}
+                </div>
+              </div>
+
+              <div className="bg-white p-5 rounded-2xl border border-blue-200/80 shadow-xs">
+                <span className="text-[10.5px] font-mono font-bold text-blue-700 uppercase tracking-wider block">
+                  In Progress
+                </span>
+                <div className="font-mono text-2xl font-black text-blue-600 mt-1">
+                  {partnerTickets.filter(t => t.status === 'IN_PROGRESS').length}
+                </div>
+              </div>
+
+              <div className="bg-white p-5 rounded-2xl border border-emerald-200/80 shadow-xs">
+                <span className="text-[10.5px] font-mono font-bold text-emerald-700 uppercase tracking-wider block">
+                  Resolved Tickets
+                </span>
+                <div className="font-mono text-2xl font-black text-emerald-600 mt-1">
+                  {partnerTickets.filter(t => t.status === 'RESOLVED' || t.status === 'CLOSED').length}
+                </div>
+              </div>
+            </div>
+
+            {/* Filter & Search Bar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200 shadow-xs">
+              <div className="flex items-center gap-2 overflow-x-auto">
+                <Filter className="w-4 h-4 text-slate-400 shrink-0" />
+                <span className="text-xs font-bold text-slate-600 uppercase tracking-wider shrink-0">Status:</span>
+                {(['ALL', 'OPEN', 'IN_PROGRESS', 'RESOLVED'] as const).map(st => (
+                  <button
+                    key={st}
+                    onClick={() => setTicketStatusFilter(st)}
+                    className={`text-xs px-3.5 py-1.5 rounded-xl font-bold transition-all cursor-pointer shrink-0 ${
+                      ticketStatusFilter === st
+                        ? 'bg-blue-600 text-white shadow-xs'
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                    }`}
+                  >
+                    {st}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <div className="relative">
+                  <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+                  <input
+                    type="text"
+                    placeholder="Search partner, code, ticket #..."
+                    value={ticketSearchQuery}
+                    onChange={e => setTicketSearchQuery(e.target.value)}
+                    className="pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-xs focus:ring-2 focus:ring-blue-600 w-64 bg-slate-50"
+                  />
+                </div>
+                <button
+                  onClick={fetchPartnerTickets}
+                  className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition cursor-pointer"
+                  title="Refresh tickets"
+                >
+                  <RefreshCw className={`w-4 h-4 ${loadingTickets ? 'animate-spin' : ''}`} />
+                </button>
+              </div>
+            </div>
+
+            {/* Tickets Main Content Grid */}
+            {loadingTickets ? (
+              <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 space-y-2">
+                <div className="w-8 h-8 border-3 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto" />
+                <p className="text-xs text-slate-400 font-medium">Fetching partner support inquiries...</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                {/* Tickets Inbound List (5 Cols) */}
+                <div className="lg:col-span-5 bg-white border border-slate-200 rounded-3xl p-4 shadow-xs flex flex-col h-[650px]">
+                  <div className="flex items-center justify-between pb-3 border-b border-slate-100 px-1">
+                    <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                      Partner Inquiries ({
+                        partnerTickets
+                          .filter(t => ticketStatusFilter === 'ALL' || t.status === ticketStatusFilter)
+                          .filter(t => !ticketSearchQuery || 
+                            t.ticketNumber?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                            t.partnerName?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                            t.referralCode?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                            t.subject?.toLowerCase().includes(ticketSearchQuery.toLowerCase())
+                          ).length
+                      })
+                    </span>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto space-y-2.5 pt-3 pr-1">
+                    {partnerTickets
+                      .filter(t => ticketStatusFilter === 'ALL' || t.status === ticketStatusFilter)
+                      .filter(t => !ticketSearchQuery || 
+                        t.ticketNumber?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                        t.partnerName?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                        t.referralCode?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                        t.subject?.toLowerCase().includes(ticketSearchQuery.toLowerCase())
+                      ).length === 0 ? (
+                        <div className="text-center py-16 text-slate-400 space-y-2">
+                          <MessageSquare className="w-8 h-8 text-slate-300 mx-auto" />
+                          <p className="text-xs">No partner support tickets found matching filter.</p>
+                        </div>
+                    ) : (
+                      partnerTickets
+                        .filter(t => ticketStatusFilter === 'ALL' || t.status === ticketStatusFilter)
+                        .filter(t => !ticketSearchQuery || 
+                          t.ticketNumber?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                          t.partnerName?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                          t.referralCode?.toLowerCase().includes(ticketSearchQuery.toLowerCase()) ||
+                          t.subject?.toLowerCase().includes(ticketSearchQuery.toLowerCase())
+                        )
+                        .map(t => (
+                          <div
+                            key={t.id}
+                            onClick={() => setSelectedPartnerTicket(t)}
+                            className={`p-4 rounded-2xl border transition-all cursor-pointer space-y-2 ${
+                              selectedPartnerTicket?.id === t.id
+                                ? 'border-blue-600 bg-blue-50/50 shadow-xs'
+                                : 'border-slate-200/80 hover:bg-slate-50'
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono text-[10.5px] font-bold text-slate-400">
+                                  #{t.ticketNumber}
+                                </span>
+                                <span className="px-2 py-0.5 bg-indigo-50 border border-indigo-200 text-indigo-700 text-[9px] font-black rounded-md font-mono">
+                                  {t.referralCode}
+                                </span>
+                              </div>
+                              <span className={`text-[9.5px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                                t.status === 'RESOLVED' || t.status === 'CLOSED'
+                                  ? 'bg-emerald-100 text-emerald-800'
+                                  : t.status === 'IN_PROGRESS'
+                                  ? 'bg-blue-100 text-blue-800'
+                                  : 'bg-amber-100 text-amber-800'
+                              }`}>
+                                {t.status}
+                              </span>
+                            </div>
+
+                            <div>
+                              <h4 className="font-bold text-xs text-slate-900 line-clamp-1">{t.subject}</h4>
+                              <p className="text-[11px] text-slate-500 line-clamp-1 mt-0.5">{t.description}</p>
+                            </div>
+
+                            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-1 border-t border-slate-100 font-mono">
+                              <span className="font-sans font-medium text-slate-600">{t.partnerName}</span>
+                              <span>{new Date(t.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </div>
+                        ))
+                    )}
+                  </div>
+                </div>
+
+                {/* Conversation & Action Desk (7 Cols) */}
+                <div className="lg:col-span-7 bg-white border border-slate-200 rounded-3xl p-6 shadow-xs flex flex-col h-[650px]">
+                  {selectedPartnerTicket ? (
+                    <div className="flex flex-col h-full space-y-4">
+                      {/* Ticket Header */}
+                      <div className="border-b border-slate-100 pb-4 space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <span className="font-mono text-sm font-black text-blue-600">#{selectedPartnerTicket.ticketNumber}</span>
+                            <span className="px-2.5 py-0.5 bg-indigo-50 text-indigo-700 border border-indigo-200 rounded-lg text-xs font-mono font-black">
+                              Code: {selectedPartnerTicket.referralCode}
+                            </span>
+                            <span className="text-xs text-slate-500 font-medium">({selectedPartnerTicket.topic})</span>
+                          </div>
+                          <span className={`text-[10px] px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
+                            selectedPartnerTicket.status === 'RESOLVED' || selectedPartnerTicket.status === 'CLOSED'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : selectedPartnerTicket.status === 'IN_PROGRESS'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-amber-100 text-amber-800'
+                          }`}>
+                            {selectedPartnerTicket.status}
+                          </span>
+                        </div>
+
+                        <h3 className="font-bold text-base text-slate-900">{selectedPartnerTicket.subject}</h3>
+                        
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 font-medium">
+                          <span>Partner: <strong className="text-slate-800">{selectedPartnerTicket.partnerName}</strong></span>
+                          {selectedPartnerTicket.email && <span>• Email: {selectedPartnerTicket.email}</span>}
+                          {selectedPartnerTicket.phone && <span>• Phone: {selectedPartnerTicket.phone}</span>}
+                          <span>• Date: {new Date(selectedPartnerTicket.createdAt).toLocaleString()}</span>
+                        </div>
+                      </div>
+
+                      {/* Messages Thread Feed */}
+                      <div className="flex-1 overflow-y-auto space-y-3 pr-1 bg-slate-50/50 p-4 rounded-2xl border border-slate-100">
+                        {/* Original Partner Query */}
+                        <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-xs space-y-1 mr-8">
+                          <div className="flex items-center justify-between text-[10.5px] font-bold text-slate-500">
+                            <span>👤 {selectedPartnerTicket.partnerName} (Partner Inquiry)</span>
+                            <span>{new Date(selectedPartnerTicket.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                          </div>
+                          <p className="text-xs text-slate-800 leading-relaxed whitespace-pre-wrap font-sans">
+                            {selectedPartnerTicket.description}
+                          </p>
+                        </div>
+
+                        {/* Subsequent Thread Replies */}
+                        {selectedPartnerTicket.messages
+                          ?.filter((m: any) => m.message !== selectedPartnerTicket.description)
+                          ?.map((msg: any, idx: number) => {
+                            const isAdmin = msg.sender_role === 'ADMIN';
+                            return (
+                              <div
+                                key={idx}
+                                className={`p-4 rounded-2xl text-xs space-y-1 shadow-xs ${
+                                  isAdmin
+                                    ? 'bg-blue-600 text-white ml-8 rounded-tr-none'
+                                    : 'bg-white text-slate-800 mr-8 rounded-tl-none border border-slate-200'
+                                }`}
+                              >
+                                <div className="flex items-center justify-between text-[10px] font-bold opacity-80">
+                                  <span>{isAdmin ? '🛡️ Admin Helpdesk Response' : `👤 ${selectedPartnerTicket.partnerName}`}</span>
+                                  <span>{new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                                </div>
+                                <p className="leading-relaxed whitespace-pre-wrap">{msg.message}</p>
+                              </div>
+                            );
+                        })}
+                      </div>
+
+                      {/* Reply & Status Action Controls */}
+                      <div className="border-t border-slate-100 pt-3 space-y-3">
+                        <textarea
+                          rows={3}
+                          value={ticketReplyMessage}
+                          onChange={e => setTicketReplyMessage(e.target.value)}
+                          placeholder="Type administrative reply / resolution instructions for the partner (dispatched to their Inbox)..."
+                          className="w-full bg-slate-50 border border-slate-200 rounded-xl p-3 text-xs focus:ring-2 focus:ring-blue-600 focus:outline-none"
+                        />
+
+                        <div className="flex flex-wrap items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleSendTicketReply(selectedPartnerTicket.id, 'RESOLVED')}
+                              disabled={isSendingTicketReply}
+                              className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition cursor-pointer shadow-xs flex items-center gap-1.5"
+                            >
+                              <CheckCircle2 className="w-4 h-4" />
+                              <span>Mark as Resolved</span>
+                            </button>
+
+                            {selectedPartnerTicket.status === 'RESOLVED' && (
+                              <button
+                                type="button"
+                                onClick={() => handleSendTicketReply(selectedPartnerTicket.id, 'IN_PROGRESS')}
+                                disabled={isSendingTicketReply}
+                                className="px-3.5 py-2 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 font-bold text-xs rounded-xl transition cursor-pointer"
+                              >
+                                Re-open Ticket
+                              </button>
+                            )}
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={() => handleSendTicketReply(selectedPartnerTicket.id)}
+                            disabled={isSendingTicketReply || !ticketReplyMessage.trim()}
+                            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs rounded-xl transition cursor-pointer shadow-xs flex items-center gap-1.5"
+                          >
+                            <Send className="w-3.5 h-3.5" />
+                            <span>{isSendingTicketReply ? 'Dispatching...' : 'Send Reply to Partner'}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center h-full text-slate-400 space-y-3">
+                      <MessageSquare className="w-12 h-12 text-slate-200" />
+                      <p className="text-xs">Select a partner support ticket from the list to view inquiry details and reply.</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
