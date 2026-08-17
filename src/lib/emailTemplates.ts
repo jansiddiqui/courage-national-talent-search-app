@@ -16,31 +16,33 @@ export function generateCNTSButton(text: string, url: string): string {
 
 function getHeader(): string {
   return `
-    <div style="background: linear-gradient(90deg, #1E40AF 0%, #4F46E5 100%); height: 5px; width: 100%;"></div>
-    <div style="padding: 24px 20px; background-color: #0F172A; text-align: center; border-bottom: 1px solid #1E293B;">
-      <div style="display: inline-block; background-color: #1E1B4B; color: #FFFFFF; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 18px; font-weight: 900; padding: 8px 18px; border-radius: 8px; letter-spacing: 1px; border: 1px solid #312E81;">
+    <div style="background: linear-gradient(90deg, #2563EB 0%, #4F46E5 100%); height: 4px; width: 100%;"></div>
+    <div style="padding: 20px 16px; background-color: #FFFFFF; text-align: center; border-bottom: 1px solid #E2E8F0;">
+      <div style="display: inline-block; background-color: #EEF2FF; color: #3730A3; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; font-size: 16px; font-weight: 800; padding: 6px 16px; border-radius: 8px; letter-spacing: 0.5px; border: 1px solid #C7D2FE;">
         COURAGE LIBRARY • CNTS 2026
       </div>
-      <h2 style="margin: 8px 0 0; color: #94A3B8; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">Courage National Talent Search</h2>
+      <div style="margin-top: 6px; color: #64748B; font-size: 11.5px; font-weight: 700; letter-spacing: 0.5px; text-transform: uppercase;">
+        Courage National Talent Search
+      </div>
     </div>
   `;
 }
 
 function getFooter(): string {
   return `
-    <div style="padding: 24px 20px; background-color: #0F172A; border-top: 1px solid #1E293B; text-align: center; color: #94A3B8;">
-      <h3 style="margin: 0 0 4px; color: #F8FAFC; font-size: 14px; font-weight: 800;">Courage National Talent Search (CNTS)</h3>
-      <p style="margin: 0 0 16px; color: #64748B; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Talent Discovery Auditing Desk</p>
+    <div style="padding: 24px 16px; background-color: #F8FAFC; border-top: 1px solid #E2E8F0; text-align: center; color: #64748B;">
+      <h3 style="margin: 0 0 4px; color: #0F172A; font-size: 13.5px; font-weight: 800;">Courage National Talent Search (CNTS)</h3>
+      <p style="margin: 0 0 14px; color: #64748B; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">Official Talent Discovery Desk</p>
       
-      <div style="margin-bottom: 16px; font-size: 13px; line-height: 1.8;">
-        <a href="${PORTAL_URL}" style="color: #60A5FA; text-decoration: none; font-weight: 600; margin: 0 8px;">Candidate Portal</a>
-        <span style="color: #334155;">&bull;</span>
-        <a href="${WEBSITE_URL}" style="color: #60A5FA; text-decoration: none; font-weight: 600; margin: 0 8px;">Website</a>
-        <span style="color: #334155;">&bull;</span>
-        <a href="mailto:support@thecouragelibrary.com" style="color: #60A5FA; text-decoration: none; font-weight: 600; margin: 0 8px;">Support</a>
+      <div style="margin-bottom: 14px; font-size: 12.5px; line-height: 1.8;">
+        <a href="${PORTAL_URL}" style="color: #2563EB; text-decoration: none; font-weight: 600; margin: 0 8px;">Candidate Portal</a>
+        <span style="color: #CBD5E1;">&bull;</span>
+        <a href="${WEBSITE_URL}" style="color: #2563EB; text-decoration: none; font-weight: 600; margin: 0 8px;">Website</a>
+        <span style="color: #CBD5E1;">&bull;</span>
+        <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; text-decoration: none; font-weight: 600; margin: 0 8px;">Support</a>
       </div>
       
-      <p style="margin: 0; color: #64748B; font-size: 11px; line-height: 1.5;">You are receiving this email because an official partner activity was performed using this address.</p>
+      <p style="margin: 0; color: #94A3B8; font-size: 11px; line-height: 1.5;">You are receiving this official correspondence regarding your CNTS account or activity.</p>
     </div>
   `;
 }
@@ -61,8 +63,9 @@ function getTrustSection(): string {
 }
 
 function wrapLayout(content: string, preheader: string = ""): string {
-  // Padding spaces prevent Gmail/Apple Mail from pulling header body text into mobile notification previews
-  const preheaderPadding = "&nbsp;&zwnj;".repeat(30);
+  // Litmus & Campaign Monitor standard preheader spacer
+  // 80 repetitions of zero-width space + non-breaking space ensures mobile notifications and email previews display ONLY the clean preheader snippet
+  const preheaderPadding = "&#847; &zwnj; &nbsp; &#8199; &shy; ".repeat(40);
 
   return `
     <!DOCTYPE html>
@@ -70,6 +73,7 @@ function wrapLayout(content: string, preheader: string = ""): string {
     <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
       <title>CNTS Notification</title>
       <style>
         body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
@@ -77,14 +81,15 @@ function wrapLayout(content: string, preheader: string = ""): string {
         img { border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
       </style>
     </head>
-    <body style="margin: 0; padding: 12px 6px; background-color: #090D16; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
-      <!-- PREHEADER TEXT FOR CLEAN MOBILE PUSH NOTIFICATION PREVIEW -->
-      <div style="display: none; max-height: 0px; overflow: hidden; mso-hide: all; font-size: 1px; line-height: 1px; color: #090D16; opacity: 0;">
-        ${preheader} ${preheaderPadding}
+    <body style="margin: 0; padding: 16px 8px; background-color: #F1F5F9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A;">
+      <!-- PREHEADER TEXT: Controls the exact push notification snippet on Android/iOS/Gmail -->
+      <div style="display: none; font-size: 1px; color: #F1F5F9; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all;">
+        ${preheader ? preheader : 'Courage National Talent Search Notification'}
+        ${preheaderPadding}
       </div>
-      <div style="max-width: 580px; width: 100%; margin: 0 auto; background-color: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); box-sizing: border-box;">
+      <div style="max-width: 580px; width: 100%; margin: 0 auto; background-color: #FFFFFF; border: 1px solid #E2E8F0; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(15, 23, 42, 0.05); box-sizing: border-box;">
         ${getHeader()}
-        <div style="padding: 24px 16px; box-sizing: border-box; width: 100%;">
+        <div style="padding: 24px 18px; box-sizing: border-box; width: 100%;">
           ${content}
         </div>
         ${getFooter()}
@@ -448,16 +453,36 @@ export function getSupportAgentRepliedTemplate(
   subject: string,
   replyText: string
 ): string {
+  const cleanSnippet = (replyText || "").replace(/<[^>]*>/g, "").replace(/\s+/g, " ").trim();
+  const preheader = `Helpdesk Reply: "${cleanSnippet.slice(0, 110)}${cleanSnippet.length > 110 ? '...' : ''}"`;
+
   const content = `
-    <h2 style="margin: 0 0 15px; color: #0f172a; font-size: 20px;">New response from CNTS Support.</h2>
-    <p style="margin: 0 0 20px; color: #334155; font-size: 15px; line-height: 1.6;">Our support team has posted a reply on ticket <strong>${ticketRef}</strong>:</p>
-    
-    <div style="background-color: #f0f9ff; border: 1px solid #bae6fd; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
-      <span style="font-[10px] font-bold text-blue-800 uppercase block mb-2">Message Reply Preview</span>
-      <p style="margin: 0; color: #0369a1; font-size: 14px; line-height: 1.6; white-space: pre-wrap;">${replyText}</p>
+    <div style="margin-bottom: 20px;">
+      <div style="display: inline-block; background-color: #EEF2FF; color: #4338CA; font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px;">
+        Helpdesk Response
+      </div>
+      <h2 style="margin: 0 0 6px; color: #0F172A; font-size: 20px; font-weight: 800; line-height: 1.3;">Update on Ticket #${ticketRef}</h2>
+      ${subject ? `<p style="margin: 0; color: #64748B; font-size: 13px; font-weight: 600;">Subject: ${subject}</p>` : ''}
+    </div>
+
+    <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-left: 4px solid #4F46E5; padding: 18px 20px; border-radius: 10px; margin-bottom: 22px;">
+      <div style="font-size: 11px; font-weight: 700; color: #64748B; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px;">
+        Response from Support Team:
+      </div>
+      <p style="margin: 0; color: #1E293B; font-size: 14px; line-height: 1.6; white-space: pre-wrap; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">${replyText}</p>
+    </div>
+
+    <p style="margin: 0 0 20px; color: #64748B; font-size: 13px; line-height: 1.5;">
+      You can track this inquiry and continue the conversation directly from your support dashboard.
+    </p>
+
+    <div style="text-align: center; margin: 25px 0 10px;">
+      <a href="${PORTAL_URL}" style="display: inline-block; background-color: #4F46E5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 700; font-size: 14px; letter-spacing: 0.3px;">
+        View & Reply on Dashboard &rarr;
+      </a>
     </div>
   `;
-  return wrapLayout(content, `New Reply on ${ticketRef}`);
+  return wrapLayout(content, preheader);
 }
 
 export function getSupportStatusChangedTemplate(
@@ -538,14 +563,14 @@ export function getPartnerApplicationTemplate(data: {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
       
       <!-- HEADER HERO BADGE -->
-      <div style="background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #312E81;">
-        <div style="display: inline-block; background-color: rgba(245, 158, 11, 0.15); color: #FBBF24; border: 1px solid rgba(245, 158, 11, 0.3); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
+      <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-top: 4px solid #F59E0B; padding: 22px 18px; border-radius: 14px; text-align: center; margin-bottom: 20px;">
+        <div style="display: inline-block; background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; padding: 4px 12px; border-radius: 20px; font-size: 10.5px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;">
           COURAGE PARTNER PROGRAM
         </div>
-        <h1 style="margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff;">
+        <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #0F172A;">
           Application Received ✓
         </h1>
-        <p style="margin: 0; color: #C7D2FE; font-size: 13px; font-weight: 500;">
+        <p style="margin: 0; color: #64748B; font-size: 13px; font-weight: 500;">
           Your Courage Partner application is under review.
         </p>
       </div>
@@ -559,7 +584,7 @@ export function getPartnerApplicationTemplate(data: {
       <!-- APPLICATION DETAILS BOX -->
       <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 14px; padding: 18px; margin: 20px 0;">
         <div style="font-size: 11px; font-weight: 900; color: #0F172A; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 14px;">
-          📋 APPLICATION DETAILS
+          APPLICATION DETAILS
         </div>
 
         <div style="margin-bottom: 12px;">
@@ -608,7 +633,7 @@ export function getPartnerApplicationTemplate(data: {
 
       <!-- CTA BUTTON -->
       <div style="text-align: center; margin: 24px 0;">
-        <a href="${WEBSITE_URL}" style="display: inline-block; background-color: #1E40AF; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 800; font-size: 13.5px; letter-spacing: 0.5px;">
+        <a href="${WEBSITE_URL}" style="display: inline-block; background-color: #2563EB; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: 800; font-size: 13.5px; letter-spacing: 0.3px;">
           Visit Courage Library
         </a>
       </div>
@@ -638,14 +663,14 @@ export function getPartnerApprovalTemplate(data: {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
       
       <!-- HERO HEADER CARD -->
-      <div style="background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #312E81;">
-        <div style="display: inline-block; background-color: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
+      <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-top: 4px solid #10B981; padding: 22px 18px; border-radius: 14px; text-align: center; margin-bottom: 20px;">
+        <div style="display: inline-block; background-color: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; padding: 4px 12px; border-radius: 20px; font-size: 10.5px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;">
           APPLICATION APPROVED • OFFICIAL PARTNER
         </div>
-        <h1 style="margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff;">
+        <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #0F172A;">
           Welcome to the Courage Partner Program! 🎉
         </h1>
-        <p style="margin: 0; color: #C7D2FE; font-size: 13px; font-weight: 500;">
+        <p style="margin: 0; color: #64748B; font-size: 13px; font-weight: 500;">
           Your partner application has been verified and approved.
         </p>
       </div>
@@ -657,9 +682,9 @@ export function getPartnerApprovalTemplate(data: {
       </p>
 
       <!-- OFFICIAL PARTNER CREDENTIALS CARD -->
-      <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 14px; padding: 18px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.03);">
+      <div style="background-color: #F8FAFC; border: 2px solid #E2E8F0; border-radius: 14px; padding: 18px; margin: 20px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
         <div style="font-size: 12px; font-weight: 900; color: #0F172A; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #E2E8F0; padding-bottom: 8px; margin-bottom: 14px;">
-          🛡️ OFFICIAL PARTNER CREDENTIAL PASS
+          OFFICIAL PARTNER CREDENTIALS
         </div>
 
         <div style="margin-bottom: 12px;">
@@ -692,7 +717,7 @@ export function getPartnerApprovalTemplate(data: {
 
       <!-- MAIN CTA BUTTON -->
       <div style="text-align: center; margin: 24px 0;">
-        <a href="${loginUrl}" style="display: block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%); color: #ffffff; padding: 14px 20px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-align: center;">
+        <a href="${loginUrl}" style="display: block; width: 100%; box-sizing: border-box; background-color: #2563EB; color: #ffffff; padding: 14px 20px; text-decoration: none; border-radius: 12px; font-weight: 900; font-size: 14px; letter-spacing: 0.5px; text-align: center;">
           SIGN IN TO PARTNER DASHBOARD &rarr;
         </a>
       </div>
@@ -700,7 +725,7 @@ export function getPartnerApprovalTemplate(data: {
       <!-- QUICK START STEPS -->
       <div style="background-color: #EFF6FF; border: 1px solid #BFDBFE; border-left: 4px solid #2563EB; border-radius: 12px; padding: 16px; margin: 24px 0;">
         <h4 style="margin: 0 0 10px; color: #1E40AF; font-size: 13.5px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.5px;">
-          🚀 Next Steps to Start Earning:
+          Next Steps to Start Earning:
         </h4>
         
         <div style="font-size: 13px; color: #1E3A8A; line-height: 1.55; margin-bottom: 10px;">
@@ -747,14 +772,14 @@ export function getPartnerSuspensionTemplate(data: {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
       
       <!-- HERO HEADER CARD -->
-      <div style="background: linear-gradient(135deg, #0F172A 0%, #451A03 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #78350F;">
-        <div style="display: inline-block; background-color: rgba(245, 158, 11, 0.2); color: #FDBA74; border: 1px solid rgba(245, 158, 11, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
+      <div style="background-color: #FFFBEB; border: 1px solid #FDE68A; border-top: 4px solid #D97706; padding: 22px 18px; border-radius: 14px; text-align: center; margin-bottom: 20px;">
+        <div style="display: inline-block; background-color: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; padding: 4px 12px; border-radius: 20px; font-size: 10.5px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;">
           ACCOUNT SUSPENDED • ACTION REQUIRED
         </div>
-        <h1 style="margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff;">
+        <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #78350F;">
           Account Status Update
         </h1>
-        <p style="margin: 0; color: #FED7AA; font-size: 13px; font-weight: 500;">
+        <p style="margin: 0; color: #92400E; font-size: 13px; font-weight: 500;">
           Your Courage Partner account access has been suspended.
         </p>
       </div>
@@ -768,7 +793,7 @@ export function getPartnerSuspensionTemplate(data: {
       <!-- REASON & DETAILS CARD -->
       <div style="background-color: #FFFBEB; border: 2px solid #FCD34D; border-radius: 14px; padding: 18px; margin: 20px 0;">
         <div style="font-size: 11px; font-weight: 900; color: #78350F; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #FDE68A; padding-bottom: 8px; margin-bottom: 14px;">
-          ⚠️ SUSPENSION DETAILS
+          SUSPENSION DETAILS
         </div>
 
         <div style="margin-bottom: 12px;">
@@ -851,14 +876,14 @@ export function getPartnerReinstatementTemplate(data: {
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
       
       <!-- HERO HEADER CARD -->
-      <div style="background: linear-gradient(135deg, #0F172A 0%, #064E3B 100%); padding: 24px 18px; border-radius: 14px; text-align: center; color: #ffffff; margin-bottom: 20px; border: 1px solid #065F46;">
-        <div style="display: inline-block; background-color: rgba(16, 185, 129, 0.2); color: #34D399; border: 1px solid rgba(16, 185, 129, 0.4); padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: 800; font-family: monospace; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;">
+      <div style="background-color: #F8FAFC; border: 1px solid #E2E8F0; border-top: 4px solid #10B981; padding: 22px 18px; border-radius: 14px; text-align: center; margin-bottom: 20px;">
+        <div style="display: inline-block; background-color: #D1FAE5; color: #065F46; border: 1px solid #6EE7B7; padding: 4px 12px; border-radius: 20px; font-size: 10.5px; font-weight: 800; font-family: monospace; letter-spacing: 0.5px; text-transform: uppercase; margin-bottom: 8px;">
           ACCOUNT REINSTATED • WELCOME BACK
         </div>
-        <h1 style="margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #ffffff;">
+        <h1 style="margin: 0 0 4px; font-size: 20px; font-weight: 900; line-height: 1.3; color: #0F172A;">
           Account Reinstated 🎉
         </h1>
-        <p style="margin: 0; color: #A7F3D0; font-size: 13px; font-weight: 500;">
+        <p style="margin: 0; color: #64748B; font-size: 13px; font-weight: 500;">
           Your Courage Partner account access has been fully restored.
         </p>
       </div>
@@ -872,7 +897,7 @@ export function getPartnerReinstatementTemplate(data: {
       <!-- DETAILS CARD -->
       <div style="background-color: #ECFDF5; border: 2px solid #A7F3D0; border-radius: 14px; padding: 18px; margin: 20px 0;">
         <div style="font-size: 11px; font-weight: 900; color: #065F46; letter-spacing: 0.5px; text-transform: uppercase; border-bottom: 2px solid #6EE7B7; padding-bottom: 8px; margin-bottom: 14px;">
-          🟢 ACCOUNT REINSTATED
+          ACCOUNT REINSTATED
         </div>
 
         <div style="margin-bottom: 12px;">

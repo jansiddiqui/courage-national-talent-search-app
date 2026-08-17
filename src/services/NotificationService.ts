@@ -473,11 +473,15 @@ export class NotificationService {
   ): Promise<{ whatsapp: boolean; email: boolean; jobIds?: string[] }> {
     console.log(`[NotificationService] Scheduling support agent reply notification for ticket: ${ticketNumber}`);
 
+    const emailSubject = subject 
+      ? `[CNTS Support] #${ticketNumber} — ${subject}`
+      : `[CNTS Support] Update on Ticket #${ticketNumber}`;
+
     if (!hasSupabaseAdminConfig) {
       const emailPromise = email 
         ? emailService.sendEmail(
             email, 
-            `New Reply on ${ticketNumber}`, 
+            emailSubject, 
             getSupportAgentRepliedTemplate(ticketNumber, subject, replyText)
           ).then(r => r.success)
         : Promise.resolve(false);
@@ -492,7 +496,7 @@ export class NotificationService {
     if (email) {
       const htmlContent = getSupportAgentRepliedTemplate(ticketNumber, subject, replyText);
       emailJobId = await this.createJob(email, "EMAIL", "support_agent_replied", {
-        subject: `New Reply on ${ticketNumber}`,
+        subject: emailSubject,
         htmlContent
       });
       if (emailJobId) jobIds.push(emailJobId);
