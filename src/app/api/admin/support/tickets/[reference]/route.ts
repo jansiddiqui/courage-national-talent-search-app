@@ -9,6 +9,11 @@ import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 
 const JWT_SECRET = process.env.JWT_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 
+function sanitizeInput(text: string): string {
+  if (!text) return "";
+  return text.replace(/<[^>]*>/g, "").trim();
+}
+
 export async function GET(request: Request, props: { params: Promise<{ reference: string }> }) {
   try {
     const { reference } = await props.params;
@@ -199,3 +204,106 @@ export async function PATCH(request: Request, props: { params: Promise<{ referen
     return NextResponse.json({ success: false, message: "Server error." }, { status: 500 });
   }
 }
+
+export async function POST(request: Request, props: { params: Promise<{ reference: string }> }) {
+  try {
+    const { reference } = await props.params;
+    if (!reference) {
+      return NextResponse.json({ success: false, message: "Missing ticket reference." }, { status: 400 });
+    }
+
+    const cookieStore = await cookies();
+    const sessionCookie = cookieStore.get("cnts_session");
+
+    if (!sessionCookie || !sessionCookie.value || !JWT_SECRET) {
+      return NextResponse.json({ success: false, message: "Authentication required." }, { status: 401 });
+    }
+
+    const payload = await verifySession(sessionCookie.value, JWT_SECRET);
+    if (!payload || (!payload.id && !payload.email && !payload.phone)) {
+      return NextResponse.json({ success: false, message: "Forbidden: Admin session required." }, { status: 403 });
+    }
+
+    const body = await request.json();
+    const { message } = body;
+
+    if (!message) {
+      return NextResponse.json({ success: false, message: "Reply message cannot be empty." }, { status: 400 });
+    }
+
+    const cleanMessage = sanitizeInput(message);
+
+    // Fetch ticket
+    const { data: ticket, error: ticketErr } = await (supabaseAdmin as any)
+      .from("support_tickets")
+      .select("id, status, ticket_number, subject, metadata, requester_id, requester_role")
+      .eq("ticket_number", reference)
+      .single();
+
+    if (ticketErr || !ticket) {
+      return NextResponse.json({ success: false, message: "Ticket not found." }, { status: 404 });
+    }
+
+    // Insert message
+    const { data: createdMsg, error: msgErr } = await (supabaseAdmin as any)
+      .from("support_ticket_messages")
+      .insert({
+        ticket_id: ticket.id,
+        sender_id: payload.id || payload.email || "ADMIN",
+        sender_role: "ADMIN",
+        message: cleanMessage,
+        is_internal: false
+      })
+      .select("*")
+      .single();
+
+    if (msgErr) {
+      console.error("[Ticket Reference POST API] Insert failed:", msgErr);
+      return NextResponse.json({ success: false, message: "Failed to persist reply message." }, { status: 500 });
+    }
+
+    // Update ticket status to IN_PROGRESS if OPEN
+    const now = new Date().toISOString();
+    const updateObj: Record<string, any> = { updated_at: now };
+    if (ticket.status === "OPEN") {
+      updateObj.status = "IN_PROGRESS";
+    }
+
+    await (supabaseAdmin as any)
+      .from("support_tickets")
+      .update(updateObj)
+      .eq("id", ticket.id);
+
+    // If partner ticket, notify partner inbox
+    const refCode = ticket.metadata?.referral_code || (ticket.requester_role === "PARTNER" ? ticket.requester_id : null);
+    if (refCode) {
+      try {
+        await (supabaseAdmin as any)
+          .from("partner_notifications")
+          .insert({
+            partner_id: ticket.requester_id || refCode,
+            referral_code: refCode,
+            sender: "Courage Helpdesk Admin",
+            title: `💬 Update on Support Ticket #${ticket.ticket_number}`,
+            preview: `Helpdesk response: ${cleanMessage.slice(0, 80)}...`,
+            full_body: `Dear Partner,\n\nOur Helpdesk team has replied to your support inquiry #${ticket.ticket_number}.\n\nReply:\n"${cleanMessage}"\n\nYou can track this resolution in your Partner Support Center tab.`,
+            category: "System",
+            is_read: false
+          });
+      } catch (notifErr) {
+        console.error("[Ticket Partner Notification non-blocking error]:", notifErr);
+      }
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: "Reply sent successfully.",
+      reply: createdMsg
+    });
+
+  } catch (error: any) {
+    console.error("[POST /api/admin/support/tickets/[reference] error]:", error);
+    return NextResponse.json({ success: false, message: "Internal server error." }, { status: 500 });
+  }
+}
+

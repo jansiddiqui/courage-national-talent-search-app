@@ -117,6 +117,7 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
+  const [openSupportCount, setOpenSupportCount] = useState<number>(0);
 
   // Accordion state for collapsible SaaS sidebar hierarchy
   const [openGroups, setOpenGroups] = useState<Record<string, boolean>>({
@@ -126,6 +127,27 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
     campaigns: true,
     control: false,
   });
+
+  // Fetch live count of open support tickets
+  useEffect(() => {
+    const fetchCounters = async () => {
+      try {
+        const res = await fetch("/api/admin/support");
+        if (res.ok) {
+          const data = await res.json();
+          const tickets = data.tickets || data.messages || [];
+          const count = tickets.filter((t: any) => t.status === "OPEN" || t.status === "PENDING" || t.status === "IN_PROGRESS").length;
+          setOpenSupportCount(count);
+        }
+      } catch {
+        // quiet fallback
+      }
+    };
+
+    fetchCounters();
+    const interval = setInterval(fetchCounters, 15000);
+    return () => clearInterval(interval);
+  }, []);
 
   const isActive = (href: string, exact?: boolean) => {
     const url = new URL(href, "http://localhost");
@@ -284,6 +306,14 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
                     {visibleLinks.map((link) => {
                       const Icon = link.icon;
                       const active = isActive(link.href, link.exact);
+                      const isSupportLink = link.href === "/admin/support";
+                      const effectiveBadge = isSupportLink && openSupportCount > 0 
+                        ? `${openSupportCount}` 
+                        : link.badge;
+                      const effectiveBadgeColor = isSupportLink && openSupportCount > 0
+                        ? "bg-rose-500 text-white font-black"
+                        : link.badgeColor;
+
                       return (
                         <button
                           key={link.href}
@@ -306,16 +336,19 @@ export default function AdminV2Layout({ children }: { children: React.ReactNode 
                                 }`
                           }`}
                         >
-                          <div className="flex items-center gap-2.5">
+                          <div className="relative flex items-center gap-2.5">
                             <Icon size={15} className={isSidebarCollapsed ? (active ? "text-white" : "text-slate-500 group-hover:text-indigo-600") : (active ? "text-white" : "text-slate-400 group-hover:text-indigo-600 transition-colors")} />
+                            {isSidebarCollapsed && isSupportLink && openSupportCount > 0 && (
+                              <span className="absolute -top-1 -right-1.5 w-2.5 h-2.5 bg-rose-500 border-2 border-white rounded-full animate-pulse" />
+                            )}
                             {!isSidebarCollapsed && <span>{link.label}</span>}
                           </div>
 
-                          {!isSidebarCollapsed && link.badge && (
+                          {!isSidebarCollapsed && effectiveBadge && (
                             <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-md font-mono shadow-xs ${
-                              active ? "bg-white/20 text-white" : (link.badgeColor || "bg-indigo-100 text-indigo-800")
+                              active ? "bg-white/20 text-white" : (effectiveBadgeColor || "bg-indigo-100 text-indigo-800")
                             }`}>
-                              {link.badge}
+                              {effectiveBadge}
                             </span>
                           )}
                         </button>

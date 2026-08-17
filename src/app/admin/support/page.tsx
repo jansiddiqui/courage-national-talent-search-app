@@ -65,19 +65,25 @@ export default function SupportPage() {
     if (!selectedTicket || !replyText.trim()) return;
     setReplying(true);
     try {
-      const res = await fetch(`/api/admin/support/tickets/${selectedTicket.reference}`, {
+      const res = await fetch(`/api/admin/support/tickets/${encodeURIComponent(selectedTicket.reference)}/messages`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: replyText.trim() }),
       });
 
-      const data = await res.json();
-      if (res.ok && data.success) {
+      let data: any = {};
+      try {
+        data = await res.json();
+      } catch {
+        data = { success: res.ok };
+      }
+
+      if (res.ok && (data.success !== false)) {
         showToast("Reply sent successfully!");
         setReplies([...replies, { role: "admin", message: replyText.trim(), created_at: new Date().toISOString() }]);
         setReplyText("");
       } else {
-        showToast(data.message || "Failed to send reply.");
+        showToast(data.message || data.error || "Failed to send reply.");
       }
     } catch (err: any) {
       showToast(err.message || "Network error.");
