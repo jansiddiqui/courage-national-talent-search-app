@@ -599,29 +599,35 @@ export const PartnerSupportCenter: React.FC<PartnerSupportCenterProps> = ({
                         return (
                           <div
                             key={idx}
-                            className={`p-3.5 rounded-2xl text-xs space-y-1 transition-all ${
-                              isAdmin
-                                ? 'bg-indigo-600 text-white ml-6 rounded-tr-none shadow-xs'
-                                : 'bg-white text-slate-800 mr-6 rounded-tl-none border border-slate-200 shadow-xs'
-                            }`}
+                            className={`flex ${isAdmin ? 'justify-start' : 'justify-end'}`}
                           >
-                            <div className="flex items-center justify-between text-[10px] font-bold opacity-90">
-                              <span className="flex items-center gap-1.5">
-                                {isAdmin ? (
-                                  <>
-                                    <ShieldCheck className="w-3.5 h-3.5" />
-                                    <span>Courage Helpdesk Admin</span>
-                                  </>
-                                ) : (
-                                  <>
-                                    <User className="w-3.5 h-3.5" />
-                                    <span>You ({partnerName})</span>
-                                  </>
-                                )}
-                              </span>
-                              <span>{new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                            <div
+                              className={`p-3.5 rounded-2xl text-xs space-y-1.5 transition-all max-w-[85%] ${
+                                isAdmin
+                                  ? 'bg-white text-slate-800 rounded-tl-none border border-slate-200 shadow-xs'
+                                  : 'bg-indigo-600 text-white rounded-tr-none shadow-xs'
+                              }`}
+                            >
+                              <div className="flex items-center justify-between gap-4 text-[10px] font-bold opacity-90">
+                                <span className="flex items-center gap-1.5">
+                                  {isAdmin ? (
+                                    <>
+                                      <ShieldCheck className="w-3.5 h-3.5 text-indigo-600" />
+                                      <span className="text-slate-800 font-bold">Courage Helpdesk Admin</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <User className="w-3.5 h-3.5 text-indigo-200" />
+                                      <span>You ({partnerName})</span>
+                                    </>
+                                  )}
+                                </span>
+                                <span className={isAdmin ? 'text-slate-400 font-normal' : 'text-indigo-100 font-normal'}>
+                                  {new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                </span>
+                              </div>
+                              <p className="leading-relaxed whitespace-pre-wrap">{m.message}</p>
                             </div>
-                            <p className="leading-relaxed whitespace-pre-wrap">{m.message}</p>
                           </div>
                         );
                       })}
