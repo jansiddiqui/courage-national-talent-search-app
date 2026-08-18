@@ -313,15 +313,17 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
           {/* ==================================================================== */}
           {/* SECTION 4 — HISTORICAL CNTS PARTICIPATION (TIMELINE)                 */}
           {/* ==================================================================== */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
-              <div className="flex items-center gap-2.5">
-                <TrendingUp size={20} className="text-blue-600" />
-                <h2 className="font-display font-bold text-lg text-slate-900">
+          <div className="bg-white rounded-3xl p-5 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-2 border-b border-slate-100 pb-3 sm:pb-4">
+              <div className="flex items-center gap-2">
+                <TrendingUp size={18} className="text-blue-600 shrink-0" />
+                <h2 className="font-display font-bold text-base sm:text-lg text-slate-900">
                   Historical CNTS Participation
                 </h2>
               </div>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Session Timeline</span>
+              <span className="text-[11px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider pl-6 sm:pl-0">
+                Session Timeline
+              </span>
             </div>
 
             {/* Vertical Timeline Layout */}
