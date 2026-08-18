@@ -139,22 +139,6 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
 
       <main className="flex-grow pt-28 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-6">
-          
-          {/* Breadcrumb & Verification Header Strip */}
-          <div className="flex items-center justify-between gap-4 text-xs font-medium text-slate-400 flex-wrap px-1">
-            <div className="flex items-center gap-2">
-              <span className="hover:text-slate-600 transition-colors">Home</span>
-              <span>/</span>
-              <span className="hover:text-slate-600 transition-colors">Schools</span>
-              <span>/</span>
-              <span className="text-slate-700 font-semibold truncate max-w-[200px] sm:max-w-xs">{school.name}</span>
-            </div>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50/90 px-3 py-1 rounded-full border border-emerald-200/80 flex items-center gap-1.5 shadow-2xs">
-              <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
-              Official CNTS School Profile
-            </span>
-          </div>
-
           {/* ==================================================================== */}
           {/* SECTION 1 — SCHOOL HERO (PREMIUM INSTITUTIONAL IDENTITY HEADER)      */}
           {/* ==================================================================== */}
