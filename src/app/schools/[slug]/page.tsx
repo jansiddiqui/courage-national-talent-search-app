@@ -4,7 +4,6 @@ import {
   School, 
   Award, 
   MapPin, 
-  CheckCircle2, 
   Sparkles, 
   ShieldCheck,
   TrendingUp,
@@ -12,7 +11,6 @@ import {
   Calendar,
   Building2,
   Globe,
-  FileText,
   Clock
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
@@ -134,7 +132,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
       <JsonLd schema={[orgSchema, breadcrumbSchema]} />
 
       <main className="flex-grow pt-28 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto space-y-8">
+        <div className="max-w-4xl mx-auto space-y-7">
           
           {/* Breadcrumb Header Strip */}
           <div className="flex items-center justify-between gap-4 text-xs font-semibold text-slate-400 flex-wrap">
@@ -147,18 +145,18 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
             </div>
             <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 flex items-center gap-1.5">
               <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
-              Official CNTS Partner Record
+              Official CNTS School Profile
             </span>
           </div>
 
           {/* ==================================================================== */}
           {/* SECTION 1 — SCHOOL HERO                                              */}
           {/* ==================================================================== */}
-          <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-xs space-y-6 relative overflow-hidden">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-5 relative overflow-hidden">
             {/* Top Accent Line */}
             <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-500" />
 
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pt-2">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pt-1">
               <div className="flex items-start gap-4">
                 {school.logo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -172,7 +170,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                     <School size={36} />
                   </div>
                 )}
-                <div className="space-y-1.5">
+                <div className="space-y-1">
                   <h1 className="font-display font-black text-2xl sm:text-4xl text-slate-900 tracking-tight leading-tight">
                     {school.name}
                   </h1>
@@ -214,7 +212,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
           </div>
 
           {/* ==================================================================== */}
-          {/* SECTION 2 — INSTITUTIONAL SNAPSHOT (COMPACT METRICS STRIP)           */}
+          {/* SECTION 2 — INSTITUTIONAL SNAPSHOT (CORRECTED REAL METRICS)         */}
           {/* ==================================================================== */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center space-y-1">
@@ -227,104 +225,105 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
 
             <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center space-y-1">
               <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block flex items-center justify-center gap-1">
-                <Award size={11} className="text-slate-400" /> CNTS Editions
+                <Award size={11} className="text-slate-400" /> CNTS Edition
               </span>
               <span className="text-xl sm:text-2xl font-black text-blue-900 block">{editionsCount} {editionsCount === 1 ? "Edition" : "Editions"}</span>
               <span className="text-[11px] font-medium text-blue-700 block">Active Participation</span>
             </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center space-y-1">
-              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block flex items-center justify-center gap-1">
-                <Users size={11} className="text-slate-400" /> Candidates
-              </span>
-              <span className="text-xl sm:text-2xl font-black text-slate-900 block">
-                {hasSnapshots ? totalCandidates : "CNTS 2026"}
-              </span>
-              <span className="text-[11px] font-medium text-slate-500 block">
-                {hasSnapshots ? "Total Participated" : "Evaluation Cycle"}
-              </span>
-            </div>
+            {hasSnapshots ? (
+              <>
+                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block flex items-center justify-center gap-1">
+                    <Users size={11} className="text-slate-400" /> Candidates
+                  </span>
+                  <span className="text-xl sm:text-2xl font-black text-slate-900 block">{totalCandidates}</span>
+                  <span className="text-[11px] font-medium text-slate-500 block">Verified Candidates</span>
+                </div>
 
-            <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center space-y-1">
-              <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block flex items-center justify-center gap-1">
-                <Sparkles size={11} className="text-amber-600" /> Recognitions
-              </span>
-              <span className="text-xl sm:text-2xl font-black text-amber-900 block">
-                {hasSnapshots ? totalScholarships : "Verified"}
-              </span>
-              <span className="text-[11px] font-medium text-amber-700 block">
-                {hasSnapshots ? "Scholarships Awarded" : "Institutional Record"}
-              </span>
-            </div>
+                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center space-y-1">
+                  <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block flex items-center justify-center gap-1">
+                    <Sparkles size={11} className="text-amber-600" /> Scholarships
+                  </span>
+                  <span className="text-xl sm:text-2xl font-black text-amber-900 block">{totalScholarships}</span>
+                  <span className="text-[11px] font-medium text-amber-700 block">Merit Recognitions</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center space-y-1">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block flex items-center justify-center gap-1">
+                    <Clock size={11} className="text-slate-400" /> Current Cycle
+                  </span>
+                  <span className="text-lg sm:text-xl font-black text-slate-900 block">CNTS 2026</span>
+                  <span className="text-[11px] font-medium text-slate-500 block">Active Examination</span>
+                </div>
+
+                <div className="bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs text-center space-y-1">
+                  <span className="text-[10px] font-bold text-amber-800 uppercase tracking-wider block flex items-center justify-center gap-1">
+                    <ShieldCheck size={11} className="text-amber-600" /> Recognition
+                  </span>
+                  <span className="text-lg sm:text-xl font-black text-amber-900 block">
+                    {school.is_founding_school ? "Founding" : "Partner"}
+                  </span>
+                  <span className="text-[11px] font-medium text-amber-700 block">CNTS Status</span>
+                </div>
+              </>
+            )}
           </div>
 
           {/* ==================================================================== */}
-          {/* SECTION 3 — OFFICIAL CNTS RECOGNITION                                */}
+          {/* SECTION 3 — OFFICIAL CNTS RECOGNITION (RESTRAINED WEIGHT)           */}
           {/* ==================================================================== */}
-          <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white space-y-4 shadow-md border border-slate-800 relative overflow-hidden">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-4">
-              <div className="space-y-1">
+          <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-5 sm:p-6 text-white space-y-3 shadow-sm border border-slate-800 relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-800/80 pb-3">
+              <div className="space-y-0.5">
                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block flex items-center gap-1.5">
-                  <Award size={13} className="text-amber-400" /> Official Institutional Recognition
+                  <Award size={13} className="text-amber-400" /> Official CNTS Recognition
                 </span>
-                <h2 className="font-display font-bold text-xl sm:text-2xl text-white">
+                <h2 className="font-display font-bold text-lg sm:text-xl text-white">
                   {school.is_founding_school ? "CNTS Founding School — 2026" : "Official CNTS Partner School"}
                 </h2>
               </div>
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/10 text-amber-300 border border-amber-400/30 shrink-0">
-                Official CNTS Record
-              </span>
             </div>
 
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
               {school.name} is officially recognized by the Courage National Talent Search (CNTS) for its partnership in national student cognitive reasoning evaluation, talent identification, and academic empowerment.
             </p>
-
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-4 border-t border-slate-800/80">
-              <div className="text-xs text-slate-400 font-mono">
-                Official CNTS Profile: /schools/{school.slug}
-              </div>
-            </div>
           </div>
 
           {/* ==================================================================== */}
-          {/* SECTION 4 — CNTS TALENT SEARCH JOURNEY (VERTICAL TIMELINE)          */}
+          {/* SECTION 4 — HISTORICAL CNTS PARTICIPATION (TIMELINE)                 */}
           {/* ==================================================================== */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
-                <TrendingUp size={22} className="text-blue-600" />
-                <h2 className="font-display font-bold text-xl text-slate-900">
-                  CNTS Talent Search Journey
+                <TrendingUp size={20} className="text-blue-600" />
+                <h2 className="font-display font-bold text-lg text-slate-900">
+                  Historical CNTS Participation
                 </h2>
               </div>
-              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Historical Progression</span>
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Session Timeline</span>
             </div>
 
             {/* Vertical Timeline Layout */}
-            <div className="relative border-l-2 border-slate-200/80 ml-4 pl-6 sm:pl-8 space-y-8 py-2">
+            <div className="relative border-l-2 border-slate-200/80 ml-3 sm:ml-4 pl-5 sm:pl-7 space-y-6 py-1">
               {hasSnapshots ? (
                 school.snapshots.map((snap, idx) => (
                   <div key={idx} className="relative group">
-                    {/* Timeline Node Icon */}
-                    <div className="absolute -left-[31px] sm:-left-[39px] top-0 w-6 h-6 rounded-full bg-blue-600 border-4 border-white shadow-xs flex items-center justify-center text-white" />
+                    <div className="absolute -left-[27px] sm:-left-[35px] top-0.5 w-5 h-5 rounded-full bg-blue-600 border-4 border-white shadow-xs" />
 
-                    <div className="bg-slate-50/80 p-4 sm:p-5 rounded-2xl border border-slate-200/80 space-y-3">
+                    <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 space-y-2.5">
                       <div className="flex items-center justify-between flex-wrap gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className="font-display font-bold text-base text-slate-900">
-                            CNTS Edition {snap.academic_session_name}
-                          </span>
-                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800">
-                            Verified Snapshot
-                          </span>
-                        </div>
+                        <span className="font-display font-bold text-sm sm:text-base text-slate-900">
+                          CNTS Edition {snap.academic_session_name}
+                        </span>
                         <span className="text-xs font-medium text-slate-500">
-                          {snap.average_score > 0 ? `Avg Score: ${snap.average_score.toFixed(1)}%` : "Evaluation Record"}
+                          {snap.average_score > 0 ? `Avg Score: ${snap.average_score.toFixed(1)}%` : "Verified Snapshot"}
                         </span>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-4 text-xs text-slate-700 pt-1">
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-700">
                         <span className="inline-flex items-center gap-1.5 font-bold text-slate-900">
                           <Users size={14} className="text-blue-600" />
                           {snap.student_count} Candidates Participated
@@ -343,15 +342,14 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                   </div>
                 ))
               ) : (
-                /* Pre-Exam Timeline Node (CNTS 2026 Active Cycle) */
+                /* Pre-Exam Timeline Node (Concise 2026 Active Cycle) */
                 <div className="relative group">
-                  {/* Timeline Node Icon */}
-                  <div className="absolute -left-[31px] sm:-left-[39px] top-0 w-6 h-6 rounded-full bg-blue-600 border-4 border-white shadow-xs flex items-center justify-center text-white" />
+                  <div className="absolute -left-[27px] sm:-left-[35px] top-0.5 w-5 h-5 rounded-full bg-blue-600 border-4 border-white shadow-xs" />
 
-                  <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100 space-y-2">
+                  <div className="bg-blue-50/50 p-4 sm:p-5 rounded-2xl border border-blue-100 space-y-2">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                       <div className="flex items-center gap-2">
-                        <span className="font-display font-bold text-base text-blue-950">
+                        <span className="font-display font-bold text-sm sm:text-base text-blue-950">
                           CNTS 2026 Edition
                         </span>
                         <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 flex items-center gap-1">
@@ -362,7 +360,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                     </div>
 
                     <p className="text-xs sm:text-sm text-slate-700 leading-relaxed pt-1">
-                      {school.name} is an active participating institution in the Courage National Talent Search 2026 edition. Historical evaluation metrics and performance records will populate automatically upon completion of the national examination cycle.
+                      {school.name} is participating in the CNTS 2026 examination cycle. Performance and achievement records will appear here after verified examination results are available.
                     </p>
                   </div>
                 </div>
@@ -371,12 +369,12 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
           </div>
 
           {/* ==================================================================== */}
-          {/* SECTION 5 — SCHOOL INFORMATION (DESCRIPTION OR FACT SHEET GRID)      */}
+          {/* SECTION 5 — SCHOOL INFORMATION (DESCRIPTION OR FACT SHEET)          */}
           {/* ==================================================================== */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-5">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-4">
             <h2 className="font-display font-bold text-lg text-slate-900 border-b border-slate-100 pb-3 flex items-center gap-2">
-              <Building2 size={20} className="text-blue-600" />
-              School Information & Institutional Details
+              <Building2 size={18} className="text-blue-600" />
+              School Information
             </h2>
 
             {school.public_description && school.public_description.trim().length > 0 ? (
@@ -384,46 +382,46 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                 {school.public_description}
               </p>
             ) : (
-              /* Structured Institutional Fact Sheet Grid (Used when custom description is omitted) */
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Official Institution Name</span>
-                  <span className="text-sm font-bold text-slate-900 block">{school.name}</span>
+              /* Clean Structured Institutional Fact Sheet Grid */
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-0.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">School Name</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 block">{school.name}</span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-0.5">
                   <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Location</span>
-                  <span className="text-sm font-bold text-slate-900 block">{school.city}{school.state ? `, ${school.state}` : ""}</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 block">{school.city}{school.state ? `, ${school.state}` : ""}</span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Board Affiliation</span>
-                  <span className="text-sm font-bold text-slate-900 block">{school.board || "Recognized Board"}</span>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-0.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Board</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 block">{school.board || "Recognized Board"}</span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Institutional Classification</span>
-                  <span className="text-sm font-bold text-slate-900 block">{school.school_type || "Educational Institution"}</span>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-0.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">School Type</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 block">{school.school_type || "Educational Institution"}</span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">CNTS Partnership Tenure</span>
-                  <span className="text-sm font-bold text-slate-900 block">Partner Since {joinYear}</span>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-0.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Partner Since</span>
+                  <span className="text-xs sm:text-sm font-bold text-slate-900 block">{joinYear}</span>
                 </div>
 
-                <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
-                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Official Domain Website</span>
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-0.5">
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Official Website</span>
                   {school.website ? (
                     <a 
                       href={school.website.startsWith("http") ? school.website : `https://${school.website}`} 
                       target="_blank" 
                       rel="noopener noreferrer" 
-                      className="text-sm font-bold text-blue-600 hover:underline flex items-center gap-1"
+                      className="text-xs sm:text-sm font-bold text-blue-600 hover:underline flex items-center gap-1"
                     >
-                      <Globe size={13} /> Visit Website ↗
+                      <Globe size={12} /> Visit Website ↗
                     </a>
                   ) : (
-                    <span className="text-sm font-medium text-slate-500 block">Official CNTS Partner</span>
+                    <span className="text-xs sm:text-sm font-medium text-slate-500 block">Official CNTS Partner</span>
                   )}
                 </div>
               </div>
@@ -431,15 +429,15 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
           </div>
 
           {/* ==================================================================== */}
-          {/* SECTION 6 — TRUST & DPDP PRIVACY NOTICE                             */}
+          {/* SECTION 6 — TRUST & DPDP PRIVACY NOTICE (SUBDUED FOOTER STATEMENT)  */}
           {/* ==================================================================== */}
-          <div className="p-6 rounded-2xl bg-slate-100/80 border border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+          <div className="p-4 sm:p-5 rounded-2xl bg-slate-100/70 border border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
             <div className="flex items-center gap-2 text-slate-600 font-medium">
-              <ShieldCheck size={16} className="text-blue-600 shrink-0" />
-              <span>Official Institutional Record • Courage National Talent Search (CNTS)</span>
+              <ShieldCheck size={15} className="text-blue-600 shrink-0" />
+              <span>CNTS Institutional Record • Courage National Talent Search</span>
             </div>
-            <p className="text-slate-400">
-              Individual candidate data is protected under CNTS Privacy Directives.
+            <p className="text-slate-400 text-[11px]">
+              Individual candidate data is protected under CNTS privacy directives.
             </p>
           </div>
 
