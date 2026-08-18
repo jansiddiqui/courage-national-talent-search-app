@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { 
   School, 
@@ -12,7 +13,8 @@ import {
   Calendar,
   Building2,
   Globe,
-  Clock
+  Clock,
+  GraduationCap
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -439,7 +441,42 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
           </div>
 
           {/* ==================================================================== */}
-          {/* SECTION 6 — TRUST & DPDP PRIVACY NOTICE (SUBDUED FOOTER STATEMENT)  */}
+          {/* SECTION 6 — INSTITUTIONAL ENGAGEMENT CALL-TO-ACTION                  */}
+          {/* ==================================================================== */}
+          <div className="bg-gradient-to-br from-slate-900 via-blue-950 to-slate-900 rounded-3xl p-6 sm:p-8 text-white text-center space-y-4 border border-slate-800 shadow-md relative overflow-hidden">
+            <div className="max-w-xl mx-auto space-y-2">
+              <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block">
+                Courage National Talent Search 2026
+              </span>
+              <h3 className="font-display font-bold text-xl sm:text-2xl text-white">
+                Empower Your Child or Partner Your School
+              </h3>
+              <p className="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                Participate in India&apos;s premier cognitive talent evaluation for Classes 5–8. Diagnostic reports, national percentile benchmarks, and merit scholarships.
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+              <Link
+                href="/register"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-sm hover:shadow-md cursor-pointer"
+              >
+                <GraduationCap size={16} className="text-blue-200" />
+                <span>Register Student</span>
+              </Link>
+
+              <Link
+                href="/for-schools"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white border border-white/20 text-xs font-bold transition-all duration-200 hover:-translate-y-0.5 active:translate-y-0 active:scale-95 shadow-sm hover:shadow-md cursor-pointer"
+              >
+                <Building2 size={16} className="text-amber-400" />
+                <span>Partner Your School</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* ==================================================================== */}
+          {/* SECTION 7 — TRUST & DPDP PRIVACY NOTICE (SUBDUED FOOTER STATEMENT)  */}
           {/* ==================================================================== */}
           <div className="p-4 sm:p-5 rounded-2xl bg-slate-100/70 border border-slate-200/60 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
             <div className="flex items-center gap-2 text-slate-600 font-medium">
