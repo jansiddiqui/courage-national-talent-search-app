@@ -132,80 +132,83 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
       <JsonLd schema={[orgSchema, breadcrumbSchema]} />
 
       <main className="flex-grow pt-28 pb-16 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto space-y-7">
+        <div className="max-w-4xl mx-auto space-y-6">
           
-          {/* Breadcrumb Header Strip */}
-          <div className="flex items-center justify-between gap-4 text-xs font-semibold text-slate-400 flex-wrap">
+          {/* Breadcrumb & Verification Header Strip */}
+          <div className="flex items-center justify-between gap-4 text-xs font-medium text-slate-400 flex-wrap px-1">
             <div className="flex items-center gap-2">
-              <span>Home</span>
+              <span className="hover:text-slate-600 transition-colors">Home</span>
               <span>/</span>
-              <span>Schools</span>
+              <span className="hover:text-slate-600 transition-colors">Schools</span>
               <span>/</span>
-              <span className="text-slate-700 truncate max-w-[200px] sm:max-w-xs">{school.name}</span>
+              <span className="text-slate-700 font-semibold truncate max-w-[200px] sm:max-w-xs">{school.name}</span>
             </div>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 flex items-center gap-1.5">
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50/90 px-3 py-1 rounded-full border border-emerald-200/80 flex items-center gap-1.5 shadow-2xs">
               <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
               Official CNTS School Profile
             </span>
           </div>
 
           {/* ==================================================================== */}
-          {/* SECTION 1 — SCHOOL HERO                                              */}
+          {/* SECTION 1 — SCHOOL HERO (PREMIUM INSTITUTIONAL IDENTITY HEADER)      */}
           {/* ==================================================================== */}
-          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-5 relative overflow-hidden">
-            {/* Top Accent Line */}
-            <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-500" />
+          <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6 relative overflow-hidden">
+            {/* Top Accent Brand Line */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-500" />
 
-            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pt-1">
-              <div className="flex items-start gap-4">
+            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pt-1">
+              {/* Left Identity Unit (Logo + Name + Location) */}
+              <div className="flex items-start gap-4 sm:gap-5">
                 {school.logo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img 
                     src={school.logo_url} 
                     alt={`${school.name} Logo`} 
-                    className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-2xl p-1 bg-white border border-slate-200 shadow-xs shrink-0"
+                    className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-2xl p-1.5 bg-white border border-slate-200 shadow-xs shrink-0"
                   />
                 ) : (
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center shadow-inner shrink-0 text-blue-700">
-                    <School size={36} />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-b from-blue-50 to-slate-50 border border-blue-100/90 rounded-2xl flex items-center justify-center shadow-xs shrink-0 text-blue-700">
+                    <School size={34} className="stroke-[1.75]" />
                   </div>
                 )}
                 <div className="space-y-1">
-                  <h1 className="font-display font-black text-2xl sm:text-4xl text-slate-900 tracking-tight leading-tight">
+                  <h1 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight leading-[1.18]">
                     {school.name}
                   </h1>
-                  <p className="text-slate-500 font-medium text-sm sm:text-base flex items-center gap-1.5">
-                    <MapPin size={16} className="text-slate-400 shrink-0" />
+                  <p className="text-slate-500 font-medium text-xs sm:text-sm flex items-center gap-1.5 pt-0.5">
+                    <MapPin size={15} className="text-slate-400 shrink-0" />
                     {school.city}{school.state ? `, ${school.state}` : ""}
                   </p>
                 </div>
               </div>
 
-              {/* Action Buttons Hierarchy (Share Profile -> Recognition Document -> Official Website) */}
-              <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} website={school.website} schoolData={school} />
+              {/* Right CTA Action Area (Vertically Centered With Identity Block) */}
+              <div className="shrink-0 w-full lg:w-auto">
+                <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} website={school.website} schoolData={school} />
+              </div>
             </div>
 
-            {/* Identity & Status Badges */}
-            <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-slate-100">
+            {/* Bottom Metadata Row (Clean Institutional Hierarchy) */}
+            <div className="flex flex-wrap items-center gap-2 sm:gap-2.5 pt-3.5 border-t border-slate-100/90 text-xs">
               {school.is_founding_school ? (
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs">
-                  <Sparkles size={14} className="text-amber-600" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs">
+                  <Sparkles size={13} className="text-amber-600" />
                   CNTS Founding School — 2026
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
-                  <ShieldCheck size={14} className="text-blue-600" />
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                  <ShieldCheck size={13} className="text-blue-600" />
                   CNTS Partner School
                 </span>
               )}
 
               {school.board && (
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+                <span className="inline-flex items-center px-3 py-1 rounded-full font-semibold bg-slate-100/80 text-slate-600 border border-slate-200/60">
                   Board: {school.board}
                 </span>
               )}
 
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+              <span className="inline-flex items-center px-3 py-1 rounded-full font-semibold bg-slate-100/80 text-slate-600 border border-slate-200/60">
                 Partner Since {joinYear}
               </span>
             </div>
