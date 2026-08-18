@@ -157,43 +157,44 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
             {/* Top Accent Brand Line */}
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-500" />
 
-            <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pt-1">
-              {/* Left Identity Unit (Logo + Name with Verification + Location) */}
-              <div className="flex items-start gap-4 sm:gap-5">
+            {/* Main Identity & Action Row */}
+            <div className="flex items-start justify-between gap-3.5 sm:gap-6 pt-1">
+              {/* Left Identity Unit (Logo + Name with Inline Verification + Location) */}
+              <div className="flex items-start gap-3.5 sm:gap-5 min-w-0">
                 {school.logo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img 
                     src={school.logo_url} 
                     alt={`${school.name} Logo`} 
-                    className="w-16 h-16 sm:w-20 sm:h-20 object-contain rounded-2xl p-1.5 bg-white border border-slate-200 shadow-xs shrink-0"
+                    className="w-14 h-14 sm:w-20 sm:h-20 object-contain rounded-2xl p-1.5 bg-white border border-slate-200 shadow-xs shrink-0"
                   />
                 ) : (
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-b from-blue-50 to-slate-50 border border-blue-100/90 rounded-2xl flex items-center justify-center shadow-xs shrink-0 text-blue-700">
-                    <School size={34} className="stroke-[1.75]" />
+                  <div className="w-14 h-14 sm:w-20 sm:h-20 bg-gradient-to-b from-blue-50 to-slate-50 border border-blue-100/90 rounded-2xl flex items-center justify-center shadow-xs shrink-0 text-blue-700">
+                    <School className="w-7 h-7 sm:w-9 sm:h-9 stroke-[1.75]" />
                   </div>
                 )}
-                <div className="space-y-1">
-                  <h1 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight leading-[1.18] flex items-center flex-wrap gap-2">
+                <div className="space-y-1 min-w-0">
+                  <h1 className="font-display font-black text-xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight leading-snug">
                     <span>{school.name}</span>
                     {school.profile_status === "PUBLISHED" && (
                       <span 
-                        className="inline-flex items-center text-blue-600 shrink-0" 
+                        className="inline-flex items-center align-middle ml-1.5 text-blue-600 shrink-0" 
                         title="Verified CNTS Partner School"
                         aria-label="Verified CNTS Partner School"
                       >
-                        <BadgeCheck size={26} className="text-blue-600 fill-blue-50 stroke-blue-600" />
+                        <BadgeCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 fill-blue-50 stroke-blue-600 -mt-0.5" />
                       </span>
                     )}
                   </h1>
                   <p className="text-slate-500 font-medium text-xs sm:text-sm flex items-center gap-1.5 pt-0.5">
-                    <MapPin size={15} className="text-slate-400 shrink-0" />
-                    {school.city}{school.state ? `, ${school.state}` : ""}
+                    <MapPin size={14} className="text-slate-400 shrink-0" />
+                    <span>{school.city}{school.state ? `, ${school.state}` : ""}</span>
                   </p>
                 </div>
               </div>
 
-              {/* Right CTA Action Area (Icon-Only Share Action Button) */}
-              <div className="shrink-0 w-full lg:w-auto flex justify-end">
+              {/* Right CTA Action Area (Icon-Only Share Action Button Anchored Top-Right) */}
+              <div className="shrink-0 pt-0.5">
                 <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} />
               </div>
             </div>
