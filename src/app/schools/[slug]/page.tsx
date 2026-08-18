@@ -137,7 +137,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
       <Navbar theme="light" />
       <JsonLd schema={[orgSchema, breadcrumbSchema]} />
 
-      <main className="flex-grow pt-28 pb-16 px-4 sm:px-6 lg:px-8">
+      <main className="flex-grow pt-32 sm:pt-36 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-6">
           {/* ==================================================================== */}
           {/* SECTION 1 — SCHOOL HERO (PREMIUM INSTITUTIONAL IDENTITY HEADER)      */}
