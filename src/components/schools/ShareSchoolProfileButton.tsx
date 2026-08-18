@@ -39,27 +39,24 @@ export default function ShareSchoolProfileButton({ schoolName, schoolSlug }: Sha
   };
 
   return (
-    <div className="relative inline-flex items-center">
-      <button
-        onClick={handleShare}
-        type="button"
-        title={copied ? "Link copied to clipboard!" : "Share school profile"}
-        aria-label="Share school profile"
-        className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white transition-all shadow-xs shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-      >
-        {copied ? (
-          <Check size={18} className="text-emerald-300" />
-        ) : (
-          <Share2 size={18} />
-        )}
-      </button>
-
-      {/* Floating tooltip on desktop */}
-      {copied && (
-        <span className="absolute -top-8 right-0 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md whitespace-nowrap animate-fade-in pointer-events-none">
-          Link Copied!
-        </span>
+    <button
+      onClick={handleShare}
+      type="button"
+      title={copied ? "Link copied to clipboard!" : "Share school profile"}
+      aria-label="Share school profile"
+      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/90 hover:bg-slate-200/90 active:scale-95 text-slate-700 text-xs font-semibold transition-all border border-slate-200/80 cursor-pointer focus:outline-none"
+    >
+      {copied ? (
+        <>
+          <Check size={13} className="text-emerald-600 shrink-0" />
+          <span className="text-emerald-700 font-bold">Copied!</span>
+        </>
+      ) : (
+        <>
+          <Share2 size={13} className="text-slate-500 shrink-0" />
+          <span>Share</span>
+        </>
       )}
-    </div>
+    </button>
   );
 }
