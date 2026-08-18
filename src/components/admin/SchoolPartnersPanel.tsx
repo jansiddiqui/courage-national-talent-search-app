@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { School, Search, Plus, Copy, Check, Users, CheckCircle, Phone, Mail, FileDown, Eye, EyeOff, Globe, Sparkles, ExternalLink, X, Key, Send, Lock } from "lucide-react";
+import { School, Search, Plus, Copy, Check, Users, CheckCircle, Phone, Mail, FileDown, Eye, EyeOff, Globe, Sparkles, ExternalLink, X, Key, Send, Lock, Award } from "lucide-react";
+import { openSchoolRecognitionCertificate } from "@/lib/schoolRecognitionCertificate";
 
 export default function SchoolPartnersPanel() {
   const router = useRouter();
@@ -486,6 +487,12 @@ export default function SchoolPartnersPanel() {
                   >
                     <FileDown size={13} /> Generate Credentials PDF
                   </button>
+                  <button
+                    onClick={() => openSchoolRecognitionCertificate(school)}
+                    className="w-full flex items-center justify-center gap-1.5 text-xs font-semibold text-amber-800 hover:text-white bg-amber-50 hover:bg-amber-600 py-2 rounded-lg transition-all duration-200 border border-amber-200"
+                  >
+                    <Award size={13} /> Generate Recognition Document
+                  </button>
                 </div>
 
                 {/* Quota Footer */}
@@ -663,7 +670,7 @@ export default function SchoolPartnersPanel() {
                   <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider block">Public URL Slug *</label>
                   {isSlugLocked && (
                     <span className="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200 flex items-center gap-1">
-                      🔒 Published Slug Locked
+                      <Lock size={11} className="shrink-0" /> Published Slug Locked
                     </span>
                   )}
                 </div>

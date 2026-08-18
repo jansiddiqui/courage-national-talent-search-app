@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, Check, ExternalLink, Globe } from "lucide-react";
+import { Share2, Check, ExternalLink, Globe, FileDown } from "lucide-react";
+import { openSchoolRecognitionCertificate, SchoolRecognitionData } from "@/lib/schoolRecognitionCertificate";
 
 interface ShareProps {
   schoolName: string;
   schoolSlug: string;
   website?: string | null;
+  schoolData?: SchoolRecognitionData;
 }
 
-export default function ShareSchoolProfileButton({ schoolName, schoolSlug, website }: ShareProps) {
+export default function ShareSchoolProfileButton({ schoolName, schoolSlug, website, schoolData }: ShareProps) {
   const [copied, setCopied] = useState(false);
 
   const profileUrl = typeof window !== "undefined" 
@@ -39,6 +41,18 @@ export default function ShareSchoolProfileButton({ schoolName, schoolSlug, websi
     }
   };
 
+  const handleDownloadCertificate = () => {
+    if (schoolData) {
+      openSchoolRecognitionCertificate(schoolData);
+    } else {
+      openSchoolRecognitionCertificate({
+        name: schoolName,
+        city: "",
+        slug: schoolSlug,
+      });
+    }
+  };
+
   return (
     <div className="flex flex-wrap items-center gap-3">
       {website && (
@@ -52,6 +66,17 @@ export default function ShareSchoolProfileButton({ schoolName, schoolSlug, websi
           Visit Official Website
           <ExternalLink size={13} className="text-slate-400" />
         </a>
+      )}
+
+      {schoolData && (
+        <button
+          onClick={handleDownloadCertificate}
+          type="button"
+          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300 text-xs font-bold transition-all shadow-2xs cursor-pointer"
+        >
+          <FileDown size={15} className="text-amber-700 shrink-0" />
+          Recognition Document
+        </button>
       )}
 
       <button

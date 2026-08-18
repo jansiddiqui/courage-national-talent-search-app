@@ -175,7 +175,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
               </div>
 
               {/* Share & Website Actions */}
-              <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} website={school.website} />
+              <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} website={school.website} schoolData={school} />
             </div>
 
             {/* Status & Identity Badges */}
@@ -188,7 +188,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
               {school.is_founding_school && (
                 <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs">
                   <Sparkles size={14} className="text-amber-600" />
-                  🏛️ CNTS Founding School — 2026
+                  CNTS Founding School — 2026
                 </span>
               )}
 
@@ -218,6 +218,34 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Official CNTS Institutional Recognition Section */}
+          <div className="bg-gradient-to-br from-slate-900 to-blue-950 rounded-3xl p-6 sm:p-8 text-white space-y-4 shadow-md relative overflow-hidden">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+              <div className="space-y-1">
+                <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block">
+                  Official Recognition Asset
+                </span>
+                <h2 className="font-display font-bold text-xl sm:text-2xl text-white">
+                  {school.is_founding_school ? "CNTS Founding School — 2026" : "Official CNTS Partner School"}
+                </h2>
+              </div>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/10 text-amber-300 border border-amber-400/30 shrink-0">
+                <Award size={14} className="text-amber-400" />
+                Verified Institution
+              </span>
+            </div>
+
+            <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
+              {school.name} is officially recognized by the Courage National Talent Search for its participation in national student academic evaluation, talent discovery, and educational development.
+            </p>
+
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
+              <div className="text-xs text-slate-400 font-mono">
+                Official Record: /schools/{school.slug}
+              </div>
+            </div>
           </div>
 
           {/* CNTS Journey / Participation History */}

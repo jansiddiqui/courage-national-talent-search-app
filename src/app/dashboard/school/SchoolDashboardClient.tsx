@@ -31,8 +31,10 @@ import {
   FileDown,
   RefreshCw,
   Key,
-  Lock
+  Lock,
+  Award
 } from "lucide-react";
+import { openSchoolRecognitionCertificate } from "@/lib/schoolRecognitionCertificate";
 import * as XLSX from "xlsx";
 import PhotoUploader from "@/components/registration/PhotoUploader";
 import Navbar from "@/components/layout/Navbar";
@@ -711,6 +713,13 @@ export default function SchoolDashboardClient({
                     </a>
                     <button
                       type="button"
+                      onClick={() => openSchoolRecognitionCertificate(school)}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-300 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer"
+                    >
+                      <Award size={13} className="text-amber-700" /> Download Official Recognition
+                    </button>
+                    <button
+                      type="button"
                       onClick={() => {
                         const url = `${window.location.origin}/schools/${school.slug}`;
                         navigator.clipboard.writeText(url);
@@ -725,7 +734,7 @@ export default function SchoolDashboardClient({
                   </>
                 ) : (
                   <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-200">
-                    🔒 Official Public Profile: Pending Admin Verification
+                    <Lock size={12} className="shrink-0 text-amber-600" /> Official Public Profile: Pending Admin Verification
                   </span>
                 )}
               </div>
