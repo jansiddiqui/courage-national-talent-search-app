@@ -81,6 +81,11 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
   const totalScholarships = school.snapshots?.reduce((acc, s) => acc + (s.scholarship_count || 0), 0) || 0;
   const editionsCount = school.snapshots?.length || 1;
 
+  // Split name so the last word and badge check are permanently bound together (never breaking onto an orphan line)
+  const nameWords = school.name.trim().split(/\s+/);
+  const leadingName = nameWords.slice(0, -1).join(" ");
+  const lastWord = nameWords[nameWords.length - 1];
+
   // JSON-LD Schemas
   const orgSchema = {
     "@context": "https://schema.org",
@@ -157,7 +162,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
             {/* Top Accent Brand Line */}
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-500" />
 
-            {/* School Identity Unit (Logo + Name with Inline Verification + Location) */}
+            {/* School Identity Unit (Logo + Name with Inline Bound Verification + Location) */}
             <div className="flex items-start gap-4 sm:gap-5 min-w-0 pt-1">
               {school.logo_url ? (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -173,17 +178,20 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
               )}
 
               <div className="space-y-1 min-w-0 flex-1">
-                <h1 className="font-display font-black text-xl sm:text-2xl lg:text-3xl text-slate-900 tracking-tight leading-snug flex items-center flex-wrap gap-1.5 sm:gap-2">
-                  <span>{school.name}</span>
-                  {school.profile_status === "PUBLISHED" && (
-                    <span 
-                      className="inline-flex items-center text-blue-600 shrink-0 align-middle" 
-                      title="Verified CNTS Partner School"
-                      aria-label="Verified CNTS Partner School"
-                    >
-                      <BadgeCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 fill-blue-50 stroke-blue-600" />
-                    </span>
-                  )}
+                <h1 className="font-display font-black text-xl sm:text-2xl lg:text-3xl text-slate-900 tracking-tight leading-snug">
+                  {leadingName ? `${leadingName} ` : ""}
+                  <span className="inline-flex items-center gap-1.5 whitespace-nowrap">
+                    <span>{lastWord}</span>
+                    {school.profile_status === "PUBLISHED" && (
+                      <span 
+                        className="inline-flex items-center text-blue-600 shrink-0 align-middle" 
+                        title="Verified CNTS Partner School"
+                        aria-label="Verified CNTS Partner School"
+                      >
+                        <BadgeCheck className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600 fill-blue-50 stroke-blue-600" />
+                      </span>
+                    )}
+                  </span>
                 </h1>
                 <p className="text-slate-500 font-medium text-xs sm:text-sm flex items-center gap-1.5 pt-0.5">
                   <MapPin size={14} className="text-slate-400 shrink-0" />
@@ -192,36 +200,32 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* Bottom Metadata & Utility Row */}
-            <div className="flex flex-wrap items-center justify-between gap-2.5 pt-3.5 border-t border-slate-100/90 text-xs">
-              <div className="flex flex-wrap items-center gap-2">
-                {school.is_founding_school ? (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs">
-                    <Sparkles size={13} className="text-amber-600" />
-                    CNTS Founding School — 2026
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
-                    <ShieldCheck size={13} className="text-blue-600" />
-                    CNTS Partner School
-                  </span>
-                )}
-
-                {school.board && (
-                  <span className="inline-flex items-center px-3 py-1 rounded-full font-semibold bg-slate-100/80 text-slate-600 border border-slate-200/60">
-                    Board: {school.board}
-                  </span>
-                )}
-
-                <span className="inline-flex items-center px-3 py-1 rounded-full font-semibold bg-slate-100/80 text-slate-600 border border-slate-200/60">
-                  Partner Since {joinYear}
+            {/* Bottom Metadata & Utility Row (Fluid Wrapping Flow) */}
+            <div className="flex flex-wrap items-center gap-2 pt-3.5 border-t border-slate-100/90 text-xs">
+              {school.is_founding_school ? (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-extrabold bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs">
+                  <Sparkles size={13} className="text-amber-600" />
+                  CNTS Founding School — 2026
                 </span>
-              </div>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                  <ShieldCheck size={13} className="text-blue-600" />
+                  CNTS Partner School
+                </span>
+              )}
 
-              {/* Secondary Utility Share Action */}
-              <div className="shrink-0">
-                <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} />
-              </div>
+              {school.board && (
+                <span className="inline-flex items-center px-3 py-1 rounded-full font-semibold bg-slate-100/80 text-slate-600 border border-slate-200/60">
+                  Board: {school.board}
+                </span>
+              )}
+
+              <span className="inline-flex items-center px-3 py-1 rounded-full font-semibold bg-slate-100/80 text-slate-600 border border-slate-200/60">
+                Partner Since {joinYear}
+              </span>
+
+              {/* Subtly Highlighted Share Action in Natural Flow */}
+              <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} />
             </div>
           </div>
 

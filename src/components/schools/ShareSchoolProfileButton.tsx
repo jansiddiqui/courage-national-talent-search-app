@@ -44,16 +44,16 @@ export default function ShareSchoolProfileButton({ schoolName, schoolSlug }: Sha
       type="button"
       title={copied ? "Link copied to clipboard!" : "Share school profile"}
       aria-label="Share school profile"
-      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/90 hover:bg-slate-200/90 active:scale-95 text-slate-700 text-xs font-semibold transition-all border border-slate-200/80 cursor-pointer focus:outline-none"
+      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50/90 hover:bg-blue-100 active:scale-95 text-blue-700 font-semibold text-xs transition-all border border-blue-200/90 cursor-pointer shadow-2xs"
     >
       {copied ? (
         <>
-          <Check size={13} className="text-emerald-600 shrink-0" />
+          <Check size={12} className="text-emerald-600 shrink-0" />
           <span className="text-emerald-700 font-bold">Copied!</span>
         </>
       ) : (
         <>
-          <Share2 size={13} className="text-slate-500 shrink-0" />
+          <Share2 size={12} className="text-blue-600 shrink-0" />
           <span>Share</span>
         </>
       )}
