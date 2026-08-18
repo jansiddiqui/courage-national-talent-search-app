@@ -123,7 +123,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
         "@type": "ListItem",
         "position": 2,
         "name": "Partner Schools",
-        "item": "https://thecouragelibrary.com/for-schools"
+        "item": "https://thecouragelibrary.com/schools"
       },
       {
         "@type": "ListItem",

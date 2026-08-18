@@ -1,7 +1,5 @@
-/* eslint-disable react/no-unescaped-entities */
-"use client";
-
-import { Building, ArrowRight, Download, ShieldCheck, FileText, PhoneCall, Rocket } from "lucide-react";
+import Link from "next/link";
+import { Building, School, ArrowRight, Download, ShieldCheck, FileText, PhoneCall, Rocket } from "lucide-react";
 import InquiryForm from "./InquiryForm";
 
 export default function HeroPortalSection() {
@@ -18,11 +16,18 @@ export default function HeroPortalSection() {
           <div className="lg:col-span-7 text-left">
             
             {/* Official Institutional Badge */}
-            <div className="flex flex-wrap items-center gap-3 mb-4">
+            <div className="flex flex-wrap items-center gap-2.5 mb-4">
               <div className="inline-flex items-center gap-2 px-3 py-1 bg-blue-50 border border-blue-200 rounded-full text-xs font-bold text-blue-700 tracking-wide shadow-sm">
                 <Building size={14} className="text-blue-600" />
                 <span>Founding Partner School Cohort — 2026 Academic Session</span>
               </div>
+              <Link
+                href="/schools"
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-full text-xs font-bold text-slate-700 transition-all shadow-2xs"
+              >
+                <School size={13} className="text-blue-600" />
+                <span>Browse Partner Schools</span>
+              </Link>
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold tracking-tight text-slate-900 mb-4 leading-tight">

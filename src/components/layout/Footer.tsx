@@ -11,6 +11,7 @@ const footerNav = [
       { label: "Why CNTS?", href: "/why-cnts" },
       { label: "About CNTS", href: "/about" },
       { label: "For Schools", href: "/for-schools" },
+      { label: "Partner Schools", href: "/schools" },
       { label: "Blog & Resources", href: "/blog" },
       { label: "Contact Us", href: "/contact" },
     ],

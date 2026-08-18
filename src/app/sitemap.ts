@@ -6,6 +6,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = "https://thecouragelibrary.com";
   const staticRoutes = [
     "",
+    "/schools",
     "/why-cnts",
     "/register",
     "/for-schools",

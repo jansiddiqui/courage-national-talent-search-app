@@ -22,6 +22,7 @@ import {
   BarChart3,
   Award,
   Building,
+  School,
   Heart,
   Bell,
   User,
@@ -180,6 +181,13 @@ const navCategories: NavCategory[] = [
         label: "For Schools", 
         href: "/for-schools", 
         icon: Building,
+        iconBg: "bg-blue-50/85",
+        iconColor: "text-blue-600"
+      },
+      { 
+        label: "Partner Schools", 
+        href: "/schools", 
+        icon: School,
         iconBg: "bg-blue-50/85",
         iconColor: "text-blue-600"
       },

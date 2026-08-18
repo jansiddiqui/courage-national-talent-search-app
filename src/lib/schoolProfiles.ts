@@ -142,3 +142,63 @@ export async function getAllPublishedSchoolSlugs(): Promise<{ slug: string; upda
     return [];
   }
 }
+
+export interface SchoolDirectoryItem {
+  id: string;
+  name: string;
+  slug: string;
+  city: string;
+  state: string | null;
+  board: string;
+  school_type: string;
+  is_founding_school: boolean;
+  is_featured: boolean;
+  logo_url: string | null;
+  joined_at: string;
+}
+
+/**
+ * Returns all published schools for the public directory (/schools).
+ * STRICT PRIVACY RULE: Only selects public-safe directory columns.
+ */
+export async function getPublishedSchoolsDirectory(): Promise<SchoolDirectoryItem[]> {
+  if (!hasSupabaseAdminConfig) {
+    return [
+      {
+        id: MOCK_PUBLISHED_SCHOOL.id,
+        name: MOCK_PUBLISHED_SCHOOL.name,
+        slug: MOCK_PUBLISHED_SCHOOL.slug,
+        city: MOCK_PUBLISHED_SCHOOL.city,
+        state: MOCK_PUBLISHED_SCHOOL.state,
+        board: MOCK_PUBLISHED_SCHOOL.board,
+        school_type: MOCK_PUBLISHED_SCHOOL.school_type,
+        is_founding_school: MOCK_PUBLISHED_SCHOOL.is_founding_school,
+        is_featured: MOCK_PUBLISHED_SCHOOL.is_featured,
+        logo_url: MOCK_PUBLISHED_SCHOOL.logo_url,
+        joined_at: MOCK_PUBLISHED_SCHOOL.joined_at,
+      },
+    ];
+  }
+
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const { data: schools, error } = await (supabaseAdmin as any)
+      .from("schools")
+      .select("id, name, slug, city, state, board, school_type, is_founding_school, is_featured, logo_url, joined_at")
+      .eq("profile_status", "PUBLISHED")
+      .not("slug", "is", null)
+      .order("is_featured", { ascending: false })
+      .order("name", { ascending: true });
+
+    if (error || !schools) {
+      console.error("[schoolProfiles] Directory fetch error:", error);
+      return [];
+    }
+
+    return schools as SchoolDirectoryItem[];
+  } catch (err) {
+    console.error("[schoolProfiles] Directory query exception:", err);
+    return [];
+  }
+}
+
