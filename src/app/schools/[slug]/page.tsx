@@ -6,6 +6,7 @@ import {
   MapPin, 
   Sparkles, 
   ShieldCheck,
+  BadgeCheck,
   TrendingUp,
   Users,
   Calendar,
@@ -157,7 +158,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-500" />
 
             <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 pt-1">
-              {/* Left Identity Unit (Logo + Name + Location) */}
+              {/* Left Identity Unit (Logo + Name with Verification + Location) */}
               <div className="flex items-start gap-4 sm:gap-5">
                 {school.logo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -172,8 +173,17 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                   </div>
                 )}
                 <div className="space-y-1">
-                  <h1 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight leading-[1.18]">
-                    {school.name}
+                  <h1 className="font-display font-black text-2xl sm:text-3xl lg:text-4xl text-slate-900 tracking-tight leading-[1.18] flex items-center flex-wrap gap-2">
+                    <span>{school.name}</span>
+                    {school.profile_status === "PUBLISHED" && (
+                      <span 
+                        className="inline-flex items-center text-blue-600 shrink-0" 
+                        title="Verified CNTS Partner School"
+                        aria-label="Verified CNTS Partner School"
+                      >
+                        <BadgeCheck size={26} className="text-blue-600 fill-blue-50 stroke-blue-600" />
+                      </span>
+                    )}
                   </h1>
                   <p className="text-slate-500 font-medium text-xs sm:text-sm flex items-center gap-1.5 pt-0.5">
                     <MapPin size={15} className="text-slate-400 shrink-0" />
@@ -182,9 +192,9 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Right CTA Action Area (Vertically Centered With Identity Block) */}
-              <div className="shrink-0 w-full lg:w-auto">
-                <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} website={school.website} schoolData={school} />
+              {/* Right CTA Action Area (Icon-Only Share Action Button) */}
+              <div className="shrink-0 w-full lg:w-auto flex justify-end">
+                <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} />
               </div>
             </div>
 

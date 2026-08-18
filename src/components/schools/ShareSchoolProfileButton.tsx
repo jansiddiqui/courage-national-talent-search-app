@@ -1,17 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, Check, ExternalLink, Globe, FileDown } from "lucide-react";
-import { openSchoolRecognitionCertificate, SchoolRecognitionData } from "@/lib/schoolRecognitionCertificate";
+import { Share2, Check } from "lucide-react";
 
 interface ShareProps {
   schoolName: string;
   schoolSlug: string;
-  website?: string | null;
-  schoolData?: SchoolRecognitionData;
 }
 
-export default function ShareSchoolProfileButton({ schoolName, schoolSlug, website, schoolData }: ShareProps) {
+export default function ShareSchoolProfileButton({ schoolName, schoolSlug }: ShareProps) {
   const [copied, setCopied] = useState(false);
 
   const profileUrl = typeof window !== "undefined" 
@@ -23,12 +20,12 @@ export default function ShareSchoolProfileButton({ schoolName, schoolSlug, websi
       try {
         await navigator.share({
           title: `${schoolName} | CNTS Partner School`,
-          text: `${schoolName} is an official Courage National Talent Search (CNTS) Partner School. View official evaluation metrics & participation history:`,
+          text: `${schoolName} is an official Courage National Talent Search (CNTS) Partner School. View institutional profile:`,
           url: profileUrl,
         });
         return;
       } catch {
-        // Fallback to clipboard if share sheet was dismissed
+        // User dismissed native share sheet
       }
     }
 
@@ -41,63 +38,27 @@ export default function ShareSchoolProfileButton({ schoolName, schoolSlug, websi
     }
   };
 
-  const handleDownloadCertificate = () => {
-    if (schoolData) {
-      openSchoolRecognitionCertificate(schoolData);
-    } else {
-      openSchoolRecognitionCertificate({
-        name: schoolName,
-        city: "",
-        slug: schoolSlug,
-      });
-    }
-  };
-
   return (
-    <div className="flex flex-wrap items-center gap-2.5">
-      {/* Primary Action: Share Profile */}
+    <div className="relative inline-flex items-center">
       <button
         onClick={handleShare}
         type="button"
-        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold transition-all shadow-xs active:scale-95 cursor-pointer"
+        title={copied ? "Link copied to clipboard!" : "Share school profile"}
+        aria-label="Share school profile"
+        className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-95 text-white transition-all shadow-xs shrink-0 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
       >
         {copied ? (
-          <>
-            <Check size={15} className="text-emerald-300" />
-            Link Copied to Clipboard!
-          </>
+          <Check size={18} className="text-emerald-300" />
         ) : (
-          <>
-            <Share2 size={15} />
-            Share Profile
-          </>
+          <Share2 size={18} />
         )}
       </button>
 
-      {/* Secondary Action: Recognition Document */}
-      {schoolData && (
-        <button
-          onClick={handleDownloadCertificate}
-          type="button"
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-amber-50 hover:bg-amber-100 text-amber-900 border border-amber-300/80 text-xs font-bold transition-all shadow-2xs cursor-pointer"
-        >
-          <FileDown size={15} className="text-amber-700 shrink-0" />
-          Recognition Document
-        </button>
-      )}
-
-      {/* Tertiary Action: Visit Official Website */}
-      {website && (
-        <a
-          href={website.startsWith("http") ? website : `https://${website}`}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold transition-all border border-slate-200 shadow-2xs"
-        >
-          <Globe size={14} className="text-blue-600 shrink-0" />
-          Official Website
-          <ExternalLink size={12} className="text-slate-400" />
-        </a>
+      {/* Floating tooltip on desktop */}
+      {copied && (
+        <span className="absolute -top-8 right-0 bg-slate-900 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow-md whitespace-nowrap animate-fade-in pointer-events-none">
+          Link Copied!
+        </span>
       )}
     </div>
   );
