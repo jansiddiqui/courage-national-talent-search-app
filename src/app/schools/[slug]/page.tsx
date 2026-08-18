@@ -332,10 +332,15 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                     <div className="absolute -left-[27px] sm:-left-[35px] top-0.5 w-5 h-5 rounded-full bg-blue-600 border-4 border-white shadow-xs" />
 
                     <div className="bg-slate-50/80 p-4 rounded-2xl border border-slate-200/80 space-y-2.5">
-                      <div className="flex items-center justify-between flex-wrap gap-2">
-                        <span className="font-display font-bold text-sm sm:text-base text-slate-900">
-                          CNTS Edition {snap.academic_session_name}
-                        </span>
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-display font-bold text-sm sm:text-base text-slate-900">
+                            CNTS Edition {snap.academic_session_name}
+                          </span>
+                          <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 whitespace-nowrap shrink-0">
+                            Verified Snapshot
+                          </span>
+                        </div>
                         <span className="text-xs font-medium text-slate-500">
                           {snap.average_score > 0 ? `Avg Score: ${snap.average_score.toFixed(1)}%` : "Verified Snapshot"}
                         </span>
@@ -365,13 +370,14 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                   <div className="absolute -left-[27px] sm:-left-[35px] top-0.5 w-5 h-5 rounded-full bg-blue-600 border-4 border-white shadow-xs" />
 
                   <div className="bg-blue-50/50 p-4 sm:p-5 rounded-2xl border border-blue-100 space-y-2">
-                    <div className="flex items-center justify-between flex-wrap gap-2">
-                      <div className="flex items-center gap-2">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
                         <span className="font-display font-bold text-sm sm:text-base text-blue-950">
                           CNTS 2026 Edition
                         </span>
-                        <span className="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 flex items-center gap-1">
-                          <Clock size={11} className="text-blue-600" /> Active Examination Cycle
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-100 text-blue-800 whitespace-nowrap shrink-0">
+                          <Clock size={11} className="text-blue-600 shrink-0" />
+                          <span>Active Examination Cycle</span>
                         </span>
                       </div>
                       <span className="text-xs font-bold text-blue-700">Official Partner</span>
