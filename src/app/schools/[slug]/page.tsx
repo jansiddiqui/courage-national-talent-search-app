@@ -8,8 +8,7 @@ import {
   Sparkles, 
   ShieldCheck,
   TrendingUp,
-  Users,
-  Globe
+  Users
 } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -130,7 +129,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
       <main className="flex-grow pt-28 pb-16 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8">
           
-          {/* Breadcrumb Header */}
+          {/* Breadcrumb Header Strip */}
           <div className="flex items-center justify-between gap-4 text-xs font-semibold text-slate-400 flex-wrap">
             <div className="flex items-center gap-2">
               <span>Home</span>
@@ -139,8 +138,9 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
               <span>/</span>
               <span className="text-slate-700 truncate max-w-[200px] sm:max-w-xs">{school.name}</span>
             </div>
-            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200/80 flex items-center gap-1">
-              ✓ Official CNTS School Profile
+            <span className="text-[11px] font-bold text-emerald-700 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 flex items-center gap-1.5">
+              <ShieldCheck size={13} className="text-emerald-600 shrink-0" />
+              Official CNTS Partner Record
             </span>
           </div>
 
@@ -149,7 +149,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
             {/* Top Accent Gradient */}
             <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-700 via-indigo-600 to-amber-500" />
 
-            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pt-2">
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 pt-2">
               <div className="flex items-start gap-4">
                 {school.logo_url ? (
                   // eslint-disable-next-line @next/next/no-img-element
@@ -174,34 +174,36 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                 </div>
               </div>
 
-              {/* Share & Website Actions */}
+              {/* Action Buttons (Share, Recognition Document, Official Website) */}
               <ShareSchoolProfileButton schoolName={school.name} schoolSlug={school.slug} website={school.website} schoolData={school} />
             </div>
 
             {/* Status & Identity Badges */}
             <div className="flex flex-wrap items-center gap-2.5 pt-2 border-t border-slate-100">
-              <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
-                <ShieldCheck size={14} className="text-blue-600" />
-                CNTS Partner School
-              </span>
-
-              {school.is_founding_school && (
+              {school.is_founding_school ? (
                 <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-extrabold bg-amber-50 text-amber-900 border border-amber-300 shadow-2xs">
                   <Sparkles size={14} className="text-amber-600" />
                   CNTS Founding School — 2026
                 </span>
+              ) : (
+                <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold bg-blue-50 text-blue-800 border border-blue-200">
+                  <ShieldCheck size={14} className="text-blue-600" />
+                  CNTS Partner School
+                </span>
               )}
 
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
-                Board: {school.board}
-              </span>
+              {school.board && (
+                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
+                  Board: {school.board}
+                </span>
+              )}
 
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 text-slate-600">
                 Partner Since {joinYear}
               </span>
             </div>
 
-            {/* Aggregate Institutional Metrics Grid */}
+            {/* Aggregate Metrics Grid (Shown if performance snapshot data exists) */}
             {school.snapshots && school.snapshots.length > 0 && (
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
                 <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 text-center">
@@ -214,7 +216,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
                 </div>
                 <div className="p-3.5 rounded-2xl bg-blue-50/60 border border-blue-100 text-center col-span-2 sm:col-span-1">
                   <span className="text-xs font-semibold text-blue-800 block">Evaluation Status</span>
-                  <span className="text-sm font-bold text-blue-900 mt-1 block">✓ Verified Record</span>
+                  <span className="text-sm font-bold text-blue-900 mt-1 block">Verified Record</span>
                 </div>
               </div>
             )}
@@ -225,7 +227,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
               <div className="space-y-1">
                 <span className="text-[10px] font-extrabold uppercase tracking-widest text-amber-400 block">
-                  Official Recognition Asset
+                  Official Institutional Recognition
                 </span>
                 <h2 className="font-display font-bold text-xl sm:text-2xl text-white">
                   {school.is_founding_school ? "CNTS Founding School — 2026" : "Official CNTS Partner School"}
@@ -233,22 +235,22 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
               </div>
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-400/10 text-amber-300 border border-amber-400/30 shrink-0">
                 <Award size={14} className="text-amber-400" />
-                Verified Institution
+                Institutional Partner
               </span>
             </div>
 
             <p className="text-slate-300 text-xs sm:text-sm leading-relaxed max-w-2xl">
-              {school.name} is officially recognized by the Courage National Talent Search for its participation in national student academic evaluation, talent discovery, and educational development.
+              {school.name} is officially recognized by the Courage National Talent Search (CNTS) for its partnership in national student academic evaluation, talent identification, and youth empowerment.
             </p>
 
-            <div className="pt-2 flex flex-wrap items-center justify-between gap-4">
+            <div className="pt-2 flex flex-wrap items-center justify-between gap-4 border-t border-slate-800/80">
               <div className="text-xs text-slate-400 font-mono">
-                Official Record: /schools/{school.slug}
+                CNTS Record: /schools/{school.slug}
               </div>
             </div>
           </div>
 
-          {/* CNTS Journey / Participation History */}
+          {/* CNTS Talent Search Journey Section */}
           <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-6">
             <div className="flex items-center justify-between border-b border-slate-100 pb-4">
               <div className="flex items-center gap-2.5">
@@ -306,7 +308,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
               <div className="p-6 rounded-2xl bg-blue-50/50 border border-blue-100 flex items-start gap-3">
                 <CheckCircle2 size={20} className="text-blue-600 shrink-0 mt-0.5" />
                 <div className="text-sm text-slate-700 space-y-1">
-                  <p className="font-bold text-blue-950">Official Registered School Partner (CNTS 2026)</p>
+                  <p className="font-bold text-blue-950">Current Examination Cycle (CNTS 2026)</p>
                   <p className="text-slate-600 leading-relaxed">
                     {school.name} is an active participating institution in the Courage National Talent Search 2026 edition. Historical evaluation metrics and performance records will populate automatically upon completion of the national examination cycle.
                   </p>
@@ -315,8 +317,8 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
             )}
           </div>
 
-          {/* About the School Section (Rendered only if description exists) */}
-          {school.public_description && (
+          {/* About the School Section (Omitted if description is not set; no filler copy) */}
+          {school.public_description && school.public_description.trim().length > 0 && (
             <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs space-y-4">
               <h2 className="font-display font-bold text-lg text-slate-900 border-b border-slate-100 pb-3">
                 About {school.name}
