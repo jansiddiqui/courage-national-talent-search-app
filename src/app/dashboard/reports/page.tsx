@@ -4,6 +4,7 @@ import { usePortal } from "@/contexts/PortalContext";
 import { BarChart2, Lock, Star, TrendingUp, Brain, BookOpen, Award, ArrowRight, Activity, Users } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { TIMELINE_LABELS } from "@/config/timeline";
 
 interface ResultData {
   overall_score: number;
@@ -116,7 +117,7 @@ export default function ReportsPage() {
               </div>
               <div className="flex items-center gap-2">
                 <Lock size={14} className="text-blue-300" />
-                <span className="text-blue-300 text-xs font-semibold">Available after {systemSettings.exam_date_label || "30 August 2026"}</span>
+                <span className="text-blue-300 text-xs font-semibold">Available from {systemSettings.exam_date_label || TIMELINE_LABELS.TALENT_PROFILE_DATE}</span>
               </div>
             </div>
           </div>

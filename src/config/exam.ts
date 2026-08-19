@@ -5,7 +5,7 @@
 
 export const EXAM_MODE = "Online";
 export const NEGATIVE_MARKING = "None";
-export const RESULT_DATE = "2026-09-12";
+export const RESULT_DATE = "2026-10-10";
 
 // Sub-Junior Category (Class 5 & 6)
 export const SUB_JUNIOR_QUESTIONS = 60;

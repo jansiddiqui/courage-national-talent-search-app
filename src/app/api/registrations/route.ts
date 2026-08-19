@@ -132,6 +132,14 @@ export async function PUT(request: Request) {
       }
     }
 
+    if (!isAdmin) {
+      const { TimelineService } = await import("@/domains/timeline/TimelineService");
+      const regCheck = await TimelineService.isRegistrationOpen();
+      if (!regCheck.isOpen) {
+        return NextResponse.json({ success: false, message: regCheck.reason || "Registrations are currently closed." }, { status: 403 });
+      }
+    }
+
     // Security check: If not admin, verify that this is a draft and unpaid registration
     if (!isAdmin) {
       const { data: currentReg, error: queryError } = await (supabaseAdmin as any)

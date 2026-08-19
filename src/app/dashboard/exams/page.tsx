@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { usePortal } from "@/contexts/PortalContext";
 import { TIMELINE_LABELS } from "@/config/timeline";
+import { SUB_JUNIOR_QUESTIONS, SUB_JUNIOR_DURATION_MINS, JUNIOR_QUESTIONS, JUNIOR_DURATION_MINS } from "@/config/exam";
 import {
   Award,
   ShieldAlert,
@@ -212,7 +213,13 @@ export default function ExamsPage() {
               <div className="grid grid-cols-3 gap-3 pt-2">
                 <div className="bg-white/5 border border-white/10 p-3 rounded-2xl text-center">
                   <span className="text-[8px] text-slate-400 uppercase font-black tracking-widest block mb-0.5">Duration</span>
-                  <strong className="text-white text-sm sm:text-base font-bold">120 Min</strong>
+                  <strong className="text-white text-sm sm:text-base font-bold">
+                    {activeCandidate?.student_class === "5" || activeCandidate?.student_class === "6"
+                      ? `${SUB_JUNIOR_DURATION_MINS} Min`
+                      : activeCandidate?.student_class === "7" || activeCandidate?.student_class === "8"
+                      ? `${JUNIOR_DURATION_MINS} Min`
+                      : "75 - 90 Min"}
+                  </strong>
                 </div>
                 <div className="bg-white/5 border border-white/10 p-3 rounded-2xl text-center">
                   <span className="text-[8px] text-slate-400 uppercase font-black tracking-widest block mb-0.5">Format</span>
@@ -220,7 +227,13 @@ export default function ExamsPage() {
                 </div>
                 <div className="bg-white/5 border border-white/10 p-3 rounded-2xl text-center">
                   <span className="text-[8px] text-slate-400 uppercase font-black tracking-widest block mb-0.5">Questions</span>
-                  <strong className="text-white text-sm sm:text-base font-bold">90 - 120</strong>
+                  <strong className="text-white text-sm sm:text-base font-bold">
+                    {activeCandidate?.student_class === "5" || activeCandidate?.student_class === "6"
+                      ? `${SUB_JUNIOR_QUESTIONS} Qs`
+                      : activeCandidate?.student_class === "7" || activeCandidate?.student_class === "8"
+                      ? `${JUNIOR_QUESTIONS} Qs`
+                      : "60 - 80 Qs"}
+                  </strong>
                 </div>
               </div>
             </div>

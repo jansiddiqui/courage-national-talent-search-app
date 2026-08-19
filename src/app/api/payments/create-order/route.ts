@@ -1,8 +1,18 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
+import { TimelineService } from "@/domains/timeline/TimelineService";
 
 export async function POST(request: Request) {
   try {
+    // 0. Hard Server-Side Registration Window Enforcement
+    const regCheck = await TimelineService.isRegistrationOpen();
+    if (!regCheck.isOpen) {
+      return NextResponse.json(
+        { success: false, error: regCheck.reason || "Registrations are currently closed." },
+        { status: 403 }
+      );
+    }
+
     const { couponCode, email, schoolCode, draftRegId } = await request.json();
     let finalAmount = 99; // Default price: ₹99
 

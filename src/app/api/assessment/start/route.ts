@@ -3,6 +3,7 @@ import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
 import { CandidateQuestionDTO, SessionStatus } from "@/domains/assessment/core/types";
+import { TimelineService } from "@/domains/timeline/TimelineService";
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
@@ -185,9 +186,12 @@ export async function POST(request: Request) {
       // Create new session
       const seed = Math.floor(100000 + Math.random() * 900000);
       const secureToken = "tok_" + Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-      const durationMinutes = (assessment as any).duration_minutes || 60;
-      const startedAt = new Date().toISOString();
-      const expiresAt = new Date(Date.now() + durationMinutes * 60 * 1000).toISOString();
+      const rawCategory = (assessment as any).category || ((assessment as any).title?.includes("Junior") && !(assessment as any).title?.includes("Sub") ? "JUNIOR" : "SUB_JUNIOR");
+      const category = rawCategory === "JUNIOR" ? "JUNIOR" : "SUB_JUNIOR";
+      
+      const sessionTiming = await TimelineService.calculateSessionExpiry(category);
+      const startedAt = sessionTiming.startedAt;
+      const expiresAt = sessionTiming.expiresAt;
 
       const { data: inserted, error: insertErr } = await (supabaseAdmin as any)
         .from("candidate_sessions")

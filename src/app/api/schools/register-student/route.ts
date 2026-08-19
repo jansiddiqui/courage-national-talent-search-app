@@ -18,6 +18,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: "Unauthorized" }, { status: 401 });
     }
 
+    // 1.1 Hard Server-Side Registration Window Enforcement
+    const { TimelineService } = await import("@/domains/timeline/TimelineService");
+    const regCheck = await TimelineService.isRegistrationOpen();
+    if (!regCheck.isOpen) {
+      return NextResponse.json({ success: false, message: regCheck.reason || "School student registrations are currently closed." }, { status: 403 });
+    }
+
     const {
       name,
       studentClass,

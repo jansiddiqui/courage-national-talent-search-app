@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { NotificationService } from "@/services/NotificationService";
+import { TimelineService } from "@/domains/timeline/TimelineService";
 
 async function generateSequentialCNTSId(): Promise<string> {
   if (!hasSupabaseAdminConfig) {
@@ -46,6 +47,15 @@ async function generateSequentialCNTSId(): Promise<string> {
 
 export async function POST(request: Request) {
   try {
+    // Hard Server-Side Registration Window Enforcement
+    const regCheck = await TimelineService.isRegistrationOpen();
+    if (!regCheck.isOpen) {
+      return NextResponse.json(
+        { success: false, message: regCheck.reason || "Registrations are currently closed." },
+        { status: 403 }
+      );
+    }
+
     const { 
       razorpayOrderId, 
       razorpayPaymentId, 

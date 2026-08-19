@@ -55,19 +55,24 @@ export async function GET(request: Request) {
       }
     }
 
-    // 2. Query Database for release gates (only check if outside sandbox)
-    const { data: setting } = await (supabaseAdmin as any)
-      .from("system_settings")
-      .select("setting_value")
-      .eq("setting_key", "result_status")
-      .maybeSingle();
-
-    const isReleased = setting?.setting_value === "RELEASED";
+    // 2. Query Database / Edition for release gates
+    const { TimelineService } = await import("@/domains/timeline/TimelineService");
+    const isReleased = await TimelineService.isResultReleased();
     if (!isReleased) {
-      return NextResponse.json(
-        { success: false, message: "Results release window is pending timeline finalization." },
-        { status: 403 }
-      );
+      // Fallback check to system_settings table if legacy toggle used
+      const { data: setting } = await (supabaseAdmin as any)
+        .from("system_settings")
+        .select("setting_value")
+        .eq("setting_key", "result_status")
+        .maybeSingle();
+
+      const legacyReleased = setting?.setting_value === "RELEASED";
+      if (!legacyReleased) {
+        return NextResponse.json(
+          { success: false, message: "Results release window is pending official publication date." },
+          { status: 403 }
+        );
+      }
     }
 
     const { data: registration, error } = await (supabaseAdmin as any)

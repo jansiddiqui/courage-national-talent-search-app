@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { 
   Home, 
+  Calendar,
   ShieldCheck, 
   CheckSquare, 
   BookOpen, 
@@ -100,6 +101,7 @@ const linkGroups: NavGroup[] = [
     title: "Control Plane",
     icon: ShieldCheck,
     links: [
+      { href: "/admin/timeline", label: "CNTS Timeline", icon: Calendar, badge: "CORE", badgeColor: "bg-blue-500 text-white" },
       { href: "/admin/rbac", label: "RBAC Controls", icon: ShieldCheck },
       { href: "/admin/approvals", label: "Approvals Queue", icon: CheckSquare },
       { href: "/admin/jobs", label: "Job Queues", icon: Briefcase },
