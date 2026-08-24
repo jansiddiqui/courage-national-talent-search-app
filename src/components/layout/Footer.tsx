@@ -118,6 +118,24 @@ export default function Footer() {
                 Submit Support Ticket
               </Link>
             </div>
+
+            {/* Product Hunt Badge */}
+            <div className="pt-1">
+              <a
+                href="https://www.producthunt.com/products/cnts-courage-national-talent-search?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-cnts-courage-national-talent-search"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block transition-opacity hover:opacity-90"
+              >
+                <img
+                  alt="CNTS — Courage National Talent Search - Discover your child's strengths beyond marks | Product Hunt"
+                  width="250"
+                  height="54"
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1230971&theme=light&t=1787585756173"
+                  className="w-[250px] h-[54px] max-w-full h-auto"
+                />
+              </a>
+            </div>
           </div>
 
           {/* Nav Link Columns — 2-col grid on mobile, 4-col on lg */}
