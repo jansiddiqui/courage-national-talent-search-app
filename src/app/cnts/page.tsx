@@ -812,7 +812,7 @@ export default function CntsLandingPage() {
                   alt="CNTS — Courage National Talent Search - Discover your child's strengths beyond marks | Product Hunt"
                   width="250"
                   height="54"
-                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1230971&theme=light&t=1787585756173"
+                  src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1230971&theme=neutral&t=1787590699413"
                   className="w-[250px] h-[54px] max-w-full h-auto"
                 />
               </a>
