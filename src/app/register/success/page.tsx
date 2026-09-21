@@ -22,6 +22,7 @@ import {
   MessageSquare
 } from "lucide-react";
 import { TIMELINE_LABELS } from "@/config/timeline";
+import { trackVerifiedPurchaseOnce } from "@/lib/meta-pixel";
 
 interface RegDetails {
   registrationId: string;
@@ -88,6 +89,20 @@ export default function SuccessPage() {
           };
           setRegDetails(mappedDetails);
           setIsDemoMode(false);
+
+          // Meta Pixel Purchase Conversion Tracking (Only for verified PAID transactions)
+          if (parsed && parsed.payment_status === "PAID") {
+            const verifiedTxId = parsed.payment_id || parsed.cnts_id || parsed.registrationId || mappedDetails.registrationId;
+            const verifiedAmount = typeof parsed.finalPrice === "number" ? parsed.finalPrice : 99;
+
+            if (verifiedTxId && verifiedAmount > 0) {
+              trackVerifiedPurchaseOnce({
+                transactionId: verifiedTxId,
+                value: verifiedAmount,
+                currency: "INR",
+              });
+            }
+          }
         } catch (e) {
           console.error("Failed to parse last registration details", e);
           setRegDetails(fallbackDetails);
