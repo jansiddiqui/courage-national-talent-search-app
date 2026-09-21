@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Script from "next/script";
 import JsonLd from "@/components/shared/JsonLd";
 import CookieBanner from "@/components/shared/CookieBanner";
-import MetaPixel from "@/components/analytics/MetaPixel";
+import MetaPixelRouteTracker from "@/components/analytics/MetaPixel";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -45,6 +46,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   const gaId = process.env.NEXT_PUBLIC_GA_ID;
+  const pixelId = process.env.NEXT_PUBLIC_META_PIXEL_ID;
 
   const orgSchema = {
     "@context": "https://schema.org",
@@ -85,7 +87,37 @@ export default function RootLayout({
             </Script>
           </>
         )}
-        <MetaPixel />
+        {pixelId && (
+          <>
+            <Script id="meta-pixel" strategy="afterInteractive">
+              {`
+                !function(f,b,e,v,n,t,s)
+                {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+                n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+                if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+                n.queue=[];t=b.createElement(e);t.async=!0;
+                t.src=v;s=b.getElementsByTagName(e)[0];
+                s.parentNode.insertBefore(t,s)}(window, document,'script',
+                'https://connect.facebook.net/en_US/fbevents.js');
+                fbq('init', '${pixelId}');
+                fbq('track', 'PageView');
+              `}
+            </Script>
+            <noscript>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                height="1"
+                width="1"
+                style={{ display: "none" }}
+                src={`https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`}
+                alt=""
+              />
+            </noscript>
+            <Suspense fallback={null}>
+              <MetaPixelRouteTracker />
+            </Suspense>
+          </>
+        )}
         {children}
         <CookieBanner />
       </body>
