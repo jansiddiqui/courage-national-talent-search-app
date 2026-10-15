@@ -119,20 +119,36 @@ export default function Footer() {
               </Link>
             </div>
 
-            {/* Product Hunt Badge */}
-            <div className="pt-1">
+            {/* Featured Badges */}
+            <div className="pt-1 flex flex-wrap items-center gap-3">
               <a
                 href="https://www.producthunt.com/products/cnts-courage-national-talent-search?embed=true&utm_source=badge-featured&utm_medium=badge&utm_campaign=badge-cnts-courage-national-talent-search"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-block transition-opacity hover:opacity-90"
               >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   alt="CNTS — Courage National Talent Search - Discover your child's strengths beyond marks | Product Hunt"
                   width="250"
                   height="54"
                   src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=1230971&theme=neutral&t=1787590699413"
                   className="w-[250px] h-[54px] max-w-full h-auto"
+                />
+              </a>
+              <a
+                href="https://launchnest.io/p/cnts-courage-national-talent-search"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-block transition-opacity hover:opacity-90"
+              >
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src="https://launchnest.io/badge/cnts-courage-national-talent-search.svg?variant=featured&theme=light"
+                  alt="CNTS — Courage National Talent Search on LaunchNest"
+                  width="220"
+                  height="56"
+                  className="w-[220px] h-[56px] max-w-full h-auto"
                 />
               </a>
             </div>
