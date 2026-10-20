@@ -223,7 +223,7 @@ export async function processWorkerJobs() {
       .lte("next_retry_at", new Date().toISOString());
 
     if (!countErr && count && count > 0) {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || SITE_URL;
+      const baseUrl = SITE_URL;
       const workerUrl = `${baseUrl}/api/admin/jobs/worker`;
       
       console.log(`[Worker] There are still ${count} pending/retry jobs. Triggering self asynchronously...`);

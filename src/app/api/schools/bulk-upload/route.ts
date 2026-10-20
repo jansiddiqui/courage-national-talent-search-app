@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     );
 
     // 6. Non-blocking call to trigger worker execution
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || SITE_URL;
+    const appUrl = SITE_URL;
     fetch(`${appUrl}/api/internal/process-school-jobs`, {
       method: "POST",
     }).catch(err => console.error("[Bulk Upload] Failed to trigger background worker:", err));
