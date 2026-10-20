@@ -3,6 +3,8 @@ import Link from "next/link";
 import { ArrowLeft, ShieldCheck, Mail, Clock, Shield } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { SITE_URL } from "@/config/site";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export const metadata: Metadata = {
   title: "Data Deletion Request | Courage National Talent Search",
@@ -53,7 +55,7 @@ export default function DataDeletionPage() {
             
             <div className="bg-blue-50/50 border border-blue-100 rounded-xl p-6">
               <ol className="list-decimal pl-4 space-y-4 text-slate-700 font-medium">
-                <li>Send an email to <strong>support@thecouragelibrary.com</strong></li>
+                <li>Send an email to <strong>{CONTACT_EMAILS.LEGAL}</strong></li>
                 <li>
                   Use the subject line: <br/>
                   <span className="inline-block mt-1 bg-white border border-slate-200 px-3 py-1.5 rounded text-slate-900 font-bold shadow-sm">"Data Deletion Request"</span>
@@ -168,11 +170,11 @@ export default function DataDeletionPage() {
                 <div className="font-semibold text-slate-900 text-base">Courage National Talent Search (CNTS)</div>
                 <div className="text-slate-500 flex items-center gap-2">
                   <Mail size={16} className="text-slate-400" />
-                  support@thecouragelibrary.com
+                  {CONTACT_EMAILS.LEGAL}
                 </div>
               </div>
               <a
-                href="https://thecouragelibrary.com"
+                href={SITE_URL}
                 target="_blank"
                 rel="noreferrer"
                 className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-xl transition-all shadow-sm shrink-0 text-sm"

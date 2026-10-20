@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 
 import { WorkspaceTab } from './PartnerWorkspaceLayout';
+import { SITE_URL } from '@/config/site';
 
 interface PayoutCenterProps {
   partnerName?: string;
@@ -71,7 +72,7 @@ export const PayoutCenter: React.FC<PayoutCenterProps> = ({
   });
 
   const activeRefCode = referralCode || 'CNTSJN';
-  const referralLink = `https://thecouragelibrary.com/register?ref=${activeRefCode}`;
+  const referralLink = `${SITE_URL}/register?ref=${activeRefCode}`;
 
   const navigateTo = (tabId: WorkspaceTab) => {
     setIsContentModalOpen(false);

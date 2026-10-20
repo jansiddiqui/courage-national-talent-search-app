@@ -2,6 +2,7 @@
 import { NextResponse } from "next/server";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { NotificationService } from "@/services/NotificationService";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export async function POST(request: Request) {
   try {
@@ -68,7 +69,7 @@ export async function POST(request: Request) {
             escalationsCreated++;
             
             // Dispatch internal escalation alert
-            let recipientEmail = "operations@thecouragelibrary.com";
+            let recipientEmail = CONTACT_EMAILS.SUPPORT;
             if (ticket.assigned_to) {
               try {
                 const { data: adminUser } = await (supabaseAdmin as any)
@@ -123,7 +124,7 @@ export async function POST(request: Request) {
             escalationsCreated++;
 
             // Dispatch internal escalation alert
-            let recipientEmail = "operations@thecouragelibrary.com";
+            let recipientEmail = CONTACT_EMAILS.SUPPORT;
             if (ticket.assigned_to) {
               try {
                 const { data: adminUser } = await (supabaseAdmin as any)

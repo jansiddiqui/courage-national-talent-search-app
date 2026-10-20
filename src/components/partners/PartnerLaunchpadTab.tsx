@@ -19,6 +19,7 @@ import {
   Lock,
   Play
 } from 'lucide-react';
+import { SITE_URL } from '@/config/site';
 
 interface PartnerLaunchpadTabProps {
   referralCode?: string;
@@ -35,7 +36,7 @@ export const PartnerLaunchpadTab: React.FC<PartnerLaunchpadTabProps> = ({
 }) => {
   const [copiedLink, setCopiedLink] = useState(false);
   const [hasPayoutAccount, setHasPayoutAccount] = useState<boolean>(false);
-  const referralLink = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+  const referralLink = `${SITE_URL}/register?ref=${referralCode}`;
 
   React.useEffect(() => {
     fetch('/api/partner/payout-account')

@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
 import { TIMELINE_LABELS } from "@/config/timeline";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
@@ -807,7 +808,7 @@ export async function GET(
 
       <div class="footer">
         <p>This is a system-generated electronic receipt powered by Razorpay billing integration.</p>
-        <p style="margin-top: 5px;">Courage National Talent Search • support@thecouragelibrary.com</p>
+        <p style="margin-top: 5px;">Courage National Talent Search • ${CONTACT_EMAILS.SUPPORT}</p>
       </div>
   </div>
 

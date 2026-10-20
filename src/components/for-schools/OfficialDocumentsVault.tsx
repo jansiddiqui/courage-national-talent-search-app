@@ -2,6 +2,7 @@
 "use client";
 
 import { FileText, Download, ShieldCheck, ArrowRight, CheckCircle2 } from "lucide-react";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export default function OfficialDocumentsVault() {
   const documents = [
@@ -99,7 +100,7 @@ export default function OfficialDocumentsVault() {
         {/* Human Reassurance Footnote */}
         <div className="mt-8 bg-white border border-slate-200 rounded-2xl p-4 text-center max-w-2xl mx-auto shadow-sm flex items-center justify-center gap-2 text-xs text-slate-700 font-medium">
           <CheckCircle2 size={16} className="text-blue-600 shrink-0" />
-          <span>Need printed document copies dispatched to your school office? Email partners@thecouragelibrary.com</span>
+          <span>Need printed document copies dispatched to your school office? Email {CONTACT_EMAILS.SCHOOLS}</span>
         </div>
 
       </div>

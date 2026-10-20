@@ -6,6 +6,7 @@ import {
   Video, Mail, Mic, RefreshCw, Send, Layers,
   AlertTriangle, Loader2
 } from 'lucide-react';
+import { SITE_URL } from '@/config/site';
 
 interface AIStudioProps {
   referralCode?: string;
@@ -42,7 +43,7 @@ export const AIStudio: React.FC<AIStudioProps> = ({
   const [copied, setCopied] = useState(false);
   const [generationCount, setGenerationCount] = useState(0);
 
-  const referralUrl = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+  const referralUrl = `${SITE_URL}/register?ref=${referralCode}`;
 
   const defaultOutput = `📢 *BIG OPPORTUNITY FOR STUDENTS IN CLASS 5-8!*
 

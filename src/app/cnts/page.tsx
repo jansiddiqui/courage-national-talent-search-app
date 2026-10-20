@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/config/site";
+import { CONTACT_EMAILS } from "@/config/contact";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Link from "next/link";
@@ -36,12 +38,12 @@ export const metadata: Metadata = {
     "National Talent Discovery Program"
   ],
   alternates: {
-    canonical: "https://thecouragelibrary.com/cnts",
+    canonical: `${SITE_URL}/cnts`,
   },
   openGraph: {
     title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
     description: "Courage National Talent Search (CNTS) is the official talent discovery and assessment program operated by Courage Library for school students across India.",
-    url: "https://thecouragelibrary.com/cnts",
+    url: `${SITE_URL}/cnts`,
     images: [
       {
         url: "/og-cnts.png",
@@ -112,14 +114,14 @@ export default function CntsLandingPage() {
   const pageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": "https://thecouragelibrary.com/cnts/#webpage",
-    "url": "https://thecouragelibrary.com/cnts",
+    "@id": `${SITE_URL}/cnts/#webpage`,
+    "url": `${SITE_URL}/cnts`,
     "name": "Courage National Talent Search (CNTS) | Official Program by Courage Library",
     "isPartOf": {
       "@type": "WebSite",
-      "@id": "https://thecouragelibrary.com/#website",
+      "@id": `${SITE_URL}/#website`,
       "name": "Courage Library",
-      "url": "https://thecouragelibrary.com"
+      "url": SITE_URL
     }
   };
 
@@ -131,13 +133,13 @@ export default function CntsLandingPage() {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://thecouragelibrary.com"
+        "item": SITE_URL
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "CNTS",
-        "item": "https://thecouragelibrary.com/cnts"
+        "item": `${SITE_URL}/cnts`
       }
     ]
   };
@@ -722,8 +724,8 @@ export default function CntsLandingPage() {
                 <tr className="border-b border-slate-200 bg-slate-50/50">
                   <th className="p-4 font-bold text-slate-900">Website</th>
                   <td className="p-4 text-blue-700 font-medium">
-                    <a href="https://thecouragelibrary.com" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                      https://thecouragelibrary.com
+                    <a href={SITE_URL} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                      {SITE_URL}
                     </a>
                   </td>
                 </tr>
@@ -731,14 +733,14 @@ export default function CntsLandingPage() {
                   <th className="p-4 font-bold text-slate-900">Program Email</th>
                   <td className="p-4 text-blue-700 font-medium flex items-center gap-1.5">
                     <Mail size={14} className="text-slate-400" />
-                    <a href="mailto:cnts@thecouragelibrary.com" className="hover:underline">cnts@thecouragelibrary.com</a>
+                    <a href={`mailto:${CONTACT_EMAILS.SUPPORT}`} className="hover:underline">{CONTACT_EMAILS.SUPPORT}</a>
                   </td>
                 </tr>
                 <tr className="bg-slate-50/50">
                   <th className="p-4 font-bold text-slate-900">General Support</th>
                   <td className="p-4 text-blue-700 font-medium flex items-center gap-1.5">
                     <Mail size={14} className="text-slate-400" />
-                    <a href="mailto:support@thecouragelibrary.com" className="hover:underline">support@thecouragelibrary.com</a>
+                    <a href={`mailto:${CONTACT_EMAILS.SUPPORT}`} className="hover:underline">{CONTACT_EMAILS.SUPPORT}</a>
                   </td>
                 </tr>
               </tbody>

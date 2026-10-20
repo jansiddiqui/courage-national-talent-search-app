@@ -6,6 +6,7 @@ import {
   Printer, Download, ShieldCheck, Sparkles,
   ExternalLink, X, Send
 } from 'lucide-react';
+import { SITE_URL } from '@/config/site';
 
 interface ReferralCenterProps {
   partnerName?: string;
@@ -21,7 +22,7 @@ export const ReferralCenter: React.FC<ReferralCenterProps> = ({
   const [showQRModal, setShowQRModal] = useState(false);
   const [activeTemplate, setActiveTemplate] = useState(0);
 
-  const referralUrl = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+  const referralUrl = `${SITE_URL}/register?ref=${referralCode}`;
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(referralUrl)}`;
   const qrHighRes = `https://api.qrserver.com/v1/create-qr-code/?size=600x600&data=${encodeURIComponent(referralUrl)}`;
 

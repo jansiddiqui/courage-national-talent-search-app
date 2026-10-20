@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/config/site";
 import Navbar from "@/components/layout/Navbar";
 import Hero from "@/components/sections/Hero";
 import PathwaySplit from "@/components/sections/PathwaySplit";
@@ -27,12 +28,12 @@ export const metadata: Metadata = {
   title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
   description: "India's premier talent discovery platform for students in Classes 5–8. Operated by Courage Library to identify cognitive strengths and award verified merit profiles.",
   alternates: {
-    canonical: "https://thecouragelibrary.com",
+    canonical: SITE_URL,
   },
   openGraph: {
     title: "Courage National Talent Search (CNTS) | Official Program by Courage Library",
     description: "India's premier talent discovery platform for students in Classes 5–8. Operated by Courage Library to identify cognitive strengths and award verified merit profiles.",
-    url: "https://thecouragelibrary.com",
+    url: SITE_URL,
     images: [
       {
         url: "/og-cnts.png",
@@ -56,8 +57,8 @@ export default function Home() {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     "name": "Courage Library",
-    "url": "https://thecouragelibrary.com",
-    "logo": "https://thecouragelibrary.com/images/logo.png",
+    "url": SITE_URL,
+    "logo": `${SITE_URL}/images/logo.png`,
     "hasOfferCatalog": {
       "@type": "OfferCatalog",
       "name": "Educational Programs",
@@ -78,14 +79,14 @@ export default function Home() {
   const pageSchema = {
     "@context": "https://schema.org",
     "@type": "WebPage",
-    "@id": "https://thecouragelibrary.com/#webpage",
-    "url": "https://thecouragelibrary.com",
+    "@id": `${SITE_URL}/#webpage`,
+    "url": SITE_URL,
     "name": "Courage Library - Home",
     "isPartOf": {
       "@type": "WebSite",
-      "@id": "https://thecouragelibrary.com/#website",
+      "@id": `${SITE_URL}/#website`,
       "name": "Courage Library",
-      "url": "https://thecouragelibrary.com"
+      "url": SITE_URL
     }
   };
 
@@ -97,7 +98,7 @@ export default function Home() {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://thecouragelibrary.com"
+        "item": SITE_URL
       }
     ]
   };

@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/config/site";
 import ContactClient from "./ContactClient";
 
 export const metadata: Metadata = {
   title: "Contact & Support Desk | Courage National Talent Search",
   description: "Get in touch with the CNTS support desk. Ask questions about candidate registrations, test syllabus details, and school onboarding.",
   alternates: {
-    canonical: "https://thecouragelibrary.com/contact",
+    canonical: `${SITE_URL}/contact`,
   },
   openGraph: {
     title: "Contact & Support Desk | Courage National Talent Search",
     description: "Get in touch with the CNTS support desk. Ask questions about candidate registrations, test syllabus details, and school onboarding.",
-    url: "https://thecouragelibrary.com/contact",
+    url: `${SITE_URL}/contact`,
     images: [
       {
         url: "/images/logo.png",

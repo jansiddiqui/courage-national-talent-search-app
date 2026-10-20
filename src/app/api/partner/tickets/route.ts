@@ -4,6 +4,7 @@ import { cookies } from "next/headers";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { verifySession } from "@/lib/sessionHelper";
 import { isRateLimited } from "@/lib/rateLimiter";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const JWT_SECRET = SERVICE_KEY || "partner-session-secret-key";
@@ -78,7 +79,7 @@ export async function POST(request: Request) {
     }
 
     if (!activeEmail) {
-      activeEmail = `${activeRefCode.toLowerCase()}@thecouragelibrary.com`;
+      activeEmail = CONTACT_EMAILS.COLLABORATE;
     }
 
     const cleanMessage = sanitizeInput(message);

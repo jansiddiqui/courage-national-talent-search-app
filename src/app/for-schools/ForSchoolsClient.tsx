@@ -18,6 +18,7 @@ import {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { BlogPost } from "@/lib/blog";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 // Subcomponents
 import HeroPortalSection from "@/components/for-schools/HeroPortalSection";
@@ -208,7 +209,7 @@ export default function ForSchoolsPage({ initialPosts = [] }: { initialPosts?: B
           </div>
 
           <p className="text-slate-400 text-xs">
-            Email: <strong className="text-white">partners@thecouragelibrary.com</strong> · Courage Library Educational Foundation
+            Email: <strong className="text-white">{CONTACT_EMAILS.SCHOOLS}</strong> · Courage Library Educational Foundation
           </p>
         </div>
       </section>

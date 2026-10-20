@@ -22,6 +22,7 @@ import {
   ShieldCheck
 } from 'lucide-react';
 import { PayoutAccountModal } from './PayoutAccountModal';
+import { SITE_URL } from '@/config/site';
 
 interface MissionsMarketplaceProps {
   partnerName?: string;
@@ -81,7 +82,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       rewardText: '₹50 honorarium per verified CNTS registration + Founding Partner Badge',
       badgeUnlocked: '🥈 CNTS Founding Mobilizer',
       status: 'Featured',
-      sampleCopy: `📢 Official Announcement! Courage Library has launched the Courage National Talent Search (CNTS) 2026. Top performers win National Merit Recognition & verified cognitive profile reports. Register via my referral code: https://thecouragelibrary.com/register?ref=${referralCode}`
+      sampleCopy: `📢 Official Announcement! Courage Library has launched the Courage National Talent Search (CNTS) 2026. Top performers win National Merit Recognition & verified cognitive profile reports. Register via my referral code: ${SITE_URL}/register?ref=${referralCode}`
     },
     {
       id: 'mission-cnts-scholarship-awareness',
@@ -96,7 +97,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       rewardText: '₹75 per rural candidate + Community Champion Badge',
       badgeUnlocked: '🌟 CNTS Community Champion',
       status: 'Active',
-      sampleCopy: `🎓 Unlocking Talent in Every District! Courage National Talent Search (CNTS) 2026 evaluates Critical Thinking, Science & Logic. Share this message with parents & teachers in your region: https://thecouragelibrary.com/register?ref=${referralCode}`
+      sampleCopy: `🎓 Unlocking Talent in Every District! Courage National Talent Search (CNTS) 2026 evaluates Critical Thinking, Science & Logic. Share this message with parents & teachers in your region: ${SITE_URL}/register?ref=${referralCode}`
     },
     {
       id: 'mission-cnts-school-partnership',
@@ -111,7 +112,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
       rewardText: '₹5,000 institutional grant per connected school + Verified School Partner Badge',
       badgeUnlocked: '🏫 Verified School Partner',
       status: 'Active',
-      sampleCopy: `Respected Principal, Courage Library offers the Courage National Talent Search (CNTS 2026) for your school students. Access institutional registration details here: https://thecouragelibrary.com/for-schools?ref=${referralCode}`
+      sampleCopy: `Respected Principal, Courage Library offers the Courage National Talent Search (CNTS 2026) for your school students. Access institutional registration details here: ${SITE_URL}/for-schools?ref=${referralCode}`
     }
   ];
 
@@ -120,7 +121,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
     : missions.filter(m => m.category === activeCategory);
 
   const copyMissionLink = (refCode: string) => {
-    navigator.clipboard.writeText(`https://thecouragelibrary.com/register?ref=${refCode}`);
+    navigator.clipboard.writeText(`${SITE_URL}/register?ref=${refCode}`);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2000);
   };
@@ -308,7 +309,7 @@ export const MissionsMarketplace: React.FC<MissionsMarketplaceProps> = ({
               </div>
 
               <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
-                <span className="text-xs text-slate-500">CNTS Referral Link: <code className="text-indigo-700 font-bold">thecouragelibrary.com/register?ref={referralCode}</code></span>
+                <span className="text-xs text-slate-500">CNTS Referral Link: <code className="text-indigo-700 font-bold">cnts.couragelibrary.in/register?ref={referralCode}</code></span>
                 <button
                   onClick={() => setSelectedMission(null)}
                   className="btn-primary text-xs py-2 px-6 cursor-pointer"

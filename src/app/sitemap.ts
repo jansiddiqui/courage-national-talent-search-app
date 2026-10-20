@@ -1,9 +1,10 @@
 import { MetadataRoute } from "next";
 import { getAllBlogPosts } from "@/lib/blog";
 import { getAllPublishedSchoolSlugs } from "@/lib/schoolProfiles";
+import { SITE_URL } from "@/config/site";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = "https://thecouragelibrary.com";
+  const baseUrl = SITE_URL;
   const staticRoutes = [
     "",
     "/schools",

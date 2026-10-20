@@ -12,7 +12,7 @@ async function fetchFull(url) {
 }
 
 async function run() {
-  const html = await fetchFull("https://thecouragelibrary.com");
+  const html = await fetchFull("https://cnts.couragelibrary.in");
   console.log("HTML length:", html.length);
   
   // Look for all script tags in HTML
@@ -26,7 +26,7 @@ async function run() {
     const srcMatch = fullTag.match(/src="([^"]+)"/);
     if (srcMatch) {
       const src = srcMatch[1];
-      const url = src.startsWith('http') ? src : `https://thecouragelibrary.com${src}`;
+      const url = src.startsWith('http') ? src : `https://cnts.couragelibrary.in${src}`;
       try {
         const jsText = await fetchFull(url);
         if (jsText.includes('1078403654595830') || jsText.includes('fbevents') || jsText.includes('fbq')) {

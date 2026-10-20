@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { User } from "lucide-react";
 import { TIMELINE_LABELS } from "@/config/timeline";
+import { SITE_URL } from "@/config/site";
 
 interface CandidateIdentityCardProps {
   candidate: {
@@ -114,7 +115,7 @@ export function CandidateIdentityCard({ candidate }: CandidateIdentityCardProps)
           {/* Smart Verification QR Code */}
           <div className="w-24 sm:w-32 bg-white flex flex-col items-center justify-center p-2 sm:p-3 shrink-0">
             <img 
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://www.thecouragelibrary.com/verify/${candidate.registration_id}&color=1e3a8a`}
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(`${SITE_URL}/verify/${candidate.registration_id}`)}&color=1e3a8a`}
               alt="Scan to Verify Candidate"
               className="w-16 h-16 sm:w-20 sm:h-20 object-contain"
             />

@@ -7,6 +7,7 @@ import { Scale, FileText, ArrowLeft, AlertTriangle } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { TIMELINE_LABELS } from "@/config/timeline";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export default function TermsOfUsePage() {
   const [activeSection, setActiveSection] = useState("eligibility");
@@ -131,7 +132,7 @@ export default function TermsOfUsePage() {
                 Have concerns regarding exam guidelines or partner school clauses?
               </p>
               <a
-                href="mailto:support@thecouragelibrary.com"
+                href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                 className="inline-flex items-center gap-2 text-xs bg-white text-slate-950 font-semibold py-2 px-3 rounded-lg hover:bg-blue-50 transition-colors w-full justify-center shadow-sm"
               >
                 <Scale size={13} /> Terms Desk
@@ -288,13 +289,13 @@ export default function TermsOfUsePage() {
                 <div className="space-y-2 text-xs">
                   <div className="font-semibold text-slate-900 text-sm">Courage National Talent Search</div>
                   <div className="text-slate-500">Registered Office: Kanpur, Uttar Pradesh, India</div>
-                  <div className="text-slate-500">Compliance Desk: support@thecouragelibrary.com</div>
+                  <div className="text-slate-500">Compliance Desk: {CONTACT_EMAILS.SUPPORT}</div>
                 </div>
                 <a
-                  href="mailto:support@thecouragelibrary.com"
+                  href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                   className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-sm shrink-0 text-xs"
                 >
-                  <Scale size={15} /> Email: support@thecouragelibrary.com
+                  <Scale size={15} /> Email: {CONTACT_EMAILS.SUPPORT}
                 </a>
               </div>
             </section>

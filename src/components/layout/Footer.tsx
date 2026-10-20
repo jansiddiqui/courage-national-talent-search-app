@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail, Phone, MessageSquare } from "lucide-react";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 const footerNav = [
   {
@@ -91,13 +92,13 @@ export default function Footer() {
             {/* Contact list */}
             <div className="space-y-2.5">
               <a
-                href="mailto:cnts@thecouragelibrary.com"
+                href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                 className="flex items-center gap-2.5 text-[11.5px] text-slate-500 hover:text-slate-200 transition-colors group"
               >
                 <div className="w-6 h-6 rounded-md bg-white/[0.04] border border-white/[0.07] flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white group-hover:border-transparent transition-all duration-200 shrink-0">
                   <Mail size={11} />
                 </div>
-                cnts@thecouragelibrary.com
+                {CONTACT_EMAILS.SUPPORT}
               </a>
               <a
                 href="tel:+918360603173"

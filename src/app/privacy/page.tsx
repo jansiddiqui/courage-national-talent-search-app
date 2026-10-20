@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/config/site";
 import PrivacyClient from "./PrivacyClient";
 
 export const metadata: Metadata = {
   title: "Privacy Policy | Courage National Talent Search",
   description: "Read the privacy policy and children's data safety guidelines for the Courage National Talent Search (CNTS) 2026 assessment program.",
   alternates: {
-    canonical: "https://thecouragelibrary.com/privacy",
+    canonical: `${SITE_URL}/privacy`,
   },
   openGraph: {
     title: "Privacy Policy | Courage National Talent Search",
     description: "Read the privacy policy and children's data safety guidelines for the Courage National Talent Search (CNTS) 2026 assessment program.",
-    url: "https://thecouragelibrary.com/privacy",
+    url: `${SITE_URL}/privacy`,
     images: [
       {
         url: "/images/logo.png",

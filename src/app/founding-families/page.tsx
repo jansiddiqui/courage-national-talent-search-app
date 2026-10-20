@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/config/site";
 import FoundingFamiliesClient from "./FoundingFamiliesClient";
 
 export const metadata: Metadata = {
   title: "CNTS Founding Families Program | Courage National Talent Search",
   description: "Become a CNTS Founding Family. Secure early-bird notification, get parent resources, and help launch India's premier cognitive talent search.",
   alternates: {
-    canonical: "https://thecouragelibrary.com/founding-families",
+    canonical: `${SITE_URL}/founding-families`,
   },
   openGraph: {
     title: "CNTS Founding Families Program | Courage National Talent Search",
     description: "Become a CNTS Founding Family. Secure early-bird notification, get parent resources, and help launch India's premier cognitive talent search.",
-    url: "https://thecouragelibrary.com/founding-families",
+    url: `${SITE_URL}/founding-families`,
     images: [
       {
         url: "/og-cnts.png",

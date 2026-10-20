@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getAllBlogPosts } from "@/lib/blog";
+import { SITE_URL } from "@/config/site";
 import BlogIndexClient from "./BlogIndexClient";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -8,12 +9,12 @@ export const metadata: Metadata = {
   title: "Courage Library Blog | Academic Insights & Talent Discovery",
   description: "Explore parent guides, school coordination tips, scholarship updates, and cognitive assessment insights by Courage National Talent Search (CNTS).",
   alternates: {
-    canonical: "https://thecouragelibrary.com/blog",
+    canonical: `${SITE_URL}/blog`,
   },
   openGraph: {
     title: "Courage Library Blog | Academic Insights & Talent Discovery",
     description: "Explore parent guides, school coordination tips, scholarship updates, and cognitive assessment insights by Courage National Talent Search (CNTS).",
-    url: "https://thecouragelibrary.com/blog",
+    url: `${SITE_URL}/blog`,
     images: [
       {
         url: "/og-cnts.png",

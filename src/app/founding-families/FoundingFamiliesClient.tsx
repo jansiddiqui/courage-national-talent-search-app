@@ -422,7 +422,7 @@ export default function FoundingFamiliesClient() {
     ctx.fillStyle = "rgba(255,255,255,0.1)";
     ctx.font = "400 7px Arial, sans-serif";
     ctx.textAlign = "center";
-    ctx.fillText("CNTS · FOUNDING EDITION 2026 · thecouragelibrary.com · Non-transferable credential", W / 2, H - 7);
+    ctx.fillText("CNTS · FOUNDING EDITION 2026 · cnts.couragelibrary.in · Non-transferable credential", W / 2, H - 7);
     ctx.textAlign = "left";
 
     const url = cvs.toDataURL("image/png");

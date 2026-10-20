@@ -29,15 +29,16 @@ import {
   JUNIOR_PER_DOMAIN,
   JUNIOR_TOTAL_MARKS,
 } from "@/config/exam";
+import { SITE_URL } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "CNTS 2026 Exam Pattern & Syllabus — Assessment Blueprint | Courage Library",
   description: "Explore the complete CNTS 2026 exam pattern: 60 MCQs for Classes 5–6 (75 min) and 80 MCQs for Classes 7–8 (90 min). Four equal domains — Reasoning, Mathematics, Language, and Critical Thinking.",
-  alternates: { canonical: "https://thecouragelibrary.com/exam-pattern" },
+  alternates: { canonical: `${SITE_URL}/exam-pattern` },
   openGraph: {
     title: "CNTS 2026 Exam Pattern & Syllabus — Assessment Blueprint",
     description: "60 MCQs for Classes 5–6 (75 min) and 80 MCQs for Classes 7–8 (90 min). Four equal domains with no negative marking.",
-    url: "https://thecouragelibrary.com/exam-pattern",
+    url: `${SITE_URL}/exam-pattern`,
     images: [{ url: "/og-cnts.png", width: 1200, height: 630, alt: "CNTS 2026 Exam Pattern" }],
     type: "website",
   },

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Share2, Check } from "lucide-react";
+import { SITE_URL } from "@/config/site";
 
 interface ShareProps {
   schoolName: string;
@@ -13,7 +14,7 @@ export default function ShareSchoolProfileButton({ schoolName, schoolSlug }: Sha
 
   const profileUrl = typeof window !== "undefined" 
     ? `${window.location.origin}/schools/${schoolSlug}`
-    : `https://thecouragelibrary.com/schools/${schoolSlug}`;
+    : `${SITE_URL}/schools/${schoolSlug}`;
 
   const handleShare = async () => {
     if (navigator.share) {

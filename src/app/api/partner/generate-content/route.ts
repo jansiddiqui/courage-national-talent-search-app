@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { SITE_URL } from '@/config/site';
 
 export async function POST(request: Request) {
   try {
@@ -9,7 +10,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'AI service not configured' }, { status: 503 });
     }
 
-    const referralUrl = `https://thecouragelibrary.com/register?ref=${referralCode || 'CNTSJN'}`;
+    const referralUrl = `${SITE_URL}/register?ref=${referralCode || 'CNTSJN'}`;
     const name = partnerName || 'Courage Partner';
 
     const systemPrompt = `You are a viral content writer for Courage Library, an educational platform running CNTS 2026 (Courage National Talent Search), India's premier merit scholarship exam for Class 5–8 students.
@@ -43,7 +44,7 @@ Generate the complete, ready-to-post content now.`;
       headers: {
         Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://thecouragelibrary.com',
+        'HTTP-Referer': SITE_URL,
         'X-Title': 'Courage Partner AI Studio',
       },
       body: JSON.stringify({

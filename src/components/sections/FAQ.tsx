@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { ChevronDown, Mail } from "lucide-react";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 const faqs = [
   {
@@ -131,10 +132,10 @@ export default function FAQ() {
             </div>
           </div>
           <a 
-            href="mailto:support@thecouragelibrary.com" 
+            href={`mailto:${CONTACT_EMAILS.SUPPORT}`} 
             className="w-full sm:w-auto text-center border border-blue-600 text-blue-700 hover:bg-blue-600 hover:text-white px-5 py-2.5 rounded-xl font-bold text-xs transition-all duration-200 shrink-0"
           >
-            support@thecouragelibrary.com
+            {CONTACT_EMAILS.SUPPORT}
           </a>
         </div>
 

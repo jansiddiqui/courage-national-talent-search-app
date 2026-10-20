@@ -5,6 +5,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { Building, ArrowRight, CheckCircle2, AlertCircle } from "lucide-react";
 import { saveContactMessage } from "@/services/supabaseService";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export interface SchoolFormData {
   schoolName: string;
@@ -164,7 +165,7 @@ Consent Given: Yes (DPDP Compliant)
       setTouched({});
     } catch (err: any) {
       console.error("School lead submission error:", err);
-      setSubmitError("Submission encountered a network issue. Please call us directly at +91 83606 03173 or email partners@thecouragelibrary.com.");
+      setSubmitError(`Submission encountered a network issue. Please call us directly at +91 83606 03173 or email ${CONTACT_EMAILS.SCHOOLS}.`);
     } finally {
       setIsSubmitting(false);
     }

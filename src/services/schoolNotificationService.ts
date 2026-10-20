@@ -1,5 +1,7 @@
 import { EmailService } from "@/services/emailService";
 import { WhatsAppService } from "@/services/whatsappService";
+import { SITE_URL } from "@/config/site";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 const emailService = new EmailService();
 const whatsappService = new WhatsAppService();
@@ -35,8 +37,8 @@ export async function sendSchoolCredentialsNotification(
   let emailSent = false;
   let whatsappSent = false;
 
-  const loginUrl = "https://thecouragelibrary.com/school/login";
-  const studentReferralUrl = `https://thecouragelibrary.com/register?school=${schoolCode}`;
+  const loginUrl = `${SITE_URL}/school/login`;
+  const studentReferralUrl = `${SITE_URL}/register?school=${schoolCode}`;
 
   // 1. Send Email Notification
   if (coordinatorEmail && coordinatorEmail.trim()) {
@@ -113,7 +115,7 @@ export async function sendSchoolCredentialsNotification(
 
             <div class="footer">
               Courage National Talent Search 2026 • Courage Library Foundation<br>
-              Need assistance? Contact support@thecouragelibrary.com
+              Need assistance? Contact ${CONTACT_EMAILS.COLLABORATE}
             </div>
           </div>
         </body>

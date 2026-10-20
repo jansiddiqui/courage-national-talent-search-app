@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { usePortal } from "@/contexts/PortalContext";
 import { Share2, Copy, Check, Award, Gift, Users, Trophy } from "lucide-react";
+import { SITE_URL } from "@/config/site";
 
 export default function ReferralPage() {
   const { activeCandidate } = usePortal();
@@ -13,7 +14,7 @@ export default function ReferralPage() {
   );
 
   const referralCode = activeCandidate.referral_code || activeCandidate.registration_id || "CNTS26-DEMO";
-  const shareUrl = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+  const shareUrl = `${SITE_URL}/register?ref=${referralCode}`;
   const whatsappUrl = `https://api.whatsapp.com/send?text=Hi!%20I'm%20inviting%20you%20to%20register%20your%20child%20for%20the%20Courage%20National%20Talent%20Search%20(CNTS)%202026.%20Use%20my%20referral%20code%20*${referralCode}*%20when%20registering.%20Register%20here%3A%20${encodeURIComponent(shareUrl)}`;
 
   const handleCopy = () => {

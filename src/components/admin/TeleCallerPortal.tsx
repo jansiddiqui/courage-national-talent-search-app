@@ -888,7 +888,7 @@ export function TeleCallerPortal() {
                         <Phone size={10} /> Call
                       </a>
                       <a
-                        href={`https://wa.me/${(currentProspect.phone || "").replace(/\D/g, "").length === 10 ? `91${(currentProspect.phone || "").replace(/\D/g, "")}` : (currentProspect.phone || "").replace(/\D/g, "")}?text=${encodeURIComponent(`Respected Principal ${currentProspect.principal_name || "Ma'am/Sir"},\n\nGreetings from Courage National Talent Search (CNTS) Academic Team!\n\nThis message confirms our scheduled discussion meeting regarding CNTS 2026 Student Scholarships & School Partnership:\n\n📅 *Meeting Time:* Today at 7:00 PM\n🏫 *School:* ${currentProspect.name || "School"}\n💻 *Mode:* Google Meet\n🔗 *Meeting Link:* https://meet.google.com/qzz-gykt-msm\n👥 *Agenda:* Student Scholarship Badges, ₹0 Cost Model & Exam Portal Walkthrough\n\nPlease let us know if you need to adjust the time. Looking forward to our conversation at 7:00 PM.\n\nWarm regards,\n*Courage National Talent Search (CNTS) Team*\nPowered by Courage Library\nOfficial Support: www.thecouragelibrary.com`)}`}
+                        href={`https://wa.me/${(currentProspect.phone || "").replace(/\D/g, "").length === 10 ? `91${(currentProspect.phone || "").replace(/\D/g, "")}` : (currentProspect.phone || "").replace(/\D/g, "")}?text=${encodeURIComponent(`Respected Principal ${currentProspect.principal_name || "Ma'am/Sir"},\n\nGreetings from Courage National Talent Search (CNTS) Academic Team!\n\nThis message confirms our scheduled discussion meeting regarding CNTS 2026 Student Scholarships & School Partnership:\n\n📅 *Meeting Time:* Today at 7:00 PM\n🏫 *School:* ${currentProspect.name || "School"}\n💻 *Mode:* Google Meet\n🔗 *Meeting Link:* https://meet.google.com/qzz-gykt-msm\n👥 *Agenda:* Student Scholarship Badges, ₹0 Cost Model & Exam Portal Walkthrough\n\nPlease let us know if you need to adjust the time. Looking forward to our conversation at 7:00 PM.\n\nWarm regards,\n*Courage National Talent Search (CNTS) Team*\nPowered by Courage Library\nOfficial Portal: cnts.couragelibrary.in`)}`}
                         target="_blank"
                         rel="noreferrer"
                         className="px-2.5 py-1 bg-indigo-600 text-white rounded-lg font-bold text-[10px] flex items-center gap-1 hover:bg-indigo-700 transition-colors shadow-2xs cursor-pointer"
@@ -1079,7 +1079,7 @@ export function TeleCallerPortal() {
                   <div className="grid grid-cols-2 gap-2">
                     <button
                       onClick={() => {
-                        const text = `Respected Principal Dr. ${currentProspect.principal_name || ""},\nGreetings from Courage National Talent Search (CNTS 2026), powered by Courage Library.\n\n• Onboarding: 100% FREE (₹0)\n• Voluntary Student Fee: ₹99\n• Link: thecouragelibrary.com/cnts`;
+                        const text = `Respected Principal Dr. ${currentProspect.principal_name || ""},\nGreetings from Courage National Talent Search (CNTS 2026), powered by Courage Library.\n\n• Onboarding: 100% FREE (₹0)\n• Voluntary Student Fee: ₹99\n• Link: cnts.couragelibrary.in`;
                         copyText(text);
                         window.open(`https://web.whatsapp.com`, "_blank");
                       }}

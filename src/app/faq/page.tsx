@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Search, ChevronRight, HelpCircle, Phone, Mail, MessageSquare, Sparkles } from "lucide-react";
 import { TIMELINE_LABELS } from "@/config/timeline";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 interface FAQItem {
   q: string;
@@ -62,7 +63,7 @@ const faqs: FAQItem[] = [
   {
     category: "exam",
     q: "Can we change the preferred exam language after registration?",
-    a: "Yes. You can change your preferred language up to 5 days before the exam date by contacting our support team at support@thecouragelibrary.com with your CNTS Registration ID.",
+    a: `Yes. You can change your preferred language up to 5 days before the exam date by contacting our support team at ${CONTACT_EMAILS.SUPPORT} with your CNTS Registration ID.`,
   },
   {
     category: "exam",
@@ -175,12 +176,12 @@ const faqs: FAQItem[] = [
   {
     category: "support",
     q: "How do I contact CNTS support for registration or technical issues?",
-    a: "You can reach our support team via email at support@thecouragelibrary.com or call our support line. All queries are resolved within 24 hours.",
+    a: `You can reach our support team via email at ${CONTACT_EMAILS.SUPPORT} or call our support line. All queries are resolved within 24 hours.`,
   },
   {
     category: "support",
     q: "What should I do if my child's name is misspelled on the admit card?",
-    a: "Log in to your Parent Dashboard, open the registration details drawer, and submit a correction request, or email us at support@thecouragelibrary.com. Corrections take 24-48 hours to update.",
+    a: `Log in to your Parent Dashboard, open the registration details drawer, and submit a correction request, or email us at ${CONTACT_EMAILS.SUPPORT}. Corrections take 24-48 hours to update.`,
   },
 ];
 
@@ -399,11 +400,11 @@ export default function FAQPage() {
               </div>
               <div className="flex flex-wrap gap-3 justify-center">
                 <a
-                  href="mailto:support@thecouragelibrary.com"
+                  href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                   className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-blue-800 border border-blue-800 text-white text-xs font-bold rounded-xl hover:bg-blue-700 transition-all shadow-md shadow-blue-800/10"
                 >
                   <Mail size={12} />
-                  support@thecouragelibrary.com
+                  {CONTACT_EMAILS.SUPPORT}
                 </a>
               </div>
             </div>

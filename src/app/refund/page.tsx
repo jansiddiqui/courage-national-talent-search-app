@@ -6,6 +6,7 @@ import Link from "next/link";
 import { HelpCircle, FileText, ArrowLeft, Mail, AlertCircle, RefreshCw } from "lucide-react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export default function RefundPolicyPage() {
   const [activeSection, setActiveSection] = useState("core-policy");
@@ -126,7 +127,7 @@ export default function RefundPolicyPage() {
                 Did you experience a double debit or a checkout transaction drop?
               </p>
               <a
-                href="mailto:support@thecouragelibrary.com"
+                href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                 className="inline-flex items-center gap-2 text-xs bg-white text-slate-950 font-semibold py-2 px-3 rounded-lg hover:bg-blue-50 transition-colors w-full justify-center shadow-sm"
               >
                 <HelpCircle size={13} /> Support Desk
@@ -251,7 +252,7 @@ export default function RefundPolicyPage() {
                 <div className="text-xs space-y-2">
                   <strong className="block font-semibold">Avoid Immediate Bank Disputes</strong>
                   <p>
-                    We encourage parents to contact our support desk at `support@thecouragelibrary.com` before filing chargeback disputes with credit card companies or banks. Resolving billing issues directly with our support desk is faster and avoids account blocks.
+                    We encourage parents to contact our support desk at `{CONTACT_EMAILS.SUPPORT}` before filing chargeback disputes with credit card companies or banks. Resolving billing issues directly with our support desk is faster and avoids account blocks.
                   </p>
                 </div>
               </div>
@@ -279,10 +280,10 @@ export default function RefundPolicyPage() {
                   </ul>
                 </div>
                 <a
-                  href="mailto:support@thecouragelibrary.com"
+                  href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                   className="inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition-all shadow-sm shrink-0 text-xs"
                 >
-                  <Mail size={15} /> support@thecouragelibrary.com
+                  <Mail size={15} /> {CONTACT_EMAILS.SUPPORT}
                 </a>
               </div>
             </section>

@@ -1,17 +1,18 @@
 import type { Metadata } from "next";
 import { getLatestBlogPosts } from "@/lib/blog";
+import { SITE_URL } from "@/config/site";
 import ForSchoolsClient from "./ForSchoolsClient";
 
 export const metadata: Metadata = {
   title: "School Partnership Portal | Courage National Talent Search (CNTS 2026)",
   description: "Partner with CNTS 2026 — India's premier cognitive talent assessment for Classes 5–8. Zero setup cost for schools. NEP 2020 aligned diagnostic reports for every student.",
   alternates: {
-    canonical: "https://thecouragelibrary.com/for-schools",
+    canonical: `${SITE_URL}/for-schools`,
   },
   openGraph: {
     title: "School Partnership Portal | Courage National Talent Search (CNTS 2026)",
     description: "Partner with CNTS 2026 — India's premier cognitive talent assessment for Classes 5–8. Zero setup cost for schools. NEP 2020 aligned diagnostic reports for every student.",
-    url: "https://thecouragelibrary.com/for-schools",
+    url: `${SITE_URL}/for-schools`,
     images: [
       {
         url: "/og-cnts.png",

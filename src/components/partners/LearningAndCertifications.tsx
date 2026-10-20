@@ -127,7 +127,7 @@ export const LearningAndCertifications: React.FC = () => {
                 <div className="bg-slate-900/80 p-4 rounded-xl border border-slate-800 text-xs text-slate-300 space-y-1 mb-6">
                   <div className="flex justify-between"><span className="text-slate-400">Recipient:</span> <span className="font-bold text-white">Rahul Sharma</span></div>
                   <div className="flex justify-between"><span className="text-slate-400">Issue Date:</span> <span className="font-mono">August 2026</span></div>
-                  <div className="flex justify-between"><span className="text-slate-400">Verification:</span> <span className="text-emerald-400 font-mono">thecouragelibrary.com/verify/CP-2026-000384</span></div>
+                  <div className="flex justify-between"><span className="text-slate-400">Verification:</span> <span className="text-emerald-400 font-mono">cnts.couragelibrary.in/verify/CP-2026-000384</span></div>
                 </div>
               </div>
 

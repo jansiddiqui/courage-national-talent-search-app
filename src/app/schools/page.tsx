@@ -9,24 +9,25 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import JsonLd from "@/components/shared/JsonLd";
 import { getPublishedSchoolsDirectory } from "@/lib/schoolProfiles";
+import { SITE_URL } from "@/config/site";
 import SchoolsDirectoryClient from "./SchoolsDirectoryClient";
 
 export const metadata: Metadata = {
   title: "CNTS Partner Schools | Courage National Talent Search",
   description: "Explore official CNTS Partner Schools across India participating in the Courage National Talent Search 2026. View participating institutions, evaluation records, and academic affiliations.",
   alternates: {
-    canonical: "https://thecouragelibrary.com/schools",
+    canonical: `${SITE_URL}/schools`,
   },
   openGraph: {
     title: "CNTS Partner Schools | Courage National Talent Search",
     description: "Explore official CNTS Partner Schools across India participating in the Courage National Talent Search 2026. View participating institutions and institutional records.",
-    url: "https://thecouragelibrary.com/schools",
+    url: `${SITE_URL}/schools`,
     siteName: "Courage National Talent Search (CNTS)",
     locale: "en_IN",
     type: "website",
     images: [
       {
-        url: "https://thecouragelibrary.com/images/og-image.png",
+        url: `${SITE_URL}/images/og-image.png`,
         width: 1200,
         height: 630,
         alt: "CNTS Partner Schools Directory",
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CNTS Partner Schools | Courage National Talent Search",
     description: "Explore official CNTS Partner Schools across India participating in the Courage National Talent Search 2026.",
-    images: ["https://thecouragelibrary.com/images/og-image.png"],
+    images: [`${SITE_URL}/images/og-image.png`],
   },
 };
 
@@ -51,11 +52,11 @@ export default async function SchoolsDirectoryPage() {
     "@type": "CollectionPage",
     "name": "CNTS Partner Schools Directory",
     "description": "Official directory of educational institutions participating in the Courage National Talent Search 2026.",
-    "url": "https://thecouragelibrary.com/schools",
+    "url": `${SITE_URL}/schools`,
     "publisher": {
       "@type": "Organization",
       "name": "Courage National Talent Search",
-      "url": "https://thecouragelibrary.com",
+      "url": SITE_URL,
     },
   };
 
@@ -67,7 +68,7 @@ export default async function SchoolsDirectoryPage() {
       "@type": "ListItem",
       "position": index + 1,
       "name": school.name,
-      "url": `https://thecouragelibrary.com/schools/${school.slug}`,
+      "url": `${SITE_URL}/schools/${school.slug}`,
     })),
   };
 
@@ -79,13 +80,13 @@ export default async function SchoolsDirectoryPage() {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://thecouragelibrary.com",
+        "item": SITE_URL,
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Partner Schools",
-        "item": "https://thecouragelibrary.com/schools",
+        "item": `${SITE_URL}/schools`,
       },
     ],
   };

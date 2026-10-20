@@ -24,6 +24,7 @@ import Footer from "@/components/layout/Footer";
 import NeedHelp from "@/components/layout/NeedHelp";
 import { CandidateIdentityCard } from "@/components/shared/CandidateIdentityCard";
 import { TIMELINE_LABELS } from "@/config/timeline";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 interface VerifyClientProps {
   candidateId: string;
@@ -187,7 +188,7 @@ export default function VerifyClient({ candidateId }: VerifyClientProps) {
                 <UserPlus size={14} /> Register Now
               </Link>
               <a
-                href="mailto:support@thecouragelibrary.com"
+                href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                 className="px-6 py-3 bg-white hover:bg-slate-50 text-slate-650 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 border border-slate-200"
               >
                 <Mail size={14} /> Contact Support

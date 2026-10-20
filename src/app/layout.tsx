@@ -4,10 +4,11 @@ import Script from "next/script";
 import JsonLd from "@/components/shared/JsonLd";
 import CookieBanner from "@/components/shared/CookieBanner";
 import MetaPixelRouteTracker from "@/components/analytics/MetaPixel";
+import { SITE_URL } from "@/config/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://thecouragelibrary.com"),
+  metadataBase: new URL(SITE_URL),
   title: "CNTS 2026 Founding Edition – Courage National Talent Search",
   description: "India's premier talent discovery platform for students in Classes 5–8. Uncover your child's unique strengths and unlock a future-ready profile.",
   icons: {
@@ -19,7 +20,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "CNTS 2026 Founding Edition – Courage National Talent Search",
     description: "India's premier talent discovery platform for students in Classes 5–8. Uncover your child's unique strengths and unlock a future-ready profile.",
-    url: "https://thecouragelibrary.com",
+    url: SITE_URL,
     siteName: "CNTS",
     images: [
       {
@@ -52,15 +53,15 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "Courage Library",
-    "url": "https://thecouragelibrary.com",
-    "logo": "https://thecouragelibrary.com/images/logo.png",
+    "url": SITE_URL,
+    "logo": `${SITE_URL}/images/logo.png`,
   };
 
   const websiteSchema = {
     "@context": "https://schema.org",
     "@type": "WebSite",
     "name": "Courage Library",
-    "url": "https://thecouragelibrary.com",
+    "url": SITE_URL,
   };
 
   return (

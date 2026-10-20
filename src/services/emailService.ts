@@ -6,11 +6,12 @@ import {
   getRecoveryTemplate,
   getFoundingFamilyTemplate
 } from "@/lib/emailTemplates";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export class EmailService {
   private apiKey = process.env.BREVO_API_KEY || "";
   private senderName = "CNTS Support";
-  private senderEmail = "noreply@thecouragelibrary.com";
+  private senderEmail = CONTACT_EMAILS.SENDER;
 
   public isSandbox(): boolean {
     return !this.apiKey;

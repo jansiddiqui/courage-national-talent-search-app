@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/config/site";
 import ResultsClient from "./ResultsClient";
 
 export const metadata: Metadata = {
   title: "Retrieve Assessment Results | Courage National Talent Search",
   description: "Access the CNTS 2026 participant results, national percentiles, ranks, and cognitive profile reports.",
   alternates: {
-    canonical: "https://thecouragelibrary.com/results",
+    canonical: `${SITE_URL}/results`,
   },
   robots: {
     index: false,
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Retrieve Assessment Results | Courage National Talent Search",
     description: "Access the CNTS 2026 participant results, national percentiles, ranks, and cognitive profile reports.",
-    url: "https://thecouragelibrary.com/results",
+    url: `${SITE_URL}/results`,
     images: [
       {
         url: "/images/logo.png",

@@ -1,5 +1,6 @@
 import { Mail, ShieldAlert, Clock, Phone } from "lucide-react";
 import Link from "next/link";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export default function NeedHelp() {
   return (
@@ -45,10 +46,10 @@ export default function NeedHelp() {
                 <span className="font-mono text-slate-550 font-extrabold uppercase">Within 24 Hours</span>
               </div>
               <a
-                href="mailto:support@thecouragelibrary.com"
+                href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                 className="w-full text-center py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-[10px] md:text-xs font-bold transition-all block shadow-sm shadow-blue-600/10 truncate px-2 border-none"
               >
-                support@thecouragelibrary.com
+                {CONTACT_EMAILS.SUPPORT}
               </a>
             </div>
           </div>

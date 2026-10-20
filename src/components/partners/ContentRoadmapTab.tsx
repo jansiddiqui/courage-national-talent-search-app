@@ -27,6 +27,7 @@ import {
   Scissors,
   Cpu
 } from 'lucide-react';
+import { SITE_URL } from '@/config/site';
 
 interface ContentRoadmapTabProps {
   referralCode?: string;
@@ -135,7 +136,7 @@ export const ContentRoadmapTab: React.FC<ContentRoadmapTabProps> = ({
   const [promptAudience, setPromptAudience] = useState<string>('Parents of Class 5-8 Students');
   const [copiedMasterPrompt, setCopiedMasterPrompt] = useState<boolean>(false);
 
-  const referralLink = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+  const referralLink = `${SITE_URL}/register?ref=${referralCode}`;
 
   const copyScript = (id: string, text: string) => {
     navigator.clipboard.writeText(text);
@@ -322,7 +323,7 @@ PLEASE FORMAT THE OUTPUT WITH:
           type: 'Reel / Short',
           hookText: '“CNTS 2026 Admit Cards are LIVE! Here is how to download your hall ticket in 10 seconds…”',
           scriptOutline: '1. Announcement: Admit cards are live.\n2. Walkthrough: Enter Candidate ID -> Download Admit Card PDF.\n3. Remind exam date: Sunday, 27 September 2026.\n4. CTA: Check your admit card link!',
-          callToAction: `Download Admit Card: https://thecouragelibrary.com/admit-card-portal`,
+          callToAction: `Download Admit Card: ${SITE_URL}/admit-card-portal`,
           recommendedPostingDays: 'Post on Sep 26'
         }
       ]
@@ -341,7 +342,7 @@ PLEASE FORMAT THE OUTPUT WITH:
           type: 'Reel / Short',
           hookText: '“Today is the day! Best of luck to all Class 5-8 candidates taking CNTS 2026 across India…”',
           scriptOutline: '1. Congratulations to all registered students.\n2. Exam guidelines: Stable internet connection, quiet room, Candidate ID ready.\n3. Result date announcement update (10 October 2026).\n4. Encourage students in comments!',
-          callToAction: `Access Exam Portal: https://thecouragelibrary.com/dashboard`,
+          callToAction: `Access Exam Portal: ${SITE_URL}/dashboard`,
           recommendedPostingDays: 'Post on Morning of Sep 27'
         }
       ]

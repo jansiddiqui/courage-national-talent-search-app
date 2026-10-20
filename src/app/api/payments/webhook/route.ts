@@ -76,17 +76,26 @@ export async function POST(request: Request) {
     const event = JSON.parse(rawBody);
     console.log(`[Razorpay Webhook] Event received: ${event.event}`);
 
-    if (event.event !== "payment.captured") {
-      return NextResponse.json({ success: true, message: `Ignored event: ${event.event}` });
+    const payment = event.payload?.payment?.entity;
+    const order = event.payload?.order?.entity;
+    const project = payment?.notes?.project || order?.notes?.project;
+
+    // Shared Razorpay account protection: IGNORE any event not explicitly belonging to CNTS
+    if (project !== "cnts") {
+      console.log(`[Razorpay Webhook] Ignored non-CNTS event (project: "${project || "none"}")`);
+      return NextResponse.json({ success: true, message: "Ignored non-CNTS event" }, { status: 200 });
     }
 
-    const payment = event.payload.payment?.entity;
+    if (event.event !== "payment.captured") {
+      return NextResponse.json({ success: true, message: `Ignored event: ${event.event}` }, { status: 200 });
+    }
+
     const paymentId = payment?.id;
-    const draftRegId = payment?.notes?.draftRegId;
+    const draftRegId = payment?.notes?.draftRegId || order?.notes?.draftRegId;
 
     if (!draftRegId) {
       console.log(`[Razorpay Webhook] No draftRegId associated with payment ${paymentId}. Skipping reconciliation.`);
-      return NextResponse.json({ success: true, message: "No draftRegId found in notes" });
+      return NextResponse.json({ success: true, message: "No draftRegId found in notes" }, { status: 200 });
     }
 
     if (!hasSupabaseAdminConfig) {

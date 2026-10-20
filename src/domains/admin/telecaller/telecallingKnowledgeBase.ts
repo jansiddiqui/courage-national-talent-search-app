@@ -477,13 +477,13 @@ Hamaare cognitive logic benchmarks Sub-Junior (5-6) aur Junior (7-8) ke liye cal
     script: {
       en: `Courage Library is an official registered educational initiative dedicated to student talent discovery and cognitive empowerment.
 
-Our headquarters details, trust registration, and official portal are publicly accessible at thecouragelibrary.com. Every school onboarding includes an official signed digital invitation letter for your records.`,
+Our headquarters details, trust registration, and official portal are publicly accessible at cnts.couragelibrary.in. Every school onboarding includes an official signed digital invitation letter for your records.`,
       hi: `करेज लाइब्रेरी एक पंजीकृत शैक्षणिक पहल है, जो छात्रों की प्रतिभा खोज और कॉग्निटिव विकास के लिए समर्पित है।
 
-हमारे मुख्यालय का विवरण, ट्रस्ट पंजीकरण और आधिकारिक पोर्टल thecouragelibrary.com पर सार्वजनिक रूप से उपलब्ध हैं। प्रत्येक स्कूल ऑनबोर्डिंग में आपके रिकॉर्ड के लिए आधिकारिक डिजिटल निमंत्रण पत्र शामिल रहता है।`,
+हमारे मुख्यालय का विवरण, ट्रस्ट पंजीकरण और आधिकारिक पोर्टल cnts.couragelibrary.in पर सार्वजनिक रूप से उपलब्ध हैं। प्रत्येक स्कूल ऑनबोर्डिंग में आपके रिकॉर्ड के लिए आधिकारिक डिजिटल निमंत्रण पत्र शामिल रहता है।`,
       hinglish: `Courage Library ek registered educational trust initiative hai jo student talent discovery aur cognitive analytics par kaam karta hai.
 
-Hamaara head office details aur official portal thecouragelibrary.com par publicly accessible hai. Onboarding ke waqt aapko official signed digital invitation letter milta hai.`,
+Hamaara head office details aur official portal cnts.couragelibrary.in par publicly accessible hai. Onboarding ke waqt aapko official signed digital invitation letter milta hai.`,
     },
     psychologyReason: {
       en: "Principals want transparent credentials. Providing portal link and registered trust credentials removes trust friction.",
@@ -606,7 +606,7 @@ Following our brief call yesterday regarding the Founding Edition of Courage Nat
 • Voluntary Student Token Fee: ₹99
 • Deliverables: QR-Verified Digital Certificates & Individual Cognitive Reports
 
-Official Information Link: thecouragelibrary.com/cnts
+Official Information Link: cnts.couragelibrary.in
 Should we reserve [School Name]'s invitation slot?`,
       hi: `आदरणीय प्राचार्य डॉ. [Principal Name] जी,
 
@@ -616,7 +616,7 @@ Should we reserve [School Name]'s invitation slot?`,
 • स्वेच्छिक छात्र टोकन शुल्क: ₹99
 • लाभ: डिजिटल क्यूआर प्रमाण पत्र एवं कॉग्निटिव रिपोर्ट
 
-आधिकारिक विवरण: thecouragelibrary.com/cnts
+आधिकारिक विवरण: cnts.couragelibrary.in
 क्या हम [School Name] का निमंत्रण स्लॉट सुरक्षित करें?`,
       hinglish: `Respected Principal Dr. [Principal Name] ji,
 
@@ -626,7 +626,7 @@ Following our call yesterday regarding CNTS 2026 Founding Edition for Classes 5 
 • Voluntary Student Token Fee: ₹99
 • Student Deliverables: QR Digital Certificates & Cognitive Reports
 
-Portal Link: thecouragelibrary.com/cnts
+Portal Link: cnts.couragelibrary.in
 Should we reserve [School Name]'s invitation slot?`,
     },
     psychologyReason: {

@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { ArrowLeft, Copy, Check, CheckCircle, XCircle, RefreshCw, FileText, School } from "lucide-react";
+import { SITE_URL } from "@/config/site";
 
 export default function OnboardNewSchoolPage() {
   return (
@@ -655,12 +656,12 @@ function OnboardNewSchoolForm() {
               <div class="grid-container" style="grid-template-columns: 1fr 1.2fr; gap: 20px; margin-bottom: 0;">
                 <div>
                   <div class="info-label">School Portal Login</div>
-                  <div class="link-box">https://www.thecouragelibrary.com/dashboard/school/login</div>
+                  <div class="link-box">${SITE_URL}/dashboard/school/login</div>
                   <p style="font-size: 10px; color: var(--slate-600); margin-top: 6px;">Use this URL and your PIN to log in to the School Dashboard to manage rosters.</p>
                 </div>
                 <div>
                   <div class="info-label">Direct Student Referral Link</div>
-                  <div class="link-box">https://www.thecouragelibrary.com/register?school=${school.school_code}</div>
+                  <div class="link-box">${SITE_URL}/register?school=${school.school_code}</div>
                   <p style="font-size: 10px; color: var(--slate-600); margin-top: 6px;">
                     ${school.sponsorship_mode === "FULL" 
                       ? `Waives 100% of the student registration fee up to your quota of ${school.quota} seats.` 

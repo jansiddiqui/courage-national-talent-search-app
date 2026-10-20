@@ -135,7 +135,7 @@ export default function DedicatedPartnerWorkspacePage() {
 
   // PREMIUM GLASSMORPHIC ACCESS LOCKED VIEW FOR UNAUTHENTICATED VISITORS
   if (!isAuthenticated) {
-    const handleUrl = `thecouragelibrary.com/partners/${slug}`;
+    const handleUrl = `cnts.couragelibrary.in/partners/${slug}`;
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-indigo-50/80 via-[#F8FAFF] to-[#F8FAFF] flex flex-col justify-between font-sans">

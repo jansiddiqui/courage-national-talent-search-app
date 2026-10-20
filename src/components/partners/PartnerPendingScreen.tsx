@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import Navbar from '@/components/layout/Navbar';
 import Footer from '@/components/layout/Footer';
+import { CONTACT_EMAILS } from '@/config/contact';
 
 interface PartnerPendingScreenProps {
   partnerData: {
@@ -181,7 +182,7 @@ export function PartnerPendingScreen({ partnerData, onRefresh }: PartnerPendingS
           <div className="text-center pt-1">
             <p className="text-xs text-slate-500 flex items-center justify-center space-x-1.5">
               <HelpCircle className="w-3.5 h-3.5 text-slate-400" />
-              <span>Questions? Contact Partner Operations at <a href="mailto:support@thecouragelibrary.com" className="text-indigo-600 font-bold hover:underline">support@thecouragelibrary.com</a></span>
+              <span>Questions? Contact Partner Operations at <a href={`mailto:${CONTACT_EMAILS.COLLABORATE}`} className="text-indigo-600 font-bold hover:underline">{CONTACT_EMAILS.COLLABORATE}</a></span>
             </p>
           </div>
 

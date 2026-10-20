@@ -396,7 +396,7 @@ export const PartnerApplicationModal: React.FC<PartnerApplicationModalProps> = (
                 </label>
                 <div className="flex items-center rounded-xl border border-slate-200 overflow-hidden bg-slate-50">
                   <span className="px-3.5 py-3 text-xs text-slate-500 font-mono border-r border-slate-200 bg-slate-100 font-semibold shrink-0">
-                    thecouragelibrary.com/register?ref=
+                    cnts.couragelibrary.in/register?ref=
                   </span>
                   <input
                     type="text"
@@ -411,7 +411,7 @@ export const PartnerApplicationModal: React.FC<PartnerApplicationModalProps> = (
                   />
                 </div>
                 <p className="text-[11px] text-slate-400 mt-1">
-                  Domain: <strong className="text-slate-700 font-mono">thecouragelibrary.com</strong>
+                  Domain: <strong className="text-slate-700 font-mono">cnts.couragelibrary.in</strong>
                 </p>
               </div>
 

@@ -1,6 +1,9 @@
-export const LOGO_URL = "https://www.thecouragelibrary.com/images/logo.png";
-export const PORTAL_URL = "https://www.thecouragelibrary.com/dashboard";
-export const WEBSITE_URL = "https://www.thecouragelibrary.com";
+import { SITE_URL } from "@/config/site";
+import { CONTACT_EMAILS } from "@/config/contact";
+
+export const LOGO_URL = `${SITE_URL}/images/logo.png`;
+export const PORTAL_URL = `${SITE_URL}/dashboard`;
+export const WEBSITE_URL = SITE_URL;
 
 export function generateCNTSButton(text: string, url: string): string {
   return `
@@ -39,7 +42,7 @@ function getFooter(): string {
         <span style="color: #CBD5E1;">&bull;</span>
         <a href="${WEBSITE_URL}" style="color: #2563EB; text-decoration: none; font-weight: 600; margin: 0 8px;">Website</a>
         <span style="color: #CBD5E1;">&bull;</span>
-        <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; text-decoration: none; font-weight: 600; margin: 0 8px;">Support</a>
+        <a href="mailto:${CONTACT_EMAILS.SUPPORT}" style="color: #2563EB; text-decoration: none; font-weight: 600; margin: 0 8px;">Support</a>
       </div>
       
       <p style="margin: 0; color: #94A3B8; font-size: 11px; line-height: 1.5;">You are receiving this official correspondence regarding your CNTS account or activity.</p>
@@ -320,7 +323,7 @@ function getFoundingFamilyFooter(): string {
       
       <div style="margin-bottom: 20px; font-size: 14px;">
         <a href="${WEBSITE_URL}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Website</a> | 
-        <a href="mailto:support@thecouragelibrary.com" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Support</a>
+        <a href="mailto:${CONTACT_EMAILS.SUPPORT}" style="color: #1e40af; text-decoration: none; font-weight: 600; margin: 0 10px;">Support</a>
       </div>
       
       <p style="margin: 0; color: #94a3b8; font-size: 12px;">You are receiving this email because you registered as a Founding Family.</p>
@@ -640,7 +643,7 @@ export function getPartnerApplicationTemplate(data: {
 
       <!-- SUPPORT FOOTER -->
       <p style="font-size: 12px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
-        If you have questions, contact Partner Support at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
+        If you have questions, contact Partner Support at <a href="mailto:${CONTACT_EMAILS.COLLABORATE}" style="color: #2563EB; font-weight: bold;">${CONTACT_EMAILS.COLLABORATE}</a>.
       </p>
     </div>
   `;
@@ -655,9 +658,9 @@ export function getPartnerApprovalTemplate(data: {
   customSlug?: string;
   honorariumRate?: number;
 }): string {
-  const workspaceUrl = `https://thecouragelibrary.com/partners/${data.customSlug || 'partner'}`;
-  const loginUrl = `https://thecouragelibrary.com/partners/apply?view=login`;
-  const referralUrl = `https://thecouragelibrary.com/register?ref=${data.referralCode}`;
+  const workspaceUrl = `${SITE_URL}/partners/${data.customSlug || 'partner'}`;
+  const loginUrl = `${SITE_URL}/partners/apply?view=login`;
+  const referralUrl = `${SITE_URL}/register?ref=${data.referralCode}`;
 
   const content = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
@@ -746,7 +749,7 @@ export function getPartnerApprovalTemplate(data: {
 
       <!-- SUPPORT FOOTER -->
       <p style="font-size: 12.5px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
-        Have questions? Contact our Partner Desk at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
+        Have questions? Contact our Partner Desk at <a href="mailto:${CONTACT_EMAILS.COLLABORATE}" style="color: #2563EB; font-weight: bold;">${CONTACT_EMAILS.COLLABORATE}</a>.
       </p>
     </div>
   `;
@@ -766,7 +769,7 @@ export function getPartnerSuspensionTemplate(data: {
     ? new Date(data.suspendedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  const reviewUrl = `https://thecouragelibrary.com/partners/${data.customSlug || 'partner'}`;
+  const reviewUrl = `${SITE_URL}/partners/${data.customSlug || 'partner'}`;
 
   const content = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
@@ -851,7 +854,7 @@ export function getPartnerSuspensionTemplate(data: {
 
       <!-- SUPPORT FOOTER -->
       <p style="font-size: 12px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
-        If you have questions, contact Partner Support at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
+        If you have questions, contact Partner Support at <a href="mailto:${CONTACT_EMAILS.COLLABORATE}" style="color: #2563EB; font-weight: bold;">${CONTACT_EMAILS.COLLABORATE}</a>.
       </p>
     </div>
   `;
@@ -870,7 +873,7 @@ export function getPartnerReinstatementTemplate(data: {
     ? new Date(data.reinstatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })
     : new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
 
-  const loginUrl = `https://thecouragelibrary.com/partners/apply?view=login`;
+  const loginUrl = `${SITE_URL}/partners/apply?view=login`;
 
   const content = `
     <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0F172A; width: 100%; box-sizing: border-box;">
@@ -953,7 +956,7 @@ export function getPartnerReinstatementTemplate(data: {
 
       <!-- SUPPORT FOOTER -->
       <p style="font-size: 12.5px; color: #64748B; margin-top: 24px; line-height: 1.5; text-align: center;">
-        If you have questions, contact Partner Support at <a href="mailto:support@thecouragelibrary.com" style="color: #2563EB; font-weight: bold;">support@thecouragelibrary.com</a>.
+        If you have questions, contact Partner Support at <a href="mailto:${CONTACT_EMAILS.COLLABORATE}" style="color: #2563EB; font-weight: bold;">${CONTACT_EMAILS.COLLABORATE}</a>.
       </p>
     </div>
   `;

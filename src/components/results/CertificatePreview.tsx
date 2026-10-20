@@ -1,6 +1,7 @@
 "use client";
 
 import { X, Award, ShieldCheck } from "lucide-react";
+import { SITE_URL } from "@/config/site";
 
 interface CertificatePreviewProps {
   candidate: any;
@@ -22,9 +23,10 @@ export default function CertificatePreview({ candidate, result, verificationToke
     return "Awarded for active participation and cognitive assessment completion.";
   };
 
+  const candidateId = candidate.cnts_id || candidate.registration_id;
   const verLink = verificationToken 
-    ? `https://thecouragelibrary.com/verify/${candidate.cnts_id || candidate.registration_id}?token=${verificationToken}`
-    : `https://thecouragelibrary.com/verify/${candidate.cnts_id || candidate.registration_id}`;
+    ? `${SITE_URL}/verify/${candidateId}?token=${verificationToken}`
+    : `${SITE_URL}/verify/${candidateId}`;
 
   return (
     <div className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs flex items-center justify-center z-50 p-4">

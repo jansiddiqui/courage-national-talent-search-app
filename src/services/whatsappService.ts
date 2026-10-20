@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { supabaseAdmin } from "@/lib/supabaseAdmin";
+import { SITE_URL } from "@/config/site";
 
 export class WhatsAppService {
   private phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID || "";
@@ -294,7 +295,7 @@ export class WhatsAppService {
         meetingTime, 
         schoolName, 
         meetingMode, 
-        meetingLink || "https://thecouragelibrary.com"
+        meetingLink || SITE_URL
       ],
       "SCHOOL_MEETING_CONFIRMATION",
       "en"

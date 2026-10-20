@@ -12,7 +12,7 @@ function getUrl(url) {
 
 async function searchChunks() {
   try {
-    const html = await getUrl('https://thecouragelibrary.com');
+    const html = await getUrl('https://cnts.couragelibrary.in');
     const regex = /src="([^"]+\.js[^"]*)"/g;
     let match;
     const srcMatches = [];
@@ -21,7 +21,7 @@ async function searchChunks() {
     }
     console.log('Total JS chunks:', srcMatches.length);
     for (const src of srcMatches) {
-      const url = src.startsWith('http') ? src : 'https://thecouragelibrary.com' + src;
+      const url = src.startsWith('http') ? src : 'https://cnts.couragelibrary.in' + src;
       try {
         const text = await getUrl(url);
         const hasId = text.includes('1078403654595830');

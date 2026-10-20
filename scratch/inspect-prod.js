@@ -1,6 +1,6 @@
 async function inspect() {
   try {
-    const res = await fetch("https://thecouragelibrary.com", {
+    const res = await fetch("https://cnts.couragelibrary.in", {
       headers: {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
       }
@@ -38,7 +38,7 @@ async function inspect() {
     // Let's fetch one or two JS chunks to search for pixel ID
     for (const chunkMatch of srcMatches.slice(0, 5)) {
       const chunkUrl = chunkMatch.replace(/^src="/, '').replace(/"$/, '');
-      const fullUrl = chunkUrl.startsWith('http') ? chunkUrl : `https://thecouragelibrary.com${chunkUrl}`;
+      const fullUrl = chunkUrl.startsWith('http') ? chunkUrl : `https://cnts.couragelibrary.in${chunkUrl}`;
       try {
         const chunkRes = await fetch(fullUrl);
         const chunkText = await chunkRes.text();

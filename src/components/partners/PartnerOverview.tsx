@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { SITE_URL } from '@/config/site';
 import { 
   Sparkles, 
   Award, 
@@ -94,7 +95,7 @@ export const PartnerOverview: React.FC<PartnerOverviewProps> = ({
     }
   }, [referralCode]);
 
-  const referralLink = `https://thecouragelibrary.com/register?ref=${referralCode}`;
+  const referralLink = `${SITE_URL}/register?ref=${referralCode}`;
 
   const copyLink = () => {
     navigator.clipboard.writeText(referralLink);

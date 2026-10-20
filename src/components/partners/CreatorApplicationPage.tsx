@@ -1119,7 +1119,7 @@ export const CreatorApplicationPage: React.FC<CreatorApplicationPageProps> = ({
               </label>
               <div className="flex flex-col sm:flex-row sm:items-center rounded-2xl border border-slate-200 overflow-hidden bg-slate-900 shadow-sm focus-within:border-indigo-500 focus-within:ring-2 focus-within:ring-indigo-500/20 transition-all">
                 <span className="px-3.5 py-3 text-xs text-slate-400 font-mono border-b sm:border-b-0 sm:border-r border-slate-800 bg-slate-950 font-semibold shrink-0">
-                  thecouragelibrary.com/register?ref=
+                  cnts.couragelibrary.in/register?ref=
                 </span>
                 <input
                   type="text"

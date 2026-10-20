@@ -38,6 +38,7 @@ import { fetchRegistrations, fetchSystemSettings, updateSystemSetting, fetchCont
 import { hasSupabaseConfig } from "@/lib/supabaseClient";
 import SchoolPartnersPanel from "@/components/admin/SchoolPartnersPanel";
 import SchoolProspectsPanel from "@/components/admin/SchoolProspectsPanel";
+import { SITE_URL } from "@/config/site";
 import { TeleCallerPortal } from "@/components/admin/TeleCallerPortal";
 
 interface MetricCardProps {
@@ -3004,7 +3005,7 @@ export default function AdminOverviewPage() {
                                   <div className="flex gap-2">
                                     <button
                                       onClick={() => {
-                                        setReplyText(prev => `${prev}\nRead more: https://thecouragelibrary.com/help/${art.slug}\n`);
+                                        setReplyText(prev => `${prev}\nRead more: ${SITE_URL}/help/${art.slug}\n`);
                                         showToast("Link inserted!");
                                       }}
                                       className="px-2 py-0.5 bg-blue-50 text-blue-850 hover:bg-blue-100 font-bold rounded text-[9px] cursor-pointer"
@@ -3013,7 +3014,7 @@ export default function AdminOverviewPage() {
                                     </button>
                                     <button
                                       onClick={() => {
-                                        navigator.clipboard.writeText(`https://thecouragelibrary.com/help/${art.slug}`);
+                                        navigator.clipboard.writeText(`${SITE_URL}/help/${art.slug}`);
                                         showToast("Link copied!");
                                       }}
                                       className="px-2 py-0.5 bg-slate-50 text-slate-600 hover:bg-slate-100 font-bold rounded text-[9px] cursor-pointer"

@@ -22,6 +22,7 @@ import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { writeAuditEntry } from "@/domains/admin/AdminAuditService";
 import { SchoolEnrichmentService } from "@/domains/school-intelligence/SchoolEnrichmentService";
 import { SchoolDiscoveryService } from "@/domains/school-intelligence/SchoolDiscoveryService";
+import { SITE_URL } from "@/config/site";
 
 const CRON_SECRET = process.env.CRON_SECRET;
 const JOB_LEASE_SECONDS = 300; // 5 minutes allow ample time for crawl + AI extraction
@@ -222,7 +223,7 @@ export async function processWorkerJobs() {
       .lte("next_retry_at", new Date().toISOString());
 
     if (!countErr && count && count > 0) {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || SITE_URL;
       const workerUrl = `${baseUrl}/api/admin/jobs/worker`;
       
       console.log(`[Worker] There are still ${count} pending/retry jobs. Triggering self asynchronously...`);
@@ -440,7 +441,7 @@ async function executeExportJob(job: any): Promise<void> {
       upsert: true
     });
 
-  let signedUrl = `https://localhost/mock-download/${filePath}`;
+  let signedUrl = `${SITE_URL}/mock-download/${filePath}`;
   if (!uploadError) {
     const { data: signedData } = await (supabaseAdmin as any).storage
       .from("reports-exports")
@@ -586,7 +587,7 @@ async function executeDigestJob(job: any): Promise<void> {
       upsert: true
     });
 
-  let signedUrl = `https://localhost/mock-download/${filePath}`;
+  let signedUrl = `${SITE_URL}/mock-download/${filePath}`;
   if (!uploadError) {
     const { data: signedData } = await (supabaseAdmin as any).storage
       .from("reports-exports")

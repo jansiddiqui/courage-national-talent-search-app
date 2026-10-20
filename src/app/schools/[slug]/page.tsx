@@ -20,6 +20,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import JsonLd from "@/components/shared/JsonLd";
 import { getPublishedSchoolProfile } from "@/lib/schoolProfiles";
+import { SITE_URL } from "@/config/site";
 import ShareSchoolProfileButton from "@/components/schools/ShareSchoolProfileButton";
 
 interface PageProps {
@@ -43,17 +44,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title,
     description,
     alternates: {
-      canonical: `https://thecouragelibrary.com/schools/${school.slug}`,
+      canonical: `${SITE_URL}/schools/${school.slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://thecouragelibrary.com/schools/${school.slug}`,
+      url: `${SITE_URL}/schools/${school.slug}`,
       type: "website",
       siteName: "Courage National Talent Search",
       images: [
         {
-          url: school.logo_url || "https://thecouragelibrary.com/og-cnts.png",
+          url: school.logo_url || `${SITE_URL}/og-cnts.png`,
           width: 1200,
           height: 630,
           alt: `${school.name} CNTS Profile`,
@@ -64,7 +65,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title,
       description,
-      images: [school.logo_url || "https://thecouragelibrary.com/og-cnts.png"],
+      images: [school.logo_url || `${SITE_URL}/og-cnts.png`],
     },
   };
 }
@@ -93,7 +94,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
     "@context": "https://schema.org",
     "@type": "EducationalOrganization",
     "name": school.name,
-    "url": school.website || `https://thecouragelibrary.com/schools/${school.slug}`,
+    "url": school.website || `${SITE_URL}/schools/${school.slug}`,
     "logo": school.logo_url || undefined,
     "address": {
       "@type": "PostalAddress",
@@ -105,7 +106,7 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
     "memberOf": {
       "@type": "Organization",
       "name": "Courage National Talent Search",
-      "url": "https://thecouragelibrary.com"
+      "url": SITE_URL
     }
   };
 
@@ -117,19 +118,19 @@ export default async function SchoolPublicProfilePage({ params }: PageProps) {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://thecouragelibrary.com"
+        "item": SITE_URL
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Partner Schools",
-        "item": "https://thecouragelibrary.com/schools"
+        "item": `${SITE_URL}/schools`
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": school.name,
-        "item": `https://thecouragelibrary.com/schools/${school.slug}`
+        "item": `${SITE_URL}/schools/${school.slug}`
       }
     ]
   };

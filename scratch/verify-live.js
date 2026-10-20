@@ -33,7 +33,7 @@ function fetchWithRedirects(initialUrl, maxRedirects = 5) {
 async function verifyLive() {
   console.log("=== LIVE PRODUCTION INSPECTION WITH REDIRECTS ===");
   try {
-    const res = await fetchWithRedirects("https://thecouragelibrary.com");
+    const res = await fetchWithRedirects("https://cnts.couragelibrary.in");
     console.log("\nFinal URL:", res.finalUrl);
     console.log("HTTP Status:", res.status);
     console.log("Vercel Cache / Age:", res.headers['x-vercel-cache'], "| Age:", res.headers['age']);

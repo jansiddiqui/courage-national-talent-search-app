@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
 import { signSession } from "@/lib/sessionHelper";
 import { emailService } from "@/services/emailService";
+import { SITE_URL } from "@/config/site";
 
 const JWT_SECRET = process.env.SUPABASE_SERVICE_ROLE_KEY as string;
 
@@ -83,7 +84,7 @@ export async function POST(request: Request) {
     const token = await signSession(payload, JWT_SECRET);
     
     // 4. Construct verification URL
-    const origin = request.headers.get("origin") || "http://localhost:3000";
+    const origin = request.headers.get("origin") || SITE_URL;
     const link = `${origin}/api/auth/verify-link?token=${token}`;
 
     // 5. Send via Brevo SMTP API using EmailService

@@ -1,3 +1,5 @@
+import { SITE_URL } from "@/config/site";
+
 /**
  * CNTS School Recognition Certificate Generator
  * Generates an institutional print/download HTML plaque layout for CNTS Partner & Founding Schools.
@@ -28,7 +30,7 @@ export function openSchoolRecognitionCertificate(school: SchoolRecognitionData) 
     ? "Recognized as a Founding Institutional Partner of the Courage National Talent Search for the 2026 Edition."
     : "Recognized as an Official Partner Institution of the Courage National Talent Search.";
 
-  const profileUrl = `https://thecouragelibrary.com/schools/${school.slug}`;
+  const profileUrl = `${SITE_URL}/schools/${school.slug}`;
   const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(profileUrl)}`;
 
   const html = `

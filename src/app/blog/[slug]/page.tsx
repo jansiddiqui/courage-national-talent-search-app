@@ -11,6 +11,7 @@ import AuthorProfile from "@/components/blog/AuthorProfile";
 import RelatedArticles from "@/components/blog/RelatedArticles";
 import JsonLd from "@/components/shared/JsonLd";
 import { BlogPostViewsTracker } from "@/components/blog/BlogPostViewsTracker";
+import { SITE_URL } from "@/config/site";
 import { 
   ComparisonBox, 
   CognitiveTransition, 
@@ -44,12 +45,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     title: `${post.seoTitle} | Courage Library`,
     description: post.seoDescription,
     alternates: {
-      canonical: `https://thecouragelibrary.com/blog/${post.slug}`,
+      canonical: `${SITE_URL}/blog/${post.slug}`,
     },
     openGraph: {
       title: post.seoTitle,
       description: post.seoDescription,
-      url: `https://thecouragelibrary.com/blog/${post.slug}`,
+      url: `${SITE_URL}/blog/${post.slug}`,
       type: "article",
       publishedTime: post.publishDate,
       modifiedTime: post.updatedDate,
@@ -106,25 +107,25 @@ export default async function BlogPostPage({ params }: PageProps) {
     "@type": "BlogPosting",
     "headline": post.title,
     "description": post.description,
-    "image": `https://thecouragelibrary.com${post.featuredImage}`,
+    "image": `${SITE_URL}${post.featuredImage}`,
     "datePublished": post.publishDate,
     "dateModified": post.updatedDate,
     "author": {
       "@type": "Organization",
       "name": "Courage Library",
-      "url": "https://thecouragelibrary.com"
+      "url": SITE_URL
     },
     "publisher": {
       "@type": "Organization",
       "name": "Courage Library",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://thecouragelibrary.com/images/logo.png"
+        "url": `${SITE_URL}/images/logo.png`
       }
     },
     "mainEntityOfPage": {
       "@type": "WebPage",
-      "@id": `https://thecouragelibrary.com/blog/${post.slug}`
+      "@id": `${SITE_URL}/blog/${post.slug}`
     }
   };
 
@@ -136,19 +137,19 @@ export default async function BlogPostPage({ params }: PageProps) {
         "@type": "ListItem",
         "position": 1,
         "name": "Home",
-        "item": "https://thecouragelibrary.com"
+        "item": SITE_URL
       },
       {
         "@type": "ListItem",
         "position": 2,
         "name": "Blog",
-        "item": "https://thecouragelibrary.com/blog"
+        "item": `${SITE_URL}/blog`
       },
       {
         "@type": "ListItem",
         "position": 3,
         "name": post.title,
-        "item": `https://thecouragelibrary.com/blog/${post.slug}`
+        "item": `${SITE_URL}/blog/${post.slug}`
       }
     ]
   };

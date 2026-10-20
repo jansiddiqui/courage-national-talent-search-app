@@ -133,7 +133,7 @@ const EMERGENCY_FALLBACK_EVENTS: CntsTimelineEvent[] = [
     title: "Candidate Registration Deadline",
     short_title: "Registration Closes",
     description: "Final deadline for online candidate registration and school roster submissions.",
-    start_at: "2026-09-25T23:59:59+05:30",
+    start_at: "2026-11-30T23:59:59+05:30",
     timezone: "Asia/Kolkata",
     event_type: "PUBLIC",
     audience: "ALL",

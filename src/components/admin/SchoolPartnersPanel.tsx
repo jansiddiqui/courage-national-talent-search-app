@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { School, Search, Plus, Copy, Check, Users, CheckCircle, Phone, Mail, FileDown, Eye, EyeOff, Globe, Sparkles, ExternalLink, X, Key, Send, Lock, Award } from "lucide-react";
 import { openSchoolRecognitionCertificate } from "@/lib/schoolRecognitionCertificate";
+import { SITE_URL } from "@/config/site";
 
 export default function SchoolPartnersPanel() {
   const router = useRouter();
@@ -316,13 +317,13 @@ export default function SchoolPartnersPanel() {
             </div>
             <div style="margin-top: 20px;">
               <div class="label">Dashboard Login Link</div>
-              <div class="value" style="font-size: 14px;">https://www.thecouragelibrary.com/school/login</div>
+              <div class="value" style="font-size: 14px;">${SITE_URL}/school/login</div>
             </div>
           </div>
 
           <div class="box">
             <div class="label" style="margin-bottom: 10px;">Direct Student Referral Link (Auto-fills Code)</div>
-            <div class="referral">https://www.thecouragelibrary.com/register?school=${school.school_code}</div>
+            <div class="referral">${SITE_URL}/register?school=${school.school_code}</div>
             <p style="font-size: 13px; color: #475569; margin-top: 10px;">
               Share this link with your students. It will automatically waive their registration fee based on your pre-paid quota (${school.quota} seats).
             </p>

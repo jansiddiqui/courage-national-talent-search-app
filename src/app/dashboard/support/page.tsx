@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { usePortal } from "@/contexts/PortalContext";
 import Link from "next/link";
 import { HelpCircle, MessageSquare, ChevronDown, ChevronUp, Phone, Mail, Send, CheckCircle, Lightbulb } from "lucide-react";
+import { CONTACT_EMAILS } from "@/config/contact";
 
 export default function SupportPage() {
   const { activeCandidate, addActivity } = usePortal();
@@ -113,13 +114,13 @@ export default function SupportPage() {
             <p className="text-[10px] text-slate-400">Mon–Sat, 10am–6pm</p>
           </div>
         </a>
-        <a href="mailto:support@thecouragelibrary.com" className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
+        <a href={`mailto:${CONTACT_EMAILS.SUPPORT}`} className="bg-white rounded-2xl border border-slate-100 shadow-sm p-4 flex items-center gap-4 hover:shadow-md transition-shadow">
           <div className="w-11 h-11 bg-blue-50 text-blue-700 rounded-xl flex items-center justify-center shrink-0">
             <Mail size={20} />
           </div>
           <div>
             <p className="text-xs font-black text-slate-800 uppercase tracking-wide">Email</p>
-            <p className="text-sm font-semibold text-slate-600 mt-0.5">support@thecouragelibrary.com</p>
+            <p className="text-sm font-semibold text-slate-600 mt-0.5">{CONTACT_EMAILS.SUPPORT}</p>
             <p className="text-[10px] text-slate-400">Response within 24h</p>
           </div>
         </a>

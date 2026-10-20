@@ -6,6 +6,7 @@ import { useParams, useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { ContentCMS } from "@/domains/academy/content/ContentCMS";
+import { SITE_URL } from "@/config/site";
 import { localProgressRepository } from "@/domains/academy/core/repositories/LocalRepository";
 import { LearningService } from "@/domains/academy/core/services/LearningService";
 import { ProgressService } from "@/domains/academy/core/services/ProgressService";
@@ -455,7 +456,7 @@ export default function WorkspacePage() {
 
   const shareChallenge = () => {
     if (!topic) return;
-    const shareText = `I just scored ${quizScore}/${questions.length} on the ${topic.title.en} challenge in CNTS Academy! Can you beat my score? Attempt the challenge here: https://thecouragelibrary.com/academy/mathematics/${slug}/practice?ref=challenge`;
+    const shareText = `I just scored ${quizScore}/${questions.length} on the ${topic.title.en} challenge in CNTS Academy! Can you beat my score? Attempt the challenge here: ${SITE_URL}/academy/mathematics/${slug}/practice?ref=challenge`;
     const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(shareText)}`;
     
     // Copy to clipboard

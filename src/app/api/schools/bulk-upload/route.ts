@@ -4,6 +4,7 @@ import { SchoolAuthService } from "@/domains/school/SchoolAuthService";
 import { SchoolImportValidation } from "@/domains/school/SchoolImportValidation";
 import { SchoolImportService } from "@/domains/school/SchoolImportService";
 import { supabaseAdmin, hasSupabaseAdminConfig } from "@/lib/supabaseAdmin";
+import { SITE_URL } from "@/config/site";
 
 const db = supabaseAdmin as any;
 
@@ -89,7 +90,7 @@ export async function POST(request: Request) {
     );
 
     // 6. Non-blocking call to trigger worker execution
-    const appUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || SITE_URL;
     fetch(`${appUrl}/api/internal/process-school-jobs`, {
       method: "POST",
     }).catch(err => console.error("[Bulk Upload] Failed to trigger background worker:", err));

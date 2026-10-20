@@ -63,7 +63,7 @@ Please let us know if you need to adjust the time. Looking forward to our conver
 Warm regards,
 *Courage National Talent Search (CNTS) Team*
 Powered by Courage Library
-Official Support: www.thecouragelibrary.com`;
+Official Portal: cnts.couragelibrary.in`;
 
   const handleOpenWhatsAppBusiness = () => {
     const cleanPhone = phoneNumber.replace(/\D/g, "");

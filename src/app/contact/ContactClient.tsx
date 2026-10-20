@@ -18,6 +18,7 @@ import {
   Lightbulb
 } from "lucide-react";
 import Image from "next/image";
+import { CONTACT_EMAILS } from "@/config/contact";
 import { saveContactMessage } from "@/services/supabaseService";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -222,7 +223,7 @@ export default function ContactPage() {
               <div className="space-y-3">
                 {/* Email Support */}
                 <a 
-                  href="mailto:support@thecouragelibrary.com"
+                  href={`mailto:${CONTACT_EMAILS.SUPPORT}`}
                   className="flex items-start gap-3 p-3 rounded-2xl hover:bg-slate-50 border border-transparent hover:border-slate-100 transition-all group"
                 >
                   <div className="p-2.5 rounded-xl bg-blue-50 text-blue-750 shrink-0">
@@ -230,7 +231,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Email Support</span>
-                    <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-800 transition-colors">support@thecouragelibrary.com</span>
+                    <span className="text-sm font-semibold text-slate-700 group-hover:text-blue-800 transition-colors">{CONTACT_EMAILS.SUPPORT}</span>
                     <p className="text-[10px] text-slate-500 mt-0.5">Response within 24 hours</p>
                   </div>
                 </a>

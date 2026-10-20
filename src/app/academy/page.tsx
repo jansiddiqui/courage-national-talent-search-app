@@ -19,12 +19,13 @@ import {
   Printer,
   Flame
 } from "lucide-react";
+import { SITE_URL } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "CNTS Learning Academy | Official Cognitive Preparation Portal",
   description: "Bilingual prep classes, mock tests, and cognitive skill paths in Reasoning, Mathematics, and Language Skills for Classes 5–8.",
   alternates: {
-    canonical: "https://thecouragelibrary.com/academy",
+    canonical: `${SITE_URL}/academy`,
   }
 };
 

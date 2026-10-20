@@ -175,6 +175,7 @@ export async function POST(request: Request) {
         currency: "INR",
         receipt: `receipt_${Date.now()}`,
         notes: {
+          project: "cnts",
           draftRegId: draftRegId || ""
         }
       }),
