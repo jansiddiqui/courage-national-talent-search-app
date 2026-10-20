@@ -274,7 +274,8 @@ export async function POST(request: Request) {
       await emailService.sendEmail(
         partnerResponseData.email,
         `We've received your Courage Partner application`,
-        emailHtml
+        emailHtml,
+        { sender: "partners" }
       );
     } catch (emailErr) {
       console.error('[Partner Confirmation Email Error]:', emailErr);

@@ -181,7 +181,8 @@ export async function PATCH(request: Request) {
             await emailService.sendEmail(
               updated.email,
               'Your Courage Partner application has been approved',
-              approvalHtml
+              approvalHtml,
+              { sender: "partners" }
             );
           } catch (emailErr) {
             console.error('[Partner Approval Email Error - Non Blocking]:', emailErr);
@@ -202,7 +203,8 @@ export async function PATCH(request: Request) {
             await emailService.sendEmail(
               updated.email,
               'Your Courage Partner account has been reinstated',
-              reinstatementHtml
+              reinstatementHtml,
+              { sender: "partners" }
             );
           } catch (emailErr) {
             console.error('[Partner Reinstatement Email Error - Non Blocking]:', emailErr);
@@ -224,7 +226,8 @@ export async function PATCH(request: Request) {
             await emailService.sendEmail(
               updated.email,
               'Your Courage Partner account has been suspended',
-              suspensionHtml
+              suspensionHtml,
+              { sender: "partners" }
             );
           } catch (emailErr) {
             console.error('[Partner Suspension Email Error - Non Blocking]:', emailErr);

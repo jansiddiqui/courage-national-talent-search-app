@@ -100,7 +100,7 @@ export async function POST(request: Request) {
       </div>
     `;
 
-    const emailRes = await emailService.sendEmail(cleanEmail, subject, htmlContent);
+    const emailRes = await emailService.sendEmail(cleanEmail, subject, htmlContent, { sender: "noreply" });
 
     if (!emailRes.success) {
       return NextResponse.json({ success: false, message: emailRes.error || "Failed to send login email. Please try again." }, { status: 500 });

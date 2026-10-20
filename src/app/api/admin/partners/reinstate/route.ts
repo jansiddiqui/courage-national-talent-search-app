@@ -99,7 +99,8 @@ export async function POST(request: Request) {
         await emailService.sendEmail(
           partnerRecord.email,
           'Your Courage Partner account has been reinstated',
-          reinstatementHtml
+          reinstatementHtml,
+          { sender: "partners" }
         );
       } catch (emailErr) {
         console.error('[Partner Reinstatement Email Error - Non Blocking]:', emailErr);

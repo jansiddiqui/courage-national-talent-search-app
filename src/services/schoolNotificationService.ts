@@ -122,7 +122,7 @@ export async function sendSchoolCredentialsNotification(
       </html>
     `;
 
-    const emailRes = await emailService.sendEmail(coordinatorEmail.trim(), subject, htmlContent);
+    const emailRes = await emailService.sendEmail(coordinatorEmail.trim(), subject, htmlContent, { sender: "partners" });
     if (emailRes.success) {
       emailSent = true;
     } else {

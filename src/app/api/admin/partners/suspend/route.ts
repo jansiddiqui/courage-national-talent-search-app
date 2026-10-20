@@ -111,7 +111,8 @@ export async function POST(request: Request) {
         await emailService.sendEmail(
           partnerRecord.email,
           'Your Courage Partner account has been suspended',
-          suspensionHtml
+          suspensionHtml,
+          { sender: "partners" }
         );
       } catch (emailErr) {
         console.error('[Partner Suspension Email Error - Non Blocking]:', emailErr);

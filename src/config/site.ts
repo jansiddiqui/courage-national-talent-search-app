@@ -2,9 +2,8 @@
  * Single source of truth for CNTS site URL.
  * Canonical base URL: https://cnts.couragelibrary.in (no trailing slash, no www).
  *
- * Any stale environment variable pointing to the legacy domain
- * (e.g. `thecouragelibrary.com` or `www.thecouragelibrary.com`) is sanitized
- * and forced to `https://cnts.couragelibrary.in`.
+ * Any stale environment variable pointing to a legacy domain
+ * is sanitized and forced to `https://cnts.couragelibrary.in`.
  */
 export function resolveSiteUrl(envUrl?: string): string {
   const url = envUrl !== undefined ? envUrl : (process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_APP_URL);
@@ -12,15 +11,15 @@ export function resolveSiteUrl(envUrl?: string): string {
     return "https://cnts.couragelibrary.in";
   }
 
-  const clean = url.trim().replace(/\/+$/, "");
+  const clean = url.trim().replace(/\/+$/, "").replace(/^(https?:\/\/)www\./i, "$1");
 
-  // Prevent legacy domain from poisoning production if stale hosting env vars exist
-  if (clean.includes("thecouragelibrary.com") || clean.includes("thecouragelibrary")) {
-    return "https://cnts.couragelibrary.in";
+  // Allow localhost only in local development/testing environments
+  if (clean.startsWith("http://localhost:") || clean.startsWith("http://127.0.0.1:")) {
+    return clean;
   }
 
-  // Ensure no www and no trailing slash
-  return clean.replace(/^(https?:\/\/)www\./i, "$1");
+  // Enforce canonical CNTS production domain (defensively rejects any legacy or invalid domains)
+  return "https://cnts.couragelibrary.in";
 }
 
 export const SITE_URL = resolveSiteUrl();

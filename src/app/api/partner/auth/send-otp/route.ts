@@ -99,7 +99,8 @@ export async function POST(request: Request) {
             </div>
             <p style="color: #94a3b8; font-size: 12px; text-align: center;">If you didn't request this OTP, please ignore this email. Do not share this code with anyone.</p>
           </div>
-        `
+        `,
+        { sender: "partners" }
       );
       console.log(`[PARTNER OTP] Sent to ${cleanEmail}`);
     } catch (emailErr) {

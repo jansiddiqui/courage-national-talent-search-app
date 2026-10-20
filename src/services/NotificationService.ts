@@ -113,11 +113,12 @@ export class NotificationService {
         );
         if (!success) errorMsg = "WhatsApp dispatch returned false";
       } else if (job.channel === "EMAIL") {
-        const { subject, htmlContent } = job.payload;
+        const { subject, htmlContent, sender } = job.payload;
         const emailRes = await emailService.sendEmail(
           job.recipient,
           subject,
-          htmlContent
+          htmlContent,
+          { sender }
         );
         success = emailRes.success;
         if (!success) errorMsg = emailRes.error || "Email dispatch failed";
@@ -280,7 +281,7 @@ export class NotificationService {
       if (email) {
         const subject = "CNTS 2026 Admit Card Available";
         const htmlContent = getAdmitCardTemplate(studentName, registrationId);
-        emailPromise = emailService.sendEmail(email, subject, htmlContent).then(r => r.success);
+        emailPromise = emailService.sendEmail(email, subject, htmlContent, { sender: "noreply" }).then(r => r.success);
       }
       const [whatsappRes, emailRes] = await Promise.all([waPromise, emailPromise]);
       return { whatsapp: whatsappRes, email: emailRes };
@@ -299,7 +300,8 @@ export class NotificationService {
       const htmlContent = getAdmitCardTemplate(studentName, registrationId);
       emailJobId = await this.createJob(email, "EMAIL", "admit_card_email", {
         subject: "CNTS 2026 Admit Card Available",
-        htmlContent
+        htmlContent,
+        sender: "noreply"
       });
       if (emailJobId) jobIds.push(emailJobId);
     }
@@ -375,7 +377,7 @@ export class NotificationService {
       if (email) {
         const subject = "CNTS 2026 Certificate Issued";
         const htmlContent = getCertificateTemplate(studentName, registrationId);
-        emailPromise = emailService.sendEmail(email, subject, htmlContent).then(r => r.success);
+        emailPromise = emailService.sendEmail(email, subject, htmlContent, { sender: "results" }).then(r => r.success);
       }
       const [whatsappRes, emailRes] = await Promise.all([waPromise, emailPromise]);
       return { whatsapp: whatsappRes, email: emailRes };
@@ -394,7 +396,8 @@ export class NotificationService {
       const htmlContent = getCertificateTemplate(studentName, registrationId);
       emailJobId = await this.createJob(email, "EMAIL", "certificate_released_email", {
         subject: "CNTS 2026 Certificate Issued",
-        htmlContent
+        htmlContent,
+        sender: "results"
       });
       if (emailJobId) jobIds.push(emailJobId);
     }
@@ -426,7 +429,8 @@ export class NotificationService {
         ? emailService.sendEmail(
             email, 
             `CNTS Support Request Received — ${ticketNumber}`, 
-            getSupportTicketCreatedTemplate(name, ticketNumber, subject, description)
+            getSupportTicketCreatedTemplate(name, ticketNumber, subject, description),
+            { sender: "support" }
           ).then(r => r.success)
         : Promise.resolve(false);
       const emailRes = await emailPromise;
@@ -447,7 +451,8 @@ export class NotificationService {
       const htmlContent = getSupportTicketCreatedTemplate(name, ticketNumber, subject, description);
       emailJobId = await this.createJob(email, "EMAIL", "support_ticket_created", {
         subject: `CNTS Support Request Received — ${ticketNumber}`,
-        htmlContent
+        htmlContent,
+        sender: "support"
       });
       if (emailJobId) jobIds.push(emailJobId);
     }
@@ -481,7 +486,7 @@ export class NotificationService {
     if (email && email.includes("@")) {
       try {
         const htmlContent = getSupportAgentRepliedTemplate(ticketNumber, subject, replyText);
-        const emailRes = await emailService.sendEmail(email, emailSubject, htmlContent);
+        const emailRes = await emailService.sendEmail(email, emailSubject, htmlContent, { sender: "support" });
         emailSent = emailRes.success;
         if (emailSent) {
           console.log(`[NotificationService] Support reply email dispatched successfully to ${email}`);
@@ -504,7 +509,8 @@ export class NotificationService {
       const htmlContent = getSupportAgentRepliedTemplate(ticketNumber, subject, replyText);
       const emailJobId = await this.createJob(email, "EMAIL", "support_agent_replied", {
         subject: emailSubject,
-        htmlContent
+        htmlContent,
+        sender: "support"
       });
       if (emailJobId) {
         jobIds.push(emailJobId);
@@ -544,7 +550,8 @@ export class NotificationService {
         ? emailService.sendEmail(
             email, 
             `Support Ticket ${ticketNumber} Updated`, 
-            getSupportStatusChangedTemplate(ticketNumber, prevStatus, newStatus)
+            getSupportStatusChangedTemplate(ticketNumber, prevStatus, newStatus),
+            { sender: "support" }
           ).then(r => r.success)
         : Promise.resolve(false);
       const emailRes = await emailPromise;
@@ -559,7 +566,8 @@ export class NotificationService {
       const htmlContent = getSupportStatusChangedTemplate(ticketNumber, prevStatus, newStatus);
       emailJobId = await this.createJob(email, "EMAIL", "support_status_changed", {
         subject: `Support Ticket ${ticketNumber} Updated`,
-        htmlContent
+        htmlContent,
+        sender: "support"
       });
       if (emailJobId) jobIds.push(emailJobId);
     }
@@ -591,7 +599,8 @@ export class NotificationService {
       const emailRes = await emailService.sendEmail(
         email, 
         `[SLA BREACH ALERT] Ticket ${ticketNumber} Escalated`, 
-        getSupportSLAEscalatedTemplate(ticketNumber, priority, breachType, escalationLevel, assignedAgent, deadline)
+        getSupportSLAEscalatedTemplate(ticketNumber, priority, breachType, escalationLevel, assignedAgent, deadline),
+        { sender: "support" }
       );
       return { email: emailRes.success };
     }
@@ -599,7 +608,8 @@ export class NotificationService {
     const htmlContent = getSupportSLAEscalatedTemplate(ticketNumber, priority, breachType, escalationLevel, assignedAgent, deadline);
     const jobId = await this.createJob(email, "EMAIL", "support_sla_escalated", {
       subject: `[SLA BREACH ALERT] Ticket ${ticketNumber} Escalated`,
-      htmlContent
+      htmlContent,
+      sender: "support"
     });
 
     if (jobId) {
